@@ -8,10 +8,7 @@ and decoding process.
 
 The document is built from plaintext section and subsection [Markdown] files
 (more specifically, [kramdown] files) using the [Jekyll] static site building
-tool. GitHub supports Jekyll natively. The rendered output of the `master`
-branch is available here:
-
-**https://webmproject.github.io/av1-bitstream/**
+tool. GitHub supports Jekyll natively.
 
 
 ## Building Locally
