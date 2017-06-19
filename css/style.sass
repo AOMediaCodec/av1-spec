@@ -63,14 +63,6 @@ table.conventions
   td:first-child
     white-space: nowrap
 
-table.syntax
-  td
-    white-space: pre-wrap
-    font-family: $monofont
-    code
-      color: #000
-      background-color: #fff
-
 table.nohead
   th
     display: none
@@ -82,11 +74,18 @@ table.xyhead
     color: #000
     font-weight: normal
 
-figure.highlight
-  background-color: #f2f2f2
-  padding-left: 1em
-  padding-right: 1em
-  border: $gridweight solid #ccc
+figure
+  display: block
+  text-align: center
+  font-style: italic
+  font-size: smaller
+  text-indent: 0
+  margin: 1em auto
+  padding: 1em
+  img
+    max-width: 80%
+    height: auto
+  figcaption
 
 div.syntax
   //background-color: $gridcolor
