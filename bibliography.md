@@ -1,5 +1,6 @@
 
 ## Bibliography
+{:.no_count}
 
 
   1. Recommendation ITU-R BT.601-7 (2011), Studio encoding parameters of digital

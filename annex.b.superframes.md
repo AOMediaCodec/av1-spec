@@ -1,9 +1,9 @@
 ## Annex B: Superframes
+{:.no_count}
 
-WIP -- placeholder
 
-
-### B.1 Overview
+### Overview
+{:.no_count}
 
 AV1 supports consolidating multiple coded frames into one single chunk, called
 a "superframe".
@@ -16,7 +16,8 @@ syntax elements is described in section B.3. The method for parsing a
 superframe is described in section B.4.
 
 
-### B.2 Superframe syntax
+### Superframe syntax
+{:.no_count}
 
 <div class="syntax">
 superframe( sz ) {                                                    <b>Type</b>
@@ -28,7 +29,8 @@ superframe( sz ) {                                                    <b>Type</b
 </div>
 
 
-#### B.2.1 Superframe index
+#### Superframe index
+{:.no_count}
 
 <div class="syntax">
 superframe_index( sz ) {                                              <b>Type</b>
@@ -45,7 +47,8 @@ superframe_index( sz ) {                                              <b>Type</b
 </div>
 
 
-#### B.2.2 Superframe header syntax
+#### Superframe header syntax
+{:.no_count}
 
 <div class="syntax">
 superframe_header( ) {                                                <b>Type</b>
@@ -57,7 +60,8 @@ superframe_header( ) {                                                <b>Type</b
 </div>
 
 
-### B.3 Superframe semantics
+### Superframe semantics
+{:.no_count}
 
 **sz** specifies the number of bytes in the superframe and is provided by
 external means.
@@ -90,7 +94,8 @@ NumFrames = frames_in_superframe_minus_1 + 1
 NumFrames equal to 1.
 
 
-### B.4 Superframe parsing
+### Superframe parsing
+{:.no_count}
 
 The use of superframes is optional, and a chunk can contain either a single
 frame, or a superframe.
