@@ -144,8 +144,6 @@ version_date: Released 2017-xx-xx
 
 {% include_relative bibliography.md %}
 
-{% include_relative 99.00.01.function-reference-links.md %}
-
-
 {% comment %}
+{% include_relative 99.00.01.function-reference-links.md %}
 {% endcomment %}
