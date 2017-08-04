@@ -18,7 +18,7 @@ title: AV1 Bitstream &amp; Decoding Process Specification
 email: webmaster@webmproject.org
 description: > 
   Description here
-baseurl: "/av1-bitstream" # the subpath of your site, e.g. /blog
+baseurl: "/av1-spec" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: webm
 github_username:  webmproject
