@@ -20,7 +20,7 @@ superframe is described in section B.4.
 {:.no_count}
 
 <div class="syntax">
-superframe( sz ) {                                                    <b>Type</b>
+superframe( sz ) {
     for( i = 0; i < NumFrames; i++ )
         frame( frame_sizes[ i ] )
     superframe_index( sz )
@@ -33,7 +33,7 @@ superframe( sz ) {                                                    <b>Type</b
 {:.no_count}
 
 <div class="syntax">
-superframe_index( sz ) {                                              <b>Type</b>
+superframe_index( sz ) {
     frameSizeSum = 0
     superframe_header( )
     for( i = 0; i < NumFrames - 1; i++ ) {
@@ -51,7 +51,7 @@ superframe_index( sz ) {                                              <b>Type</b
 {:.no_count}
 
 <div class="syntax">
-superframe_header( ) {                                                <b>Type</b>
+superframe_header( ) {
     <b>superframe_marker</b>                                                 f(3)
     <b>bytes_per_framesize_minus_1</b>                                       f(2)
     <b>frames_in_superframe_minus_1</b>                                      f(3)
