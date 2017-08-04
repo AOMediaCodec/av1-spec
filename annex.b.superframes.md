@@ -25,7 +25,6 @@ superframe( sz ) {
         frame( frame_sizes[ i ] )
     superframe_index( sz )
 }
-
 </div>
 
 
@@ -43,7 +42,6 @@ superframe_index( sz ) {
     frame_size[ i ] = sz – SzIndex - frameSizeSum
     superframe_header( )
 }
-
 </div>
 
 
@@ -56,7 +54,6 @@ superframe_header( ) {
     <b>bytes_per_framesize_minus_1</b>                                       f(2)
     <b>frames_in_superframe_minus_1</b>                                      f(3)
 }
-
 </div>
 
 
