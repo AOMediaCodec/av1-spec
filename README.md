@@ -1,15 +1,21 @@
 ---
+layout: page
+title: Authoring Notes, AV1 Bitstream &amp; Decoding Process Specification
 ---
-# Draft AV1 Bitstream & Decoding Process Specification
+
+
+# {{ page.title }}
+{:.no_toc}
+
 
 ![AV1 logo graphic](images/av1-logo-297x142.png)
 
-This document, once published, will define the AV1 video codec bitstream format
-and decoding process.
+This document provides instructions for working with the [draft] AV1 Bitstream
+&amp; Decoding Process Specification.
 
-The document is built from plaintext section and subsection [Markdown] files
-(more specifically, [kramdown] files) using the [Jekyll] static site building
-tool.
+The specification document is built from plaintext section and subsection
+[Markdown] files (more specifically, [kramdown] files) using the [Jekyll] static
+site generator tool.
 
 
 **Contents**
@@ -34,7 +40,7 @@ version -- or installing it may conflict with your system's installed version --
 first **[install rbenv]**, then install Ruby v2.3.0 within it (again, in
 userland).
 
-~~~~~
+~~~~~ bash
 # list all available versions:
 $ rbenv install -l
 2.2.6
@@ -52,7 +58,7 @@ $ rbenv install 2.3.0
 
 Gem dependencies are managed by [bundler].
 
-~~~~~
+~~~~~ bash
 $ gem install bundler
 
 # Filesystem location where gems are installed
@@ -63,7 +69,7 @@ $ gem env home
 
 ### Clone the Repo
 
-~~~~~
+~~~~~ bash
 git clone https://aomedia.googlesource.com/av1-spec
 cd av1-spec
 ~~~~~
@@ -73,7 +79,7 @@ cd av1-spec
 
 In the directory of your local clone, do:
 
-~~~~~
+~~~~~ bash
 rbenv local 2.3.0
 ~~~~~
 
@@ -85,7 +91,7 @@ will now use v2.3.0 and gems appropriate for it.
 
 In the directory of your local clone, run
 
-~~~~~
+~~~~~ bash
 bundle install
 ~~~~~
 
@@ -98,7 +104,7 @@ for some gems to compile successfully._
 
 ### Build and Preview Locally with Jekyll
 
-~~~~~
+~~~~~ bash
 bundle exec jekyll serve
 ~~~~~
 
@@ -106,6 +112,38 @@ This will build the document and launch a local webserver at
 `http://127.0.0.1:4000/av1-spec/` (by default). Jekyll will also watch the
 the filesystem for changes and rebuild the document as needed. Reload your
 browser tab to view any changes you've made.
+
+
+### Notes on NPM and Grunt
+
+The specification document requires a bit of arbitrary text manipulation that
+can't be done with Jekyll alone. To automate these needs we turn to [GruntJS], a
+Node-based task runner. The following assumes you have already installed
+[NodeJS] and [npm], the Node package manager.
+
+_**Note** that these steps are not critically necessary for working on the
+document. Rather they apply cosmetic changes to the HTML output on a postproc
+basis._
+
+~~~~~ bash
+## Update npm globally
+npm update -g npm
+
+## Install grunt globally
+npm install -g grunt-cli
+
+## Go the the project directory
+cd av1-spec
+
+## Install the project's Node dependencies
+## (uses package.json and Gruntfile)
+npm install
+~~~~~
+
+To transform the Jekyll-generated HTML file (`_site/index.html`), run `grunt` in
+the project directory. This will apply the text transformations described in
+Grunt's `replace` task (see `Gruntfile`) and will write the output to
+`_build/index.html`.
 
 
 ## Git at Google, and Gerrit
@@ -117,6 +155,8 @@ must install the Gerrit [commit-msg] script in their local repo for Gerrit to
 accept any patches they push to it for review.
 
 
+
+[draft]: .
 [Markdown]: https://daringfireball.net/projects/markdown/
 [kramdown]: https://kramdown.gettalong.org/
 [Jekyll]: https://jekyllrb.com/
@@ -125,3 +165,6 @@ accept any patches they push to it for review.
 [install rbenv]: https://github.com/rbenv/rbenv#installation
 [Gerrit]: https://gerrit-review.googlesource.com/Documentation/
 [commit-msg]: https://gerrit-review.googlesource.com/Documentation/cmd-hook-commit-msg.html
+[GruntJS]: https://gruntjs.com/
+[NodeJS]: https://nodejs.org/
+[npm]: https://www.npmjs.org/
