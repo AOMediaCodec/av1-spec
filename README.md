@@ -116,14 +116,13 @@ browser tab to view any changes you've made.
 
 ### Notes on NPM and Grunt
 
+_These steps are not critically necessary for working on the document. Rather,
+they apply cosmetic changes to the HTML output on a postproc basis._
+
 The specification document requires a bit of arbitrary text manipulation that
 can't be done with Jekyll alone. To automate these needs we turn to [GruntJS], a
 Node-based task runner. The following assumes you have already installed
 [NodeJS] and [npm], the Node package manager.
-
-_**Note** that these steps are not critically necessary for working on the
-document. Rather they apply cosmetic changes to the HTML output on a postproc
-basis._
 
 ~~~~~ bash
 ## Update npm globally
@@ -143,7 +142,12 @@ npm install
 To transform the Jekyll-generated HTML file (`_site/index.html`), run `grunt` in
 the project directory. This will apply the text transformations described in
 Grunt's `replace` task (see `Gruntfile`) and will write the output to
-`_build/index.html`.
+`_site/av1-spec.html`.
+
+Currently this method is used to "bold" the names of syntax elements within
+syntax tables. For example, the tokenized string `@@syntax_element` will be
+replaced with `<b>syntax_element</b>`. This reduces the clutter of HTML elements
+within the source text files.
 
 
 ## Git at Google, and Gerrit
