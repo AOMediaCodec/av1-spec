@@ -5,23 +5,23 @@ version: Version 0.2
 version_date: Released 2017-xx-xx
 ---
 
-{% include_relative 00.00.00.title.md %}
-{% include_relative 00.00.01.version.md %}
-{% include_relative 00.00.02.authors.md %}
-{% include_relative 00.00.03.last.modified.md %}
-{% include_relative 00.00.04.abstract.md %}
+{% include_relative 00.title.md %}
+{% include_relative 00.version.md %}
+{% include_relative 00.authors.md %}
+{% include_relative 00.last.modified.md %}
+{% include_relative 00.abstract.md %}
 
-{% include_relative 00.00.05.toc.md %}
+{% include_relative 00.toc.md %}
 
-{% include_relative 01.00.00.scope.md %}
+{% include_relative 01.scope.md %}
 
-{% include_relative 02.00.00.terms.md %}
+{% include_relative 02.terms.md %}
 
-{% include_relative 03.00.00.symbols.md %}
+{% include_relative 03.symbols.md %}
 
-{% include_relative 04.00.00.conventions.md %}
+{% include_relative 04.conventions.md %}
 
-{% include_relative 05.00.00.decoding.overview.md %}
+{% include_relative 05.decoding.overview.md %}
 
 {% include_relative 06.bitstream.syntax.md %}
 {% include_relative 06.frame.syntax.md %}
@@ -104,13 +104,13 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.find.best.ref.mvs.function.md %}
 {% include_relative 06.append.sub8x8.mvs.function.md %}
 
-{% include_relative 07.00.00.bitstream.semantics.md %}
+{% include_relative 07.bitstream.semantics.md %}
 
-{% include_relative 08.00.00.decoding.process.md %}
+{% include_relative 08.decoding.process.md %}
 
-{% include_relative 09.00.00.parsing.process.md %}
+{% include_relative 09.parsing.process.md %}
 
-{% include_relative 10.00.00.additional.tables.md %}
+{% include_relative 10.additional.tables.md %}
 
 {% include_relative annex.a.levels.md %}
 
@@ -119,5 +119,5 @@ version_date: Released 2017-xx-xx
 {% include_relative bibliography.md %}
 
 {% comment %}
-{% include_relative 99.00.01.function-reference-links.md %}
+{% include_relative 99.function-reference-links.md %}
 {% endcomment %}
