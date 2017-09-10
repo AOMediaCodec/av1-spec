@@ -22,32 +22,6 @@ version_date: Released 2017-xx-xx
 {% include_relative 04.00.00.conventions.md %}
 
 {% include_relative 05.00.00.decoding.overview.md %}
-{% include_relative 05.01.00.av1.purpose.md %}
-{% include_relative 05.02.00.compressing.md %}
-{% include_relative 05.03.00.quantization.md %}
-{% include_relative 05.04.00.predicting.md %}
-{% include_relative 05.05.00.inter.prediction.md %}
-{% include_relative 05.06.00.superblocks.md %}
-{% include_relative 05.07.00.multiple.transforms.md %}
-{% include_relative 05.08.00.inverse.dct.md %}
-{% include_relative 05.09.00.inverse.adst.md %}
-{% include_relative 05.10.00.reference.frames.md %}
-{% include_relative 05.11.00.hidden.frames.md %}
-{% include_relative 05.12.00.compound.prediction.md %}
-{% include_relative 05.13.00.motion.vector.prediction.md %}
-{% include_relative 05.14.00.tiles.md %}
-{% include_relative 05.15.00.segmentation.map.md %}
-{% include_relative 05.16.00.reference.frame.scaling.md %}
-{% include_relative 05.17.00.arithmetic.coding.md %}
-{% include_relative 05.18.00.probability.updates.md %}
-{% include_relative 05.19.00.chroma.format.md %}
-{% include_relative 05.20.00.high.bit.depth.md %}
-{% include_relative 05.21.00.probability.contexts.md %}
-{% include_relative 05.22.00.zigzag.ordering.md %}
-{% include_relative 05.23.00.loop.filter.md %}
-{% include_relative 05.24.00.loop.filter.ordering.md %}
-{% include_relative 05.25.00.frame.structure.md %}
-{% include_relative 05.26.00.superframes.md %}
 
 {% include_relative 06.00.00.bitstream.syntax.md %}
 {% include_relative 06.01.00.frame.syntax.md %}
