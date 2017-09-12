@@ -172,6 +172,10 @@ module.exports = function( grunt ) {
                   "mv_hp": "<b>mv_hp</b>",
                   "more_coefs": "<b>more_coefs</b>",
                   "token": "<b>token</b>",
+                  "dc_head_token": "<b>dc_head_token</b>",
+                  "ac_head_token": "<b>ac_head_token</b>",
+                  "last_head_token": "<b>last_head_token</b>",
+                  "tail_token": "<b>tail_token</b>",
                   "sign_bit": "<b>sign_bit</b>",
                 }
               }
