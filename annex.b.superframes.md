@@ -36,7 +36,7 @@ superframe_index( sz ) {
     frameSizeSum = 0
     superframe_header( )
     for( i = 0; i < NumFrames - 1; i++ ) {
-        <b>frame_sizes</b>[ i ]                                              f(SzBytes)
+        <b>frame_sizes</b>[ i ]                                              le(SzBytes)
         frameSizeSum += frame_size[ i ]
     }
     frame_size[ i ] = sz – SzIndex - frameSizeSum
