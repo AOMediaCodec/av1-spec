@@ -11,9 +11,9 @@ a "superframe".
 The superframe index is stored in the last up to 34 bytes of a chunk. The
 enclosed frames can be located by parsing this superframe index.
 
-The syntax of the superframe is shown in section B.2, and the meaning of the
-syntax elements is described in section B.3. The method for parsing a
-superframe is described in section B.4.
+The syntax of the superframe is shown in [section B.2][], and the meaning of the
+syntax elements is described in [section B.3][]. The method for parsing a
+superframe is described in [section B.4][].
 
 
 ### Superframe syntax

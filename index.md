@@ -5,6 +5,8 @@ version: Version 0.2
 version_date: Released 2017-xx-xx
 ---
 
+{% include_relative section.links.md %}
+
 {% include_relative 00.title.md %}
 {% include_relative 00.version.md %}
 {% include_relative 00.authors.md %}
