@@ -115,9 +115,15 @@ version_date: Released 2017-xx-xx
 
 {% include_relative 10.additional.tables.md %}
 
+{::options parse_block_html="true" /}
+<div class="annex">
+
 {% include_relative annex.a.levels.md %}
 
 {% include_relative annex.b.superframes.md %}
+
+</div>
+{::options parse_block_html="false" /}
 
 {% include_relative bibliography.md %}
 

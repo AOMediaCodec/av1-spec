@@ -29,7 +29,15 @@
     h5:before {counter-increment: h5; content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) ". "}
     h6:before {counter-increment: h6; content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) ". "}
 
+    div.annex { counter-reset: h2 }
+    div.annex h2:before {counter-increment: h2; content: "" }
+    div.annex h3:before {counter-increment: h3; content: counter(h2, upper-alpha) "." counter(h3) ". "}
+    div.annex h4:before {counter-increment: h4; content: counter(h2, upper-alpha) "." counter(h3) "." counter(h4) ". "}
+    div.annex h5:before {counter-increment: h5; content: counter(h2, upper-alpha) "." counter(h3) "." counter(h4) "." counter(h5) ". "}
+    div.annex h6:before {counter-increment: h6; content: counter(h2, upper-alpha) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) ". "}
+    
     h2.no_count:before, h3.no_count:before, h4.no_count:before, h5.no_count:before, h6.no_count:before { content: ""; counter-increment: none }
+    
   </style>
 </head>
 <body>
