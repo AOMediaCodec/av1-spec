@@ -90,6 +90,9 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.token.syntax.md %}
 {% include_relative 06.get.scan.function.md %}
 {% include_relative 06.coef.syntax.md %}
+{% include_relative 06.palette.mode.info.md %}
+{% include_relative 06.palette.tokens.md %}
+{% include_relative 06.palette.colors.md %}
 {% include_relative 06.motion.vector.prediction.md %}
 {% include_relative 06.find.mv.refs.function.md %}
 {% include_relative 06.is.inside.function.md %}
