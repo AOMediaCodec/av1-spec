@@ -105,9 +105,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.if.diff.ref.frame.add.function.md %}
 {% include_relative 06.scale.mv.function.md %}
 {% include_relative 06.get.block.mv.function.md %}
-{% include_relative 06.get.sub.block.mv.function.md %}
 {% include_relative 06.find.best.ref.mvs.function.md %}
-{% include_relative 06.append.sub8x8.mvs.function.md %}
 
 {% include_relative 07.bitstream.semantics.md %}
 
