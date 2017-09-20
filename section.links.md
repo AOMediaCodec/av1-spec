@@ -15,7 +15,7 @@
 [section 8.7.1.3]: #inverse-dct-process
 [section 4.9.5]: #ln
 [section 7.4.5]: #intra-frame-mode-info-semantics
-[section 8.8.2]: #superblock-loop-filter-process
+[section 8.8.2]: #edge-loop-filter-process
 [section 6.3.4]: #decode-term-subexp-syntax
 [section 6.4.22]: #get-uv-size-function
 [section 7.3]: #compressed-header-semantics
