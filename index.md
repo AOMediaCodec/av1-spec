@@ -45,6 +45,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.tile.info.syntax.md %}
 {% include_relative 06.tile.size.calculation.function.md %}
 {% include_relative 06.delta.q.params.md %}
+{% include_relative 06.delta.lf.params.md %}
 {% include_relative 06.compressed.header.function.md %}
 {% include_relative 06.tx.mode.syntax.md %}
 {% include_relative 06.tx.mode.probs.function.md %}
@@ -76,6 +77,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.intra.segment.id.syntax.md %}
 {% include_relative 06.skip.syntax.md %}
 {% include_relative 06.delta.qindex.syntax.md %}
+{% include_relative 06.delta.lf.syntax.md %}
 {% include_relative 06.segmentation.feature.active.function.md %}
 {% include_relative 06.tx.size.syntax.md %}
 {% include_relative 06.inter.frame.mode.info.function.md %}
