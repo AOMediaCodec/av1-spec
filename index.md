@@ -48,23 +48,18 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.delta.lf.params.md %}
 {% include_relative 06.compressed.header.function.md %}
 {% include_relative 06.tx.mode.syntax.md %}
-{% include_relative 06.tx.mode.probs.function.md %}
 {% include_relative 06.diff.update.prob.syntax.md %}
 {% include_relative 06.decode.term.subexp.syntax.md %}
 {% include_relative 06.inv.remap.prob.function.md %}
 {% include_relative 06.inv.recenter.noneg.function.md %}
-{% include_relative 06.coef.probs.syntax.md %}
 {% include_relative 06.skip.probs.function.md %}
 {% include_relative 06.inter.mode.probs.function.md %}
-{% include_relative 06.interp.filter.probs.function.md %}
 {% include_relative 06.intra.inter.probs.function.md %}
 {% include_relative 06.frame.reference.mode.function.md %}
 {% include_relative 06.frame.reference.mode.probs.function.md %}
 {% include_relative 06.y.mode.probs.function.md %}
 {% include_relative 06.uv.mode.probs.function.md %}
 {% include_relative 06.segmentation.probs.function.md %}
-{% include_relative 06.partition.probs.function.md %}
-{% include_relative 06.y.intra.mode.probs.function.md %}
 {% include_relative 06.mv.probs.function.md %}
 {% include_relative 06.setup.compound.reference.mode.syntax.md %}
 {% include_relative 06.decode.tiles.syntax.md %}
@@ -121,13 +116,14 @@ version_date: Released 2017-xx-xx
 
 {::options parse_block_html="true" /}
 <div class="annex">
+{::options parse_block_html="false" /}
 
 {% include_relative annex.a.levels.md %}
 
 {% include_relative annex.b.superframes.md %}
 
 </div>
-{::options parse_block_html="false" /}
+
 
 {% include_relative bibliography.md %}
 
