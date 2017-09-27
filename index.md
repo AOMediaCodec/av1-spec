@@ -95,15 +95,9 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.palette.tokens.md %}
 {% include_relative 06.palette.colors.md %}
 {% include_relative 06.motion.vector.prediction.md %}
-{% include_relative 06.find.mv.refs.function.md %}
 {% include_relative 06.is.inside.function.md %}
 {% include_relative 06.clamp.mv.row.function.md %}
 {% include_relative 06.clamp.mv.col.function.md %}
-{% include_relative 06.add.mv.ref.list.function.md %}
-{% include_relative 06.if.same.ref.frame.add.function.md %}
-{% include_relative 06.if.diff.ref.frame.add.function.md %}
-{% include_relative 06.scale.mv.function.md %}
-{% include_relative 06.get.block.mv.function.md %}
 {% include_relative 06.find.best.ref.mvs.function.md %}
 
 {% include_relative 07.bitstream.semantics.md %}
