@@ -18,7 +18,7 @@
 [section 4.9.5]: #ln
 [section 7.4.5]: #intra-frame-mode-info-semantics
 [section 8.4.3]: #probability-adaption-process
-[section 6.3.14]: #mv-probs-function
+[section 6.3.12]: #mv-probs-function
 [section 6.4.24]: #get-uv-size-function
 [section 7.4.15]: #mv-semantics
 [section 8.9.5]: #sample-filtering-process
@@ -122,7 +122,7 @@
 [section 6.4.4]: #decode-block-syntax
 [section 6.4.6]: #intra-frame-mode-info-syntax
 [section 7.1.2]: #refresh-probs-semantics
-[section 6.3.13]: #segmentation-probs-function
+[section 6.3.11]: #segmentation-probs-function
 [section 4.6]: #mathematical-functions
 [section 6.4.2]: #decode-tile-function
 [section 8.5.1.3]: #candidate-add-process
@@ -152,12 +152,11 @@
 [section 8.8.1.4]: #inverse-adst-input-array-permutation-process
 [section 7.3.1]: #tx-mode-semantics
 [section 8.5.2.4]: #temporal-scan-process
-[section 6.3.15]: #setup-compound-reference-mode-syntax
+[section 6.3.13]: #setup-compound-reference-mode-syntax
 [section 9.2]: #parsing-process-for-boolean-decoder
 [section 8.7]: #reconstruction-and-dequantization
 [section 6.2.14]: #tile-size-calculation-function
 [section 6.4.31]: #palette-colors-syntax
-[section 8.8.1.9]: #inverse-adst-process
 [section 7.3.4]: #inv-remap-prob-semantics
 [section 8.5.2.2]: #scan-col-process
 [section 9.2.3]: #exit-process-for-boolean-decoder
@@ -173,7 +172,7 @@
 [section 8.6]: #prediction-processes
 [section 4.9]: #descriptors
 [section 9]: #parsing-process
-[section 6.3.12]: #uv-mode-probs-function
+[section 8.8.1.9]: #inverse-adst-process
 [section 6.2.5]: #frame-size-with-refs-syntax
 [section 7.2.6]: #compute-image-size-semantics
 [section 6.4.28]: #coef-syntax
@@ -211,7 +210,6 @@
 [section 5.25]: #frame-structure
 [section 4.7]: #method-of-describing-bitstream-syntax
 [section 9.2.4]: #parsing-process-for-read_literal
-[section 6.3.11]: #y-mode-probs-function
 [section 7.4.2]: #decode-tile-semantics
 [section 6.4.7]: #intra-segment-id-syntax
 [section 4.8]: #functions

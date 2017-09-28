@@ -57,8 +57,6 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.intra.inter.probs.function.md %}
 {% include_relative 06.frame.reference.mode.function.md %}
 {% include_relative 06.frame.reference.mode.probs.function.md %}
-{% include_relative 06.y.mode.probs.function.md %}
-{% include_relative 06.uv.mode.probs.function.md %}
 {% include_relative 06.segmentation.probs.function.md %}
 {% include_relative 06.mv.probs.function.md %}
 {% include_relative 06.setup.compound.reference.mode.syntax.md %}
