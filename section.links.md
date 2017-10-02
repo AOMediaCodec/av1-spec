@@ -3,7 +3,7 @@
 [section 7.2.11]: #tile-info-semantics
 [section 6.3.7]: #inter-mode-probs-function
 [section A]: #annex-a-levels
-[section 10.5]: #quantizer-matrix-tables
+[section 10.4]: #quantizer-matrix-tables
 [section 5.12]: #compound-prediction
 [section 7.4.4]: #decode-block-semantics
 [section 7.4.16]: #mv-component-semantics
@@ -42,12 +42,11 @@
 [section 5.10]: #reference-frames
 [section 8.6.3]: #palette-prediction-process
 [section 7.4.18]: #token-semantics
-[section 6.4.30]: #palette-tokens-syntax
+[section 6.4.32]: #palette-tokens-syntax
 [section 8.9.2]: #filter-size-process
 [section 8.9]: #loop-filter-process
 [section 6.5.1]: #is-inside-function
 [section 6.4.9]: #quantizer-index-delta-syntax
-[section 10.3]: #fixed-probability-tables
 [section 6.2.15]: #quantizer-index-delta-parameters-syntax
 [section 5.21]: #probability-contexts
 [section 8.2]: #frame-order-constraints
@@ -68,10 +67,10 @@
 [section 10.2]: #conversion-tables
 [section B.2]: #superframe-syntax
 [section 6.4]: #decode-tiles-syntax
-[section 10.4]: #default-probability-tables
+[section 10.3]: #default-probability-tables
 [section 5.6]: #superblocks
 [section 9.3.3]: #tree-decoding-process
-[section 8.8]: #inverse-transform-process
+[section 6.4.30]: #is-directional-mode-function
 [section 4]: #conventions
 [section 7.1]: #frame-semantics
 [section 9.3.1]: #tree-selection-process
@@ -156,7 +155,8 @@
 [section 9.2]: #parsing-process-for-boolean-decoder
 [section 8.7]: #reconstruction-and-dequantization
 [section 6.2.14]: #tile-size-calculation-function
-[section 6.4.31]: #palette-colors-syntax
+[section 6.4.29]: #intra-angle-info-syntax
+[section 6.4.33]: #palette-colors-syntax
 [section 7.3.4]: #inv-remap-prob-semantics
 [section 8.5.2.2]: #scan-col-process
 [section 9.2.3]: #exit-process-for-boolean-decoder
@@ -175,6 +175,7 @@
 [section 8.8.1.9]: #inverse-adst-process
 [section 6.2.5]: #frame-size-with-refs-syntax
 [section 7.2.6]: #compute-image-size-semantics
+[section 8.8]: #inverse-transform-process
 [section 6.4.28]: #coef-syntax
 [section 6.1.1]: #trailing-bits-syntax
 [section 7.2.5]: #frame-size-with-refs-semantics
@@ -194,7 +195,7 @@
 [section 6.4.20]: #assign-mv-function
 [section B.2.1]: #superframe-index
 [section 7.2.13]: #loop-filter-delta-parameters-semantics
-[section 6.4.29]: #palette-mode-info-syntax
+[section 6.4.31]: #palette-mode-info-syntax
 [section 8.8.1]: #1d-transforms
 [section 7.4.12]: #intra-block-mode-info-semantics
 [section 5.18]: #probability-updates
