@@ -30,7 +30,6 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.trailing.bits.syntax.md %}
 {% include_relative 06.refresh.probs.syntax.md %}
 {% include_relative 06.uncompressed.header.syntax.md %}
-{% include_relative 06.frame.sync.syntax.md %}
 {% include_relative 06.color.config.syntax.md %}
 {% include_relative 06.frame.size.syntax.md %}
 {% include_relative 06.render.size.syntax.md %}
@@ -46,8 +45,9 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.tile.size.calculation.function.md %}
 {% include_relative 06.delta.q.params.md %}
 {% include_relative 06.delta.lf.params.md %}
-{% include_relative 06.compressed.header.function.md %}
 {% include_relative 06.tx.mode.syntax.md %}
+{% include_relative 06.frame.reference.mode.function.md %}
+{% include_relative 06.compressed.header.function.md %}
 {% include_relative 06.diff.update.prob.syntax.md %}
 {% include_relative 06.decode.term.subexp.syntax.md %}
 {% include_relative 06.inv.remap.prob.function.md %}
@@ -55,7 +55,6 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.skip.probs.function.md %}
 {% include_relative 06.inter.mode.probs.function.md %}
 {% include_relative 06.intra.inter.probs.function.md %}
-{% include_relative 06.frame.reference.mode.function.md %}
 {% include_relative 06.frame.reference.mode.probs.function.md %}
 {% include_relative 06.segmentation.probs.function.md %}
 {% include_relative 06.mv.probs.function.md %}
