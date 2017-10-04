@@ -87,11 +87,14 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.get.uv.size.function.md %}
 {% include_relative 06.get.plane.block.size.function.md %}
 {% include_relative 06.token.syntax.md %}
+{% include_relative 06.compute.transform.type.function.md %}
 {% include_relative 06.get.scan.function.md %}
 {% include_relative 06.coef.syntax.md %}
 {% include_relative 06.intra.angle.info.syntax.md %}
 {% include_relative 06.is.directional.mode.function.md %}
 {% include_relative 06.palette.mode.info.md %}
+{% include_relative 06.transform.type.syntax.md %}
+{% include_relative 06.get.transform.set.type.function.md %}
 {% include_relative 06.palette.tokens.md %}
 {% include_relative 06.palette.colors.md %}
 {% include_relative 06.motion.vector.prediction.md %}
