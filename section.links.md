@@ -9,9 +9,11 @@
 [section 7.4.17]: #mv-component-semantics
 [section 8.8.2]: #2d-inverse-transform
 [section 8.9.4]: #adaptive-filter-strength-selection-process
+[section B]: #annex-b-superframes
 [section 6.3]: #compressed-header-function
 [section 7.4.12]: #is-inter-semantics
 [section 6.4.15]: #is-inter-syntax
+[section 8.8.1.15]: #inverse-identity-transform-process
 [section 6.4.34]: #transform-type-syntax
 [section 6.3.7]: #intra-inter-probs-function
 [section 6.5.2]: #clamp-mv-row-function
@@ -21,7 +23,7 @@
 [section 8.4.3]: #probability-adaption-process
 [section 6.3.10]: #mv-probs-function
 [section 6.4.25]: #get-uv-size-function
-[section 8.9.5]: #sample-filtering-process
+[section 8.8.1.11]: #inverse-identity-transform-4-process
 [section 7.2.10]: #segmentation-params-semantics
 [section 5.4]: #predicting-image-data
 [section 8.5.3.1]: #scan-row-process
@@ -62,7 +64,7 @@
 [section 7.2.12]: #quantizer-index-delta-parameters-semantics
 [section B.2.2]: #superframe-header-syntax
 [section 7.4.20]: #coef-semantics
-[section 8.9.3]: #adaptive-filter-strength-process
+[section 8.8.1.14]: #inverse-identity-transform-32-process
 [section 6.5]: #motion-vector-prediction-1
 [section 8.9.5.1]: #filter-mask-process
 [section 10.2]: #conversion-tables
@@ -114,6 +116,7 @@
 [section 4.1]: #arithmetic-operators
 [section 5.21]: #probability-contexts
 [section 6.2.16]: #tx-mode-syntax
+[section 8.8.1.13]: #inverse-identity-transform-16-process
 [section 6.4.8]: #skip-syntax
 [section C]: #bibliography
 [section 7.2.8]: #quantization-params-semantics
@@ -137,7 +140,7 @@
 [section 4.9.4]: #bp
 [section 5.27]: #palette-prediction
 [section 8.5]: #motion-vector-prediction-processes
-[section B]: #annex-b-superframes
+[section 8.9.5]: #sample-filtering-process
 [section 5.1]: #purpose-of-av1
 [section 8.6.2.1]: #motion-vector-selection-process
 [section A.1]: #overview
@@ -175,7 +178,7 @@
 [section 8.6.2.2]: #motion-vector-clamping-process
 [section 8.6]: #prediction-processes
 [section 4.9]: #descriptors
-[section 9]: #parsing-process
+[section 8.8.1.12]: #inverse-identity-transform-8-process
 [section 8.8.1.9]: #inverse-adst-process
 [section 6.2.4]: #frame-size-with-refs-syntax
 [section 7.2.5]: #compute-image-size-semantics
@@ -234,6 +237,7 @@
 [section 7.2.2]: #frame-size-semantics
 [section 5.16]: #reference-frame-scaling
 [section 6.2.11]: #probability-syntax
+[section 9]: #parsing-process
 [section 8.5.3.3]: #scan-point-process
 [section 6.3.1]: #diff-update-prob-syntax
 [section 7.4.23]: #palette-tokens-semantics
@@ -250,6 +254,7 @@
 [section 4.9.1]: #fn
 [section 8.9.1]: #edge-loop-filter-process
 [section 8.4.2]: #merge-probs-process
+[section 8.9.3]: #adaptive-filter-strength-process
 [section 6.2.15]: #loop-filter-delta-parameters-syntax
 [section 3]: #symbols-and-abbreviated-terms
 [section 7.4.22]: #palette-mode-info-semantics
