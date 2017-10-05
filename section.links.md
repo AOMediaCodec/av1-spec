@@ -21,7 +21,6 @@
 [section 8.4.3]: #probability-adaption-process
 [section 6.3.10]: #mv-probs-function
 [section 6.4.25]: #get-uv-size-function
-[section 7.4.16]: #mv-semantics
 [section 8.9.5]: #sample-filtering-process
 [section 7.2.10]: #segmentation-params-semantics
 [section 5.4]: #predicting-image-data
@@ -111,7 +110,7 @@
 [section 6.2.1]: #color-config-syntax
 [section 6.4.12]: #tx-size-syntax
 [section 5.23]: #loop-filter
-[section 7.2.3]: #render-size-semantics
+[section 7.4.9]: #loop-filter-delta-semantics
 [section 4.1]: #arithmetic-operators
 [section 5.21]: #probability-contexts
 [section 6.2.16]: #tx-mode-syntax
@@ -130,7 +129,7 @@
 [section 6.4.2]: #decode-tile-function
 [section 8.5.1.3]: #candidate-add-process
 [section 4.9.7]: #s
-[section 7.4.9]: #loop-filter-delta-semantics
+[section 7.4.16]: #mv-semantics
 [section 9.4]: #parsing-process-for-cdf-encoded-syntax-elements
 [section 7.3.2]: #diff-update-prob-semantics
 [section 6.2.17]: #frame-reference-mode-function
@@ -155,7 +154,7 @@
 [section 8.8.1.4]: #inverse-adst-input-array-permutation-process
 [section 7.3.1]: #tx-mode-semantics
 [section 8.5.3.4]: #temporal-scan-process
-[section 6.3.11]: #setup-compound-reference-mode-syntax
+[section 7.2.3]: #render-size-semantics
 [section 9.2]: #parsing-process-for-boolean-decoder
 [section 8.7]: #reconstruction-and-dequantization
 [section 6.2.13]: #tile-size-calculation-function

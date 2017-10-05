@@ -58,7 +58,6 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.frame.reference.mode.probs.function.md %}
 {% include_relative 06.segmentation.probs.function.md %}
 {% include_relative 06.mv.probs.function.md %}
-{% include_relative 06.setup.compound.reference.mode.syntax.md %}
 {% include_relative 06.decode.tiles.syntax.md %}
 {% include_relative 06.get.tile.offset.function.md %}
 {% include_relative 06.decode.tile.function.md %}
