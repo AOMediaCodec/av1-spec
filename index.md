@@ -47,6 +47,13 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.delta.lf.params.md %}
 {% include_relative 06.tx.mode.syntax.md %}
 {% include_relative 06.frame.reference.mode.function.md %}
+{% include_relative 06.global.motion.params.syntax.md %}
+{% include_relative 06.global.param.syntax.md %}
+{% include_relative 06.decode.signed.subexp.with.ref.syntax.md %}
+{% include_relative 06.decode.unsigned.subexp.with.ref.syntax.md %}
+{% include_relative 06.decode.subexp.md %}
+{% include_relative 06.decode.uniform.md %}
+{% include_relative 06.inverse.recenter.syntax.md %}
 {% include_relative 06.compressed.header.function.md %}
 {% include_relative 06.diff.update.prob.syntax.md %}
 {% include_relative 06.decode.term.subexp.syntax.md %}
