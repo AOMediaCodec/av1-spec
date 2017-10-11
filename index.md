@@ -86,6 +86,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.inter.block.mode.info.syntax.md %}
 {% include_relative 06.ref.frames.syntax.md %}
 {% include_relative 06.assign.mv.function.md %}
+{% include_relative 06.read.motion.mode.syntax.md %}
 {% include_relative 06.get.mode.function.md %}
 {% include_relative 06.mv.syntax.md %}
 {% include_relative 06.mv.component.syntax.md %}
