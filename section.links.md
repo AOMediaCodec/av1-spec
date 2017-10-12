@@ -277,6 +277,7 @@
 [section 8.4.2]: #merge-probs-process
 [section 8.9.3]: #adaptive-filter-strength-process
 [section 6.2.15]: #loop-filter-delta-parameters-syntax
+[section 8.6.2.9]: #overlapped-motion-compensation-process
 [section 3]: #symbols-and-abbreviated-terms
 [section 7.4.22]: #palette-mode-info-semantics
 [section 5.17]: #arithmetic-coding
@@ -285,6 +286,7 @@
 [section 9.4.1]: #cdf-selection-process
 [section 7.3.5]: #coef-prob-semantics
 [section 7.4.1]: #decode-tiles-semantics
+[section 8.6.2.10]: #overlap-blending-process
 [section 5.22]: #zigzag-ordering
 [section 8.4]: #probability-adaptation-process
 [section 5.5]: #inter-prediction
