@@ -16,30 +16,6 @@
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=AM_HTMLorMML">
   </script>
   <script src="assets/js/ASCIIMathML.js"></script>
-  <style>
-    body {counter-reset: h2}
-    h2 {counter-reset: h3}
-    h3 {counter-reset: h4}
-    h4 {counter-reset: h5}
-    h5 {counter-reset: h6}
-
-    h2:before {counter-increment: h2; content: counter(h2) ". "}
-    h3:before {counter-increment: h3; content: counter(h2) "." counter(h3) ". "}
-    h4:before {counter-increment: h4; content: counter(h2) "." counter(h3) "." counter(h4) ". "}
-    h5:before {counter-increment: h5; content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) ". "}
-    h6:before {counter-increment: h6; content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) ". "}
-
-    div.annex { counter-reset: h2 }
-    div.annex h2:before {counter-increment: h2; content: "" }
-    div.annex h3:before {counter-increment: h3; content: counter(h2, upper-alpha) "." counter(h3) ". "}
-    div.annex h4:before {counter-increment: h4; content: counter(h2, upper-alpha) "." counter(h3) "." counter(h4) ". "}
-    div.annex h5:before {counter-increment: h5; content: counter(h2, upper-alpha) "." counter(h3) "." counter(h4) "." counter(h5) ". "}
-    div.annex h6:before {counter-increment: h6; content: counter(h2, upper-alpha) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) ". "}
-
-    h2.no_count:before, h3.no_count:before, h4.no_count:before, h5.no_count:before, h6.no_count:before { content: ""; counter-increment: none }
-
-  </style>
-
   <link rel="apple-touch-icon" sizes="57x57" href="/images/icons/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="/images/icons/apple-icon-60x60.png">
   <link rel="apple-touch-icon" sizes="72x72" href="/images/icons/apple-icon-72x72.png">
@@ -57,12 +33,11 @@
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="msapplication-TileImage" content="/images/icons/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
-
 </head>
+
 <body>
 
 {{ content }}
 
 </body>
 </html>
-
