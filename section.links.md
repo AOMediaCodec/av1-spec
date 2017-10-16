@@ -93,6 +93,7 @@
 [section 7.4.14]: #inter-block-mode-info-semantics
 [section 8.8.1.7]: #inverse-adst8-process
 [section 6.4.17]: #intra-block-mode-info-syntax
+[section 8.6.2.12]: #segment-mask-process
 [section 8.4.1]: #merge-prob-process
 [section 4.9.3]: #sun
 [section 5]: #overview-of-the-decoding-process-informative
@@ -113,6 +114,7 @@
 [section 7.4.8]: #quantizer-index-delta-semantics
 [section 8.9.5.2]: #narrow-filter-process
 [section 6.1]: #frame-syntax
+[section 8.6.2.13]: #inter-intra-mask-process
 [section 7.3.6]: #frame-reference-mode-semantics
 [section 6.4.30]: #token-syntax
 [section 4.9.2]: #len
@@ -192,6 +194,7 @@
 [section 6.3.3]: #inv-remap-prob-function
 [section 10.1]: #scan-tables
 [section 9.3]: #parsing-process-for-tree-encoded-syntax-elements
+[section 8.6.2.11]: #wedge-mask-process
 [section 7.2.7]: #loop-filter-semantics
 [section 8.6.2.2]: #motion-vector-clamping-process
 [section 8.6]: #prediction-processes
@@ -255,6 +258,7 @@
 [section C]: #bibliography
 [section 8.6.2.7]: #resolve-divisor-process
 [section 8]: #decoding-process
+[section 8.6.2.14]: #mask-blend-process
 [section 6.2.9]: #delta-quantizer-syntax
 [section 8.5.3.7]: #compound-search-stack-process
 [section 6.1.2]: #refresh-probs-syntax
