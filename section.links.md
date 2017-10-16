@@ -16,7 +16,7 @@
 [section 7.4.12]: #is-inter-semantics
 [section 6.4.15]: #is-inter-syntax
 [section 8.8.1.15]: #inverse-identity-transform-process
-[section 6.4.37]: #transform-type-syntax
+[section 6.4.38]: #transform-type-syntax
 [section 6.3.7]: #intra-inter-probs-function
 [section 6.5.2]: #clamp-mv-row-function
 [section 7.2.9]: #delta-quantizer-semantics
@@ -33,6 +33,7 @@
 [section 6.3.4]: #inv-recenter-noneg-function
 [section 5.15]: #segmentation-map
 [section 5.3]: #quantization-and-lossy-compression
+[section 8.6.4]: #predict-chroma-from-luma-process
 [section B.3]: #superframe-semantics
 [section 6.4.24]: #get-mode-function
 [section 5.14]: #tiles
@@ -47,7 +48,7 @@
 [section 5.10]: #reference-frames
 [section 8.6.3]: #palette-prediction-process
 [section 7.4.22]: #token-semantics
-[section 6.4.39]: #palette-tokens-syntax
+[section 6.4.40]: #palette-tokens-syntax
 [section 8.9.2]: #filter-size-process
 [section 10.4]: #quantizer-matrix-tables
 [section 8.9]: #loop-filter-process
@@ -58,6 +59,7 @@
 [section 6.2.3]: #render-size-syntax
 [section 8.2]: #frame-order-constraints
 [section 8.5.1.3]: #temporal-motion-vector-candidate-process
+[section 8.8.1.5]: #inverse-adst-output-array-permutation-process
 [section 6.2.23]: #decode-uniform-syntax
 [section B.4]: #superframe-parsing
 [section 4.4]: #bitwise-operators
@@ -180,7 +182,7 @@
 [section 9.2.1]: #initialization-process-for-boolean-decoder
 [section 6.2.13]: #tile-size-calculation-function
 [section 6.4.34]: #intra-angle-info-syntax
-[section 6.4.40]: #palette-colors-syntax
+[section 6.4.41]: #palette-colors-syntax
 [section 7.3.4]: #inv-remap-prob-semantics
 [section 8.5.3.2]: #scan-col-process
 [section 6.2.24]: #inverse-recenter-syntax
@@ -196,7 +198,7 @@
 [section 9.3]: #parsing-process-for-tree-encoded-syntax-elements
 [section 8.6.2.11]: #wedge-mask-process
 [section 7.2.7]: #loop-filter-semantics
-[section 8.6.2.2]: #motion-vector-clamping-process
+[section 7.4.25]: #read-cfl-alphas-semantics
 [section 8.6]: #prediction-processes
 [section 4.9]: #descriptors
 [section 8.8.1.12]: #inverse-identity-transform-8-process
@@ -208,7 +210,7 @@
 [section 6.3.6]: #inter-mode-probs-function
 [section 7.2.4]: #frame-size-with-refs-semantics
 [section 6.2]: #uncompressed-header-syntax
-[section 6.4.38]: #get-transform-set-type-function
+[section 6.4.39]: #get-transform-set-type-function
 [section 5.7]: #multiple-transforms
 [section 7.2.1]: #color-config-semantics
 [section 5.24]: #loop-filter-ordering-and-filters
@@ -222,7 +224,7 @@
 [section 6.4.20]: #assign-mv-function
 [section B.2.1]: #superframe-index
 [section 7.2.13]: #loop-filter-delta-parameters-semantics
-[section 6.4.36]: #palette-mode-info-syntax
+[section 6.4.37]: #palette-mode-info-syntax
 [section 8.8.1]: #1d-transforms
 [section 7.4.13]: #intra-block-mode-info-semantics
 [section 5.18]: #probability-updates
@@ -247,12 +249,12 @@
 [section 6.4.7]: #intra-segment-id-syntax
 [section 4.8]: #functions
 [section B.1]: #overview-1
-[section 8.8.1.5]: #inverse-adst-output-array-permutation-process
+[section 8.6.2.2]: #motion-vector-clamping-process
 [section 7.4.15]: #ref-frames-semantics
 [section 8.5.3.8]: #lower-precision-process
 [section 8.1]: #general
 [section 4.3]: #relational-operators
-[section 7.4.27]: #palette-colors-semantics
+[section 7.4.28]: #palette-colors-semantics
 [section 7.3]: #compressed-header-semantics
 [section 8.6.2]: #inter-prediction-process
 [section C]: #bibliography
@@ -268,11 +270,12 @@
 [section 9]: #parsing-process
 [section 8.5.3.3]: #scan-point-process
 [section 6.3.1]: #diff-update-prob-syntax
-[section 7.4.26]: #palette-tokens-semantics
+[section 7.4.27]: #palette-tokens-semantics
 [section 4.5]: #assignment
 [section 6.4.32]: #get-scan-function
 [section 6.4.16]: #get-segment-id-syntax
 [section 7.4.3]: #decode-partition-semantics
+[section 6.4.36]: #read-cfl-alphas-syntax
 [section 6.4.29]: #get-plane-block-size-function
 [section 8.5.2]: #compound-context-process
 [section 6.4.14]: #inter-segment-id-syntax
@@ -287,7 +290,7 @@
 [section 6.2.15]: #loop-filter-delta-parameters-syntax
 [section 8.6.2.9]: #overlapped-motion-compensation-process
 [section 3]: #symbols-and-abbreviated-terms
-[section 7.4.25]: #palette-mode-info-semantics
+[section 7.4.26]: #palette-mode-info-semantics
 [section 5.17]: #arithmetic-coding
 [section 7.2.14]: #global-motion-params-semantics
 [section 4.2]: #logical-operators
