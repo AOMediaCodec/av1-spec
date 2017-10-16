@@ -68,6 +68,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.decode.tiles.syntax.md %}
 {% include_relative 06.get.tile.offset.function.md %}
 {% include_relative 06.decode.tile.function.md %}
+{% include_relative 06.clear.block.decoded.flags.function.md %}
 {% include_relative 06.decode.partition.function.md %}
 {% include_relative 06.decode.block.syntax.md %}
 {% include_relative 06.mode.info.syntax.md %}
