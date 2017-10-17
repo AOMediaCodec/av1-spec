@@ -49,16 +49,33 @@ table
       font-weight: normal
 
 figure
-  display: block
-  text-align: center
-  font-style: italic
-  font-size: smaller
-  text-indent: 0
-  margin: 1em auto
-  padding: 1em
-  img
+  figcaption
+    text-align: center
+    font-style: italic
+    margin: 1em auto
+
+
+// Rules that vary with viewport size
+//
+// Custom, iPhone Retina
+@media only screen and (min-width : 320px)
+
+// Extra Small Devices, Phones
+@media only screen and (min-width : 480px)
+
+// Small Devices, Tablets
+@media only screen and (min-width : 768px)
+
+// Medium Devices, Desktops
+@media only screen and (min-width : 992px)
+  figure
     max-width: 80%
-    height: auto
+
+// Large Devices, Wide Screens
+@media only screen and (min-width : 1200px)
+  figure
+    max-width: 60%
+
 
 // Auto heading-number styles
 
