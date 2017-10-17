@@ -19,19 +19,20 @@ superframe is described in [section B.4][].
 ### Superframe syntax
 {:.no_count}
 
-<div class="syntax">
+~~~~~
 superframe( sz ) {
     for( i = 0; i < NumFrames; i++ )
         frame( frame_sizes[ i ] )
     superframe_index( sz )
 }
-</div>
+~~~~~
+{:.syntax }
 
 
 #### Superframe index
 {:.no_count}
 
-<div class="syntax">
+~~~~~
 superframe_index( sz ) {
     frameSizeSum = 0
     superframe_header( )
@@ -42,19 +43,21 @@ superframe_index( sz ) {
     frame_size[ i ] = sz – SzIndex - frameSizeSum
     superframe_header( )
 }
-</div>
+~~~~~
+{:.syntax }
 
 
 #### Superframe header syntax
 {:.no_count}
 
-<div class="syntax">
+~~~~~
 superframe_header( ) {
     <b>superframe_marker</b>                                                 f(3)
     <b>bytes_per_framesize_minus_1</b>                                       f(2)
     <b>frames_in_superframe_minus_1</b>                                      f(3)
 }
-</div>
+~~~~~
+{:.syntax }
 
 
 ### Superframe semantics

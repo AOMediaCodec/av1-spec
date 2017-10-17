@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>{{ site.title }}</title>
   <link rel="stylesheet" href="{{ 'assets/css/style.css' | relative_url }}">
-  <link rel="stylesheet" href="{{ 'assets/css/pygments/monokai.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ 'assets/css/bootstrap.min.css' | relative_url }}">
   <script type="text/x-mathjax-config">
   MathJax.Hub.Config({
     asciimath2jax: {
@@ -36,9 +36,13 @@
 </head>
 
 <body>
-
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
 {{ content }}
-
+    </div>
+  </div>
+</div>
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <!-- Include all compiled plugins (below), or include individual files as needed -->
