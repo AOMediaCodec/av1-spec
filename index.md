@@ -45,6 +45,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.tile.size.calculation.function.md %}
 {% include_relative 06.delta.q.params.md %}
 {% include_relative 06.delta.lf.params.md %}
+{% include_relative 06.cdef.params.syntax.md %}
 {% include_relative 06.tx.mode.syntax.md %}
 {% include_relative 06.frame.reference.mode.function.md %}
 {% include_relative 06.global.motion.params.syntax.md %}
@@ -112,6 +113,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.is.inside.function.md %}
 {% include_relative 06.clamp.mv.row.function.md %}
 {% include_relative 06.clamp.mv.col.function.md %}
+{% include_relative 06.decode.cdef.syntax.md %}
 
 {% include_relative 07.bitstream.semantics.md %}
 
