@@ -48,6 +48,29 @@ table
       color: #000
       font-weight: normal
 
+table.syntax // Experimental
+  font-family: $monofont
+  font-size: 1em
+  margin-bottom: 1em
+  td, th
+    border: 1px solid #ccc
+    padding-left: .5em
+    padding-right: .5em
+  td code
+    color: #333
+    background-color: #fff
+    font-size: 1em
+    padding: 0
+  td:first-child
+    text-align: center
+  td:nth-child(2)
+    white-space: pre
+    width: 100%
+  th
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+    color: #fff
+    background-color: #333
+
 figure
   figcaption
     text-align: center
@@ -135,6 +158,54 @@ div.annex
   h6:before
     counter-increment: h6
     content: counter(h2, upper-alpha) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) ". "
+
+// Bootstrap-style documentation callouts
+
+.bs-callout
+  padding: 20px
+  margin: 20px 0
+  border: 1px solid #eee
+  border-left-width: 5px
+  border-radius: 3px
+  h4
+    margin-top: 0
+    margin-bottom: 5px
+  p:last-child
+    margin-bottom: 0
+  code
+    border-radius: 3px
+  + .bs-callout
+    margin-top: -5px
+
+.bs-callout-default
+  border-left-color: #777
+  h4
+    color: #777
+
+.bs-callout-primary
+  border-left-color: #428bca
+  h4
+    color: #428bca
+
+.bs-callout-success
+  border-left-color: #5cb85c
+  h4
+    color: #5cb85c
+
+.bs-callout-danger
+  border-left-color: #d9534f
+  h4
+    color: #d9534f
+
+.bs-callout-warning
+  border-left-color: #f0ad4e
+  h4
+    color: #f0ad4e
+
+.bs-callout-info
+  border-left-color: #5bc0de
+  h4
+    color: #5bc0de
 
 // Bootstrap overrides
 
