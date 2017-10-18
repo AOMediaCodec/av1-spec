@@ -26,7 +26,19 @@ version_date: Released 2017-xx-xx
 {% include_relative 05.decoding.overview.md %}
 
 {% include_relative 06.bitstream.syntax.md %}
-{% include_relative 06.frame.syntax.md %}
+{% include_relative 06.obu.syntax.md %}
+{% include_relative 06.obu.header.syntax.md %}
+{% include_relative 06.obu.extension.header.syntax.md %}
+{% include_relative 06.reserved.obu.syntax.md %}
+{% include_relative 06.sequence.header.obu.syntax.md %}
+{% include_relative 06.temporal.delimiter.obu.syntax.md %}
+{% include_relative 06.padding.obu.syntax.md %}
+{% include_relative 06.frame.header.obu.syntax.md %}
+{% include_relative 06.metadata.obu.syntax.md %}
+{% include_relative 06.metadata.private.data.syntax.md %}
+{% include_relative 06.metadata.hdr.cll.syntax.md %}
+{% include_relative 06.metadata.hdr.mdcv.syntax.md %}
+{% include_relative 06.tile.group.obu.syntax.md %}
 {% include_relative 06.trailing.bits.syntax.md %}
 {% include_relative 06.refresh.probs.syntax.md %}
 {% include_relative 06.uncompressed.header.syntax.md %}
