@@ -40,7 +40,6 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.metadata.hdr.mdcv.syntax.md %}
 {% include_relative 06.tile.group.obu.syntax.md %}
 {% include_relative 06.trailing.bits.syntax.md %}
-{% include_relative 06.refresh.probs.syntax.md %}
 {% include_relative 06.uncompressed.header.syntax.md %}
 {% include_relative 06.color.config.syntax.md %}
 {% include_relative 06.frame.size.syntax.md %}
@@ -52,7 +51,6 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.quantization.params.syntax.md %}
 {% include_relative 06.delta.quantizer.syntax.md %}
 {% include_relative 06.segmentation.params.syntax.md %}
-{% include_relative 06.probability.syntax.md %}
 {% include_relative 06.tile.info.syntax.md %}
 {% include_relative 06.tile.size.calculation.function.md %}
 {% include_relative 06.delta.q.params.md %}
@@ -67,17 +65,8 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.decode.subexp.md %}
 {% include_relative 06.decode.uniform.md %}
 {% include_relative 06.inverse.recenter.syntax.md %}
-{% include_relative 06.compressed.header.function.md %}
-{% include_relative 06.diff.update.prob.syntax.md %}
 {% include_relative 06.decode.term.subexp.syntax.md %}
-{% include_relative 06.inv.remap.prob.function.md %}
 {% include_relative 06.inv.recenter.noneg.function.md %}
-{% include_relative 06.skip.probs.function.md %}
-{% include_relative 06.inter.mode.probs.function.md %}
-{% include_relative 06.intra.inter.probs.function.md %}
-{% include_relative 06.frame.reference.mode.probs.function.md %}
-{% include_relative 06.segmentation.probs.function.md %}
-{% include_relative 06.mv.probs.function.md %}
 {% include_relative 06.decode.tiles.syntax.md %}
 {% include_relative 06.get.tile.offset.function.md %}
 {% include_relative 06.decode.tile.function.md %}
