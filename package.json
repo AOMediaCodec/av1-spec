@@ -5,28 +5,21 @@
   "version": "0.2.0",
   "homepage": "http://aomedia.org/",
   "contributors": {
-     "name" : "Adrian Grange <agrange@google.com",
-     "name" : "Peter de Rivaz <peter.derivaz@argondesign.com>",
-     "name" : "Jonathan Hunt <jonathan.hunt@argondesign.com>",
-     "name" : "Lou Quillio <louquillio@google.com>"
-   },
+    "name": "Lou Quillio <louquillio@google.com>"
+  },
   "repository": {
     "type": "git",
     "url": "https://aomedia.googlesource.com/av1-spec"
   },
-  "bugs": {"url" : "https://bugs.chromium.org/p/aomedia/issues/list" },
-  "licenses": [
-    {
-      "type": "BSD-2-Clause"
-    }
-  ],
+  "bugs": {
+    "url": "https://bugs.chromium.org/p/aomedia/issues/list"
+  },
+  "license": "BSD-2-Clause",
   "dependencies": {},
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-cli": "^1.2.0",
-    "grunt-contrib-concat": "~0.1.1",
-    "grunt-contrib-jshint": "~0.3.0",
-    "grunt-contrib-watch": "~0.1.4",
+    "grunt-jekyll": "^0.4.6",
     "grunt-replace": "^1.0.1"
   },
   "keywords": []
