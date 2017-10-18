@@ -14,7 +14,7 @@ module.exports = function( grunt ) {
               ]
             },
             files: [
-              {src: ["_site/index.html"], dest: "_site/av1-spec.html"}
+              { src: ["_site/index.html"], dest: "_site/av1-spec.html" }
             ]
           }
         },
