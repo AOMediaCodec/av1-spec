@@ -9,8 +9,7 @@ version_date: Released 2017-xx-xx
 
 {% include_relative 00.title.md %}
 {% include_relative 00.version.md %}
-{% include_relative 00.authors.md %}
-{% include_relative 00.last.modified.md %}
+
 {% include_relative 00.abstract.md %}
 
 {% include_relative 00.toc.md %}
