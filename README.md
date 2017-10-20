@@ -53,6 +53,10 @@ $ rbenv install -l
 $ rbenv install 2.3.0
 ~~~~~
 
+Depending on your distro and environment, you may have trouble building a
+particular Ruby version. The rbenv project site maintains a
+[wiki page with troubleshooting help](https://github.com/rbenv/ruby-build/wiki).
+
 
 ### Bundler
 
