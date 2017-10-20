@@ -30,7 +30,8 @@ Contributors will want to preview their edits locally before submitting patches
 for review. Doing so requires a sane Ruby and rubygems environment. We use
 [rbenv] and [bundler] to "groom" the project environment and avoid conflicts.
 
-_**Note** that all commands are to be run as an ordinary, unprivileged user._
+**Note** that all commands are to be run as an ordinary, unprivileged user.
+{:.alert .alert-info }
 
 
 ### Ruby and rbenv
@@ -102,8 +103,9 @@ bundle install
 Bundler will set dependencies and install needed gems as listed in
 `Gemfile.lock`.
 
-_**Note** that you may need Ruby development headers installed on your system
-for some gems to compile successfully._
+**Note** that you may need Ruby development headers installed on your system
+for some gems to compile successfully.
+{:.alert .alert-info }
 
 
 ### Build and Preview Locally with Jekyll
