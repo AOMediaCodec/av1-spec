@@ -22,8 +22,6 @@ version_date: Released 2017-xx-xx
 
 {% include_relative 04.conventions.md %}
 
-{% include_relative 05.decoding.overview.md %}
-
 {% include_relative 06.bitstream.syntax.md %}
 {% include_relative 06.obu.syntax.md %}
 {% include_relative 06.obu.header.syntax.md %}
