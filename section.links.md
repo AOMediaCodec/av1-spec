@@ -51,6 +51,7 @@
 [section 5.7.13]: #quantizer-index-delta-parameters-syntax
 [section 5.8.25]: #get-mode-function
 [section 7.5.1.3]: #temporal-motion-vector-candidate-process
+[section 7.6.1.1]: #intra-edge-filter-strength-selection-process
 [section 5.7.23]: #decode-uniform-syntax
 [section 4.4]: #bitwise-operators
 [section 7.11]: #output-process
@@ -84,6 +85,7 @@
 [section 7.5.3.1]: #scan-row-process
 [section 8.2.5]: #symbol-decoding-process
 [section 6.8.25]: #intra-angle-info-semantics
+[section 7.6.1.2]: #intra-edge-filter-process
 [section 6.8.12]: #transform-type-semantics
 [section 6.1.3]: #trailing-bits-semantics
 [section 5.7.5]: #compute-image-size-function
