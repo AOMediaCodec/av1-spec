@@ -25,7 +25,12 @@ github_username:  webmproject
 timezone: America/Los_Angeles
 
 # Build settings
+highlighter: none
 markdown: kramdown
+kramdown:
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    disable: true
 gems:
 exclude:
   - Gemfile
