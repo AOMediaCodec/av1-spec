@@ -63,7 +63,6 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.inverse.recenter.syntax.md %}
 {% include_relative 06.inv.recenter.noneg.function.md %}
 {% include_relative 06.tile.group.obu.syntax.md %}
-{% include_relative 06.get.tile.offset.function.md %}
 {% include_relative 06.decode.tile.function.md %}
 {% include_relative 06.clear.block.decoded.flags.function.md %}
 {% include_relative 06.decode.partition.function.md %}
