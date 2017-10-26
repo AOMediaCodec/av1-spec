@@ -90,7 +90,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.mv.syntax.md %}
 {% include_relative 06.mv.component.syntax.md %}
 {% include_relative 06.residual.syntax.md %}
-{% include_relative 06.get.uv.size.function.md %}
+{% include_relative 06.get.tx.size.function.md %}
 {% include_relative 06.get.plane.block.size.function.md %}
 {% include_relative 06.token.syntax.md %}
 {% include_relative 06.compute.transform.type.function.md %}

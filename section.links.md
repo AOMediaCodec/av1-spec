@@ -22,7 +22,7 @@
 [section 4.9.5]: #ln
 [section 5.8.42]: #is-inside-function
 [section 6.8.5]: #intra-frame-mode-info-semantics
-[section 5.8.28]: #get-uv-size-function
+[section 5.8.28]: #get-tx-size-function
 [section 6.8.20]: #mv-semantics
 [section 7.5.3.6]: #search-stack-process
 [section 6.7.10]: #segmentation-params-semantics
