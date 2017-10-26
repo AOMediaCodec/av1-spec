@@ -75,6 +75,8 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.delta.lf.syntax.md %}
 {% include_relative 06.segmentation.feature.active.function.md %}
 {% include_relative 06.tx.size.syntax.md %}
+{% include_relative 06.read.inter.tx.size.syntax.md %}
+{% include_relative 06.read.var.tx.size.syntax.md %}
 {% include_relative 06.inter.frame.mode.info.function.md %}
 {% include_relative 06.inter.segment.id.syntax.md %}
 {% include_relative 06.is.inter.syntax.md %}
@@ -90,6 +92,8 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.mv.syntax.md %}
 {% include_relative 06.mv.component.syntax.md %}
 {% include_relative 06.residual.syntax.md %}
+{% include_relative 06.transform.block.syntax.md %}
+{% include_relative 06.transform.tree.syntax.md %}
 {% include_relative 06.get.tx.size.function.md %}
 {% include_relative 06.get.plane.block.size.function.md %}
 {% include_relative 06.token.syntax.md %}
