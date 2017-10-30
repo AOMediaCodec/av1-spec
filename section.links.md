@@ -215,7 +215,7 @@
 [section 5.7.7]: #loop-filter-params-syntax
 [section 7.1]: #general
 [section 5.7.22]: #decode-subexp-syntax
-[section 7.4]: #cdf-averaging-process
+[section 7.4]: #cdf-update-process
 [section 5.8.22]: #assign-mv-function
 [section 4.7]: #method-of-describing-bitstream-syntax
 [section 5.8.10]: #loop-filter-delta-syntax
