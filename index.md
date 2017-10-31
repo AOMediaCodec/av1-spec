@@ -128,6 +128,8 @@ version_date: Released 2017-xx-xx
 {% include_relative annex.a.levels.md %}
 
 {% include_relative annex.b.superframes.md %}
+
+{% include_relative annex.c.experiments.md %}
 </div>
 
 {% include_relative bibliography.md %}

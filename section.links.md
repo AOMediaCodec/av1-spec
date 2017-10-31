@@ -164,7 +164,7 @@
 [section 5.7.12]: #tile-size-calculation-function
 [section 5.8.38]: #intra-angle-info-syntax
 [section 5.3]: #sequence-header-obu-syntax
-[section C]: #bibliography
+[section D]: #bibliography
 [section 6.8.12]: #inter-tx-size-semantics
 [section 7.4.3.2]: #scan-col-process
 [section 5.7.24]: #inverse-recenter-syntax
@@ -176,6 +176,7 @@
 [section 5.8.5]: #mode-info-syntax
 [section 7.5.2.1]: #motion-vector-scaling-process
 [section 6.7.7]: #loop-filter-semantics
+[section C.3]: #excluded-experiments
 [section 9.1]: #scan-tables
 [section 4.9]: #descriptors
 [section 7.9.2]: #cdef-direction-process
@@ -235,6 +236,7 @@
 [section 7.5.2.11]: #inter-intra-mask-process
 [section 6.8.15]: #is-inter-semantics
 [section 6.6.3]: #metadata-high-dynamic-range-mastering-display-color-volume-semantics
+[section C.2]: #included-experiments
 [section 7.5.2.5]: #resolve-divisor-process
 [section 7]: #decoding-process
 [section 7.5.2.12]: #mask-blend-process
@@ -261,7 +263,8 @@
 [section 5.8.16]: #inter-segment-id-syntax
 [section 5.8.33]: #get-plane-residual-size-function
 [section 5.6.1]: #metadata-private-data-syntax
-[section C.1]: #unimpressed-footer-syntax
+[section C]: #annex-c-included-experiments
+[section D.1]: #unimpressed-footer-syntax
 [section 4.9.1]: #fn
 [section 7.8.1]: #edge-loop-filter-process
 [section 7.8.3]: #adaptive-filter-strength-process
@@ -272,6 +275,7 @@
 [section 6.7.14]: #global-motion-params-semantics
 [section 4.2]: #logical-operators
 [section 7.5.2.6]: #warp-estimation-process
+[section C.1]: #overview-2
 [section 8.3.1]: #cdf-selection-process
 [section 5.6.2]: #metadata-high-dynamic-range-content-light-level-syntax
 [section 7.9]: #cdef-process
