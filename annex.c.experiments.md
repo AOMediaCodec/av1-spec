@@ -18,7 +18,7 @@ The specification has been updated to include the following list of adopted expe
 | palette_delta_encoding        |
 | HLS R19                       |
 | altref2                       |
-| cdef_singlepass               | Bug 926 not yet fixed in code or spec
+| cdef_singlepass               |
 | cfl                           | Bug 928 not yet fixed in code or spec
 | chroma_sub8x8                 |
 | colorspace_headers            |
@@ -40,7 +40,7 @@ The specification has been updated to include the following list of adopted expe
 | alt_intra                     |
 | aom_qm                        |
 | cb4x4                         |
-| cdef                          |
+| cdef                          | Needs modification to support striped mode
 | compound_round                |
 | convolve_round                |
 | daala_ec                      |
