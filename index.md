@@ -109,6 +109,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.palette.tokens.md %}
 {% include_relative 06.palette.colors.md %}
 {% include_relative 06.is.inside.function.md %}
+{% include_relative 06.check.references.function.md %}
 {% include_relative 06.clamp.mv.row.function.md %}
 {% include_relative 06.clamp.mv.col.function.md %}
 {% include_relative 06.decode.cdef.syntax.md %}
