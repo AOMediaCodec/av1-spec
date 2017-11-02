@@ -54,7 +54,7 @@ The specification has been updated to include the following list of adopted expe
 | ext-intra                     |
 | ext-tx                        |
 | filter_7bit                   |
-| global_motion                 | Code changes in patch 30248 not yet added to spec
+| global_motion                 |
 | independent_row_tile          |
 | misc_fixes                    |
 | motion_var                    |
