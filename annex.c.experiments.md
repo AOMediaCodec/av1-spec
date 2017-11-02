@@ -79,8 +79,9 @@ The specification has been updated to include the following list of adopted expe
 | intra_edge                    |
 | simple_bwd_adapt              |
 | ext_partition_types           | Bug 914 not yet fixed in code or spec
-| mfmv                          | DecodeOrder(s) not yet defined
+| mfmv                          |
 | short_filter                  |
+| frame_marker                  |
 {:.table .table-sm .table-bordered }
 
 ### Excluded Experiments
@@ -90,7 +91,6 @@ The specification has not yet been updated with the following experiments:
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
 | q_adapt_probs                 | Bug 936 not yet fixed
-| frame_marker                  | 
 | txmg                          | Unclear if this is to be adopted
 | daala_tx                      | Unclear if this is to be adopted
 | filter_intra                  | Unclear if this is to be adopted
