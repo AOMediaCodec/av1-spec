@@ -34,7 +34,7 @@ The specification has been updated to include the following list of adopted expe
 | smooth_hv                     |
 | tempmv_signaling              |
 | wedge                         |
-| frame_size                    | Code changes in patch 30001 not yet added to spec
+| frame_size                    |
 | parallel_deblocking           |
 | tmv                           |
 | alt_intra                     |
