@@ -34,7 +34,7 @@ The specification has been updated to include the following list of adopted expe
 | smooth_hv                     |
 | tempmv_signaling              |
 | wedge                         |
-| frame_size                    |
+| frame_size                    | Code changes in patch 30001 not yet added to spec
 | parallel_deblocking           |
 | tmv                           |
 | alt_intra                     |
@@ -54,7 +54,7 @@ The specification has been updated to include the following list of adopted expe
 | ext-intra                     |
 | ext-tx                        |
 | filter_7bit                   |
-| global_motion                 |
+| global_motion                 | Code changes in patch 30248 not yet added to spec
 | independent_row_tile          |
 | misc_fixes                    |
 | motion_var                    |
@@ -80,6 +80,7 @@ The specification has been updated to include the following list of adopted expe
 | simple_bwd_adapt              |
 | ext_partition_types           | Bug 914 not yet fixed in code or spec
 | mfmv                          | DecodeOrder(s) not yet defined
+| short_filter                  |
 {:.table .table-sm .table-bordered }
 
 ### Excluded Experiments
@@ -98,7 +99,6 @@ The specification has not yet been updated with the following experiments:
 | striped_loop_restoration      | Code still under development
 | txk_sel                       | Bugs 869, 866 not yet fixed in code
 | lv_map                        | Bugs 840, 841 not yet fixed in code 
-| short_filter                  | Code has just appeared
 | CICP                          | No code for this yet
 | Timecodes                     | No code for this yet
 {:.table .table-sm .table-bordered }
