@@ -105,7 +105,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 06.read.cfl.alphas.syntax.md %}
 {% include_relative 06.palette.mode.info.md %}
 {% include_relative 06.transform.type.syntax.md %}
-{% include_relative 06.get.transform.set.type.function.md %}
+{% include_relative 06.get.transform.set.function.md %}
 {% include_relative 06.palette.tokens.md %}
 {% include_relative 06.palette.colors.md %}
 {% include_relative 06.is.inside.function.md %}
