@@ -9,7 +9,7 @@ module.exports = function( grunt ) {
               patterns: [
                 {
                   match: /@@[a-zA-Z_0-9]*(\[[^\]]*\])*/g,
-                  replacement: function(match) { return "<b>&nbsp;&nbsp;" + match.substring(2) + "</b>"; }
+                  replacement: function(match) { return "<b>" + match.substring(2) + "</b>&nbsp;&nbsp;"; }
                 }
               ]
             },
