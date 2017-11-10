@@ -135,8 +135,7 @@ version_date: Released 2017-xx-xx
 
 {% include_relative bibliography.md %}
 
-{% include_relative 98.testing.md %}
-
 {% comment %}
+{% include_relative 98.testing.md %}
 {% include_relative 99.function-reference-links.md %}
 {% endcomment %}
