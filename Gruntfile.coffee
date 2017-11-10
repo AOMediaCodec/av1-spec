@@ -3,22 +3,28 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
     clean: [ 'docs' ]
-    copy: files: {
-      expand: true
-      src: 'assets/**'
-      dest: 'docs/'
-    }
     replace: dist:
       options: patterns: [ {
         match: /@@[a-zA-Z_0-9]*(\[[^\]]*\])*/g
         replacement: (match) ->
           '<b class="syntax-element">' + match.substring(2) + '</b>'
-
       } ]
       files: [ {
-        src: [ '_site/index.html' ]
+        src:  '_site/index.html'
         dest: 'docs/index.html'
       } ]
+    copy:
+      docs:
+        files: [ {
+          expand: true
+          src: 'assets/**'
+          dest: 'docs/'
+        } ]
+      deprecated: # Preserves ArgonDesign webserver scheme
+        files: [ {
+          src: 'docs/index.html'
+          dest: '_site/av1-spec.html'
+        } ]
     jekyll:
       options:
         bundleExec: true
@@ -35,7 +41,7 @@ module.exports = (grunt) ->
   # Register the default tasks.
   grunt.registerTask 'default', [
     'clean'
-    'copy'
     'replace'
+    'copy'
   ]
   return
