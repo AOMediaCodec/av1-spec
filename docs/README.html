@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>AV1 Bitstream &amp; Decoding Process Specification</title>
+  <link rel="stylesheet" href="/av1-spec/assets/css/style.css">
+  <link rel="stylesheet" href="/av1-spec/assets/css/bootstrap.min.css">
+  <link rel="apple-touch-icon" sizes="57x57" href="assets/images/icons/apple-icon-57x57.png">
+  <link rel="apple-touch-icon" sizes="60x60" href="assets/images/icons/apple-icon-60x60.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="assets/images/icons/apple-icon-72x72.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="assets/images/icons/apple-icon-76x76.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="assets/images/icons/apple-icon-114x114.png">
+  <link rel="apple-touch-icon" sizes="120x120" href="assets/images/icons/apple-icon-120x120.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="assets/images/icons/apple-icon-144x144.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="assets/images/icons/apple-icon-152x152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icons/apple-icon-180x180.png">
+  <link rel="icon" type="image/png" sizes="192x192"  href="assets/images/icons/android-icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="assets/images/icons/favicon-96x96.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icons/favicon-16x16.png">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="assets/images/icons/ms-icon-144x144.png">
+  <meta name="theme-color" content="#ffffff">
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-10 col-md-offset-1">
+<h1 class="no_toc" id="authoring-notes-av1-bitstream--decoding-process-specification">Authoring Notes, AV1 Bitstream &amp; Decoding Process Specification</h1>
+
+<p><img src="images/av1-logo-297x142.png" alt="AV1 logo graphic" /></p>
+
+<p>This document provides instructions for working with the <a href=".">draft</a> AV1 Bitstream
+&amp; Decoding Process Specification.</p>
+
+<p>The specification document is built from plaintext section and subsection
+<a href="https://daringfireball.net/projects/markdown/">Markdown</a> files (more specifically, <a href="https://kramdown.gettalong.org/">kramdown</a> files) using the <a href="https://jekyllrb.com/">Jekyll</a> static
+site generator tool.</p>
+
+<p><strong>Contents</strong></p>
+
+<ul id="markdown-toc">
+  <li><a href="#building-locally" id="markdown-toc-building-locally">Building Locally</a>    <ul>
+      <li><a href="#ruby-and-rbenv" id="markdown-toc-ruby-and-rbenv">Ruby and rbenv</a></li>
+      <li><a href="#bundler" id="markdown-toc-bundler">Bundler</a></li>
+      <li><a href="#clone-the-repo" id="markdown-toc-clone-the-repo">Clone the Repo</a></li>
+      <li><a href="#set-local-ruby-version-rbenv" id="markdown-toc-set-local-ruby-version-rbenv">Set Local Ruby Version (rbenv)</a></li>
+      <li><a href="#install-gem-dependencies-with-bundler" id="markdown-toc-install-gem-dependencies-with-bundler">Install Gem Dependencies with Bundler</a></li>
+      <li><a href="#build-and-preview-locally-with-jekyll" id="markdown-toc-build-and-preview-locally-with-jekyll">Build and Preview Locally with Jekyll</a></li>
+      <li><a href="#notes-on-npm-and-grunt" id="markdown-toc-notes-on-npm-and-grunt">Notes on NPM and Grunt</a></li>
+    </ul>
+  </li>
+  <li><a href="#git-at-google-and-gerrit" id="markdown-toc-git-at-google-and-gerrit">Git at Google, and Gerrit</a></li>
+</ul>
+
+<h2 id="building-locally">Building Locally</h2>
+
+<p>Contributors will want to preview their edits locally before submitting patches
+for review. Doing so requires a sane Ruby and rubygems environment. We use
+<a href="https://github.com/rbenv/rbenv">rbenv</a> and <a href="http://bundler.io/">bundler</a> to “groom” the project environment and avoid conflicts.</p>
+
+<p class="alert alert-info"><strong>Note</strong> that all commands are to be run as an ordinary, unprivileged user.</p>
+
+<h3 id="ruby-and-rbenv">Ruby and rbenv</h3>
+
+<p>This project currently depends on Ruby v2.3.0. Because your distro may lack this
+version – or installing it may conflict with your system’s installed version –
+first <strong><a href="https://github.com/rbenv/rbenv#installation">install rbenv</a></strong>, then install Ruby v2.3.0 within it (again, in
+userland).</p>
+
+<pre><code class="language-bash"># list all available versions:
+$ rbenv install -l
+2.2.6
+2.3.0-dev
+2.3.0-preview1
+2.3.0-preview2
+2.3.0
+
+# install a Ruby version:
+$ rbenv install 2.3.0
+</code></pre>
+
+<p>Depending on your distro and environment, you may have trouble building a
+particular Ruby version. The rbenv project site maintains a
+<a href="https://github.com/rbenv/ruby-build/wiki">wiki page with troubleshooting help</a>.</p>
+
+<h3 id="bundler">Bundler</h3>
+
+<p>Gem dependencies are managed by <a href="http://bundler.io/">bundler</a>.</p>
+
+<pre><code class="language-bash">$ gem install bundler
+
+# Filesystem location where gems are installed
+$ gem env home
+# =&gt; ~/.rbenv/versions/&lt;ruby-version&gt;/lib/ruby/gems/...
+</code></pre>
+
+<h3 id="clone-the-repo">Clone the Repo</h3>
+
+<pre><code class="language-bash">git clone https://aomedia.googlesource.com/av1-spec
+cd av1-spec
+</code></pre>
+
+<h3 id="set-local-ruby-version-rbenv">Set Local Ruby Version (rbenv)</h3>
+
+<p>In the directory of your local clone, do:</p>
+
+<pre><code class="language-bash">rbenv local 2.3.0
+</code></pre>
+
+<p>Regardless of any other Rubies installed on your system, the project environment
+will now use v2.3.0 and gems appropriate for it.</p>
+
+<h3 id="install-gem-dependencies-with-bundler">Install Gem Dependencies with Bundler</h3>
+
+<p>In the directory of your local clone, run</p>
+
+<pre><code class="language-bash">bundle install
+</code></pre>
+
+<p>Bundler will set dependencies and install needed gems as listed in
+<code>Gemfile.lock</code>.</p>
+
+<p class="alert alert-info"><strong>Note</strong> that you may need Ruby development headers installed on your system
+for some gems to compile successfully.</p>
+
+<h3 id="build-and-preview-locally-with-jekyll">Build and Preview Locally with Jekyll</h3>
+
+<pre><code class="language-bash">bundle exec jekyll serve
+</code></pre>
+
+<p>This will build the document and launch a local webserver at
+<code>http://127.0.0.1:4000/av1-spec/</code> (by default). Jekyll will also watch the
+the filesystem for changes and rebuild the document as needed. Reload your
+browser tab to view any changes you’ve made.</p>
+
+<h3 id="notes-on-npm-and-grunt">Notes on NPM and Grunt</h3>
+
+<p><em>These steps are not critically necessary for working on the document. Rather,
+they apply cosmetic changes to the HTML output on a postproc basis.</em></p>
+
+<p>The specification document requires a bit of arbitrary text manipulation that
+can’t be done with Jekyll alone. To automate these needs we turn to <a href="https://gruntjs.com/">GruntJS</a>, a
+Node-based task runner. The following assumes you have already installed
+<a href="https://nodejs.org/">NodeJS</a> and <a href="https://www.npmjs.org/">npm</a>, the Node package manager.</p>
+
+<pre><code class="language-bash">## Update npm globally
+npm update -g npm
+
+## Install grunt globally
+npm install -g grunt-cli
+
+## Go the the project directory
+cd av1-spec
+
+## Install the project's Node dependencies
+## (uses package.json and Gruntfile)
+npm install
+</code></pre>
+
+<p>To transform the Jekyll-generated HTML file (<code>_site/index.html</code>), run <code>grunt</code> in
+the project directory. This will apply the text transformations described in
+Grunt’s <code>replace</code> task (see <code>Gruntfile</code>) and will write the output to
+<code>_site/av1-spec.html</code>.</p>
+
+<p>Currently this method is used to “bold” the names of syntax elements within
+syntax tables. For example, the tokenized string <code>@@syntax_element</code> will be
+replaced with <code>&lt;b&gt;syntax_element&lt;/b&gt;</code>. This reduces the clutter of HTML elements
+within the source text files.</p>
+
+<h2 id="git-at-google-and-gerrit">Git at Google, and Gerrit</h2>
+
+<p>The project is <a href="https://aomedia.googlesource.com/">hosted on Git at Google</a>,
+which uses the Gerrit code review tool. Prospective contributors must have a
+Google account and a working knowledge of <a href="https://gerrit-review.googlesource.com/Documentation/">Gerrit</a>. In particular, contributors
+must install the Gerrit <a href="https://gerrit-review.googlesource.com/Documentation/cmd-hook-commit-msg.html">commit-msg</a> script in their local repo for Gerrit to
+accept any patches they push to it for review.</p>
+
+
+      </div>
+    </div>
+  </div>
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="assets/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -20,6 +20,13 @@ module.exports = (grunt) ->
           src: 'assets/**'
           dest: 'docs/'
         } ]
+      readme:
+        files: [ {
+          expand: true  # Not intuitive
+          flatten: true # Not intuitive
+          src: '_site/README.html'
+          dest: 'docs/'
+        } ]
       deprecated: # Preserves ArgonDesign webserver scheme
         files: [ {
           src: 'docs/index.html'
