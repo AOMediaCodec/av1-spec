@@ -72,6 +72,7 @@ The specification has been updated to include the following list of adopted expe
 | tile_groups                   |
 | var_tx                        |
 | warped_motion                 | Bug 950 not yet fixed in code or spec
+| ext_warped_motion             | Included in spec, but not yet adopted
 | loopfilter_level              |
 | deblock_13tap                 |
 | gm_ref_mv                     |
