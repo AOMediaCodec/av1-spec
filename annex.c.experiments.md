@@ -84,6 +84,7 @@ The specification has been updated to include the following list of adopted expe
 | short_filter                  |
 | frame_marker                  |
 | no_frame_context_signalling   |
+| segment_zeromv                |
 {:.table .table-sm .table-bordered }
 
 ### Excluded Experiments
@@ -104,7 +105,6 @@ The specification has not yet been updated with the following experiments:
 | CICP                          | No code for this yet
 | Timecodes                     | No code for this yet
 | coef_ctx_reduce               | 
-| segment_zeromv                |
 | amvr                          |
 | segment_pred_last             |
 | tx64x64                       |
