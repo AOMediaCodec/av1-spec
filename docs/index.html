@@ -34,7 +34,7 @@
 <p><em>Version 0.3</em><br />
 <em>© 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2017-11-10 17:54:22 -0800</em></p>
+<p><em>Last modified: 2017-11-14 11:56:05 -0800</em></p>
 
 <p class="alert alert-danger"><strong>Draft Document</strong><br />
 This document is a work in process draft, and will change substantially before
@@ -67,7 +67,6 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
           <li><a href="#fn" id="markdown-toc-fn">f(n)</a></li>
           <li><a href="#len" id="markdown-toc-len">le(n)</a></li>
           <li><a href="#sun" id="markdown-toc-sun">su(n)</a></li>
-          <li><a href="#bp" id="markdown-toc-bp">B(p)</a></li>
           <li><a href="#ln" id="markdown-toc-ln">L(n)</a></li>
           <li><a href="#s" id="markdown-toc-s">S</a></li>
           <li><a href="#un" id="markdown-toc-un">U(n)</a></li>
@@ -112,21 +111,21 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
           <li><a href="#loop-filter-delta-parameters-syntax" id="markdown-toc-loop-filter-delta-parameters-syntax">Loop Filter Delta Parameters Syntax</a></li>
           <li><a href="#cdef-params-syntax" id="markdown-toc-cdef-params-syntax">CDEF Params Syntax</a></li>
           <li><a href="#tx-mode-syntax" id="markdown-toc-tx-mode-syntax">TX Mode Syntax</a></li>
-          <li><a href="#frame-reference-mode-function" id="markdown-toc-frame-reference-mode-function">Frame Reference Mode Function</a></li>
+          <li><a href="#frame-reference-mode-syntax" id="markdown-toc-frame-reference-mode-syntax">Frame Reference Mode Syntax</a></li>
           <li><a href="#global-motion-params-syntax" id="markdown-toc-global-motion-params-syntax">Global Motion Params Syntax</a></li>
           <li><a href="#global-param-syntax" id="markdown-toc-global-param-syntax">Global Param Syntax</a></li>
           <li><a href="#decode-signed-subexp-with-ref-syntax" id="markdown-toc-decode-signed-subexp-with-ref-syntax">Decode Signed Subexp With Ref Syntax</a></li>
           <li><a href="#decode-unsigned-subexp-with-ref-syntax" id="markdown-toc-decode-unsigned-subexp-with-ref-syntax">Decode Unsigned Subexp With Ref Syntax</a></li>
           <li><a href="#decode-subexp-syntax" id="markdown-toc-decode-subexp-syntax">Decode Subexp Syntax</a></li>
           <li><a href="#decode-uniform-syntax" id="markdown-toc-decode-uniform-syntax">Decode Uniform Syntax</a></li>
-          <li><a href="#inverse-recenter-syntax" id="markdown-toc-inverse-recenter-syntax">Inverse Recenter Syntax</a></li>
+          <li><a href="#inverse-recenter-function" id="markdown-toc-inverse-recenter-function">Inverse Recenter Function</a></li>
           <li><a href="#inv-recenter-noneg-function" id="markdown-toc-inv-recenter-noneg-function">Inv Recenter Noneg Function</a></li>
         </ul>
       </li>
       <li><a href="#tile-group-obu-syntax" id="markdown-toc-tile-group-obu-syntax">Tile Group OBU Syntax</a>        <ul>
-          <li><a href="#decode-tile-function" id="markdown-toc-decode-tile-function">Decode Tile Function</a></li>
+          <li><a href="#decode-tile-syntax" id="markdown-toc-decode-tile-syntax">Decode Tile Syntax</a></li>
           <li><a href="#clear-block-decoded-flags-function" id="markdown-toc-clear-block-decoded-flags-function">Clear Block Decoded Flags Function</a></li>
-          <li><a href="#decode-partition-function" id="markdown-toc-decode-partition-function">Decode Partition Function</a></li>
+          <li><a href="#decode-partition-syntax" id="markdown-toc-decode-partition-syntax">Decode Partition Syntax</a></li>
           <li><a href="#decode-block-syntax" id="markdown-toc-decode-block-syntax">Decode Block Syntax</a></li>
           <li><a href="#mode-info-syntax" id="markdown-toc-mode-info-syntax">Mode Info Syntax</a></li>
           <li><a href="#intra-frame-mode-info-syntax" id="markdown-toc-intra-frame-mode-info-syntax">Intra Frame Mode Info Syntax</a></li>
@@ -138,14 +137,14 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
           <li><a href="#tx-size-syntax" id="markdown-toc-tx-size-syntax">TX Size Syntax</a></li>
           <li><a href="#inter-tx-size-syntax" id="markdown-toc-inter-tx-size-syntax">Inter TX Size Syntax</a></li>
           <li><a href="#var-tx-size-syntax" id="markdown-toc-var-tx-size-syntax">Var TX Size Syntax</a></li>
-          <li><a href="#inter-frame-mode-info-function" id="markdown-toc-inter-frame-mode-info-function">Inter Frame Mode Info Function</a></li>
+          <li><a href="#inter-frame-mode-info-syntax" id="markdown-toc-inter-frame-mode-info-syntax">Inter Frame Mode Info Syntax</a></li>
           <li><a href="#inter-segment-id-syntax" id="markdown-toc-inter-segment-id-syntax">Inter Segment ID Syntax</a></li>
           <li><a href="#is-inter-syntax" id="markdown-toc-is-inter-syntax">Is Inter Syntax</a></li>
-          <li><a href="#get-segment-id-syntax" id="markdown-toc-get-segment-id-syntax">Get Segment ID Syntax</a></li>
+          <li><a href="#get-segment-id-function" id="markdown-toc-get-segment-id-function">Get Segment ID Function</a></li>
           <li><a href="#intra-block-mode-info-syntax" id="markdown-toc-intra-block-mode-info-syntax">Intra Block Mode Info Syntax</a></li>
           <li><a href="#inter-block-mode-info-syntax" id="markdown-toc-inter-block-mode-info-syntax">Inter Block Mode Info Syntax</a></li>
           <li><a href="#ref-frames-syntax" id="markdown-toc-ref-frames-syntax">Ref Frames Syntax</a></li>
-          <li><a href="#assign-mv-function" id="markdown-toc-assign-mv-function">Assign MV Function</a></li>
+          <li><a href="#assign-mv-syntax" id="markdown-toc-assign-mv-syntax">Assign MV Syntax</a></li>
           <li><a href="#read-motion-mode-syntax" id="markdown-toc-read-motion-mode-syntax">Read Motion Mode Syntax</a></li>
           <li><a href="#read-inter-intra-syntax" id="markdown-toc-read-inter-intra-syntax">Read Inter Intra Syntax</a></li>
           <li><a href="#read-compound-type-syntax" id="markdown-toc-read-compound-type-syntax">Read Compound Type Syntax</a></li>
@@ -168,7 +167,7 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
           <li><a href="#transform-type-syntax" id="markdown-toc-transform-type-syntax">Transform Type Syntax</a></li>
           <li><a href="#get-transform-set-function" id="markdown-toc-get-transform-set-function">Get Transform Set Function</a></li>
           <li><a href="#palette-tokens-syntax" id="markdown-toc-palette-tokens-syntax">Palette Tokens Syntax</a></li>
-          <li><a href="#palette-colors-syntax" id="markdown-toc-palette-colors-syntax">Palette Colors Syntax</a></li>
+          <li><a href="#palette-color-context-function" id="markdown-toc-palette-color-context-function">Palette Color Context Function</a></li>
           <li><a href="#is-inside-function" id="markdown-toc-is-inside-function">Is Inside Function</a></li>
           <li><a href="#check-references-functions" id="markdown-toc-check-references-functions">Check References Functions</a></li>
           <li><a href="#clamp-mv-row-function" id="markdown-toc-clamp-mv-row-function">Clamp MV Row Function</a></li>
@@ -253,7 +252,7 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
           <li><a href="#read-cfl-alphas-semantics" id="markdown-toc-read-cfl-alphas-semantics">Read CFL Alphas Semantics</a></li>
           <li><a href="#palette-mode-info-semantics" id="markdown-toc-palette-mode-info-semantics">Palette Mode Info Semantics</a></li>
           <li><a href="#palette-tokens-semantics" id="markdown-toc-palette-tokens-semantics">Palette Tokens Semantics</a></li>
-          <li><a href="#palette-colors-semantics" id="markdown-toc-palette-colors-semantics">Palette Colors Semantics</a></li>
+          <li><a href="#palette-color-context-semantics" id="markdown-toc-palette-color-context-semantics">Palette Color Context Semantics</a></li>
           <li><a href="#decode-cdf-semantics" id="markdown-toc-decode-cdf-semantics">Decode CDF Semantics</a></li>
         </ul>
       </li>
@@ -909,23 +908,43 @@ relate to the semantics of a particular syntax element are defined in
       <td>Index for quantizer segment feature</td>
     </tr>
     <tr>
-      <td><code>SEG_LVL_ALT_L</code></td>
+      <td><code>SEG_LVL_ALT_LF_Y_V</code></td>
       <td style="text-align: center">1</td>
-      <td>Index for loop filter segment feature</td>
+      <td>Index for vertical luma loop filter segment feature</td>
+    </tr>
+    <tr>
+      <td><code>SEG_LVL_ALT_LF_Y_H</code></td>
+      <td style="text-align: center">2</td>
+      <td>Index for horizontal luma loop filter segment feature</td>
+    </tr>
+    <tr>
+      <td><code>SEG_LVL_ALT_LF_U</code></td>
+      <td style="text-align: center">3</td>
+      <td>Index for U plane loop filter segment feature</td>
+    </tr>
+    <tr>
+      <td><code>SEG_LVL_ALT_LF_V</code></td>
+      <td style="text-align: center">4</td>
+      <td>Index for V plane loop filter segment feature</td>
     </tr>
     <tr>
       <td><code>SEG_LVL_REF_FRAME</code></td>
-      <td style="text-align: center">2</td>
+      <td style="text-align: center">5</td>
       <td>Index for reference frame segment feature</td>
     </tr>
     <tr>
       <td><code>SEG_LVL_SKIP</code></td>
-      <td style="text-align: center">3</td>
+      <td style="text-align: center">6</td>
       <td>Index for skip segment feature</td>
     </tr>
     <tr>
+      <td><code>SEG_LVL_GLOBALMV</code></td>
+      <td style="text-align: center">7</td>
+      <td>Index for global mv feature</td>
+    </tr>
+    <tr>
       <td><code>SEG_LVL_MAX</code></td>
-      <td style="text-align: center">6</td>
+      <td style="text-align: center">8</td>
       <td>Number of segment features</td>
     </tr>
     <tr>
@@ -1951,7 +1970,11 @@ for ( initial statement; condition; subsequent statement )
 
 <h3 id="functions">Functions</h3>
 
-<p>Functions used for syntax description are specified in this section.</p>
+<p>Bitstream functions used for syntax description are specified in this section.</p>
+
+<p>Other functions are included in the syntax tables.
+The convention is that a section is called syntax if it causes syntax elements to be read from the bitstream, either directly or indirectly through subprocesses.
+The remaining sections are called functions.</p>
 
 <p>The specification of these functions makes use of a bitstream position
 indicator. This bitstream position indicator locates the position of the bit
@@ -2009,12 +2032,6 @@ The parsing process for this descriptor is specified below:</p>
     return value
 }
 </code></pre>
-
-<h4 id="bp">B(p)</h4>
-
-<p>A single arithmetic encoded bit with estimated probability p/256 of being 0.
-The syntax element is set equal to the return value of read_bool( p ) (see
-<a href="#boolean-decoding-process">section 8.2.2</a>‎ for a specification of this process).</p>
 
 <h4 id="ln">L(n)</h4>
 
@@ -2256,8 +2273,8 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
 <h4 id="metadata-high-dynamic-range-content-light-level-syntax">Metadata High Dynamic Range Content Light Level Syntax</h4>
 
 <pre class="syntax"><code>metadata_hdr_cll( sz ) {
-    max_cll                                                                    f(16)
-    max_fall                                                                   f(16)
+    <b class="syntax-element">max_cll</b>                                                                  f(16)
+    <b class="syntax-element">max_fall</b>                                                                 f(16)
 }
 </code></pre>
 
@@ -2265,13 +2282,13 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
 
 <pre class="syntax"><code>metadata_hdr_mdcv( sz ) {
     for ( i = 0; i &lt; 3; i++ ) {    
-        primary_chromaticity_x[ i ]                                            f(16)
-        primary_chromaticity_y[ i ]                                            f(16)
+        <b class="syntax-element">primary_chromaticity_x[ i ]</b>                                          f(16)
+        <b class="syntax-element">primary_chromaticity_y[ i ]</b>                                          f(16)
     }
-    white_point_chromaticity_x                                                 f(16)
-    white_point_chromaticity_y                                                 f(16)
-    luminance_max                                                              f(32)
-    luminance_min                                                              f(32)
+    <b class="syntax-element">white_point_chromaticity_x</b>                                               f(16)
+    <b class="syntax-element">white_point_chromaticity_y</b>                                               f(16)
+    <b class="syntax-element">luminance_max</b>                                                            f(32)
+    <b class="syntax-element">luminance_min</b>                                                            f(32)
 }
 </code></pre>
 
@@ -2598,7 +2615,7 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
                     FeatureEnabled[ i ][ j ] = feature_enabled
                     if ( feature_enabled == 1 ) {
                         bitsToRead = Segmentation_Feature_Bits[ j ]
-                        feature_value f(bitsToRead)
+                        <b class="syntax-element">feature_value</b>                                        f(bitsToRead)
                         if ( Segmentation_Feature_Signed[ j ] == 1 ) {
                             <b class="syntax-element">feature_sign</b>                                     f(1)
                         }
@@ -2615,8 +2632,8 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
 
 <p>The constant lookup tables used in this syntax are defined as:</p>
 
-<pre><code>Segmentation_Feature_Bits[ SEG_LVL_MAX ] = { 8, 6, 6, 6, 6, 2, 0 }
-Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0 }
+<pre><code>Segmentation_Feature_Bits[ SEG_LVL_MAX ] = { 8, 6, 6, 6, 6, 3, 0, 0 }
+Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
 </code></pre>
 
 <h4 id="tile-info-syntax">Tile Info Syntax</h4>
@@ -2809,7 +2826,7 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0 }
 }
 </code></pre>
 
-<h4 id="frame-reference-mode-function">Frame Reference Mode Function</h4>
+<h4 id="frame-reference-mode-syntax">Frame Reference Mode Syntax</h4>
 
 <pre class="syntax"><code>frame_reference_mode( ) {
     if ( FrameIsIntra ) {
@@ -2974,7 +2991,7 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0 }
 }
 </code></pre>
 
-<h4 id="inverse-recenter-syntax">Inverse Recenter Syntax</h4>
+<h4 id="inverse-recenter-function">Inverse Recenter Function</h4>
 
 <pre class="syntax"><code>inverse_recenter( r, v ) {
   if (v &gt; 2 * r)
@@ -2999,7 +3016,7 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0 }
 
 <h3 id="tile-group-obu-syntax">Tile Group OBU Syntax</h3>
 
-<pre class="syntax"><code>tile_group_obu( sz )
+<pre class="syntax"><code>tile_group_obu( sz ) {
     NumTiles = TileCols * TileRows
     startBitPos = get_position( )
     tileBits = TileColsLog2 + tile_rows_log2
@@ -3049,7 +3066,7 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0 }
 }
 </code></pre>
 
-<h4 id="decode-tile-function">Decode Tile Function</h4>
+<h4 id="decode-tile-syntax">Decode Tile Syntax</h4>
 
 <pre class="syntax"><code>decode_tile( ) {
     if ( !dependent_tiles || TileNum == tg_start)
@@ -3088,7 +3105,7 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0 }
 }
 </code></pre>
 
-<h4 id="decode-partition-function">Decode Partition Function</h4>
+<h4 id="decode-partition-syntax">Decode Partition Syntax</h4>
 
 <pre class="syntax"><code>decode_partition( r, c, bSize ) {
     if ( r &gt;= MiRows || c &gt;= MiCols )
@@ -3369,7 +3386,7 @@ to use a rectangular transform; the table is defined as:</p>
 <pre><code class="language-c">Rect_Tx_Allowed[ BLOCK_SIZES ] = {
     0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0,
     0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1,
-};
+}
 </code></pre>
 
 <p>The Tx_Mode_To_Biggest_Tx_Size table is defined as:</p>
@@ -3466,7 +3483,7 @@ to use a rectangular transform; the table is defined as:</p>
 }
 </code></pre>
 
-<h4 id="inter-frame-mode-info-function">Inter Frame Mode Info Function</h4>
+<h4 id="inter-frame-mode-info-syntax">Inter Frame Mode Info Syntax</h4>
 
 <pre class="syntax"><code>inter_frame_mode_info( ) {
     LeftRefFrame[ 0 ] = AvailL ? RefFrames[ MiRow ][ MiCol-1 ][ 0 ] : INTRA_FRAME
@@ -3531,7 +3548,7 @@ to use a rectangular transform; the table is defined as:</p>
 }
 </code></pre>
 
-<h4 id="get-segment-id-syntax">Get Segment ID Syntax</h4>
+<h4 id="get-segment-id-function">Get Segment ID Function</h4>
 
 <p>The predicted segment id is the smallest value found in the on-screen region
 of the segmentation map covered by the current block.</p>
@@ -3569,7 +3586,7 @@ of the segmentation map covered by the current block.</p>
     intra_angle_info( )
     PaletteSizeY = 0
     PaletteSizeUV = 0
-    if (( MiSize &gt;= BLOCK_8X8 ) &amp;&amp; ( MiSize &lt;= BLOCK_128X128 ) &amp;&amp;
+    if (( MiSize &gt;= BLOCK_8X8 ) &amp;&amp; ( MiSize &lt;= BLOCK_64X64 ) &amp;&amp;
           allow_screen_content_tools )
         palette_mode_info( )
 }
@@ -3592,7 +3609,8 @@ of the segmentation map covered by the current block.</p>
         compound_context( )
         find_mv_stack( -1 )
     }
-    if ( seg_feature_active( SEG_LVL_SKIP ) ) {
+    if ( seg_feature_active( SEG_LVL_SKIP ) ||
+         seg_feature_active( SEG_LVL_GLOBALMV ) ) {
         YMode = GLOBALMV
     } else if ( isCompound ) {
         <b class="syntax-element">compound_mode</b>                                                        S
@@ -3685,7 +3703,8 @@ of the segmentation map covered by the current block.</p>
     if ( seg_feature_active( SEG_LVL_REF_FRAME ) ) {
         RefFrame[ 0 ] = FeatureData[ segment_id ][ SEG_LVL_REF_FRAME ]
         RefFrame[ 1 ] = NONE
-    } else if ( seg_feature_active( SEG_LVL_SKIP ) ) {
+    } else if ( seg_feature_active( SEG_LVL_SKIP ) ||
+                seg_feature_active( SEG_LVL_GLOBALMV ) ) {
         RefFrame[ 0 ] = LAST_FRAME
         RefFrame[ 1 ] = NONE
     } else {
@@ -3765,7 +3784,7 @@ of the segmentation map covered by the current block.</p>
 }
 </code></pre>
 
-<h4 id="assign-mv-function">Assign MV Function</h4>
+<h4 id="assign-mv-syntax">Assign MV Syntax</h4>
 
 <pre class="syntax"><code>assign_mv( isCompound ) {
     bw = Block_Width[ MiSize ]
@@ -4127,7 +4146,7 @@ previous candidate.</p>
 
 <p>transform_tree is used to read a number of transform blocks arranged in a transform tree.</p>
 
-<pre><code>transform_tree( plane, startX, startY, w, h ) {
+<pre class="syntax"><code>transform_tree( plane, startX, startY, w, h ) {
     maxX = (MiCols * MI_SIZE) &gt;&gt; subX
     maxY = (MiRows * MI_SIZE) &gt;&gt; subY
     if ( startX &gt;= maxX || startY &gt;= maxY ) {
@@ -4161,12 +4180,11 @@ previous candidate.</p>
         }
     }
 }
-{:.syntax }
+</code></pre>
 
-where find_tx_size finds the transform size matching the given dimensions and is defined as:
+<p>where find_tx_size finds the transform size matching the given dimensions and is defined as:</p>
 
-~~~~~ c
-find_tx_size( w, h ) {
+<pre><code class="language-c">find_tx_size( w, h ) {
     for( txSz = 0; txSz &lt; TX_SIZES_ALL; txSz++ )
         if ( Tx_Width[ txSz ] == w &amp;&amp; Tx_Height[ txSz ] == h )
             break
@@ -4781,7 +4799,7 @@ subarray to be sorted is between indices i1 and i2 inclusive.</p>
 }
 </code></pre>
 
-<h4 id="palette-colors-syntax">Palette Colors Syntax</h4>
+<h4 id="palette-color-context-function">Palette Color Context Function</h4>
 
 <pre class="syntax"><code>get_palette_color_context( colorMap, r, c, n ) {
     for( i = 0; i &lt; PALETTE_COLORS; i++ ) {
@@ -4922,7 +4940,7 @@ check_golden(refFrame) {
                 if (sb_all_skip(i, j, step4))
                     cdef_idx[ i ][ j ] = -1
                 else
-                    <b class="syntax-element">cdef_idx[ i ][ j ]</b>                                       S
+                    <b class="syntax-element">cdef_idx[ i ][ j ]</b>                                       L(cdef_bits)
             }
         }
     }
@@ -4934,7 +4952,7 @@ check_golden(refFrame) {
 <pre><code class="language-c">sb_all_skip( miRow, miCol, step4 ) {
     for( r = miRow; r &lt; Min( MiRows, miRow + step4 ); r++ ) {
         for( c = miCol; c &lt; Min( MiCols, miCol + step4 ); c++ ) {
-            if (!SkipCoeffs[ r ][ c ])
+            if (!Skips[ r ][ c ])
                 return 0
         }
     }
@@ -6237,8 +6255,8 @@ translation global motion.</p>
 <h4 id="global-param-semantics">Global Param Semantics</h4>
 
 <p><strong>absBits</strong> is used to compute the range of values that can be used for this
-parameter. The values allowed are in the range -(1 « absBits) to
-(1 « absBits).</p>
+parameter. The values allowed are in the range -(1 &lt;&lt; absBits) to
+(1 &lt;&lt; absBits).</p>
 
 <p><strong>precBits</strong> specifies the number of fractional bits used for representing this
 parameter in the bitstream. All global motion parameters are stored in the model
@@ -6366,7 +6384,7 @@ frame.</p>
 tile group.</p>
 
 <p>It is a requirement of bitstream conformance that the value of tg_start is equal to the value of TileNum at the point that
-tile_group_header is invoked.</p>
+tile_group_obu is invoked.</p>
 
 <p><strong>tg_end</strong> specifies the zero-based index of the last tile in the current
 tile group.</p>
@@ -6387,7 +6405,7 @@ described in <a href="#cdf-update-process">section 7.4</a>.</p>
 <p><strong>tile_size</strong> specifies the size in bytes of the next coded tile.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> This size includes any padding bytes added by the exit process for the
-Boolean decoder. The size does not include the bytes used for tile_group_header,
+Boolean decoder. The size does not include the bytes used for tile_group_obu,
 trailing_bits, and tile_size.</p>
 
 <p><strong>AboveSameTileGroup</strong> is a variable that specifies if the tile above can be used
@@ -6419,9 +6437,6 @@ current superblock. Delta values for the quantizer index and loop filter are
 only read on the first block of a superblock.</p>
 
 <h4 id="clear-block-decoded-flags-semantics">Clear Block Decoded Flags Semantics</h4>
-
-<p><strong>clear_block_decoded_flags</strong> is a function which resets the array BlockDecoded
-so that all elements are set to 0 at the beginning of a superblock.</p>
 
 <p><strong>notLastColumn</strong> equal to 1 indicates that the current superblock is not in the
 rightmost column of the current tile. notLastColumn equal to 0 indicates that
@@ -6930,6 +6945,87 @@ txfm_split equal to 0 specifies that the block should not be split any more.</p>
   </thead>
   <tbody>
     <tr>
+      <td style="text-align: center">DCT_DCT</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ADST_DCT</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">DCT_ADST</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ADST_ADST</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">FLIPADST_DCT</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">DCT_FLIPADST</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">FLIPADST_FLIPADST</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">ADST_FLIPADST</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
+      <td style="text-align: center">FLIPADST_ADST</td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center"> </td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center">X</td>
+      <td style="text-align: center"> </td>
+    </tr>
+    <tr>
       <td style="text-align: center">IDTX</td>
       <td style="text-align: center"> </td>
       <td style="text-align: center">X</td>
@@ -6992,87 +7088,6 @@ txfm_split equal to 0 specifies that the block should not be split any more.</p>
       <td style="text-align: center"> </td>
       <td style="text-align: center"> </td>
     </tr>
-    <tr>
-      <td style="text-align: center">DCT_DCT</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">ADST_DCT</td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">DCT_ADST</td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">FLIPADST_DCT</td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">DCT_FLIPADST</td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">ADST_ADST</td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">FLIPADST_FLIPADST</td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">ADST_FLIPADST</td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center"> </td>
-    </tr>
-    <tr>
-      <td style="text-align: center">FLIPADST_ADST</td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center"> </td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center">X</td>
-      <td style="text-align: center"> </td>
-    </tr>
   </tbody>
 </table>
 
@@ -7109,57 +7124,57 @@ compute YMode as follows:</p>
   </thead>
   <tbody>
     <tr>
-      <td style="text-align: center">13</td>
+      <td style="text-align: center">14</td>
       <td style="text-align: left">NEARESTMV</td>
     </tr>
     <tr>
-      <td style="text-align: center">14</td>
+      <td style="text-align: center">15</td>
       <td style="text-align: left">NEARMV</td>
     </tr>
     <tr>
-      <td style="text-align: center">15</td>
+      <td style="text-align: center">16</td>
       <td style="text-align: left">GLOBALMV</td>
     </tr>
     <tr>
-      <td style="text-align: center">16</td>
+      <td style="text-align: center">17</td>
       <td style="text-align: left">NEWMV</td>
     </tr>
     <tr>
-      <td style="text-align: center">17</td>
+      <td style="text-align: center">18</td>
       <td style="text-align: left">NEAREST_NEARESTMV</td>
     </tr>
     <tr>
-      <td style="text-align: center">18</td>
+      <td style="text-align: center">19</td>
       <td style="text-align: left">NEAR_NEARMV</td>
     </tr>
     <tr>
-      <td style="text-align: center">19</td>
+      <td style="text-align: center">20</td>
       <td style="text-align: left">NEAREST_NEWMV</td>
     </tr>
     <tr>
-      <td style="text-align: center">20</td>
+      <td style="text-align: center">21</td>
       <td style="text-align: left">NEW_NEARESTMV</td>
     </tr>
     <tr>
-      <td style="text-align: center">21</td>
+      <td style="text-align: center">22</td>
       <td style="text-align: left">NEAR_NEWMV</td>
     </tr>
     <tr>
-      <td style="text-align: center">22</td>
+      <td style="text-align: center">23</td>
       <td style="text-align: left">NEW_NEARMV</td>
     </tr>
     <tr>
-      <td style="text-align: center">23</td>
+      <td style="text-align: center">24</td>
       <td style="text-align: left">GLOBAL_GLOBALMV</td>
     </tr>
     <tr>
-      <td style="text-align: center">24</td>
+      <td style="text-align: center">25</td>
       <td style="text-align: left">NEW_NEWMV</td>
     </tr>
   </tbody>
 </table>
 
-<p class="alert alert-info"><strong>Note:</strong> The intra modes take values 0..12 so these YMode values start at 13.</p>
+<p class="alert alert-info"><strong>Note:</strong> The intra modes take values 0..13 so these YMode values start at 14.</p>
 
 <p><strong>new_mv</strong> equal to 0 means that a motion vector difference should be read.</p>
 
@@ -7716,7 +7731,7 @@ a transform block.</p>
 <p class="alert alert-info"><strong>Note:</strong> dc_head_token can specify any combination of token and moreCoefs.
 ac_head_token cannot specify the case when both token and moreCoefs are equal
 to zero. last_head_token cannot specify a zero token, and always specifies
-moreCoefs equal to zero. These restriction ensure that there are no syntax
+moreCoefs equal to zero. These restrictions ensure that there are no syntax
 elements corresponding to trailing zero coefficients.</p>
 
 <p><strong>combToken</strong> specifies the size of the coefficient and whether this is the last
@@ -7922,7 +7937,7 @@ Y plane.</p>
 <p><strong>palette_color_idx_uv</strong> holds the index in ColorOrder for a pixel in the
 block’s UV plane.</p>
 
-<h4 id="palette-colors-semantics">Palette Colors Semantics</h4>
+<h4 id="palette-color-context-semantics">Palette Color Context Semantics</h4>
 
 <p><strong>ColorOrder</strong> is an array holding the mapping from an encoded index to the
 palette. ColorOrder is ranked in order of frequency of occurrence of each color
@@ -8052,7 +8067,7 @@ to an invalid motion vector of -32768, -32768 as follows:</p>
         for ( x = 0; x &lt; w8; x++ )
             for ( i = 0; i &lt; MFMV_STACK_SIZE; i++ )
                 for ( j = 0; j &lt; 2; j++ )
-                    MotionFieldMvs[ ref ][ y ][ x ][ i ][ j ] = -1 &lt;&lt; 15.
+                    MotionFieldMvs[ ref ][ y ][ x ][ i ][ j ] = -1 &lt;&lt; 15
 </code></pre>
 
 <p>The variable curAltDecodeOrder (representing the decode order for ALTREF_FRAME of the current frame) is set equal to DecodeOrders[ ALTREF_FRAME ].</p>
@@ -8365,7 +8380,7 @@ in the inter block mode info syntax described in <a href="#inter-block-mode-info
 
 <p>The array RefListMv[ refList ] is first initialized to have both entries equal to ZeroMvs[ refList ].</p>
 
-<p>The variable NumMvFound (repesenting the number of candidates found during this process) is set equal to 0.</p>
+<p>The variable NumMvFound (representing the number of candidates found during this process) is set equal to 0.</p>
 
 <p>The variable bw8 (representing the width of the block in units of 8 pixels) is set equal to Num_8x8_Blocks_Wide[ MiSize ].</p>
 
@@ -8471,10 +8486,10 @@ in the inter block mode info syntax described in <a href="#inter-block-mode-info
 
 <ul>
   <li>
-    <p>If use_128x128_superblock is equal to 1, size is set equal to (Num_4x4_Blocks_Wide[ BLOCK_128X128 ].</p>
+    <p>If use_128x128_superblock is equal to 1, size is set equal to Num_4x4_Blocks_Wide[ BLOCK_128X128 ].</p>
   </li>
   <li>
-    <p>Otherwise (use_128x128_superblock is equal to 0), size is set equal to (Num_4x4_Blocks_Wide[ BLOCK_64X64 ].</p>
+    <p>Otherwise (use_128x128_superblock is equal to 0), size is set equal to Num_4x4_Blocks_Wide[ BLOCK_64X64 ].</p>
   </li>
 </ul>
 
@@ -8574,10 +8589,10 @@ for (i = 0; i &lt; 2; i++) {
     mvRow = MiRow + offMvs4[i][0]
     mvCol = MiCol + offMvs4[i][1]
     if (is_inside(mvcol, mvrow)) {
-      counter += Mode_To_Counter[YModes[ mvRow ][ mvCol ]
+        counter += Mode_To_Counter[ YModes[ mvRow ][ mvCol ] ]
     }
-  }
-  CompoundModeContext = Counter_To_Context[counter]
+}
+CompoundModeContext = Counter_To_Context[counter]
 </code></pre>
 
 <p>The Mode_To_Counter table is defined as:</p>
@@ -8726,7 +8741,7 @@ kept in memory</p>
 <p>A series of motion vector locations is scanned as follows:</p>
 
 <pre><code class="language-c">i = 0
-while ( i &lt; bw4 &amp;&amp; NumMvFound &lt; MAX_REF_MV_STACK_SIZE) {
+while ( i &lt; bw4 ) {
     mvRow = miRow + deltaRow
     mvCol = miCol + deltaCol + i
     if (!is_inside(mvRow,mvCol))
@@ -8771,7 +8786,7 @@ deltaCol += MiCol &amp; 1
 <p>A series of motion vector locations is scanned as follows:</p>
 
 <pre><code class="language-c">i = 0
-while ( i &lt; bh4 &amp;&amp; NumMvFound &lt; MAX_REF_MV_STACK_SIZE) {
+while ( i &lt; bh4 ) {
     mvRow = miRow + deltaRow + i
     mvCol = miCol + deltaCol
     if (!is_inside(mvRow,mvCol))
@@ -8884,29 +8899,15 @@ tplSamplePos[9][2] = {
 
 <p>This process looks up a motion vector from the motion field and adds it into the stack.</p>
 
-<table>
-  <tbody>
-    <tr>
-      <td>The variable mvRow is set equal to (MiRow + deltaRow)</td>
-      <td>1.</td>
-    </tr>
-  </tbody>
-</table>
+<p>The variable mvRow is set equal to (MiRow + deltaRow) | 1.</p>
 
-<table>
-  <tbody>
-    <tr>
-      <td>The variable mvCol is set equal to (MiCol + deltaCol)</td>
-      <td>1.</td>
-    </tr>
-  </tbody>
-</table>
+<p>The variable mvCol is set equal to (MiCol + deltaCol) | 1.</p>
 
 <p>If is_inside( mvRow, mvCol ) is equal to 0, this process terminates immediately.</p>
 
-<p>The variable x8 is set equal to mvCol » 1.</p>
+<p>The variable x8 is set equal to mvCol &gt;&gt; 1.</p>
 
-<p>The variable y8 is set equal to mvRow » 1.</p>
+<p>The variable y8 is set equal to mvRow &gt;&gt; 1.</p>
 
 <p>(x8 and y8 represent the position of the candidate in units of 8x8 pixels.)</p>
 
@@ -9234,14 +9235,14 @@ the compound search stack process in <a href="#compound-search-stack-process">se
         refMv = RefStackMv[ idx ][ list ]
         predMv = PredStackMv[ idx ][ list ]
         v = 0
-        if ( WeightStack[ idx ] &gt;= REF_CAT_LEVEL )
+        if ( WeightStack[ idx ] &gt;= REF_CAT_LEVEL ) {
             v = 2
             for ( j = 0; j &lt; 2; j++ ) {
                 if ( Abs( refMv[ j ] - predMv[ j ] ) &gt; 4 )
                     v = 1
             }
         }
-        MvCtxStack[ idx ][ list] = v
+        MvCtxStack[ idx ][ list ] = v
     }
 }
 </code></pre>
@@ -9440,7 +9441,7 @@ cand[ 4 ] = Abs( Mvs[ candRow ][ candCol ][ 0 ][ 0 ] - Mvs[ 0 ][ 0 ] ) +
             Abs( Mvs[ candRow ][ candCol ][ 0 ][ 1 ] - Mvs[ 0 ][ 1 ] )
 </code></pre>
 
-<p>If this array cand is equal (in all 4 locations) to CandList[ i ] for any i &lt; NumSamples, then this process immediately returns.</p>
+<p>If this array cand is equal (in all 5 locations) to CandList[ i ] for any i &lt; NumSamples, then this process immediately returns.</p>
 
 <p>Otherwise, the following ordered steps apply:</p>
 
@@ -9452,6 +9453,10 @@ cand[ 4 ] = Abs( Mvs[ candRow ][ candCol ][ 0 ][ 0 ] - Mvs[ 0 ][ 0 ] ) +
     <p>NumSamples is increased by 1.</p>
   </li>
 </ol>
+
+<p class="alert alert-info"><strong>Note:</strong> The test for cand being equal to CandList[i] ensures that each candidate block is only added once to the list.
+If the first two entries are equal, all five entries will automatically be equal.
+The reference implementation shows how to use additional logic to avoid calling the add sample process more than once per candidate.</p>
 
 <h5 id="sort-sample-process">Sort Sample Process</h5>
 
@@ -9548,18 +9553,18 @@ CurrFrame.</p>
 
 <p>The variable h is set equal to 1 &lt;&lt; log2H.</p>
 
-<p>The variable maxX is set equal to (MiCols * MI_SIZE) - 1.</p>
+<p>The variable maxX is set equal to ( MiCols * MI_SIZE ) - 1.</p>
 
-<p>The variable maxY is set equal to (MiRows * MI_SIZE) - 1.</p>
+<p>The variable maxY is set equal to ( MiRows * MI_SIZE ) - 1.</p>
 
 <p>If plane is greater than 0, then:</p>
 
 <ul>
   <li>
-    <p>maxX is set equal to ((MiCols * MI_SIZE) &gt;&gt; subsampling_x) - 1.</p>
+    <p>maxX is set equal to ( ( MiCols * MI_SIZE ) &gt;&gt; subsampling_x ) - 1.</p>
   </li>
   <li>
-    <p>maxY is set equal to ( (MiRows * MI_SIZE) &gt;&gt; subsampling_y) - 1.</p>
+    <p>maxY is set equal to ( ( MiRows * MI_SIZE ) &gt;&gt; subsampling_y ) - 1.</p>
   </li>
 </ul>
 
@@ -9877,13 +9882,13 @@ if (i + j + 2 &lt; w + h)</p>
     <ol>
       <li>
         <p>pred[ i ][ j ] = Round2( AboveRow[ i/2 + j ] +
-AboveRow[ i/2 + j + 1 ], 1 ) for even values of j in the
+AboveRow[ i/2 + j + 1 ], 1 ) for even values of i in the
 range 0..h-2</p>
       </li>
       <li>
         <p>pred[ i ][ j ] = Round2( AboveRow[ i/2 + j ] + 2 *
 AboveRow[ i/2 + j + 1 ] + AboveRow[ i/2 + j + 2 ], 2 )
-for odd values of j in the range 0..h-1.</p>
+for odd values of i in the range 0..h-1.</p>
       </li>
     </ol>
   </li>
@@ -10396,7 +10401,8 @@ initial location startX, startY, and the step sizes stepX, stepY.</p>
   <li>
     <p>If useWarp is equal to 1, the block warp process in <a href="#block-warp-process">section 7.7.2.3</a> is invoked with
 plane, refList, x, y, i8, j8, w, h as inputs and the
-output is assigned to the 2D array preds[ refList ] for i8 = 0..((h-1) &gt;&gt; 3) and for j8 = 0..((w-1) &gt;&gt; 3).</p>
+output is merged into the 2D array preds[ refList ] for i8 = 0..((h-1) &gt;&gt; 3) and for j8 = 0..((w-1) &gt;&gt; 3).
+(Each invocation fills in a block of output of size w by h at x offset j8<em>8 and y offset i8</em>8.)</p>
   </li>
   <li>
     <p>If useWarp is equal to 0, the block inter prediction process in <a href="#block-inter-prediction-process">section 7.7.2.2</a> is invoked with
@@ -10561,23 +10567,23 @@ plane as follows:</p>
   </li>
 </ul>
 
-<p>The variable halfSample (representing half the size of a sample in units of 1/16 th of a sample) is set equal to ( 1 « ( SUBPEL_BITS - 1 ) ).</p>
+<p>The variable halfSample (representing half the size of a sample in units of 1/16 th of a sample) is set equal to ( 1 &lt;&lt; ( SUBPEL_BITS - 1 ) ).</p>
 
-<p>The variable origY is set equal to ( (y « SUBPEL_BITS) + ( ( 2 * mv[0] ) » subY ) + halfSample ).</p>
+<p>The variable origY is set equal to ( (y &lt;&lt; SUBPEL_BITS) + ( ( 2 * mv[0] ) &gt;&gt; subY ) + halfSample ).</p>
 
-<p>The variable origX is set equal to ( (x « SUBPEL_BITS) + ( ( 2 * mv[1] ) » subX ) + halfSample ).</p>
+<p>The variable origX is set equal to ( (x &lt;&lt; SUBPEL_BITS) + ( ( 2 * mv[1] ) &gt;&gt; subX ) + halfSample ).</p>
 
 <p>(origX and origY specify the location of the centre of the sample at the top-left corner of the
 reference block in the current frame’s coordinate system in units of 1/16 th of a sample, i.e. with SUBPEL_BITS=4 fractional bits.)</p>
 
-<p>The variable baseX is set equal to (x * xScale - ( halfSample « REF_SCALE_SHIFT ) ).</p>
+<p>The variable baseX is set equal to (x * xScale - ( halfSample &lt;&lt; REF_SCALE_SHIFT ) ).</p>
 
-<p>The variable baseY is set equal to (y * yScale - ( halfSample « REF_SCALE_SHIFT ) ).</p>
+<p>The variable baseY is set equal to (y * yScale - ( halfSample &lt;&lt; REF_SCALE_SHIFT ) ).</p>
 
 <p>(baseX and baseY specify the location of the top-left corner of the block in the
 reference frame in the reference frame’s coordinate system with 18 fractional bits.)</p>
 
-<p>The variable off (containing a rounding offset for the filter tap selection) is set equal to ( ( 1 « (SCALE_SUBPEL_BITS - SUBPEL_BITS) ) / 2 ).</p>
+<p>The variable off (containing a rounding offset for the filter tap selection) is set equal to ( ( 1 &lt;&lt; (SCALE_SUBPEL_BITS - SUBPEL_BITS) ) / 2 ).</p>
 
 <p>The output variable startX is set equal to (Round2Signed( baseX, REF_SCALE_SHIFT + SUBPEL_BITS - SCALE_SUBPEL_BITS) + off).</p>
 
@@ -11085,11 +11091,11 @@ for (k = -7; k &lt; 8; k++) {
 
 <p>The variable w is set equal to ( warpParams[ 3 ] * warpParams[ 4 ] ).</p>
 
-<p>The variable delta0 is set equal to Clip3( -32768, 32767, warpParams[ 5 ] - Round2Signed( w * divFactor, divShift ) - (1 « WARPEDMODEL_PREC_BITS) ).</p>
+<p>The variable delta0 is set equal to Clip3( -32768, 32767, warpParams[ 5 ] - Round2Signed( w * divFactor, divShift ) - (1 &lt;&lt; WARPEDMODEL_PREC_BITS) ).</p>
 
-<p>It is a requirement of bitstream conformance that 4 * Abs( alpha0 ) + 7 * Abs( beta0 ) is less than (1 « WARPEDMODEL_PREC_BITS).</p>
+<p>It is a requirement of bitstream conformance that 4 * Abs( alpha0 ) + 7 * Abs( beta0 ) is less than (1 &lt;&lt; WARPEDMODEL_PREC_BITS).</p>
 
-<p>It is a requirement of bitstream conformance that 4 * Abs( gamma0 ) + 4 * Abs( delta0 ) is less than (1 « WARPEDMODEL_PREC_BITS).</p>
+<p>It is a requirement of bitstream conformance that 4 * Abs( gamma0 ) + 4 * Abs( delta0 ) is less than (1 &lt;&lt; WARPEDMODEL_PREC_BITS).</p>
 
 <p>The output variables are set as follows:</p>
 
@@ -11107,7 +11113,7 @@ delta = Round2Signed( delta0, WARP_PARAM_REDUCE_BITS) &lt;&lt; WARP_PARAM_REDUCE
 
 <p>The variable n (representing the location of the most signficant bit in Abs(d) ) is set equal to floor( log2( Abs(d) ) ).</p>
 
-<p>The variable e is set equal to Abs( d ) - ( 1 « n ).</p>
+<p>The variable e is set equal to Abs( d ) - ( 1 &lt;&lt; n ).</p>
 
 <p>The variable f is set as follows:</p>
 
@@ -11116,11 +11122,11 @@ delta = Round2Signed( delta0, WARP_PARAM_REDUCE_BITS) &lt;&lt; WARP_PARAM_REDUCE
     <p>If n &gt; DUT_LUT_BITS, f is set equal to Round2( e, n - DIV_LUT_BITS ).</p>
   </li>
   <li>
-    <p>Otherwise, f is set equal to e « (DIV_LUT_BITS - n ).</p>
+    <p>Otherwise, f is set equal to e &lt;&lt; ( DIV_LUT_BITS - n ).</p>
   </li>
 </ul>
 
-<p>The output variable divShift is set equal to (n + DIV_LUT_PREC_BITS).</p>
+<p>The output variable divShift is set equal to ( n + DIV_LUT_PREC_BITS ).</p>
 
 <p>The output variable divFactor is set as follows:</p>
 
@@ -11129,7 +11135,7 @@ delta = Round2Signed( delta0, WARP_PARAM_REDUCE_BITS) &lt;&lt; WARP_PARAM_REDUCE
     <p>If d is less than 0, divFactor is set equal to -Div_Lut[ f ].</p>
   </li>
   <li>
-    <p>Otherwise, divFactors is set equal to Div_Lut[ f ].</p>
+    <p>Otherwise, divFactor is set equal to Div_Lut[ f ].</p>
   </li>
 </ul>
 
@@ -11409,21 +11415,21 @@ output is assigned to the 2D array obmcPred.</p>
 
 <p>The blending masks are defined as follows:</p>
 
-<pre><code class="language-c">Obmc_Mask_1[1] = { 64 };
+<pre><code class="language-c">Obmc_Mask_1[1] = { 64 }
 
-Obmc_Mask_2[2] = { 45, 64 };
+Obmc_Mask_2[2] = { 45, 64 }
 
-Obmc_Mask_4[4] = { 39, 50, 59, 64 };
+Obmc_Mask_4[4] = { 39, 50, 59, 64 }
 
-Obmc_Mask_8[8] = { 36, 42, 48, 53, 57, 61, 64, 64 };
+Obmc_Mask_8[8] = { 36, 42, 48, 53, 57, 61, 64, 64 }
 
 Obmc_Mask_16[16] = { 34, 37, 40, 43, 46, 49, 52, 54,
-                     56, 58, 60, 61, 64, 64, 64, 64 };
+                     56, 58, 60, 61, 64, 64, 64, 64 }
 
 Obmc_Mask_32[32] = { 33, 35, 36, 38, 40, 41, 43, 44,
                      45, 47, 48, 50, 51, 52, 53, 55,
                      56, 57, 58, 59, 60, 60, 61, 62,
-                     64, 64, 64, 64, 64, 64, 64, 64 };
+                     64, 64, 64, 64, 64, 64, 64, 64 }
 </code></pre>
 
 <h5 id="overlap-blending-process">Overlap Blending Process</h5>
@@ -11505,7 +11511,7 @@ h = MASK_MASTER_SIZE
 for (j = 0; j &lt; w; j ++) {
     shift = MASK_MASTER_SIZE / 4
     for (i = 0; i &lt; h; i += 2) {
-        MasterMask[ WEDGE_OBLIQUE63 ][ i ][ j ] = Wedge_Master_oblique_even[ Clip3( 0, MASK_MASTER_SIZE - 1, j - shift ) ]
+        MasterMask[ WEDGE_OBLIQUE63 ][ i ][ j ] = Wedge_Master_Oblique_Even[ Clip3( 0, MASK_MASTER_SIZE - 1, j - shift ) ]
         shift -= 1
         MasterMask[ WEDGE_OBLIQUE63 ][ i + 1][ j ] = Wedge_Master_Oblique_Even[ Clip3( 0, MASK_MASTER_SIZE - 1, j - shift ) ]
         MasterMask[ WEDGE_VERTICAL ][ i ][ j ] = Wedge_Master_Vertical[ j ]
@@ -11573,7 +11579,7 @@ Wedge_Master_Vertical[MASK_MASTER_SIZE] = {
 
 <p>The get_wedge functions are defined as:</p>
 
-<pre><code class="language-c">int block_shape(bsize) {
+<pre><code class="language-c">block_shape(bsize) {
   w4 = Num_4x4_Blocks_Wide[bsize]
   h4 = Num_4x4_Blocks_High[bsize]
   if (h4 &gt; w4)
@@ -12592,19 +12598,19 @@ of the length of the input array.</p>
     <p>The variable a is set equal to i &amp; 1.</p>
   </li>
   <li>
-    <p>The variable b is a ^ ( ( i &gt;&gt; 1 ) &amp; 1 ).</p>
+    <p>The variable b is set equal to a ^ ( ( i &gt;&gt; 1 ) &amp; 1 ).</p>
   </li>
   <li>
-    <p>The variable c is b ^ ( ( i &gt;&gt; 2 ) &amp; 1 ).</p>
+    <p>The variable c is set equal to b ^ ( ( i &gt;&gt; 2 ) &amp; 1 ).</p>
   </li>
   <li>
-    <p>The variable d is c ^ ( ( i &gt;&gt; 3 ) &amp; 1 ).</p>
+    <p>The variable d is set equal to c ^ ( ( i &gt;&gt; 3 ) &amp; 1 ).</p>
   </li>
   <li>
-    <p>The variable e is d ^ ( ( i &gt;&gt; 4 ) &amp; 1 ).</p>
+    <p>The variable e is set equal to d ^ ( ( i &gt;&gt; 4 ) &amp; 1 ).</p>
   </li>
   <li>
-    <p>The variable idx is set equal to ( a &lt;&lt; 4 ) | ( b &lt;&lt; 3 ) | ( c &lt;&lt; 2 ) | ( d &lt;&lt; 1 ) | e ) &gt;&gt; ( 5 - n ).</p>
+    <p>The variable idx is set equal to ( ( a &lt;&lt; 4 ) | ( b &lt;&lt; 3 ) | ( c &lt;&lt; 2 ) | ( d &lt;&lt; 1 ) | e ) &gt;&gt; ( 5 - n ).</p>
   </li>
   <li>
     <p>The variable T[ i ] is set equal to e ? ( - copyT[ idx ] ) : copyT[ idx ].</p>
@@ -13107,7 +13113,7 @@ equal to 1.</p>
   </li>
 </ul>
 
-<p>The variable isTileEdge (equal to 1 if the samples come from different tiles is derived as follows:</p>
+<p>The variable isTileEdge (equal to 1 if the samples come from different tiles) is derived as follows:</p>
 
 <ul>
   <li>
@@ -13118,7 +13124,7 @@ equal to 1.</p>
   </li>
 </ul>
 
-<p>The variable isTileGroupEdge (equal to 1 if the samples come from different tile groups is derived as follows:</p>
+<p>The variable isTileGroupEdge (equal to 1 if the samples come from different tile groups) is derived as follows:</p>
 
 <ul>
   <li>
@@ -13157,7 +13163,7 @@ to 1.</p>
 </ul>
 
 <p>The filter size process specified in <a href="#filter-size-process">section 7.10.2</a> is invoked with the inputs
-txSz, prevTxSz, pass, subX, and subY, plane and the output assigned to
+txSz, prevTxSz, pass, subX, subY, and plane, and the output assigned to
 the variable filterSize (containing the maximum filter size that can be
 used).</p>
 
@@ -13175,8 +13181,8 @@ lvl, limit, blimit, and thresh.</p>
   <li>If applyFilter is equal to 1 and lvl is greater than zero, the sample
   filtering process specified in <a href="#sample-filtering-process">section 7.10.5</a> is invoked with the input variable
   x set equal to xP + dy * i, the input variable y set equal to yP + dx * i,
-  and the variables plane, limit, blimit, thresh, plane, dx, dy,
-  filterSize.</li>
+  and the variables plane, limit, blimit, thresh, dx, dy,
+  and filterSize supplied as inputs.</li>
 </ul>
 
 <p class="alert alert-info"><strong>Note:</strong> the vector (dx,dy) represents the direction of the filter, while
@@ -13352,7 +13358,7 @@ boundaries.</p>
 
 <p>This process is invoked to select a loop filter strength level.</p>
 
-<p>The variable i is set equal ( plane == 0 ) ? pass : ( plane + 1 ).</p>
+<p>The variable i is set equal to ( plane == 0 ) ? pass : ( plane + 1 ).</p>
 
 <p>The variable baseFilterLevel is set equal to Clip3( 0, MAX_LOOP_FILTER, deltaLF +
     loop_filter_level[ i ] ).</p>
@@ -13364,7 +13370,7 @@ boundaries.</p>
     <p>The variable nShift is set equal to baseFilterLevel &gt;&gt; 5.</p>
   </li>
   <li>
-    <p>lvlSeg is set equal to baseFilterLevel.</p>
+    <p>The variable lvlSeg is set equal to baseFilterLevel.</p>
   </li>
   <li>
     <p>The variable feature is set equal to SEG_LVL_ALT_LF_Y_V + i.</p>
@@ -13691,7 +13697,7 @@ central sample) is set as follows:</p>
     <p>Otherwise if plane is equal to 0, n is set equal to 3.</p>
   </li>
   <li>
-    <p>Otherwise (log2size is equal to 3 and plane is greater than 0), n is set equal to 2.</p>
+    <p>Otherwise (log2Size is equal to 3 and plane is greater than 0), n is set equal to 2.</p>
   </li>
 </ul>
 
@@ -13702,7 +13708,7 @@ central sample) is set as follows:</p>
     <p>If log2Size is equal to 3 and plane is equal to 0, n2 is set equal to 0.</p>
   </li>
   <li>
-    <p>Otherwise (log2size is equal to 4 or plane is greater than 0), n2 is set equal to 1.</p>
+    <p>Otherwise (log2Size is equal to 4 or plane is greater than 0), n2 is set equal to 1.</p>
   </li>
 </ul>
 
@@ -13799,7 +13805,7 @@ CdefFrame will be overwritten later in this process.</p>
 
 <p>The variable coeffShift is set equal to BitDepth - 8.</p>
 
-<p>The variable skip is set equal to SkipCoeffs[ r ][ c ].</p>
+<p>The variable skip is set equal to Skips[ r ][ c ].</p>
 
 <p>The variable filterY (that says if the filter should be applied to the luma samples) is set equal to ( !skip || cdef_y_filter_skip[ idx ] ).</p>
 
@@ -13959,7 +13965,7 @@ var = (bestCost - cost[(yDir + 4) &amp; 7]) &gt;&gt; 10
 
 <p>where the Div_Table is a constant lookup table specified as:</p>
 
-<pre><code class="language-c">uint16 Div_Table[9] = { 
+<pre><code class="language-c">Div_Table[9] = { 
     0, 840, 420, 280, 210, 168, 140, 120, 105
 }
 </code></pre>
@@ -14042,7 +14048,7 @@ tile that includes the current block.</p>
 <pre><code class="language-c">startX = (c * MI_SIZE ) &gt;&gt; sub
 startY = (r * MI_SIZE ) &gt;&gt; sub
 size = 8 &gt;&gt; sub
-for ( i = 0; i &lt; size; i++ )
+for ( i = 0; i &lt; size; i++ ) {
     for (j = 0; j &lt; size; j++) {
         sum = 0
         x = CurrFrame[plane][y0 + i][x0 + j]
@@ -14073,11 +14079,11 @@ for ( i = 0; i &lt; size; i++ )
 
 <p>where Cdef_Pri_Taps and Cdef_Sec_Taps are constant lookup tables specified as:</p>
 
-<pre><code class="language-c">uint8 Cdef_Pri_Taps[2][2] = { 
+<pre><code class="language-c">Cdef_Pri_Taps[2][2] = { 
     { 4, 2 }, { 3, 3 } 
 }
 
-uint8 Cdef_Sec_Taps[2][2] = { 
+Cdef_Sec_Taps[2][2] = { 
     { 2, 1 }, { 2, 1 } 
 }
 </code></pre>
@@ -14095,7 +14101,7 @@ uint8 Cdef_Sec_Taps[2][2] = {
 
 <p>and cdef_get_at fetches a pixel from CurrFrame if it is available, or returns CDEF_VERY_LARGE otherwise, and is defined as:</p>
 
-<pre><code class="language-c">uint16 cdef_get_at(plane, x0, y0, i, j, dir, k, sign) {
+<pre><code class="language-c">cdef_get_at(plane, x0, y0, i, j, dir, k, sign) {
     y = y0 + i + sign * Cdef_Directions[dir][k][0]
     x = x0 + j + sign * Cdef_Directions[dir][k][1]
     candidateR = (y &lt;&lt; sub) &gt;&gt; MI_SIZE_LOG2
@@ -14215,50 +14221,56 @@ previous motion vectors.</p>
 if bit i of refresh_frame_flags is equal to 1 (i.e.
 if (refresh_frame_flags &gt;&gt; i) &amp; 1 is equal to 1):</p>
 
-<pre><code> * RefFrameWidth[ i ] is set equal to FrameWidth.
-
- * RefFrameHeight[ i ] is set equal to FrameHeight.
-
- * RefSubsamplingX[ i ] is set equal to subsampling_x.
-
- * RefSubsamplingY[ i ] is set equal to subsampling_y.
-
- * RefBitDepth[ i ] is set equal to BitDepth.
- 
- * RefDecodeOrder[ i ] is set equal to DecodeOrder.
-
- * FrameStore[ i ][ 0 ][ y ][ x ] is set equal to CdefFrame[ 0 ][ y ][ x ]
-   for x = 0..FrameWidth-1, for y = 0..FrameHeight-1.
-
- * FrameStore[ i ][ plane ][ y ][ x ] is set equal to
-   CdefFrame[ plane ][ y ][ x ] for plane = 1..2,
-   for x = 0..((FrameWidth + subsampling_x) \&gt;\&gt; subsampling_x) - 1,
-   for y = 0..((FrameHeight + subsampling_y) \&gt;\&gt; subsampling_y) - 1.
-   
- * SavedFrameType[ i ] is set equal to frame_type.
- 
- * SavedDecodeOrders[ i ][ j] is set equal to DecodeOrders[ j ] for j = LAST_FRAME..ALTREF_FRAME.
-
- * SavedRefFrames[ i ][ row ][ col ][ list ] is set equal to
-   RefFrames[ row ][ col ][ list ] for row = 0..MiRows-1,
-   for col = 0..MiCols-1, for list = 0..1.
-
- * SavedMvs[ i ][ row ][ col ][ list ][ comp ] is set equal to
-   Mvs[ row ][ col ][ list ][ comp ] for row = 0..MiRows-1,
-   for col = 0..MiCols-1, for list = 0..1, for comp = 0..1.
-   
- * SavedGmParams[ i ][ ref ][ j ] is set equal to gm_params[ ref ][ j ]
-   for ref = LAST_FRAME..ALTREF_FRAME,
-   for j = 0..5.
-   
- * The function save_cdfs( i ) is invoked (see below).
-</code></pre>
+<ul>
+  <li>
+    <p>RefFrameWidth[ i ] is set equal to FrameWidth.</p>
+  </li>
+  <li>
+    <p>RefFrameHeight[ i ] is set equal to FrameHeight.</p>
+  </li>
+  <li>
+    <p>RefSubsamplingX[ i ] is set equal to subsampling_x.</p>
+  </li>
+  <li>
+    <p>RefSubsamplingY[ i ] is set equal to subsampling_y.</p>
+  </li>
+  <li>
+    <p>RefBitDepth[ i ] is set equal to BitDepth.</p>
+  </li>
+  <li>
+    <p>RefDecodeOrder[ i ] is set equal to DecodeOrder.</p>
+  </li>
+  <li>
+    <p>FrameStore[ i ][ 0 ][ y ][ x ] is set equal to CdefFrame[ 0 ][ y ][ x ]
+for x = 0..FrameWidth-1, for y = 0..FrameHeight-1.</p>
+  </li>
+  <li>
+    <p>FrameStore[ i ][ plane ][ y ][ x ] is set equal to
+CdefFrame[ plane ][ y ][ x ] for plane = 1..2,
+for x = 0..((FrameWidth + subsampling_x) &gt;&gt; subsampling_x) - 1,
+for y = 0..((FrameHeight + subsampling_y) &gt;&gt; subsampling_y) - 1.</p>
+  </li>
+  <li>
+    <p>SavedMvs[ i ][ row ][ col ][ list ][ comp ] is set equal to
+Mvs[ row ][ col ][ list ][ comp ] for row = 0..MiRows-1,
+for col = 0..MiCols-1, for list = 0..1, for comp = 0..1.</p>
+  </li>
+  <li>
+    <p>SavedGmParams[ i ][ ref ][ j ] is set equal to gm_params[ ref ][ j ]
+for ref = LAST_FRAME..ALTREF_FRAME,
+for j = 0..5.</p>
+  </li>
+  <li>
+    <p>The function save_cdfs( i ) is invoked (see below).</p>
+  </li>
+</ul>
 
 <p>save_cdfs( ctx ) is a function call that indicates that indicates that all the CDF arrays are saved into frame context number ctx in the range 0 to (NUM_REF_FRAMES - 1).
 When this function is invoked the following takes place:</p>
 
-<pre><code> * A copy of each CDF array mentioned in the semantics for setup_past_independence is saved in an area of memory indexed by ctx.
-</code></pre>
+<ul>
+  <li>A copy of each CDF array mentioned in the semantics for setup_past_independence is saved in an area of memory indexed by ctx.</li>
+</ul>
 
 <p class="alert alert-info"><strong>Note:</strong> Although this process stores all the motion vectors, only the values where row and col are both odd will be used again.</p>
 
@@ -14862,7 +14874,7 @@ computed by:</p>
 
 <pre><code class="language-c">if ( AvailU &amp;&amp; AvailL )
     ctx = (LeftIntra &amp;&amp; AboveIntra) ? 3 : LeftIntra || AboveIntra
-    else if ( AvailU || AvailL )
+else if ( AvailU || AvailL )
     ctx = 2 * (AvailU ? AboveIntra : LeftIntra)
 else
     ctx = 0
@@ -15551,12 +15563,12 @@ where ctx is computed by:</p>
 <p><strong>mv_class0_fr</strong>: the cdf is given by
 TileMvClass0FrCdf[ MvCtx ][ comp ][ mv_class0_bit ].</p>
 
-<p><strong>mv_class0_hp</strong>: the cdf</p>
+<p><strong>mv_class0_hp</strong>: the cdf is given by TileMvClass0HpCdf[ MvCtx ][ comp ].</p>
 
 <p><strong>mv_fr</strong>: the cdf is given by TileMvFrCdf[ MvCtx ][ comp ].</p>
 
 <p><strong>tail_token</strong>: the cdf is given by
-TileTailTokenCdf[txSz][plane&gt;0][is_inter][band][ctx] where ctx is computed by:</p>
+TileTailTokenCdf[ txSz ][ plane &gt; 0 ][ is_inter ][ band ][ ctx ] where ctx is computed by:</p>
 
 <pre><code class="language-c">if ( c == 0 ) {
     sx = plane &gt; 0 ? subsampling_x : 0
@@ -15617,11 +15629,11 @@ TileTailTokenCdf[txSz][plane&gt;0][is_inter][band][ctx] where ctx is computed by
 
 <p><strong>dc_head_token</strong>: dc_head_token uses the same derivation for the variable ctx
 as for the syntax element tail_token. The cdf for dc_head_token is given by
-TileDcHeadTokenCdf[txSz][plane&gt;0][is_inter][ctx].</p>
+TileDcHeadTokenCdf[ txSz ][ plane &gt; 0 ][ is_inter ][ ctx ].</p>
 
 <p><strong>ac_head_token</strong>: ac_head_token uses the same derivation for the variable ctx
 as for the syntax element tail_token. The cdf for ac_head_token is given by
-TileAcHeadTokenCdf[txSz][plane&gt;0][is_inter][band-1][ctx].</p>
+TileAcHeadTokenCdf[ txSz ][ plane &gt; 0 ][ is_inter ][ band - 1 ][ ctx ].</p>
 
 <p><strong>has_palette_y</strong>: the cdf is given by
 TilePaletteYModeCdf[ MiSize - BLOCK_8X8 ][ ctx ] where ctx is computed as
@@ -15743,10 +15755,14 @@ BLOCK_8X8 ].</p>
 
 <p><strong>delta_lf_abs</strong>: the cdf is derived as follows:</p>
 
-<pre><code>* If delta_lf_multi is equal to 0, the cdf is given by TileDeltaLFCdf.
-
-* Otherwise (delta_lf_multi is equal to 1), the cdf is given by TileDeltaLFMultiCdf[ i ].
-</code></pre>
+<ul>
+  <li>
+    <p>If delta_lf_multi is equal to 0, the cdf is given by TileDeltaLFCdf.</p>
+  </li>
+  <li>
+    <p>Otherwise (delta_lf_multi is equal to 1), the cdf is given by TileDeltaLFMultiCdf[ i ].</p>
+  </li>
+</ul>
 
 <p><strong>intra_tx_type</strong>: the cdf depends on the variable set, as follows:</p>
 
@@ -18013,7 +18029,7 @@ type with the horizontal and vertical operations transposed.</p>
 }
 </code></pre>
 
-<pre><code class="language-c">Default_Txfm_Split_Cdf[TXFM_PARTITION_CONTEXTS][3] = {
+<pre><code class="language-c">Default_Txfm_Split_Cdf[ TXFM_PARTITION_CONTEXTS ][ 3 ] = {
   { 250*128, 32768, 0 }, { 231*128, 32768, 0 },
   { 212*128, 32768, 0 }, { 241*128, 32768, 0 },
   { 166*128, 32768, 0 }, { 66*128, 32768, 0 },
@@ -25905,6 +25921,10 @@ external means.</p>
         <td>Bug 950 not yet fixed in code or spec</td>
       </tr>
       <tr>
+        <td>ext_warped_motion</td>
+        <td>Included in spec, but not yet adopted</td>
+      </tr>
+      <tr>
         <td>loopfilter_level</td>
         <td> </td>
       </tr>
@@ -25946,6 +25966,10 @@ external means.</p>
       </tr>
       <tr>
         <td>no_frame_context_signalling</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>segment_zeromv</td>
         <td> </td>
       </tr>
     </tbody>
@@ -26009,10 +26033,6 @@ external means.</p>
       </tr>
       <tr>
         <td>coef_ctx_reduce</td>
-        <td> </td>
-      </tr>
-      <tr>
-        <td>segment_zeromv</td>
         <td> </td>
       </tr>
       <tr>
