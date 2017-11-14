@@ -19,7 +19,7 @@
 [section 5.8.42]: #transform-type-syntax
 [section 5.8.48]: #clamp-mv-row-function
 [section 6.7.9]: #delta-quantizer-semantics
-[section 4.9.5]: #ln
+[section 4.9.4]: #ln
 [section 5.8.46]: #is-inside-function
 [section 6.8.5]: #intra-frame-mode-info-semantics
 [section 6.8.30]: #read-cfl-alphas-semantics
@@ -32,7 +32,7 @@
 [section 6.8.13]: #var-tx-size-semantics
 [section 5.8.3]: #decode-partition-function
 [section 7.7.4]: #predict-chroma-from-luma-process
-[section 5.8.26]: #get-mode-function
+[section 5.7.3]: #render-size-syntax
 [section 7.9.1.1]: #butterfly-functions
 [section 6.8.24]: #residual-semantics
 [section 5.7.19]: #global-param-syntax
@@ -50,7 +50,7 @@
 [section 5.8.23]: #read-motion-mode-syntax
 [section 5.8.9]: #quantizer-index-delta-syntax
 [section 5.7.13]: #quantizer-index-delta-parameters-syntax
-[section 5.7.3]: #render-size-syntax
+[section 5.8.26]: #get-mode-function
 [section 7.10.2]: #filter-size-process
 [section 7.7.1.1]: #intra-edge-filter-strength-selection-process
 [section 5.7.23]: #decode-uniform-syntax
@@ -126,13 +126,13 @@
 [section 4.6]: #mathematical-functions
 [section 5.8.1]: #decode-tile-function
 [section 5.1.2]: #obu-extension-header-syntax
-[section 4.9.6]: #s
+[section 4.9.5]: #s
 [section 6.8.9]: #loop-filter-delta-semantics
 [section 8.3]: #parsing-process-for-cdf-encoded-syntax-elements
 [section 7.10.5]: #sample-filtering-process
 [section 5.7.17]: #frame-reference-mode-function
 [section 5.7.20]: #decode-signed-subexp-with-ref-syntax
-[section 4.9.4]: #bp
+[section 7.6.3.3]: #scan-point-process
 [section 5.6.3]: #metadata-high-dynamic-range-mastering-display-color-volume-syntax
 [section 6.8.21]: #read-compound-type-semantics
 [section 7.7.2]: #inter-prediction-process
@@ -199,12 +199,12 @@
 [section 5.8.43]: #get-transform-set-function
 [section 7.8.1]: #dequantization-functions
 [section 7.7.2.2]: #block-inter-prediction-process
-[section 4.9.7]: #un
+[section 4.9.6]: #un
 [section 7.6.3.11]: #context-and-clamping-process
 [section 5.1]: #obu-syntax
 [section 5.8.11]: #segmentation-feature-active-function
 [section 7.9]: #inverse-transform-process
-[section 5.7.2]: #frame-size-syntax
+[section 5.8.22]: #assign-mv-function
 [section B]: #annex-b-raw-bitstream-format
 [section 6.7.13]: #loop-filter-delta-parameters-semantics
 [section 5.8.41]: #palette-mode-info-syntax
@@ -218,7 +218,7 @@
 [section 7.1]: #general
 [section 5.7.22]: #decode-subexp-syntax
 [section 7.7.2.9]: #wedge-mask-process
-[section 5.8.22]: #assign-mv-function
+[section 5.7.2]: #frame-size-syntax
 [section 4.7]: #method-of-describing-bitstream-syntax
 [section 5.8.10]: #loop-filter-delta-syntax
 [section 5.7.21]: #decode-unsigned-subexp-with-ref-syntax
@@ -249,7 +249,6 @@
 [section 6.1]: #obu-semantics
 [section 6.6]: #metadata-obu-semantics
 [section 8]: #parsing-process
-[section 7.6.3.3]: #scan-point-process
 [section 8.2]: #parsing-process-for-boolean-decoder
 [section 6.8.32]: #palette-tokens-semantics
 [section 5.8.14]: #var-tx-size-syntax
