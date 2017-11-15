@@ -85,6 +85,8 @@ The specification has been updated to include the following list of adopted expe
 | frame_marker                  |
 | no_frame_context_signalling   |
 | segment_zeromv                |
+| loop_restoration              | Wiener Filter convolve not yet complete
+| striped_loop_restoration      |
 {:.table .table-sm .table-bordered }
 
 ### Excluded Experiments
@@ -98,8 +100,6 @@ The specification has not yet been updated with the following experiments:
 | daala_tx                      | Unclear if this is to be adopted
 | filter_intra                  | Unclear if this is to be adopted
 | ext_tile                      | Code still under development
-| loop_restoration              | Code still under development
-| striped_loop_restoration      | Code still under development
 | txk_sel                       | Bugs 869, 866 not yet fixed in code
 | lv_map                        | Bugs 840, 841 not yet fixed in code 
 | CICP                          | No code for this yet

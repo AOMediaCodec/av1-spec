@@ -34,7 +34,7 @@
 <p><em>Version 0.3</em><br />
 <em>© 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2017-11-14 11:56:05 -0800</em></p>
+<p><em>Last modified: 2017-11-15 08:35:08 -0800</em></p>
 
 <p class="alert alert-danger"><strong>Draft Document</strong><br />
 This document is a work in process draft, and will change substantially before
@@ -110,6 +110,7 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
           <li><a href="#quantizer-index-delta-parameters-syntax" id="markdown-toc-quantizer-index-delta-parameters-syntax">Quantizer Index Delta Parameters Syntax</a></li>
           <li><a href="#loop-filter-delta-parameters-syntax" id="markdown-toc-loop-filter-delta-parameters-syntax">Loop Filter Delta Parameters Syntax</a></li>
           <li><a href="#cdef-params-syntax" id="markdown-toc-cdef-params-syntax">CDEF Params Syntax</a></li>
+          <li><a href="#loop-restoration-params-syntax" id="markdown-toc-loop-restoration-params-syntax">Loop Restoration Params Syntax</a></li>
           <li><a href="#tx-mode-syntax" id="markdown-toc-tx-mode-syntax">TX Mode Syntax</a></li>
           <li><a href="#frame-reference-mode-syntax" id="markdown-toc-frame-reference-mode-syntax">Frame Reference Mode Syntax</a></li>
           <li><a href="#global-motion-params-syntax" id="markdown-toc-global-motion-params-syntax">Global Motion Params Syntax</a></li>
@@ -173,6 +174,8 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
           <li><a href="#clamp-mv-row-function" id="markdown-toc-clamp-mv-row-function">Clamp MV Row Function</a></li>
           <li><a href="#clamp-mv-col-function" id="markdown-toc-clamp-mv-col-function">Clamp MV Col Function</a></li>
           <li><a href="#decode-cdef-syntax" id="markdown-toc-decode-cdef-syntax">Decode CDEF Syntax</a></li>
+          <li><a href="#decode-loop-restoration-syntax" id="markdown-toc-decode-loop-restoration-syntax">Decode Loop Restoration Syntax</a></li>
+          <li><a href="#decode-loop-restoration-unit-syntax" id="markdown-toc-decode-loop-restoration-unit-syntax">Decode Loop Restoration Unit Syntax</a></li>
         </ul>
       </li>
     </ul>
@@ -230,6 +233,7 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
           <li><a href="#quantizer-index-delta-semantics" id="markdown-toc-quantizer-index-delta-semantics">Quantizer Index Delta Semantics</a></li>
           <li><a href="#loop-filter-delta-semantics" id="markdown-toc-loop-filter-delta-semantics">Loop Filter Delta Semantics</a></li>
           <li><a href="#cdef-params-semantics" id="markdown-toc-cdef-params-semantics">CDEF Params Semantics</a></li>
+          <li><a href="#loop-restoration-params-semantics" id="markdown-toc-loop-restoration-params-semantics">Loop Restoration Params Semantics</a></li>
           <li><a href="#tx-size-semantics" id="markdown-toc-tx-size-semantics">TX Size Semantics</a></li>
           <li><a href="#inter-tx-size-semantics" id="markdown-toc-inter-tx-size-semantics">Inter TX Size Semantics</a></li>
           <li><a href="#var-tx-size-semantics" id="markdown-toc-var-tx-size-semantics">Var TX Size Semantics</a></li>
@@ -254,6 +258,7 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
           <li><a href="#palette-tokens-semantics" id="markdown-toc-palette-tokens-semantics">Palette Tokens Semantics</a></li>
           <li><a href="#palette-color-context-semantics" id="markdown-toc-palette-color-context-semantics">Palette Color Context Semantics</a></li>
           <li><a href="#decode-cdf-semantics" id="markdown-toc-decode-cdf-semantics">Decode CDF Semantics</a></li>
+          <li><a href="#decode-loop-restoration-unit-semantics" id="markdown-toc-decode-loop-restoration-unit-semantics">Decode Loop Restoration Unit Semantics</a></li>
         </ul>
       </li>
     </ul>
@@ -366,6 +371,14 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
           <li><a href="#cdef-block-process" id="markdown-toc-cdef-block-process">CDEF Block Process</a></li>
           <li><a href="#cdef-direction-process" id="markdown-toc-cdef-direction-process">CDEF Direction Process</a></li>
           <li><a href="#cdef-filter-process" id="markdown-toc-cdef-filter-process">CDEF Filter Process</a></li>
+        </ul>
+      </li>
+      <li><a href="#loop-restoration-process" id="markdown-toc-loop-restoration-process">Loop Restoration Process</a>        <ul>
+          <li><a href="#loop-restore-block-process" id="markdown-toc-loop-restore-block-process">Loop Restore Block Process</a></li>
+          <li><a href="#self-guided-filter-process" id="markdown-toc-self-guided-filter-process">Self Guided Filter Process</a></li>
+          <li><a href="#box-filter-process" id="markdown-toc-box-filter-process">Box Filter Process</a></li>
+          <li><a href="#wiener-filter-process" id="markdown-toc-wiener-filter-process">Wiener Filter Process</a></li>
+          <li><a href="#get-source-sample-process" id="markdown-toc-get-source-sample-process">Get Source Sample Process</a></li>
         </ul>
       </li>
       <li><a href="#output-process" id="markdown-toc-output-process">Output Process</a></li>
@@ -1513,6 +1526,16 @@ relate to the semantics of a particular syntax element are defined in
       <td>Clamping value used for matrix components of warp</td>
     </tr>
     <tr>
+      <td><code>WARPEDPIXEL_PREC_SHIFTS</code></td>
+      <td style="text-align: center">1&lt;&lt;6</td>
+      <td>Number of phases used in warped filtering</td>
+    </tr>
+    <tr>
+      <td><code>WARPEDDIFF_PREC_BITS</code></td>
+      <td style="text-align: center">10</td>
+      <td>Number of extra bits of precision in warped filtering</td>
+    </tr>
+    <tr>
       <td><code>INTERINTRA_MODES</code></td>
       <td style="text-align: center">4</td>
       <td>Number of inter intra modes</td>
@@ -1661,6 +1684,61 @@ relate to the semantics of a particular syntax element are defined in
       <td><code>MAX_TX_DEPTH</code></td>
       <td style="text-align: center">3</td>
       <td>Number of contexts for tx_size when the maximum transform size is 8x8</td>
+    </tr>
+    <tr>
+      <td><code>WEDGE_TYPES</code></td>
+      <td style="text-align: center">16</td>
+      <td>Number of directions for the wedge mask process</td>
+    </tr>
+    <tr>
+      <td><code>FILTER_BITS</code></td>
+      <td style="text-align: center">7</td>
+      <td>Number of bits used in Wiener filter coefficients</td>
+    </tr>
+    <tr>
+      <td><code>WIENER_COEFFS</code></td>
+      <td style="text-align: center">3</td>
+      <td>Number of Wiener filter coefficients to read</td>
+    </tr>
+    <tr>
+      <td><code>EXTRAPREC_BITS</code></td>
+      <td style="text-align: center">2</td>
+      <td>Extra precision used in Wiener filtering</td>
+    </tr>
+    <tr>
+      <td><code>SGRPROJ_PARAMS_BITS</code></td>
+      <td style="text-align: center">4</td>
+      <td>Number of bits needed to specify self guided filter set</td>
+    </tr>
+    <tr>
+      <td><code>SGRPROJ_PRJ_SUBEXP_K</code></td>
+      <td style="text-align: center">4</td>
+      <td>Controls how self guided deltas are read</td>
+    </tr>
+    <tr>
+      <td><code>SGRPROJ_PRJ_BITS</code></td>
+      <td style="text-align: center">7</td>
+      <td>Precision bits during self guided restoration</td>
+    </tr>
+    <tr>
+      <td><code>SGRPROJ_RST_BITS</code></td>
+      <td style="text-align: center">4</td>
+      <td>Restoration precision bits generated higher than source before projection</td>
+    </tr>
+    <tr>
+      <td><code>SGRPROJ_MTABLE_BITS</code></td>
+      <td style="text-align: center">20</td>
+      <td>Precision of mtable division table</td>
+    </tr>
+    <tr>
+      <td><code>SGRPROJ_RECIP_BITS</code></td>
+      <td style="text-align: center">8</td>
+      <td>Precision of division by n table</td>
+    </tr>
+    <tr>
+      <td><code>SGRPROJ_SGR_BITS</code></td>
+      <td style="text-align: center">8</td>
+      <td>Internal precision bits for core selfguided_restoration</td>
     </tr>
   </tbody>
 </table>
@@ -2140,8 +2218,8 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
     <b class="syntax-element">obu_type</b>                                                                 f(4)
     <b class="syntax-element">obu_reserved_2bits</b>                                                       f(2)
     <b class="syntax-element">obu_extension_flag</b>                                                       f(1)
-    if ( obu_extension_flag == 1 )    
-        <b class="syntax-element">obu_extension_header</b>()                                               f(8)
+    if ( obu_extension_flag == 1 )
+        obu_extension_header()
 }    
 
 </code></pre>
@@ -2450,6 +2528,7 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
     }
     delta_lf_params( )
     cdef_params( )
+    lr_params( )
     read_tx_mode( )
     global_motion_params( )
     frame_reference_mode( )
@@ -2809,6 +2888,46 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
 }
 </code></pre>
 
+<h4 id="loop-restoration-params-syntax">Loop Restoration Params Syntax</h4>
+
+<pre class="syntax"><code>lr_params( ) {
+    usesLr = 0
+    usesChromaLr = 0
+    for (i = 0; i &lt; 3; i++) {
+        <b class="syntax-element">lr_type</b>                                                              f(2)
+        FrameRestorationType[i] = Remap_Lr_Type[lr_type]
+        if (FrameRestorationType[i] != RESTORE_NONE) {
+            usesLr = 1
+            if ( i &gt; 0 ) {
+                usesChromaLr = 1
+            }
+        }
+    }
+    if ( usesLr ) {
+        <b class="syntax-element">lr_unit_shift</b>                                                        f(1)
+        if ( lr_unit_shift )
+            <b class="syntax-element">lr_unit_extra_shift</b>                                              f(1)
+            lr_unit_shift += lr_unit_extra_shift
+        }
+        LoopRestorationSize[ 0 ] = RESTORATION_TILESIZE_MAX &gt;&gt; (2 - lr_unit_shift)
+        if (subsampling_x &amp;&amp; subsampling_y &amp;&amp; usesChromaLr ) {
+            <b class="syntax-element">lr_uv_shift</b>                                                      f(1)
+        } else {
+            lr_uv_shift = 0
+        }
+        LoopRestorationSize[1] = LoopRestorationSize[0] &gt;&gt; lr_uv_shift
+        LoopRestorationSize[2] = LoopRestorationSize[0] &gt;&gt; lr_uv_shift
+    }
+}
+</code></pre>
+
+<p>where Remap_Lr_Type is a constant lookup table specified as:</p>
+
+<pre><code class="language-c">Remap_Lr_Type[4] = {
+  RESTORE_NONE, RESTORE_SWITCHABLE, RESTORE_WIENER, RESTORE_SGRPROJ
+}
+</code></pre>
+
 <h4 id="tx-mode-syntax">TX Mode Syntax</h4>
 
 <pre class="syntax"><code>read_tx_mode( ) {
@@ -2927,17 +3046,17 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
     precDiff = WARPEDMODEL_PREC_BITS - precBits
     round = (i % 3) == 2 ? (1 &lt;&lt; WARPEDMODEL_PREC_BITS) : 0
     sub = (i % 3) == 2 ? (1 &lt;&lt; precDiff) : 0
-    mx = (1 &lt;&lt; absBits) + 1
+    mx = (1 &lt;&lt; absBits)
     r = (gm_params[ref][idx] &gt;&gt; precDiff) - sub
-    gm_params[ref][idx] = (decode_signed_subexp_with_ref(mx,r) &lt;&lt; precDiff) + round
+    gm_params[ref][idx] = (decode_signed_subexp_with_ref( -mx, mx + 1, r ) &lt;&lt; precDiff) + round
 }
 </code></pre>
 
 <h4 id="decode-signed-subexp-with-ref-syntax">Decode Signed Subexp With Ref Syntax</h4>
 
-<pre class="syntax"><code>decode_signed_subexp_with_ref( mx, r ) {
-    x = decode_unsigned_subexp_with_ref((n &lt;&lt; 1) - 1, r + (n - 1))
-    return x - (n - 1)
+<pre class="syntax"><code>decode_signed_subexp_with_ref( low, high, r ) {
+    x = decode_unsigned_subexp_with_ref(high - low, r - low)
+    return x + low
 }
 </code></pre>
 
@@ -2945,10 +3064,10 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
 
 <pre class="syntax"><code>decode_unsigned_subexp_with_ref( mx, r ) {
     v = decode_subexp( mx )
-    if ((r &lt;&lt; 1) &lt;= n) {
+    if ((r &lt;&lt; 1) &lt;= mx) {
         return inverse_recenter(r, v)
     } else {
-        return n - 1 - inverse_recenter(n - 1 - r, v)
+        return mx - 1 - inverse_recenter(mx - 1 - r, v)
     }
 }
 </code></pre>
@@ -3069,11 +3188,19 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
 <h4 id="decode-tile-syntax">Decode Tile Syntax</h4>
 
 <pre class="syntax"><code>decode_tile( ) {
-    if ( !dependent_tiles || TileNum == tg_start)
+    if ( !dependent_tiles || TileNum == tg_start) {
         clear_above_context( )
+    }
     for ( i = 0; i &lt; FRAME_LF_COUNT; i++ )
         DeltaLF[ i ] = 0
-    
+    for ( plane = 0; plane &lt; 3; plane++ ) {
+        for ( pass = 0; pass &lt; 2; pass++ ) {
+            RefSgrXqd[ plane ][ pass ] = Sgrproj_Xqd_Mid[ pass ]
+            for ( i = 0; i &lt; WIENER_COEFFS; i++ ) {
+                RefLrWiener[ plane ][ pass ][ j ] = Wiener_Taps_Mid[ j]
+            }
+        }
+    }
     sbSize = use_128x128_superblock ? BLOCK_128X128 : BLOCK_64X64
     sbSize4 = Num_4x4_Blocks_Wide[ sbSize ]
     for ( r = MiRowStart; r &lt; MiRowEnd; r += sbSize4 ) {
@@ -3083,9 +3210,17 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
             clear_block_decoded_flags( c &lt; ( MiColEnd - 1 ) )
             decode_partition( r, c, sbSize )
             decode_cdef( r, c, sbSize )
+            decode_lr( r, c, sbSize )
         }
     }
 }
+</code></pre>
+
+<p>where Sgrproj_Xqd_Mid and Wiener_Taps_Mid are constant lookup tables specified as:</p>
+
+<pre><code class="language-c">Wiener_Taps_Mid[3] = {  3,  -7,  15 }
+
+Sgrproj_Xqd_Mid[2] = { -32,  31 }
 </code></pre>
 
 <h4 id="clear-block-decoded-flags-function">Clear Block Decoded Flags Function</h4>
@@ -3117,7 +3252,7 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
     hasCols = ( c + halfBlock4x4 ) &lt; MiCols
     if (bSize &lt; BLOCK_8X8) {
         partition = PARTITION_NONE
-    } else if ( hasRows &amp;&amp; hasCols )
+    } else if ( hasRows &amp;&amp; hasCols ) {
         <b class="syntax-element">partition</b>                                                            S
     } else if ( hasCols ) {
         <b class="syntax-element">split_or_horz</b>                                                        S
@@ -3223,7 +3358,7 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
                 PaletteColors[ 0 ][ r + y ][ c + x ][ i ] = palette_colors_y[ i ]
             for ( i = 0; i &lt; PaletteSizeUV; i++ )
                 PaletteColors[ 1 ][ r + y ][ c + x ][ i ] = palette_colors_u[ i ]
-            for ( i = 0; i &lt; FRAME_LF_COUNT; i++ ) {
+            for ( i = 0; i &lt; FRAME_LF_COUNT; i++ )
                 DeltaLFs[ r + y ][ c + x ][ i ] = DeltaLF[ i ]
         }
     }
@@ -3476,10 +3611,6 @@ to use a rectangular transform; the table is defined as:</p>
   TX_8X8,    // TX_16X8
   TX_16X16,  // TX_16X32
   TX_16X16,  // TX_32X16
-  TX_4X4,    // TX_4X16
-  TX_4X4,    // TX_16X4
-  TX_8X8,    // TX_8X32
-  TX_8X8,    // TX_32X8
 }
 </code></pre>
 
@@ -4037,7 +4168,7 @@ previous candidate.</p>
 
         if ( is_inter ) {
             predW = Block_Width[ MiSize ] &gt;&gt; subX
-            predH = Blocks_Height[ MiSize ] &gt;&gt; subY
+            predH = Block_Height[ MiSize ] &gt;&gt; subY
             someUseIntra = 0
             for( r = 0; r &lt; num4x4H; r++ )
                 for( c = 0; c &lt; num4x4W; c++ )
@@ -4960,6 +5091,155 @@ check_golden(refFrame) {
 }
 </code></pre>
 
+<h4 id="decode-loop-restoration-syntax">Decode Loop Restoration Syntax</h4>
+
+<pre class="syntax"><code class="language-c">decode_lr( r, c, bSize ) {
+    for (plane = 0; plane &lt; 3; plane++) {
+        if (FrameRestorationType[ plane ] == RESTORE_NONE)
+            continue
+        subX = (plane == 0) ? 0 : subsampling_x
+        subY = (plane == 0) ? 0 : subsampling_y
+        w = Num_4x4_Blocks_Wide[ bSize ]
+        h = Num_4x4_Blocks_High[ bSize ]
+        unitSize = LoopRestorationSize[ plane ].
+        unitRows = count_units_in_tile( unitSize, (MiRowEnd - MiRowStart) * MI_SIZE &gt;&gt; subY )
+        unitCols = count_units_in_tile( unitSize, (MiColEnd - MiColStart) * MI_SIZE &gt;&gt; subX )
+        relMiRow = r - MiRowStart
+        relMiCol = c - MiColStart
+        if (unitRows == 1) {
+            unitRowStart = relMiRow &gt; 0
+            unitRowEnd = 1
+        } else {
+            unitRowStart = ( relMiRow * ( MI_SIZE &gt;&gt; subY) ) / unitSize
+            unitRowEnd = Min( unitRows, ( (relMiRow + h) * ( MI_SIZE &gt;&gt; subY) ) / unitSize)
+        }
+        if (unitCols == 1) {
+            unitColStart = relMiCol &gt; 0
+            unitColEnd = 1
+        } else {
+            unitColStart = ( relMiCol * ( MI_SIZE &gt;&gt; subX) ) / unitSize
+            unitColEnd = Min( unitCols, ( (relMiCol + w) * ( MI_SIZE &gt;&gt; subX) ) / unitSize)
+        }
+        for (unitRow = unitRowStart; unitRow &lt; unitRowEnd; unitRow++) {
+            for (unitCol = unitColStart; unitCol &lt; unitColEnd; unitCol++) {
+                decode_lr_unit(plane, unitRow, unitCol)
+            }
+        }
+    }
+}
+</code></pre>
+
+<p>where count_units_in_tile is a function specified as:</p>
+
+<pre><code class="language-c">count_units_in_tile(unitSize, tileSize) {
+  return Max((tile_size + (unit_size &gt;&gt; 1)) / unit_size, 1)
+</code></pre>
+
+<h4 id="decode-loop-restoration-unit-syntax">Decode Loop Restoration Unit Syntax</h4>
+
+<pre class="syntax"><code class="language-c">decode_lr_unit(plane, unitRow, unitCol) {
+    if (FrameRestorationType[ plane ] == RESTORE_NONE) {
+        restoration_type = RESTORE_NONE
+    } else if (FrameRestorationType[ plane ] == RESTORE_WIENER) {
+        <b class="syntax-element">use_wiener</b>                                                           S
+        restoration_type = use_wiener ? RESTORE_WIENER : RESTORE_NONE
+      } else if (FrameRestorationType[ plane ] == RESTORE_SGRPROJ) {
+        <b class="syntax-element">use_sgrproj</b>                                                          S
+        restoration_type = use_sgrproj ? RESTORE_SGRPROJ : RESTORE_NONE
+    } else {
+        <b class="syntax-element">restoration_type</b>                                                     S
+    }
+    LrType[ TileNum ][ plane ][ unitRow ][ unitCol ] = restoration_type
+    if (restoration_type == RESTORE_WIENER) {
+        for ( pass = 0; pass &lt; 2; pass++ )
+            if (plane) {
+                firstCoeff = 1
+                LrWiener[ TileNum ][ plane ]
+                        [ unitRow ][ unitCol ][ pass ][0] = 0
+            } else {
+                firstCoeff = 0
+            }
+            for (j = firstCoeff; j &lt; 3; j++) {
+                min = Wiener_Taps_Min[ j ]
+                max = Wiener_Taps_Max[ j ]
+                k = Wiener_Taps_K[ j ]
+                v = decode_signed_subexp_with_ref_bool(
+                        min, max + 1, k, RefLrWiener[ plane ][ pass ][ j ] )
+                LrWiener[ TileNum ][ plane ]
+                        [ unitRow ][ unitCol ][ pass ][ j ] = v
+                RefLrWiener[ plane ][ pass ][ j ] = v
+            }
+        }
+    } else if (restoration_type == RESTORE_SGRPROJ) {
+        <b class="syntax-element">lr_sgr_set</b>                                                           U(SGRPROJ_PARAMS_BITS)
+        LrSgrSet[ TileNum ][ plane ][ unitRow ][ unitCol ] = lr_sgr_set
+        for (i = 0; i &lt; 2; i++) {
+            min = Sgrproj_Xqd_Min[i]
+            max = Sgrproj_Xqd_Max[i]
+            v = decode_signed_subexp_with_ref_bool(
+                     min, max + 1, SGRPROJ_PRJ_SUBEXP_K, RefSgrXqd[ plane ][ i ])
+            LrSgrXqd[ TileNum ][ plane ][ unitRow ][ unitCol ][ i ] = v
+            RefSgrXqd[ plane ][ i ] = v
+        }
+    } 
+}
+</code></pre>
+
+<p>where Wiener_Taps_Min, Wiener_Taps_Max, ,Wiener_Taps_K, Sgrproj_Xqd_Min, and Sgrproj_Xqd_Max are constant lookup tables:</p>
+
+<pre><code class="language-c">Wiener_Taps_Min[3] = { -5, -23, -17 }
+Wiener_Taps_Max[3] = { 10,   8,  46 }
+Wiener_Taps_K[3] = { 1, 2, 3 }
+
+Sgrproj_Xqd_Min[2] = { -96, -32 }
+Sgrproj_Xqd_Max[2] = {  31,  95 }
+</code></pre>
+
+<p>and decode_signed_subexp_with_ref_bool
+is a function specified as follows:</p>
+
+<pre class="syntax"><code class="language-c">decode_signed_subexp_with_ref_bool( low, high, k, r ) {
+    x = decode_unsigned_subexp_with_ref_bool(high - low, k, r - low)
+    return x + low
+}
+
+decode_unsigned_subexp_with_ref_bool( mx, k, r ) {
+    v = decode_subexp_bool( mx, k )
+    if ((r &lt;&lt; 1) &lt;= mx) {
+        return inverse_recenter(r, v)
+    } else {
+        return mx - 1 - inverse_recenter(mx - 1 - r, v)
+    }
+}
+
+decode_subexp_bool( numSyms, k ) {
+    i = 0
+    mk = 0
+    while (1) {
+        b2 = i ? k + i - 1 : k
+        a = 1 &lt;&lt; b2
+        if (numSyms &lt;= mk + 3 * a) {
+            <b class="syntax-element">subexp_unif_bools</b>                                                U(numSyms - mk)
+            return subexp_unif_bools + mk
+        } else {
+            <b class="syntax-element">subexp_more_bools</b>                                                L(1)
+            if (subexp_more_bools) {
+               i++
+               mk += a
+            } else {
+               <b class="syntax-element">subexp_bools</b>                                                  L(b2)
+               return subexp_bools + mk
+            }
+        }
+    }
+}
+</code></pre>
+
+<p class="alert alert-info"><strong>Note:</strong> The decode_signed_subexp_with_ref_bool function is the same as the decode_signed_subexp_with_ref
+function
+except that the bits used to represent the symbol are arithmetic coded instead of being read directly
+from the bitstream.</p>
+
 <h2 id="bitstream-semantics">Bitstream Semantics</h2>
 
 <p>This section specifies the meaning of the syntax elements read in the syntax
@@ -5539,7 +5819,7 @@ default values:</p>
 <p><strong>refresh_frame_flags</strong> contains a bitmask that specifies which reference frame
 slots will be updated with the current frame after it is decoded.</p>
 
-<p>See <a href="#reference-frame-update-process">section 7.13</a> for details of the frame update process.</p>
+<p>See <a href="#reference-frame-update-process">section 7.14</a> for details of the frame update process.</p>
 
 <p><strong>ref_frame_idx</strong> specifies which reference frames are used by inter frames. It
 is a requirement of bitstream conformance that the selected reference frames
@@ -5865,6 +6145,15 @@ Default_Palette_Size_8_Uv_Color_Cdf</p>
       </li>
       <li>
         <p>CflAlphaCdf is set to a copy of Default_Cfl_Alpha_Cdf</p>
+      </li>
+      <li>
+        <p>TileUseWienerCdf is set to a copy of Default_Use_Wiener_Cdf</p>
+      </li>
+      <li>
+        <p>TileUseSgrprojCdf is set to a copy of Default_Use_Sgrprog_Cdf</p>
+      </li>
+      <li>
+        <p>TileRestorationTypeCdf is set to a copy of Default_Restoration_Type_Cdf</p>
       </li>
     </ul>
   </li>
@@ -6804,6 +7093,52 @@ secondary filter.</p>
 <p><strong>cdef_y_filter_skip</strong> and <strong>cdef_uv_filter_skip</strong> specify whether to apply the
 filtering for skipped blocks. Skipped blocks will only be filtered if this skip
 bit is equal to 1.</p>
+
+<h4 id="loop-restoration-params-semantics">Loop Restoration Params Semantics</h4>
+
+<p><strong>lr_type</strong> is used to compute FrameRestorationType.</p>
+
+<p><strong>FrameRestorationType</strong> specifies the type of restoration used for each plane as follows:</p>
+
+<table class="table table-sm table-bordered">
+  <thead>
+    <tr>
+      <th style="text-align: center">lr_type</th>
+      <th style="text-align: center">FrameRestorationType</th>
+      <th style="text-align: center">Name of FrameRestorationType</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">0</td>
+      <td style="text-align: center">RESTORE_NONE</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">3</td>
+      <td style="text-align: center">RESTORE_SWITCHABLE</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">2</td>
+      <td style="text-align: center">1</td>
+      <td style="text-align: center">RESTORE_WIENER</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">3</td>
+      <td style="text-align: center">2</td>
+      <td style="text-align: center">RESTORE_SGRPROJ</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>lr_unit_shift</strong> specifies if the luma restoration size should be halved.</p>
+
+<p><strong>lr_unit_extra_shift</strong> specifies if the luma restoration size should be halved again.</p>
+
+<p><strong>lr_uv_shift</strong> is only present for 4:2:0 formats and specifies if the chroma size should be half the luma size.</p>
+
+<p><strong>LoopRestorationSize[plane]</strong> specifies for size of loop restoration units in units of samples in the current plane.</p>
 
 <h4 id="tx-size-semantics">TX Size Semantics</h4>
 
@@ -7953,6 +8288,24 @@ probability context used to decode palette_color_idx_y and palette_color_idx_uv.
 <p><strong>cdef_idx</strong> specifies which CDEF filtering parameters should be used for a
 particular 64 by 64 pixel block.</p>
 
+<h4 id="decode-loop-restoration-unit-semantics">Decode Loop Restoration Unit Semantics</h4>
+
+<p><strong>use_wiener</strong> specifies if the Wiener filter should be used.</p>
+
+<p><strong>use_sgrproj</strong> specifies if the self guided filter should be used.</p>
+
+<p><strong>restoration_type</strong> specifies the restoration filter that should be used with the same interpretation as FrameRestorationType.</p>
+
+<p><strong>lr_sgr_set</strong> specifies which set of parameters to use for the self guided filter.</p>
+
+<p><strong>subexp_more_bools</strong> equal to 0 specifies that the parameter is in the range mk
+to mk+a-1.  subexp_more_bools equal to 0 specifies that the parameter is greater
+than mk+a-1.</p>
+
+<p><strong>subexp_unif_bools</strong> specifies the value of the parameter minus mk.</p>
+
+<p><strong>subexp_bools</strong> specifies the value of the parameter minus mk.</p>
+
 <h2 id="decoding-process">Decoding Process</h2>
 
 <h3 id="general">General</h3>
@@ -7983,6 +8336,9 @@ filter process specified in <a href="#loop-filter-process">section 7.10</a> is i
     <p>The CDEF process specified in <a href="#cdef-process">section 7.11</a> is invoked.</p>
   </li>
   <li>
+    <p>The loop restoration process specified in <a href="#loop-restoration-process">section 7.12</a> is invoked.</p>
+  </li>
+  <li>
     <p>If all of the following conditions are true, PrevSegmentIds[ row ][ col ]
 is set equal to SegmentIds[ row ][ col ] for row = 0..MiRows-1, for
 col = 0..MiCols-1:</p>
@@ -7997,12 +8353,12 @@ col = 0..MiCols-1:</p>
     </ul>
   </li>
   <li>
-    <p>The reference frame update process as specified in <a href="#reference-frame-update-process">section 7.13</a> is
+    <p>The reference frame update process as specified in <a href="#reference-frame-update-process">section 7.14</a> is
      invoked.</p>
   </li>
 </ol>
 
-<p>If show_existing_frame is equal to 1 or show_frame is equal to 1, the output process as specified in <a href="#output-process">section 7.12</a> is invoked.</p>
+<p>If show_existing_frame is equal to 1 or show_frame is equal to 1, the output process as specified in <a href="#output-process">section 7.13</a> is invoked.</p>
 
 <h3 id="frame-order-constraints">Frame Order Constraints</h3>
 
@@ -8952,7 +9308,7 @@ if ( refList &gt;= 0 ) {
         lower_mv_precision( candMv0 )
         lower_mv_precision( candMv1 )
         if ( deltaRow == 0 &amp;&amp; deltaCol == 0 ) {
-            if ( Abs( candMv0[ 0 ] ) &gt;= 16 || Abs( candMv0[ 1 ] ) &gt;= 16 ) ||
+            if ( Abs( candMv0[ 0 ] ) &gt;= 16 || Abs( candMv0[ 1 ] ) &gt;= 16 ||
                  Abs( candMv1[ 0 ] ) &gt;= 16 || Abs( candMv1[ 1 ] ) &gt;= 16 )
                 ZeroMvContext = 1
         }
@@ -11696,14 +12052,15 @@ predicted.</p>
 <pre><code class="language-c">sizeScale = MAX_SB_SIZE / Max( h, w )
 for (i = 0; i &lt; h; i++) {
     for (j = 0; j &lt; w; j++) {
-    if (interintra_mode == II_V_PRED) {
-        Mask[ i ][ j ] = Ii_Weights_1d[ i * sizeScale ]
-    } else if (interintra_mode == II_H_PRED) {
-        Mask[ i ][ j ] = Ii_Weights_1d[ j * sizeScale ]
-    } else if (interintra_mode == II_SMOOTH_PRED) {
-        Mask[ i ][ j ] = Ii_Weights_1d[ Min(i, j) * sizeScale ]
-    } else {
-        Mask[ i ][ j ] = 32
+        if (interintra_mode == II_V_PRED) {
+            Mask[ i ][ j ] = Ii_Weights_1d[ i * sizeScale ]
+        } else if (interintra_mode == II_H_PRED) {
+            Mask[ i ][ j ] = Ii_Weights_1d[ j * sizeScale ]
+        } else if (interintra_mode == II_SMOOTH_PRED) {
+            Mask[ i ][ j ] = Ii_Weights_1d[ Min(i, j) * sizeScale ]
+        } else {
+            Mask[ i ][ j ] = 32
+        }
     }
 }
 </code></pre>
@@ -12516,7 +12873,7 @@ values should be used.</p>
 for i = 0..7.</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 4, invoke B( 8 + i, 15 - i, 12 + ( brev( 2, 3 - i ) &lt;&lt; 7 ),
+    <p>If n is greater than or equal to 4, invoke B( 8 + i, 15 - i, 12 + ( brev( 2, 3 - i ) &lt;&lt; 7 ) ),
 highPrecision, 0) for i = 0..4.</p>
   </li>
   <li>
@@ -13830,7 +14187,7 @@ CdefFrame will be overwritten later in this process.</p>
         <p>priStr is set equal to 19 &lt;&lt; coeffShift.</p>
       </li>
       <li>
-        <p>secStr is set equal to 7 &lt;&lt; coeffShift.  <strong>Note:</strong> Shift is applied to the secondary strength in this case.</p>
+        <p>secStr is set equal to 7 &lt;&lt; coeffShift.</p>
       </li>
     </ul>
   </li>
@@ -13868,7 +14225,7 @@ CdefFrame will be overwritten later in this process.</p>
         <p>priStr is set equal to 19 &lt;&lt; coeffShift.</p>
       </li>
       <li>
-        <p>secStr is set equal to 7 &lt;&lt; coeffShift.  <strong>Note:</strong> Shift is applied to the secondary strength in this case.</p>
+        <p>secStr is set equal to 7 &lt;&lt; coeffShift.</p>
       </li>
     </ul>
   </li>
@@ -14127,6 +14484,435 @@ Cdef_Sec_Taps[2][2] = {
 }
 </code></pre>
 
+<h3 id="loop-restoration-process">Loop Restoration Process</h3>
+
+<p>Input to this process are the arrays CurrFrame (of reconstructed samples) and CdefFrame (of deringed samples).</p>
+
+<p>Output from this process is the array LrFrame of loop restored samples.</p>
+
+<p class="alert alert-info"><strong>Note:</strong>
+Although in this process we loop over 4x4 blocks,
+loop restoration is designed to work in stripes 64 luma pixels high without needing additional line buffers.
+Samples within the current stripe are fetched from CdefFrame. 
+Samples outside the current stripe are fetched from CurrFrame (these samples will be deblocked, but will not have CDEF filtering applied).</p>
+
+<p>The array LrFrame is set equal to a copy CdefFrame.  (The contents of LrFrame will later be overwritten for blocks that require restoration filtering.)</p>
+
+<p>Next, loop restoration is applied for each 4x4 block of each plane as follows:</p>
+
+<pre><code class="language-c">for ( row = 0; row &lt; MiRows; row++ ) {
+    for ( col = 0; col &lt; MiCols; col++ ) {
+        for ( plane = 0; plane &lt; 3; plane++ ) {
+            loop_restore_block( plane, row, col)
+        }
+    }
+}
+</code></pre>
+
+<p>When loop_restore_block is called, the loop restore block process in <a href="#loop-restore-block-process">section 7.12.1</a> is invoked with plane, row, and col as inputs.</p>
+
+<h4 id="loop-restore-block-process">Loop Restore Block Process</h4>
+
+<p>The inputs to this block are:</p>
+
+<ul>
+  <li>
+    <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
+  </li>
+  <li>
+    <p>variables row and col specifying the location of the block in units
+of 4x4 blocks in the luma plane.</p>
+  </li>
+</ul>
+
+<p>The output of this process are samples in LrFrame[ plane ].</p>
+
+<p>The variables TileNum, MiColStart, MiRowStart, MiColEnd, MiRowEnd are set equal to the values they had when the syntax element MiSizes[ row ][ col ] was written.</p>
+
+<p>The variable lumaY is set equal to row * MI_SIZE.</p>
+
+<p>The variable stripeNum (specifying the zero-based index of the current stripe) is set equal to (lumaY + 8) / 64.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> The stripes are offset upwards by 8 luma pixels to make pipelined implementations more efficient.
+When a row of superblocks has been received, enough rows of deblocked output can be produced to allow loop restoration of the corresponding stripes.</p>
+
+<p>The variables subX and subY are set equal to the subsampling for the current
+plane as follows:</p>
+
+<ul>
+  <li>
+    <p>If plane is equal to 0, subX is set equal to 0 and subY is set equal to 0.</p>
+  </li>
+  <li>
+    <p>Otherwise, subX is set equal to subsampling_x and subY is set equal to
+   subsampling_y.</p>
+  </li>
+</ul>
+
+<p>The variable StripeStartY (specifying the start of the stripe in units of samples in the current plane) is set equal to ( (-8 + stripeNum * 64) &gt;&gt; subY ).</p>
+
+<p>The variable StripeEndY (specifying the end of the stripe in units of samples in the current plane) is set equal to stripeStart + (64 &gt;&gt; subY) - 1.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> StripeStart and StripeEnd are used by the get source sample process to decide whether to fetch from CurrFrame or CdefFrame.</p>
+
+<p>The variable unitSize (specifying the size of restoration units in units of 4x4 luma blocks) is set equal to LoopRestorationSize[ plane ].</p>
+
+<p>The variable unitRows (specifying the number of restoration units down the tile) is set equal to count_units_in_tile( unitSize, (MiRowEnd - MiRowStart) * MI_SIZE » subY ).</p>
+
+<p>The variable unitCols (specifying the number of restoration units across the tile) is set equal to count_units_in_tile( unitSize, (MiColEnd - MiColStart) * MI_SIZE » subX ).</p>
+
+<p>The variable unitRow (specifying the vertical index of the current loop restoration unit) is set equal to Min( unitRows - 1, (row - MiRowStart) / unitSize).</p>
+
+<p>The variable unitCol (specifying the horizontal index of the current loop restoration unit) is set equal to Min( unitCols - 1, (col - MiColStart) / unitSize).</p>
+
+<p>The extent of the space allowed for filtering is configured depending on loop_filter_across_tiles as follows:</p>
+
+<ul>
+  <li>
+    <p>If loop_filter_across_tiles is equal to 1, the following applies:</p>
+
+    <ul>
+      <li>
+        <p>TileStartX is set equal to 0</p>
+      </li>
+      <li>
+        <p>TileStartY is set equal to 0</p>
+      </li>
+      <li>
+        <p>TileEndX is set equal to (MiCols * MI_SIZE &gt;&gt; subX) - 1</p>
+      </li>
+      <li>
+        <p>TileEndY is set equal to (MiRows * MI_SIZE &gt;&gt; subY) - 1</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Otherwise (loop_filter_across_tiles is equal to 0), the following applies:</p>
+
+    <ul>
+      <li>
+        <p>TileStartX is set equal to (MiColStart * MI_SIZE &gt;&gt; subX)</p>
+      </li>
+      <li>
+        <p>TileStartY is set equal to (MiRowStart * MI_SIZE &gt;&gt; subY)</p>
+      </li>
+      <li>
+        <p>TileEndX is set equal to (MiColEnd * MI_SIZE &gt;&gt; subX) - 1</p>
+      </li>
+      <li>
+        <p>TileEndY is set equal to (MiRowEnd * MI_SIZE &gt;&gt; subY) - 1</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>The variable x is set equal to ( col * MI_SIZE &gt;&gt; subX ).</p>
+
+<p>The variable y is set equal to ( row * MI_SIZE &gt;&gt; subY ).</p>
+
+<p>The variable w is set equal to ( MI_SIZE &gt;&gt; subX ).</p>
+
+<p>The variable h is set equal to ( MI_SIZE &gt;&gt; subY ).</p>
+
+<p>(Variables x and y represent the position of the block in samples relative to the top-left corner of the current plane.
+Variables w and h represent the size of the block in samples.)</p>
+
+<p class="alert alert-info"><strong>Note:</strong> Although we describe the filter as operating on small blocks, the output will be the same
+if larger blocks are used - provided all contained samples belong to the same loop restoration unit.</p>
+
+<p>The variable rType (specifying the loop restoration type) is set equal to LrType[ TileNum ][ plane ][ unitRow ][ unitCol ].</p>
+
+<p>The filter to used depends on rType as follows:</p>
+
+<ul>
+  <li>
+    <p>If rType is equal to RESTORE_WIENER, the Wiener filter process specified in <a href="#wiener-filter-process">section 7.12.4</a> is invoked with plane, unitRow, unitCol, x, y, w, h as inputs.</p>
+  </li>
+  <li>
+    <p>Otherwise, if rType is equal to RESTORE_SGD, the self guided filter process specified in <a href="#self-guided-filter-process">section 7.12.2</a> is invoked with plane, unitRow, unitCol, row, and col as inputs.</p>
+  </li>
+  <li>
+    <p>Otherwise (rType is equal to RESTORE_NONE), no filtering is applied.</p>
+  </li>
+</ul>
+
+<h4 id="self-guided-filter-process">Self Guided Filter Process</h4>
+
+<p>The inputs to this block are:</p>
+
+<ul>
+  <li>
+    <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
+  </li>
+  <li>
+    <p>variables unitRow and unitCol specifying the offset of the loop restoration unit with the current tile,</p>
+  </li>
+  <li>
+    <p>variables x and y specifying the position of the block in samples relative to the top-left corner of the current plane,</p>
+  </li>
+  <li>
+    <p>variables w and h specifying the size of the block in samples.</p>
+  </li>
+</ul>
+
+<p>The arrays flt1 and flt2 are prepared by the following ordered steps:</p>
+
+<ol>
+  <li>
+    <p>The variable set is set equal to LrSgrSet[ TileNum ][ plane ][ unitRow ][ unitCol ].</p>
+  </li>
+  <li>
+    <p>The variable pass is set equal to 0.</p>
+  </li>
+  <li>
+    <p>The box filter process specified in <a href="#box-filter-process">section 7.12.3</a> is invoked with plane, x, y, w, h, set, and pass as inputs, and the output assigned to flt1.</p>
+  </li>
+  <li>
+    <p>The variable pass is set equal to 1.</p>
+  </li>
+  <li>
+    <p>The box filter process specified in <a href="#box-filter-process">section 7.12.3</a> is invoked with plane, x, y, w, h, set, and pass as inputs, and the output assigned to flt2.</p>
+  </li>
+</ol>
+
+<p>The restoration process is then applied for each sample as follows:</p>
+
+<pre><code class="language-c">xq0 = LrSgrXqd[ TileNum ][ plane ][ unitRow ][ unitCol ][ 0 ]
+xqd1 = LrSgrXqd[ TileNum ][ plane ][ unitRow ][ unitCol ][ 1 ]
+xq1 = (1 &lt;&lt; SGRPROJ_PRJ_BITS) - xq0 - xqd1
+for ( i = 0; i &lt; h; i++ ) {
+    for ( j = 0; j &lt; w; j++ ) {
+        u = CdefFrame[ plane ][ y + i ][ x + j ] &lt;&lt; SGRPROJ_RST_BITS
+        f1 = flt1[ i ][ j ] - u
+        f2 = flt2[ i ][ j ] - u
+        v = xq0 * f1 + xq1 * f2 + (u &lt;&lt; SGRPROJ_PRJ_BITS)
+        w = Round2( v, SGRPROJ_RST_BITS + SGRPROJ_PRJ_BITS )
+        LrFrame[ plane ][ y + i ][ x + j ] = Clip1( w )
+    }
+}
+</code></pre>
+
+<h4 id="box-filter-process">Box Filter Process</h4>
+
+<p>The inputs to this process are:</p>
+
+<ul>
+  <li>
+    <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
+  </li>
+  <li>
+    <p>variables x and y specifying the position of the block in samples relative to the top-left corner of the current plane,</p>
+  </li>
+  <li>
+    <p>variables w and h specifying the size of the block in samples,</p>
+  </li>
+  <li>
+    <p>a variable set specifying the strength of the filtering,</p>
+  </li>
+  <li>
+    <p>a variable pass (equal to 0 or 1), specifying if we are generating the first or second filterred output.</p>
+  </li>
+</ul>
+
+<p>The output of this process is a 2d array F.</p>
+
+<p>The variable r (specifying that the box filters have side length 2*r+1) is set equal to Sgr_Params[ set ][ pass * 2 + 0 ].</p>
+
+<p>The variable eps (specifying a scaling for the output) is set equal to Sgr_Params[ set ][ pass * 2 + 1 ].</p>
+
+<p>The 2d arrays A and B (note these arrays are valid for coordinates including an extra sample around the boundary) are prepared as follows:</p>
+
+<pre><code class="language-c">n = ( 2 * r + 1 ) * ( 2 * r + 1 )
+n2e = n * n * eps;
+s = (((1 &lt;&lt; SGRPROJ_MTABLE_BITS) + n2e / 2) / n2e)
+for ( i = -1; i &lt; h + 1; i++ ) {
+    for ( j = -1; j &lt; w + 1; j++ ) {
+        a = 0
+        b = 0
+        for ( dy = -r ; dy &lt;= r; dy++ ) {
+            for ( dx = -r; dx &lt;= r; dx++ ) {
+                c = get_source_sample( plane, x + j + dx, y + i + dy )
+                a += c * c
+                b += c
+            }
+        }
+        a = Round2( a, 2 * (BitDepth - 8) )
+        b = Round2( b, BitDepth - 8 )
+        p = Max( 0, a * n - b * b )
+        z = Round2( p * s, SGRPROJ_MTABLE_BITS )
+        a2 = X_By_Xplus1[ Min( z, 255 ) ]
+        b2 = ( (1 &lt;&lt; SGRPROJ_SGR_BITS) - a2 ) * b * One_By_X[ n - 1 ]
+        A[ i ][ j ] = a2
+        B[ i ][ j ] = Round2( b2, SGRPROJ_RECIP_BITS )
+    }
+}
+</code></pre>
+
+<p>where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.12.5</a> should be invoked
+and the output assigned to variable c.</p>
+
+<p>After A and B are prepared, the output array F is generated as follows:</p>
+
+<pre><code class="language-c">for ( i = 0; i &lt; h; i++ ) {
+    for ( j = 0; j &lt; w; j++ ) {
+        a = 0
+        b = 0
+        for ( dy = -1 ; dy &lt;= 1; dy++ ) {
+            for ( dx = -1; dx &lt;= 1; dx++ ) {
+                weight = (dx == 0 || dy == 0) ? 4 : 3
+                a += weight * A[ i + dy ][ j + dx ]
+                b += weight * B[ i + dy ][ j + dx ]
+            }
+        }
+        v = a * CdefFrame[ plane ][ y + i ][ x + j ] + b
+        F[ i ][ j ] = Round2( v, SGRPROJ_SGR_BITS + 5 - SGRPROJ_RST_BITS)
+    }   
+}
+</code></pre>
+
+<p>The constant lookup tables Sgr_Params, X_By_Xplus1, and One_By_X are specified as:</p>
+
+<pre><code class="language-c">Sgr_Params[ SGRPROJ_PARAMS ][ 4 ] = {
+  { 2, 12, 1, 4 },  { 2, 15, 1, 6 },  { 2, 18, 1, 8 },  { 2, 20, 1, 9 },
+  { 2, 22, 1, 10 }, { 2, 25, 1, 11 }, { 2, 35, 1, 12 }, { 2, 45, 1, 13 },
+  { 2, 55, 1, 14 }, { 2, 65, 1, 15 }, { 2, 75, 1, 16 }, { 2, 30, 1, 6 },
+  { 2, 50, 1, 12 }, { 2, 60, 1, 13 }, { 2, 70, 1, 14 }, { 2, 80, 1, 15 }
+}
+
+X_By_Xplus1[ 256 ] = {
+  0,   128, 171, 192, 205, 213, 219, 224, 228, 230, 233, 235, 236, 238, 239,
+  240, 241, 242, 243, 243, 244, 244, 245, 245, 246, 246, 247, 247, 247, 247,
+  248, 248, 248, 248, 249, 249, 249, 249, 249, 250, 250, 250, 250, 250, 250,
+  250, 251, 251, 251, 251, 251, 251, 251, 251, 251, 251, 252, 252, 252, 252,
+  252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 253, 253,
+  253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253,
+  253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 254, 254, 254,
+  254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254,
+  254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254,
+  254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254,
+  254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254,
+  254, 254, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+  256
+}
+
+One_By_X[MAX_NELEM] = {
+  4096, 2048, 1365, 1024, 819, 683, 585, 512, 455, 410, 372, 341, 315,
+  293,  273,  256,  241,  228, 216, 205, 195, 186, 178, 171, 164,
+}
+</code></pre>
+
+<h4 id="wiener-filter-process">Wiener Filter Process</h4>
+
+<p>The inputs to this block are:</p>
+
+<ul>
+  <li>
+    <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
+  </li>
+  <li>
+    <p>variables unitRow and unitCol specifying the offset of the loop restoration unit with the current tile,</p>
+  </li>
+  <li>
+    <p>variables x and y specifying the position of the block in samples relative to the top-left corner of the current plane,</p>
+  </li>
+  <li>
+    <p>variables w and h specifying the size of the block in samples.</p>
+  </li>
+</ul>
+
+<p>The output from this process are modified pixels in LrFrame.</p>
+
+<p>The sub-sample interpolation is effected via two one-dimensional convolutions.
+First a horizontal filter is used to build up a temporary array, and then this
+array is vertically filtered to obtain the final prediction.</p>
+
+<p>The array hfilter (containing the wiener filter coefficients for horizontal filtering) is set equal to LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 0 ].</p>
+
+<p>The array vfilter (containing the wiener filter coefficients for vertical filtering) is set equal to LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 1 ].</p>
+
+<p>The filtering is applied as follows:</p>
+
+<ul>
+  <li>
+    <p>The array intermediate is specified as follows:</p>
+
+    <pre><code class="language-c">top = (1 &lt;&lt; (BitDepth + 1 + EXTRAPREC_BITS)) - 1
+for ( r = 0; r &lt; h + 7; r++ ) {
+    for ( c = 0; c &lt; w; c++ ) {
+        s = get_source_sample( plane, x + c - 3, y + r - 3 ) &lt;&lt; FILTER_BITS
+        s += 1 &lt;&lt; (BitDepth + FILTER_BITS - 1)
+        for ( t = 0; t &lt; 8; t++ )
+            s += hfilter[ t ] * get_source_sample( plane, x + c + t - 3, y + r - 3 )
+        intermediate[ r ][ c ] = Round2(s, FILTER_BITS - EXTRAPREC_BITS)
+    }
+}
+</code></pre>
+
+    <p>Where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.12.5</a> should be invoked.</p>
+  </li>
+  <li>
+    <p>The output samples are written as follows:</p>
+
+    <pre><code class="language-c">for ( r = 0; r &lt; h; r++ ) {
+    for ( c = 0; c &lt; w; c++ ) {
+        s = intermediate[ r + 3 ][ c ] &lt;&lt; FILTER_BITS
+        s += 1 &lt;&lt; ( BitDepth + FILTER_BITS + EXTRAPREC_BITS - 1 )
+        for ( t = 0; t &lt; 8; t++ )
+            s += vfilter[ t ] * intermediate[ r + t ][ c ]
+        LrFrame[ plane ][ y + r ][ x + c ] = Round2( s, FILTER_BITS + EXTRAPREC_BITS )
+    }
+}
+</code></pre>
+  </li>
+</ul>
+
+<h4 id="get-source-sample-process">Get Source Sample Process</h4>
+
+<p>The inputs to this process are:</p>
+
+<ul>
+  <li>
+    <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
+  </li>
+  <li>
+    <p>variables unitRorw and unitCol specifying which loop restoration unit we are in (relative to the current tile),</p>
+  </li>
+  <li>
+    <p>variables x and y specifying the location in the current plane in units of samples.</p>
+  </li>
+</ul>
+
+<p>This process makes sure samples are taken from within the allowed extent for loop restoration filtering.</p>
+
+<p>Samples within the current stripe have had Cdef filtering applied, samples outside the current stripe
+have not had Cdef filtering applied.</p>
+
+<p>The sample to return is specified as follows:</p>
+
+<pre><code class="language-c">x = Min(TileEndX, x)
+x = Max(TileStartX, x)
+y = Min(TileEndY, y)
+y = Max(TileStartY, y)
+if (y &lt; StripeStartY) {
+    y = Max(StripeStartY - 2,y)
+    return CurrFrame[ plane ][ y ][ x ]
+} else if (y &gt; StripeEndY) {
+    y = Min(StripeEndY + 2,y)
+    return CurrFrame[ plane ][ y ][ x ]
+} else {
+    return CdefFrame[ plane ][ y ][ x ]
+}
+</code></pre>
+
+<p class="alert alert-info"><strong>Note:</strong> This process can be called for samples on the three lines above and three lines below the current stripe.
+However, the coordinates are cropped such that only two lines above and below the stripe need to be fetched.
+In other words, requests for the third line (above or below) are given a copy of the second line.</p>
+
 <h3 id="output-process">Output Process</h3>
 
 <p>This process is invoked to optionally display a frame.</p>
@@ -14211,8 +14997,8 @@ with x = 0..((w + subX) &gt;&gt; subX) - 1 and y = 0..((h + subY) &gt;&gt; subY)
 
 <p>This process is invoked as the final step in decoding a frame.</p>
 
-<p>The inputs to this process are the samples in the current frame
-CdefFrame[ plane ][ x ][ y ].</p>
+<p>The inputs to this process are the decoded samples for the current frame
+LrFrame[ plane ][ x ][ y ].</p>
 
 <p>The output from this process is an updated set of reference frames and
 previous motion vectors.</p>
@@ -14241,12 +15027,12 @@ if (refresh_frame_flags &gt;&gt; i) &amp; 1 is equal to 1):</p>
     <p>RefDecodeOrder[ i ] is set equal to DecodeOrder.</p>
   </li>
   <li>
-    <p>FrameStore[ i ][ 0 ][ y ][ x ] is set equal to CdefFrame[ 0 ][ y ][ x ]
+    <p>FrameStore[ i ][ 0 ][ y ][ x ] is set equal to LrFrame[ 0 ][ y ][ x ]
 for x = 0..FrameWidth-1, for y = 0..FrameHeight-1.</p>
   </li>
   <li>
     <p>FrameStore[ i ][ plane ][ y ][ x ] is set equal to
-CdefFrame[ plane ][ y ][ x ] for plane = 1..2,
+LrFrame[ plane ][ y ][ x ] for plane = 1..2,
 for x = 0..((FrameWidth + subsampling_x) &gt;&gt; subsampling_x) - 1,
 for y = 0..((FrameHeight + subsampling_y) &gt;&gt; subsampling_y) - 1.</p>
   </li>
@@ -14539,6 +15325,15 @@ prefixed with “Tile”.  This copying produces the following arrays:</p>
   </li>
   <li>
     <p>TileCflAlphaCdf</p>
+  </li>
+  <li>
+    <p>TileUseWienerCdf</p>
+  </li>
+  <li>
+    <p>TileUseSgrprojCdf</p>
+  </li>
+  <li>
+    <p>TileRestorationTypeCdf</p>
   </li>
 </ul>
 
@@ -14848,7 +15643,7 @@ if (maxTxSz &gt;= TX_8X8) {
     ctx = (txSz != maxTxSz &amp;&amp; maxTxSz &gt; TX_8X8) +
                (TX_SIZES - 1 - maxTxSz) * 2
 }
-if (ctx != TXFM_PARTITION_CONTEXTS - 1)
+if (ctx != TXFM_PARTITION_CONTEXTS - 1) {
     ctx = ctx * 3 + above + left
 }
 </code></pre>
@@ -15004,7 +15799,7 @@ if ( AvailU &amp;&amp; AvailL ) {
             else if ( check_golden_or_last3(frfa) || check_golden_or_last3(frfl) )
                 ctx = 2 + (frfa != frfl)
             else if ( frfa==frfl ||
-                     (check_backward(frfa) &amp;&amp; check_backward(frfl))) {
+                     (check_backward(frfa) &amp;&amp; check_backward(frfl)))
                 ctx = 3
             else
                 ctx = 4
@@ -15073,7 +15868,7 @@ if ( AvailU &amp;&amp; AvailL ) {
             else if ( check_last_or_last2(frfa) || check_last_or_last2(frfl) )
                 ctx = 2 + (frfa != frfl)
             else if ( frfa==frfl ||
-                     (check_backward(frfa) &amp;&amp; check_backward(frfl))) {
+                     (check_backward(frfa) &amp;&amp; check_backward(frfl)))
                 ctx = 3
             else
                 ctx = 4
@@ -15274,7 +16069,7 @@ if ( AvailU &amp;&amp; AvailL ) {
         else
             ctx = 3 * ( check_last_or_last2(left0) ||
                         check_last_or_last2(left1) )
-    } else {
+    } else
         ctx = 2
 }
 </code></pre>
@@ -15355,7 +16150,7 @@ if ( AvailU &amp;&amp; AvailL ) {
         else
             ctx = 3 * ( check_last(left0) ||
                         check_last(left1) )
-    } else {
+    } else
         ctx = 2
 }
 </code></pre>
@@ -15436,7 +16231,7 @@ if ( AvailU &amp;&amp; AvailL ) {
         else
             ctx = 3 * ( check_last3(left0) ||
                         check_last3(left1) )
-    } else {
+    } else
         ctx = 2
 }
 </code></pre>
@@ -15915,6 +16710,12 @@ ctx = ref_count_ctx( last3Count, goldCount )
 
 <pre><code class="language-c">ctx = (signV - 1) * 3 + signU
 </code></pre>
+
+<p><strong>use_wiener</strong>: The cdf is given by TileUseWienerCdf.</p>
+
+<p><strong>use_sgrproj</strong>: The cdf is given by TileUseSgrprojCdf.</p>
+
+<p><strong>restoration_type</strong>: The cdf is given by TileRestorationTypeCdf.</p>
 
 <h2 id="additional-tables">Additional Tables</h2>
 
@@ -17743,8 +18544,8 @@ Transpose_Tx_Size[ t ] returns a transform size with width h
 and height w.</p>
 
 <pre><code class="language-c">Transpose_Tx_Size[ TX_SIZES_ALL ] = {
-  TX_4X4, TX_8X8, TX_16X16, TX_32X32, TX_8X4, TX_4X8, TX_16X8,
-  TX_8X16, TX_32X16, TX_16X32, TX_16X4, TX_4X16, TX_32X8, TX_8X32,
+  TX_4X4, TX_8X8, TX_16X16, TX_32X32, TX_8X4,
+  TX_4X8, TX_16X8, TX_8X16, TX_32X16, TX_16X32,
 }
 </code></pre>
 
@@ -20502,6 +21303,21 @@ Default_Coef_Extra_Bits_Cat6_S5_Cdf[ 5 ] = { 32513, 32641, 32767, 32768, 0 }
     32568, 32602, 32628, 32664, 32680, 32691, 32708, 32768, 0 },
   { 15939, 24151, 27754, 29680, 30651, 31267, 31527, 31868,
     32001, 32090, 32181, 32284, 32314, 32366, 32486, 32768, 0 }
+}
+</code></pre>
+
+<pre><code class="language-c">Default_Use_Wiener_Cdf[ 2 + 1 ] = {
+  64*128, 32768, 0
+}
+</code></pre>
+
+<pre><code class="language-c">Default_Use_Sgrprog_Cdf[ 2 + 1 ] = {
+  64*128, 32768, 0
+}
+</code></pre>
+
+<pre><code class="language-c">Default_Restoration_Type_Cdf[ RESTORE_SWITCHABLE + 1 ] = {
+  32*128, 144*128, 32768, 0
 }
 </code></pre>
 
@@ -25972,6 +26788,14 @@ external means.</p>
         <td>segment_zeromv</td>
         <td> </td>
       </tr>
+      <tr>
+        <td>loop_restoration</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>striped_loop_restoration</td>
+        <td> </td>
+      </tr>
     </tbody>
   </table>
 
@@ -26005,14 +26829,6 @@ external means.</p>
       </tr>
       <tr>
         <td>ext_tile</td>
-        <td>Code still under development</td>
-      </tr>
-      <tr>
-        <td>loop_restoration</td>
-        <td>Code still under development</td>
-      </tr>
-      <tr>
-        <td>striped_loop_restoration</td>
         <td>Code still under development</td>
       </tr>
       <tr>
