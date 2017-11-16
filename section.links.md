@@ -106,6 +106,7 @@
 [section 5.8.50]: #decode-cdef-syntax
 [section 6.1.1]: #obu-header-semantics
 [section 6.7.19]: #frame-reference-mode-semantics
+[section 7.12.5]: #wiener-coefficient-process
 [section 5.8.34]: #token-syntax
 [section 4.9.2]: #len
 [section 5.3.1]: #color-config-syntax
@@ -149,7 +150,7 @@
 [section 7.7.2.7]: #overlapped-motion-compensation-process
 [section 7.2]: #decode-frame-process
 [section 5.6]: #metadata-obu-syntax
-[section 7.12.5]: #get-source-sample-process
+[section 7.12.6]: #get-source-sample-process
 [section 5.8]: #tile-group-obu-syntax
 [section 7.9.1.11]: #inverse-identity-transform-32-process
 [section A]: #annex-a-levels

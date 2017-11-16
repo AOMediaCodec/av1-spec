@@ -34,7 +34,7 @@
 <p><em>Version 0.3</em><br />
 <em>© 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2017-11-15 08:35:08 -0800</em></p>
+<p><em>Last modified: 2017-11-16 01:17:42 -0800</em></p>
 
 <p class="alert alert-danger"><strong>Draft Document</strong><br />
 This document is a work in process draft, and will change substantially before
@@ -378,6 +378,7 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
           <li><a href="#self-guided-filter-process" id="markdown-toc-self-guided-filter-process">Self Guided Filter Process</a></li>
           <li><a href="#box-filter-process" id="markdown-toc-box-filter-process">Box Filter Process</a></li>
           <li><a href="#wiener-filter-process" id="markdown-toc-wiener-filter-process">Wiener Filter Process</a></li>
+          <li><a href="#wiener-coefficient-process" id="markdown-toc-wiener-coefficient-process">Wiener Coefficient Process</a></li>
           <li><a href="#get-source-sample-process" id="markdown-toc-get-source-sample-process">Get Source Sample Process</a></li>
         </ul>
       </li>
@@ -14555,11 +14556,13 @@ plane as follows:</p>
 
 <p class="alert alert-info"><strong>Note:</strong> StripeStart and StripeEnd are used by the get source sample process to decide whether to fetch from CurrFrame or CdefFrame.</p>
 
-<p>The variable unitSize (specifying the size of restoration units in units of 4x4 luma blocks) is set equal to LoopRestorationSize[ plane ].</p>
+<p>The variable unitSize (specifying the size of restoration units in units of samples in the current plane) is set equal to LoopRestorationSize[ plane ].</p>
 
 <p>The variable unitRows (specifying the number of restoration units down the tile) is set equal to count_units_in_tile( unitSize, (MiRowEnd - MiRowStart) * MI_SIZE » subY ).</p>
 
 <p>The variable unitCols (specifying the number of restoration units across the tile) is set equal to count_units_in_tile( unitSize, (MiColEnd - MiColStart) * MI_SIZE » subX ).</p>
+
+<p class="alert alert-info"><strong>Note:</strong> The number of restoration units in a tile can be different for chroma and luma.</p>
 
 <p>The variable unitRow (specifying the vertical index of the current loop restoration unit) is set equal to Min( unitRows - 1, (row - MiRowStart) / unitSize).</p>
 
@@ -14677,8 +14680,9 @@ if larger blocks are used - provided all contained samples belong to the same lo
 
 <p>The restoration process is then applied for each sample as follows:</p>
 
-<pre><code class="language-c">xq0 = LrSgrXqd[ TileNum ][ plane ][ unitRow ][ unitCol ][ 0 ]
+<pre><code class="language-c">xqd0 = LrSgrXqd[ TileNum ][ plane ][ unitRow ][ unitCol ][ 0 ]
 xqd1 = LrSgrXqd[ TileNum ][ plane ][ unitRow ][ unitCol ][ 1 ]
+xq0 = xqd0
 xq1 = (1 &lt;&lt; SGRPROJ_PRJ_BITS) - xq0 - xqd1
 for ( i = 0; i &lt; h; i++ ) {
     for ( j = 0; j &lt; w; j++ ) {
@@ -14740,15 +14744,19 @@ for ( i = -1; i &lt; h + 1; i++ ) {
         b = Round2( b, BitDepth - 8 )
         p = Max( 0, a * n - b * b )
         z = Round2( p * s, SGRPROJ_MTABLE_BITS )
-        a2 = X_By_Xplus1[ Min( z, 255 ) ]
-        b2 = ( (1 &lt;&lt; SGRPROJ_SGR_BITS) - a2 ) * b * One_By_X[ n - 1 ]
+        if ( z &gt;= 255 )
+            a2 = 256
+        else
+            a2 = ((z &lt;&lt; SGRPROJ_SGR_BITS) + (z/2)) / (z + 1)
+        oneOverN = ((1 &lt;&lt; SGRPROJ_RECIP_BITS) + (n/2)) / n
+        b2 = ( (1 &lt;&lt; SGRPROJ_SGR_BITS) - a2 ) * b * oneOverN
         A[ i ][ j ] = a2
         B[ i ][ j ] = Round2( b2, SGRPROJ_RECIP_BITS )
     }
 }
 </code></pre>
 
-<p>where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.12.5</a> should be invoked
+<p>where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.12.6</a> should be invoked
 and the output assigned to variable c.</p>
 
 <p>After A and B are prepared, the output array F is generated as follows:</p>
@@ -14778,32 +14786,6 @@ and the output assigned to variable c.</p>
   { 2, 55, 1, 14 }, { 2, 65, 1, 15 }, { 2, 75, 1, 16 }, { 2, 30, 1, 6 },
   { 2, 50, 1, 12 }, { 2, 60, 1, 13 }, { 2, 70, 1, 14 }, { 2, 80, 1, 15 }
 }
-
-X_By_Xplus1[ 256 ] = {
-  0,   128, 171, 192, 205, 213, 219, 224, 228, 230, 233, 235, 236, 238, 239,
-  240, 241, 242, 243, 243, 244, 244, 245, 245, 246, 246, 247, 247, 247, 247,
-  248, 248, 248, 248, 249, 249, 249, 249, 249, 250, 250, 250, 250, 250, 250,
-  250, 251, 251, 251, 251, 251, 251, 251, 251, 251, 251, 252, 252, 252, 252,
-  252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 253, 253,
-  253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253,
-  253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 254, 254, 254,
-  254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254,
-  254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254,
-  254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254,
-  254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254,
-  254, 254, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-  256
-}
-
-One_By_X[MAX_NELEM] = {
-  4096, 2048, 1365, 1024, 819, 683, 585, 512, 455, 410, 372, 341, 315,
-  293,  273,  256,  241,  228, 216, 205, 195, 186, 178, 171, 164,
-}
 </code></pre>
 
 <h4 id="wiener-filter-process">Wiener Filter Process</h4>
@@ -14831,9 +14813,11 @@ One_By_X[MAX_NELEM] = {
 First a horizontal filter is used to build up a temporary array, and then this
 array is vertically filtered to obtain the final prediction.</p>
 
-<p>The array hfilter (containing the wiener filter coefficients for horizontal filtering) is set equal to LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 0 ].</p>
+<p>The Wiener coefficient process specified in <a href="#wiener-coefficient-process">section 7.12.5</a> is invoked with an input of LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 0 ] and the output assigned to vfilter.</p>
 
-<p>The array vfilter (containing the wiener filter coefficients for vertical filtering) is set equal to LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 1 ].</p>
+<p>The Wiener coefficient process specified in <a href="#wiener-coefficient-process">section 7.12.5</a> is invoked with an input of LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 1 ] and the output assigned to hfilter.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> The horizontal filter needs to be applied before the vertical filter, but the horizontal coefficients are sent after the vertical coefficients.</p>
 
 <p>The filtering is applied as follows:</p>
 
@@ -14841,19 +14825,20 @@ array is vertically filtered to obtain the final prediction.</p>
   <li>
     <p>The array intermediate is specified as follows:</p>
 
-    <pre><code class="language-c">top = (1 &lt;&lt; (BitDepth + 1 + EXTRAPREC_BITS)) - 1
+    <pre><code class="language-c">offset = (1 &lt;&lt; (BitDepth + EXTRAPREC_BITS - 1))
+limit = (1 &lt;&lt; (BitDepth + 1 + EXTRAPREC_BITS)) - 1
 for ( r = 0; r &lt; h + 7; r++ ) {
     for ( c = 0; c &lt; w; c++ ) {
-        s = get_source_sample( plane, x + c - 3, y + r - 3 ) &lt;&lt; FILTER_BITS
-        s += 1 &lt;&lt; (BitDepth + FILTER_BITS - 1)
-        for ( t = 0; t &lt; 8; t++ )
+        s = 1 &lt;&lt; (BitDepth + FILTER_BITS - 1)
+        for ( t = 0; t &lt; 7; t++ )
             s += hfilter[ t ] * get_source_sample( plane, x + c + t - 3, y + r - 3 )
-        intermediate[ r ][ c ] = Round2(s, FILTER_BITS - EXTRAPREC_BITS)
+        v = Round2(s, FILTER_BITS - EXTRAPREC_BITS)
+        intermediate[ r ][ c ] = Clip3( -offset, limit - offset, v)
     }
 }
 </code></pre>
 
-    <p>Where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.12.5</a> should be invoked.</p>
+    <p>Where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.12.6</a> should be invoked.</p>
   </li>
   <li>
     <p>The output samples are written as follows:</p>
@@ -14862,14 +14847,39 @@ for ( r = 0; r &lt; h + 7; r++ ) {
     for ( c = 0; c &lt; w; c++ ) {
         s = intermediate[ r + 3 ][ c ] &lt;&lt; FILTER_BITS
         s += 1 &lt;&lt; ( BitDepth + FILTER_BITS + EXTRAPREC_BITS - 1 )
-        for ( t = 0; t &lt; 8; t++ )
+        for ( t = 0; t &lt; 7; t++ )
             s += vfilter[ t ] * intermediate[ r + t ][ c ]
-        LrFrame[ plane ][ y + r ][ x + c ] = Round2( s, FILTER_BITS + EXTRAPREC_BITS )
+            v = Round2( s, FILTER_BITS + EXTRAPREC_BITS )
+        LrFrame[ plane ][ y + r ][ x + c ] = Clip1( v )
     }
 }
 </code></pre>
   </li>
 </ul>
+
+<h4 id="wiener-coefficient-process">Wiener Coefficient Process</h4>
+
+<p>The input to this process is an array coeff containing 3 coefficients.</p>
+
+<p>The output from this process is an an array containing 7 coefficients.</p>
+
+<p>The Wiener filter is always symmetrical and has a unit DC gain, so there are only three coefficients that need to be explicitly coded.</p>
+
+<p>This process computes the full set of coefficients as follows:</p>
+
+<pre><code class="language-c">filter[ 3 ] = 128
+for ( i = 0; i &lt; 3; i++ ) {
+    c = coeff[ i ]
+    filter[ i ] = c
+    filter[ 6 - i ] = c
+    filter[ 3 ] -= 2 * c
+}
+</code></pre>
+
+<p>The output of the process is the array filter.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> When chroma is being filtered, coeff[ 0 ] will always be equal to 0, therefore filter[ 0 ] and filter[ 6 ] will always be equal to 0.
+In other words, luma uses a 7-tap filter, while chroma uses a 5-tap filter.</p>
 
 <h4 id="get-source-sample-process">Get Source Sample Process</h4>
 
@@ -14880,7 +14890,7 @@ for ( r = 0; r &lt; h + 7; r++ ) {
     <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
   </li>
   <li>
-    <p>variables unitRorw and unitCol specifying which loop restoration unit we are in (relative to the current tile),</p>
+    <p>variables unitRow and unitCol specifying which loop restoration unit we are in (relative to the current tile),</p>
   </li>
   <li>
     <p>variables x and y specifying the location in the current plane in units of samples.</p>
@@ -14889,8 +14899,8 @@ for ( r = 0; r &lt; h + 7; r++ ) {
 
 <p>This process makes sure samples are taken from within the allowed extent for loop restoration filtering.</p>
 
-<p>Samples within the current stripe have had Cdef filtering applied, samples outside the current stripe
-have not had Cdef filtering applied.</p>
+<p>Samples within the current stripe are taken after Cdef filtering has been applied, samples outside the current stripe
+are taken before Cdef filtering.</p>
 
 <p>The sample to return is specified as follows:</p>
 
