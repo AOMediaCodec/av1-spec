@@ -85,7 +85,7 @@ The specification has been updated to include the following list of adopted expe
 | frame_marker                  |
 | no_frame_context_signalling   |
 | segment_zeromv                |
-| loop_restoration              | Wiener Filter convolve not yet complete
+| loop_restoration              |
 | striped_loop_restoration      |
 {:.table .table-sm .table-bordered }
 
