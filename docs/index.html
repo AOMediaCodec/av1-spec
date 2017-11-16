@@ -34,7 +34,7 @@
 <p><em>Version 0.3</em><br />
 <em>© 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2017-11-16 01:17:42 -0800</em></p>
+<p><em>Last modified: 2017-11-16 06:31:41 -0800</em></p>
 
 <p class="alert alert-danger"><strong>Draft Document</strong><br />
 This document is a work in process draft, and will change substantially before
@@ -1610,11 +1610,6 @@ relate to the semantics of a particular syntax element are defined in
       <td><code>CFL_ALPHABET_SIZE</code></td>
       <td style="text-align: center">16</td>
       <td>Number of values for <code>cfl_alpha_u</code> and <code>cfl_alpha_v</code></td>
-    </tr>
-    <tr>
-      <td><code>MV_BIT_CONTEXTS</code></td>
-      <td style="text-align: center">6</td>
-      <td>Number of contexts for <code>mv_bit</code></td>
     </tr>
     <tr>
       <td><code>COMP_INTER_CONTEXTS</code></td>
@@ -4770,6 +4765,13 @@ get_scan( plane, txSz ) {
 }
 </code></pre>
 
+<p>The function sort( arr, i1, i2 ) sorts a subarray of the array arr in-place into ascending order. The
+subarray to be sorted is between indices i1 and i2 inclusive.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> The palette colors are generated in ascending order.
+The palette cache is also in ascending order.
+This means that the sort function can be replaced in implementations by a merge of two sorted lists.</p>
+
 <p>where the function get_palette_cache, which merges the above and left palettes to form a cache,
 is specified as follows:</p>
 
@@ -4825,8 +4827,7 @@ is specified as follows:</p>
 }
 </code></pre>
 
-<p>The function sort( arr, i1, i2 ) sorts a subarray of the array arr in-place into ascending order. The
-subarray to be sorted is between indices i1 and i2 inclusive.</p>
+<p class="alert alert-info"><strong>Note:</strong> get_palette_cache is equivalent to sorting the available palette colors from above and left together and removing any duplicates.</p>
 
 <h4 id="transform-type-syntax">Transform Type Syntax</h4>
 
@@ -5996,28 +5997,31 @@ col = 0..MiCols-1.</p>
         <p>SingleRefCdf is set to a copy of Default_Single_Ref_Cdf</p>
       </li>
       <li>
-        <p>MvJointCdf[ i ] is set to a copy of Default_Mv_Joint_Cdf for i = 0..MV_CONTEXTS</p>
+        <p>MvJointCdf[ i ] is set to a copy of Default_Mv_Joint_Cdf for i = 0..MV_CONTEXTS-1</p>
       </li>
       <li>
-        <p>MvClassCdf[ i ] is set to a copy of Default_Mv_Class_Cdf for i = 0..MV_CONTEXTS</p>
+        <p>MvClassCdf[ i ][ comp ] is set to a copy of Default_Mv_Class_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
       </li>
       <li>
-        <p>MvClass0BitCdf is set to a copy of Default_Mv_Class0_Bit_Cdf</p>
+        <p>MvClass0BitCdf[ i ][ comp ] is set to a copy of Default_Mv_Class0_Bit_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
       </li>
       <li>
-        <p>MvFrCdf[ i ] is set to a copy of Default_Mv_Fr_Cdf for i = 0..MV_CONTEXTS</p>
+        <p>MvFrCdf[ i ][ comp ] is set to a copy of Default_Mv_Fr_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
       </li>
       <li>
-        <p>MvClass0FrCdf[ i ] is set to a copy of Default_Mv_Class0_Fr_Cdf for i = 0..MV_CONTEXTS</p>
+        <p>MvClass0FrCdf[ i ][ comp ] is set to a copy of Default_Mv_Class0_Fr_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
       </li>
       <li>
-        <p>MvClass0HpCdf is set to a copy of Default_Mv_Class0_Hp_Cdf</p>
+        <p>MvClass0HpCdf[ i ][ comp ] is set to a copy of Default_Mv_Class0_Hp_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
       </li>
       <li>
-        <p>MvBitCdf is set to a copy of Default_Mv_Bit_Cdf</p>
+        <p>MvSignCdf[ i ][ comp ] is set to a copy of Default_Mv_Sign_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
       </li>
       <li>
-        <p>MvHpCdf is set to a copy of Default_Mv_Hp_Cdf</p>
+        <p>MvBitCdf[ i ][ comp ] is set to a copy of Default_Mv_Bit_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
+      </li>
+      <li>
+        <p>MvHpCdf[ i ][ comp ] is set to a copy of Default_Mv_Hp_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
       </li>
       <li>
         <p>TailTokenCdf is set to a copy of Default_Tail_Token_Cdf</p>
@@ -14401,6 +14405,8 @@ to 1, the variables are set to indicate the whole frame is available. If
 loop_filter_across_tiles is equal to 0, the variables are set according to the
 tile that includes the current block.</p>
 
+<p>The variable coeffShift is set equal to BitDepth - 8.</p>
+
 <p>The filtering is applied as follows:</p>
 
 <pre><code class="language-c">startX = (c * MI_SIZE ) &gt;&gt; sub
@@ -14415,14 +14421,14 @@ for ( i = 0; i &lt; size; i++ ) {
         for (k = 0; k &lt; 2; k++) {
             for (sign = -1; sign &lt;= 1; sign += 2) {
                 p = cdef_get_at(plane, x0, y0, i, j, dir, k,  sign)
-                sum += Cdef_Pri_Taps[priStr &amp; 1][k] * constrain(p - x, priStr, damping)
+                sum += Cdef_Pri_Taps[(priStr &gt;&gt; coeffShift) &amp; 1][k] * constrain(p - x, priStr, damping)
                 if (p != CDEF_VERY_LARGE) {
                     max = Max(p, max)
                     min = Min(p, min)
                 }
                 for ( dirOff = -2; dirOff &lt;= 2; dirOff += 4) {
                     s = cdef_get_at(plane, x0, y0, i, j, (dir + dirOff) &amp; 7, k,  sign)
-                    sum += Cdef_Sec_Taps[priStr &amp; 1][k] * constrain(s - x, secStr, damping)
+                    sum += Cdef_Sec_Taps[(priStr &gt;&gt; coeffShift) &amp; 1][k] * constrain(s - x, secStr, damping)
                     if (s != CDEF_VERY_LARGE) {
                         max = Max(s, max)
                         min = Min(s, min)
@@ -14632,7 +14638,7 @@ if larger blocks are used - provided all contained samples belong to the same lo
     <p>If rType is equal to RESTORE_WIENER, the Wiener filter process specified in <a href="#wiener-filter-process">section 7.12.4</a> is invoked with plane, unitRow, unitCol, x, y, w, h as inputs.</p>
   </li>
   <li>
-    <p>Otherwise, if rType is equal to RESTORE_SGD, the self guided filter process specified in <a href="#self-guided-filter-process">section 7.12.2</a> is invoked with plane, unitRow, unitCol, row, and col as inputs.</p>
+    <p>Otherwise, if rType is equal to RESTORE_SGRPROJ, the self guided filter process specified in <a href="#self-guided-filter-process">section 7.12.2</a> is invoked with plane, unitRow, unitCol, row, and col as inputs.</p>
   </li>
   <li>
     <p>Otherwise (rType is equal to RESTORE_NONE), no filtering is applied.</p>
@@ -14829,7 +14835,7 @@ array is vertically filtered to obtain the final prediction.</p>
 limit = (1 &lt;&lt; (BitDepth + 1 + EXTRAPREC_BITS)) - 1
 for ( r = 0; r &lt; h + 7; r++ ) {
     for ( c = 0; c &lt; w; c++ ) {
-        s = 1 &lt;&lt; (BitDepth + FILTER_BITS - 1)
+        s = 0
         for ( t = 0; t &lt; 7; t++ )
             s += hfilter[ t ] * get_source_sample( plane, x + c + t - 3, y + r - 3 )
         v = Round2(s, FILTER_BITS - EXTRAPREC_BITS)
@@ -14839,17 +14845,18 @@ for ( r = 0; r &lt; h + 7; r++ ) {
 </code></pre>
 
     <p>Where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.12.6</a> should be invoked.</p>
+
+    <p class="alert alert-info"><strong>Note:</strong> The intermediate result is clipped so that ( intermediate[ r ][ c ] + offset ) fits in an unsigned variable with (BitDepth + 3) bits.</p>
   </li>
   <li>
     <p>The output samples are written as follows:</p>
 
     <pre><code class="language-c">for ( r = 0; r &lt; h; r++ ) {
     for ( c = 0; c &lt; w; c++ ) {
-        s = intermediate[ r + 3 ][ c ] &lt;&lt; FILTER_BITS
-        s += 1 &lt;&lt; ( BitDepth + FILTER_BITS + EXTRAPREC_BITS - 1 )
+        s = 0
         for ( t = 0; t &lt; 7; t++ )
             s += vfilter[ t ] * intermediate[ r + t ][ c ]
-            v = Round2( s, FILTER_BITS + EXTRAPREC_BITS )
+        v = Round2( s, FILTER_BITS + EXTRAPREC_BITS )
         LrFrame[ plane ][ y + r ][ x + c ] = Clip1( v )
     }
 }
@@ -15200,6 +15207,9 @@ prefixed with “Tile”.  This copying produces the following arrays:</p>
   </li>
   <li>
     <p>TileMvJointCdf</p>
+  </li>
+  <li>
+    <p>TileMvSignCdf</p>
   </li>
   <li>
     <p>TileMvClassCdf</p>
@@ -16361,6 +16371,8 @@ where ctx is computed by:</p>
 
 <p><strong>mv_joint</strong>: the cdf is given by TileMvJointCdf[ MvCtx ].</p>
 
+<p><strong>mv_sign</strong>: the cdf is given by TileMvSignCdf[ MvCtx ][ comp ].</p>
+
 <p><strong>mv_class</strong>: the cdf is given by TileMvClassCdf[ MvCtx ][ comp ].</p>
 
 <p><strong>mv_class0_bit</strong>: the cdf is given by TileMvClass0BitCdf[ MvCtx ][ comp ].</p>
@@ -16371,6 +16383,8 @@ TileMvClass0FrCdf[ MvCtx ][ comp ][ mv_class0_bit ].</p>
 <p><strong>mv_class0_hp</strong>: the cdf is given by TileMvClass0HpCdf[ MvCtx ][ comp ].</p>
 
 <p><strong>mv_fr</strong>: the cdf is given by TileMvFrCdf[ MvCtx ][ comp ].</p>
+
+<p><strong>mv_bit</strong>: the cdf is given by TileMvBitCdf[ MvCtx ][ comp ][ i ].</p>
 
 <p><strong>tail_token</strong>: the cdf is given by
 TileTailTokenCdf[ txSz ][ plane &gt; 0 ][ is_inter ][ band ][ ctx ] where ctx is computed by:</p>
@@ -18876,12 +18890,21 @@ type with the horizontal and vertical operations transposed.</p>
 }
 </code></pre>
 
+<pre><code class="language-c">Default_Mv_Sign_Cdf[3] = {
+  128*128, 32768, 0
+}
+</code></pre>
+
 <pre><code class="language-c">Default_Mv_Bit_Cdf[ MV_BIT_CONTEXTS ][ 3 ] = {
-  { 196*128, 32768, 0 },
-  { 198*128, 32768, 0 },
-  { 208*128, 32768, 0 },
+  { 136*128, 32768, 0 },
+  { 140*128, 32768, 0 },
+  { 148*128, 32768, 0 },
+  { 160*128, 32768, 0 },
+  { 176*128, 32768, 0 },
+  { 192*128, 32768, 0 },
   { 224*128, 32768, 0 },
-  { 245*128, 32768, 0 },
+  { 234*128, 32768, 0 },
+  { 234*128, 32768, 0 },
   { 240*128, 32768, 0 }
 }
 </code></pre>
