@@ -34,7 +34,7 @@
 <p><em>Version 0.3</em><br />
 <em>© 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2017-11-16 06:31:41 -0800</em></p>
+<p><em>Last modified: 2017-11-20 05:01:36 -0800</em></p>
 
 <p class="alert alert-danger"><strong>Draft Document</strong><br />
 This document is a work in process draft, and will change substantially before
@@ -501,12 +501,7 @@ matrices) or its single sample value.</p>
   <dt>Compound prediction</dt>
   <dd>
     <p>A type of inter prediction where sample values are computed by blending
-together predictions from two different reference frames.</p>
-  </dd>
-  <dt>Compressed header</dt>
-  <dd>
-    <p>An arithmetically encoded description of frame level settings of transform
-mode and probability adjustments.</p>
+together predictions from two reference frames (the frames blended can be the same or different).</p>
   </dd>
   <dt>DC coefficient</dt>
   <dd>
@@ -540,16 +535,22 @@ that conforms to the description provided in this document.</p>
   </dd>
   <dt>Flag</dt>
   <dd>
-    <p>A binary variable.</p>
+    <p>A binary variable - some variables and syntax elements (e.g. obu_extension_flag)
+are described using the word flag to highlight
+that the syntax element can only be equal to 0 or equal to 1.</p>
   </dd>
   <dt>Frame</dt>
   <dd>
-    <p>The representation of video signals in the space domain, composed of one luma
+    <p>The representation of video signals in the spatial domain, composed of one luma
 sample matrix (Y) and two chroma sample matrices (U and V).</p>
   </dd>
   <dt>Frame context</dt>
   <dd>
     <p>A set of probabilities used in the decoding process.</p>
+  </dd>
+  <dt>Frame buffer</dt>
+  <dd>
+    <p>A storage area for a previously decoded frame and associated information.</p>
   </dd>
   <dt>Golden frame</dt>
   <dd>
@@ -585,7 +586,9 @@ decoded.</p>
 
     <p class="alert alert-info"><strong>Note:</strong> A key frame is different to an intra-only frame even though both
 only use intra prediction. The difference is that a key frame fully resets the
-decoding process.</p>
+decoding process.  For example, for a sequence of frames A, B, C, frame C can
+use frame A as a reference if B was an intra-only frame - but not if B was
+a keyframe.</p>
   </dd>
   <dt>Intra prediction</dt>
   <dd>
@@ -622,7 +625,8 @@ signal related to the primary colors.</p>
   </dd>
   <dt>Mode info</dt>
   <dd>
-    <p>A header that specifies how a block should be predicted.</p>
+    <p>Syntax elements sent for a block containing an indication of how a block is
+to be predicted during the decoding process.</p>
   </dd>
   <dt>Mode info block</dt>
   <dd>
@@ -713,7 +717,7 @@ frames, from 0 to 1023 (inclusive) for 10-bit frames, and from 0 to 4095
   <dt>Segmentation map</dt>
   <dd>
     <p>A 3-bit number containing the segment affiliation for each 4x4 block in the
-image. The segmentation map persists across frames.</p>
+image. The segmentation map persists across frames.  (TODO change with segment_pred_last experiment)</p>
   </dd>
   <dt>Sequence</dt>
   <dd>
@@ -752,7 +756,7 @@ be applied.</p>
 
     <p class="alert alert-info"><strong>Note:</strong> For AV1 this intention is only partially met. Partitioning into
 columns works as expected, but partitioning into rows does not. The decode of
-a tile depends on the decode of the tile above.</p>
+a tile depends on the decode of the tile above if dependent_tiles is equal to 1.</p>
   </dd>
   <dt>Transform block</dt>
   <dd>
@@ -1537,6 +1541,21 @@ relate to the semantics of a particular syntax element are defined in
       <td>Number of extra bits of precision in warped filtering</td>
     </tr>
     <tr>
+      <td><code>GM_ALPHA_PREC_DIFF</code></td>
+      <td style="text-align: center">1</td>
+      <td>TODO</td>
+    </tr>
+    <tr>
+      <td><code>GM_TRANS_PREC_BITS</code></td>
+      <td style="text-align: center">6</td>
+      <td>TODO</td>
+    </tr>
+    <tr>
+      <td><code>GM_TRANS_ONLY_PREC_BITS</code></td>
+      <td style="text-align: center">3</td>
+      <td>TODO</td>
+    </tr>
+    <tr>
       <td><code>INTERINTRA_MODES</code></td>
       <td style="text-align: center">4</td>
       <td>Number of inter intra modes</td>
@@ -1735,6 +1754,11 @@ relate to the semantics of a particular syntax element are defined in
       <td><code>SGRPROJ_SGR_BITS</code></td>
       <td style="text-align: center">8</td>
       <td>Internal precision bits for core selfguided_restoration</td>
+    </tr>
+    <tr>
+      <td><code>SELECT_INTEGER_MV</code></td>
+      <td style="text-align: center">2</td>
+      <td>Value that indicates the force_integer_mv syntax element is coded</td>
     </tr>
   </tbody>
 </table>
@@ -2194,7 +2218,7 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
     else if ( obu_type == OBU_TD )
         temporal_delimiter_obu()
     else if ( obu_type == OBU_FRAME_HEADER )
-        frame_header_obu()
+        frame_header_obu( sz )
     else if ( obu_type == OBU_TILE_GROUP )
         tile_group_obu( sz )
     else if ( obu_type == OBU_METADATA )
@@ -2419,6 +2443,17 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
         <b class="syntax-element">allow_screen_content_tools</b>                                           f(1)
         refresh_frame_flags = 0xFF
         CurrentVideoFrame = 0
+        if (allow_screen_content_tools) {
+            <b class="syntax-element">seq_choose_integer_mv</b>                                            f(1)
+            if ( seq_choose_integer_mv ) {
+                seq_force_integer_mv = SELECT_INTEGER_MV
+            } else {
+                <b class="syntax-element">seq_force_integer_mv</b>                                         f(1)
+            }
+        } else {
+            seq_force_integer_mv = 0
+        }
+    }
     } else {
         if ( frame_type == INTRA_ONLY_FRAME ) {
             <b class="syntax-element">allow_screen_content_tools</b>                                       f(1)
@@ -2469,7 +2504,15 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
                 frame_size( )
                 render_size( )
             }
-            <b class="syntax-element">allow_high_precision_mv</b>                                          f(1)
+            if ( seq_force_integer_mv == SELECT_INTEGER_MV )
+                <b class="syntax-element">force_integer_mv</b>                                             f(1)
+            else
+                force_integer_mv = seq_force_integer_mv
+            if ( force_integer_mv ) {
+                allow_high_precision_mv = 0
+            } else {
+                <b class="syntax-element">allow_high_precision_mv</b>                                      f(1)
+            }
             read_interpolation_filter( )
             if ( error_resilient_mode ) {
                 can_use_previous = 0
@@ -3047,6 +3090,9 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
     gm_params[ref][idx] = (decode_signed_subexp_with_ref( -mx, mx + 1, r ) &lt;&lt; precDiff) + round
 }
 </code></pre>
+
+<p class="alert alert-info"><strong>Note:</strong> When force_integer_mv is equal to 1, some fractional bits are still read for the translation components.
+However, these fractional bits will be discarded during the Setup Zero MV process.</p>
 
 <h4 id="decode-signed-subexp-with-ref-syntax">Decode Signed Subexp With Ref Syntax</h4>
 
@@ -3928,7 +3974,7 @@ of the segmentation map covered by the current block.</p>
             if ( compMode == NEWMV &amp;&amp; NumMvFound &lt;= 1)
                 useStack = 0
             if ( useStack ) {
-                PredMv[ i ] = RefStackMv[ pos ]
+                PredMv[ i ] = RefStackMv[ pos ][ i ]
                 if ( YMode == NEARMV &amp;&amp; pos &gt; 1 ) {
                     // No clamping
                 } else {
@@ -3953,7 +3999,8 @@ of the segmentation map covered by the current block.</p>
         motion_mode = SIMPLE
         return
     }
-    if ( YMode == GLOBALMV || YMode == GLOBAL_GLOBALMV) {
+    if ( !force_integer_mv &amp;&amp; 
+         ( YMode == GLOBALMV || YMode == GLOBAL_GLOBALMV ) ) {
         if (gm_type[ RefFrame[ 0 ] ] &gt; TRANSLATION) {
             motion_mode = SIMPLE
             return
@@ -3964,7 +4011,7 @@ of the segmentation map covered by the current block.</p>
         return
     }
     find_warp_samples()
-    if ( NumSamples == 0) {
+    if ( force_integer_mv || NumSamples == 0) {
         <b class="syntax-element">use_obmc</b>                                                             S
         motion_mode = use_obmc ? OBMC : SIMPLE
     } else {
@@ -4091,8 +4138,14 @@ previous candidate.</p>
     <b class="syntax-element">mv_class</b>                                                                 S
     if ( mv_class == MV_CLASS_0 ) {
         <b class="syntax-element">mv_class0_bit</b>                                                        S
-        <b class="syntax-element">mv_class0_fr</b>                                                         S
-        <b class="syntax-element">mv_class0_hp</b>                                                         S
+        if ( force_integer_mv )
+            mv_class0_fr = 3
+        else
+            <b class="syntax-element">mv_class0_fr</b>                                                     S
+        if ( allow_high_precision_mv )
+            mv_class0_hp = 1
+        else
+            <b class="syntax-element">mv_class0_hp</b>                                                     S
         mag = ( ( mv_class0_bit &lt;&lt; 3 ) |
                 ( mv_class0_fr &lt;&lt; 1 ) |
                   mv_class0_hp ) + 1
@@ -4103,8 +4156,14 @@ previous candidate.</p>
             d |= mv_bit &lt;&lt; i
         }
         mag = CLASS0_SIZE &lt;&lt; ( mv_class + 2 )
-        <b class="syntax-element">mv_fr</b>                                                                S
-        <b class="syntax-element">mv_hp</b>                                                                S
+        if ( force_integer_mv )
+            mv_fr = 3
+        else
+            <b class="syntax-element">mv_fr</b>                                                            S
+        if ( allow_high_precision_mv )
+            mv_hp = 1
+        else
+            <b class="syntax-element">mv_hp</b>                                                            S
         mag += ( ( d &lt;&lt; 3 ) | ( mv_fr &lt;&lt; 1 ) | mv_hp ) + 1
     }
     return mv_sign ? -mag : mag
@@ -4836,7 +4895,7 @@ is specified as follows:</p>
     set = get_tx_set( txSz )
 
     if ( set &gt; 0 &amp;&amp;
-         ( segmentation_enabled ? get_qindex( 1 ) : base_q_idx ) &gt; 0 &amp;&amp;
+         ( segmentation_enabled ? get_qindex( 1, segment_id ) : base_q_idx ) &gt; 0 &amp;&amp;
          !skip &amp;&amp;
          !seg_feature_active( SEG_LVL_SKIP ) ) {
         if ( is_inter ) {
@@ -5253,6 +5312,12 @@ structures.</p>
 
 <p>Each OBU is given to the decoding process in turn as a bitstream along
 with a variable sz that gives the total number of bytes in the OBU.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> Encoders should always set sz equal to the actual size of the OBU.
+Decoders should ignore any extra bytes if sz is greater than the actual size of the OBU.
+(For example, this may be needed if a future version of AV1 defines some additional
+fields at the end of the frame header, that are not strictly required for decoding,
+but if interpreted can improve the decoding).</p>
 
 <p>OBUs must begin at a byte boundary.</p>
 
@@ -5805,6 +5870,13 @@ pixels.</p>
 palette encoding; allow_screen_content_tools equal to 0 indicates that palette
 encoding is never used.</p>
 
+<p><strong>seq_choose_integer_mv</strong> equal to 1 indicates that the force_integer_mv syntax element
+will be present in the frame headers of inter and intra-only frames.</p>
+
+<p><strong>seq_force_integer_mv</strong> equal to SELECT_INTEGER_MV indicates that the force_integer_mv syntax element
+will be present in the frame headers of inter and intra-only frames.  Otherwise, seq_force_integer_mv
+contains the value for force_integer_mv.</p>
+
 <p><strong>intra_reset_all</strong> equal to 1 indicates that all contexts should be reset;
 intra_reset_all equal to 0 indicates that only the context in the frame header
 should be reset.</p>
@@ -5845,6 +5917,9 @@ order of pictures.</p>
 It is a requirement of bitstream conformance that whenever RefFrameId is calculated, the value matches
 the value of current_frame_id at the time that the frame indexed by
 ref_frame_idx was stored.</p>
+
+<p><strong>force_integer_mv</strong> equal to 1 specifies that motion vectors will always be integers.
+force_integer_mv equal to 0 specifies that motion vectors can contain fractional bits.</p>
 
 <p><strong>allow_high_precision_mv</strong> equal to 0 specifies that motion vectors are
 specified to quarter pel precision; allow_high_precision_mv equal to 1
@@ -6268,7 +6343,7 @@ coded using intra prediction.</p>
 <p>When compute_image_size is invoked, if this is the first time compute_image_size is invoked, or if either
 FrameWidth or FrameHeight have changed in value compared to the previous
 time this function was invoked, then the segmentation map is cleared to
-all zeros by setting SegmentId[ row ][ col ] equal to 0 for row =
+all zeros by setting SegmentIds[ row ][ col ] equal to 0 for row =
 0..MiRows-1 and col = 0..MiCols-1.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> compute_image_size is not invoked and therefore segmentation map is
@@ -6907,6 +6982,8 @@ the component blocks within this block:</p>
     </tr>
   </tbody>
 </table>
+
+<p>The symbol BLOCK_LARGEST is defined as equal to BLOCK_128X128.</p>
 
 <p>The dimensions of these blocks are given in width, height order (e.g.
 BLOCK_8X16 corresponds to a block that is 8 pixels wide, and 16 pixels high).</p>
@@ -8812,7 +8889,10 @@ in the inter block mode info syntax described in <a href="#inter-block-mode-info
       mv[1] = Round2Signed(yc, WARPEDMODEL_PREC_BITS - 2) * 2
     }
 }
+lower_mv_precision( mv )
 </code></pre>
+
+<p>where the call to lower_mv_precision invokes the lower precision process specified in <a href="#lower-precision-process">section 7.6.3.9</a>.</p>
 
 <h5 id="spatial-motion-vector-candidate-process">Spatial Motion Vector Candidate Process</h5>
 
@@ -9511,17 +9591,27 @@ the compound search stack process in <a href="#compound-search-stack-process">se
 
 <p>The input to this process is a reference candMv to a motion vector array.</p>
 
-<p>This process modifies the contents of the input motion vector to remove the least significant bit when high precision is not allowed.</p>
+<p>This process modifies the contents of the input motion vector to remove the least significant bit when high precision is not allowed,
+and all three fractional bits when force_integer_mv is equal to 1.</p>
 
 <p>If allow_high_precision_mv is equal to 1, this process terminates immediately.</p>
 
 <p>For i = 0..1, the following applies:</p>
 
-<pre><code class="language-c">if (candMv[ i ] &amp; 1) {
+<pre><code class="language-c">if (force_integer_mv) {
+    a = Abs( candMv[ i ] )
+    aInt = (a + 3) &gt;&gt; 3
     if (candMv[ i ] &gt; 0)
-        candMv[ i ]--
+        candMv[ i ] = aInt &lt;&lt; 3
     else
-        candMv[ i ]++
+        candMv[ i ] = -( aInt &lt;&lt; 3 )
+} else {
+    if (candMv[ i ] &amp; 1) {
+        if (candMv[ i ] &gt; 0)
+            candMv[ i ]--
+        else
+            candMv[ i ]++
+    }
 }
 </code></pre>
 
@@ -10733,6 +10823,9 @@ the following ordered steps:</p>
     <ul>
       <li>
         <p>If w &lt; 8 or h &lt; 8, useWarp is set equal to 0.</p>
+      </li>
+      <li>
+        <p>Otherwise, if force_integer_mv is equal to 1, useWarp is set equal to 0.</p>
       </li>
       <li>
         <p>Otherwise, if motion_mode is equal to LOCALWARP, useWarp is set equal to 1.</p>
@@ -12460,7 +12553,7 @@ defined as follows:</p>
 }
 </code></pre>
 
-<p>The function get_qindex( ignoreDeltaQ ) returns the quantizer index for the current block and is specified by the following:</p>
+<p>The function get_qindex( ignoreDeltaQ, segmentId ) returns the quantizer index for the current block and is specified by the following:</p>
 
 <ul>
   <li>
@@ -12468,7 +12561,7 @@ defined as follows:</p>
 
     <ol>
       <li>
-        <p>Set the variable data equal to FeatureData[ segment_id ][ SEG_LVL_ALT_Q ].</p>
+        <p>Set the variable data equal to FeatureData[ segmentId ][ SEG_LVL_ALT_Q ].</p>
       </li>
       <li>
         <p>Set data equal to base_q_idx + data</p>
@@ -12491,10 +12584,10 @@ coefficient for a particular plane and is derived as follows:</p>
 
 <ul>
   <li>
-    <p>If plane is equal to 0, return dc_q( get_qindex( 0 ) + deltaQYDc ).</p>
+    <p>If plane is equal to 0, return dc_q( get_qindex( 0, segment_id ) + deltaQYDc ).</p>
   </li>
   <li>
-    <p>Otherwise, return dc_q( get_qindex( 0 ) + deltaQUVDc ).</p>
+    <p>Otherwise, return dc_q( get_qindex( 0, segment_id ) + deltaQUVDc ).</p>
   </li>
 </ul>
 
@@ -12503,10 +12596,10 @@ coefficient for a particular plane and is derived as follows:</p>
 
 <ul>
   <li>
-    <p>If plane is equal to 0, return ac_q( get_qindex( 0 ) ).</p>
+    <p>If plane is equal to 0, return ac_q( get_qindex( 0, segment_id ) ).</p>
   </li>
   <li>
-    <p>Otherwise, return ac_q( get_qindex( 0 ) + deltaQUVAc ).</p>
+    <p>Otherwise, return ac_q( get_qindex( 0, segment_id ) + deltaQUVAc ).</p>
   </li>
 </ul>
 
@@ -16383,6 +16476,8 @@ TileMvClass0FrCdf[ MvCtx ][ comp ][ mv_class0_bit ].</p>
 <p><strong>mv_class0_hp</strong>: the cdf is given by TileMvClass0HpCdf[ MvCtx ][ comp ].</p>
 
 <p><strong>mv_fr</strong>: the cdf is given by TileMvFrCdf[ MvCtx ][ comp ].</p>
+
+<p><strong>mv_hp</strong>: the cdf is given by TileMvHpCdf[ MvCtx ][ comp ].</p>
 
 <p><strong>mv_bit</strong>: the cdf is given by TileMvBitCdf[ MvCtx ][ comp ][ i ].</p>
 
@@ -26829,6 +26924,10 @@ external means.</p>
         <td>striped_loop_restoration</td>
         <td> </td>
       </tr>
+      <tr>
+        <td>amvr</td>
+        <td>Bug 1048 not yet fixed in code or spec</td>
+      </tr>
     </tbody>
   </table>
 
@@ -26882,10 +26981,6 @@ external means.</p>
       </tr>
       <tr>
         <td>coef_ctx_reduce</td>
-        <td> </td>
-      </tr>
-      <tr>
-        <td>amvr</td>
         <td> </td>
       </tr>
       <tr>
