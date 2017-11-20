@@ -34,7 +34,7 @@
 <p><em>Version 0.3</em><br />
 <em>© 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2017-11-20 05:01:36 -0800</em></p>
+<p><em>Last modified: 2017-11-20 08:12:08 -0800</em></p>
 
 <p class="alert alert-danger"><strong>Draft Document</strong><br />
 This document is a work in process draft, and will change substantially before
@@ -1391,6 +1391,11 @@ relate to the semantics of a particular syntax element are defined in
       <td>Maximum magnitude of AngleDeltaY and AngleDeltaUV</td>
     </tr>
     <tr>
+      <td><code>DIRECTIONAL_MODES</code></td>
+      <td style="text-align: center">8</td>
+      <td>Number of directional intra modes</td>
+    </tr>
+    <tr>
       <td><code>ANGLE_STEP</code></td>
       <td style="text-align: center">3</td>
       <td>Number of degrees of step per unit increase in AngleDeltaY or AngleDeltaUV.</td>
@@ -1541,19 +1546,19 @@ relate to the semantics of a particular syntax element are defined in
       <td>Number of extra bits of precision in warped filtering</td>
     </tr>
     <tr>
-      <td><code>GM_ALPHA_PREC_DIFF</code></td>
-      <td style="text-align: center">1</td>
-      <td>TODO</td>
+      <td><code>GM_ALPHA_PREC_BITS</code></td>
+      <td style="text-align: center">15</td>
+      <td>Number of fractional bits for sending non-translational warp model coefficients</td>
     </tr>
     <tr>
       <td><code>GM_TRANS_PREC_BITS</code></td>
       <td style="text-align: center">6</td>
-      <td>TODO</td>
+      <td>Number of fractional bits for sending translational warp model coefficients</td>
     </tr>
     <tr>
       <td><code>GM_TRANS_ONLY_PREC_BITS</code></td>
       <td style="text-align: center">3</td>
-      <td>TODO</td>
+      <td>Number of fractional bits used for pure translational warps</td>
     </tr>
     <tr>
       <td><code>INTERINTRA_MODES</code></td>
@@ -2218,7 +2223,7 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
     else if ( obu_type == OBU_TD )
         temporal_delimiter_obu()
     else if ( obu_type == OBU_FRAME_HEADER )
-        frame_header_obu( sz )
+        frame_header_obu( )
     else if ( obu_type == OBU_TILE_GROUP )
         tile_group_obu( sz )
     else if ( obu_type == OBU_METADATA )
@@ -2392,7 +2397,7 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
 
 <h3 id="frame-header-obu-syntax">Frame Header OBU Syntax</h3>
 
-<pre class="syntax"><code>frame_header_obu( sz )
+<pre class="syntax"><code>frame_header_obu( ) {
     if ( SeenFrameHeader == 1 ) {
         frame_header_copy()
     } else {
@@ -3072,7 +3077,7 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
 
 <pre class="syntax"><code>read_global_param( type, ref, idx ) {
     absBits = GM_ABS_ALPHA_BITS
-    precBits = GM_ALPHA_PREC_DIFF
+    precBits = GM_ALPHA_PREC_BITS
     if (idx &lt; 2) {
         if (type == TRANSLATION) {
             absBits = GM_ABS_TRANS_ONLY_BITS - !allow_high_precision_mv
@@ -3441,7 +3446,7 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
     intra_angle_info( )
     PaletteSizeY = 0
     PaletteSizeUV = 0
-    if (( MiSize &gt;= BLOCK_8X8 ) &amp;&amp; ( MiSize &lt;= BLOCK_128X128 ) &amp;&amp;
+    if (( MiSize &gt;= BLOCK_8X8 ) &amp;&amp; ( MiSize &lt;= BLOCK_64X64 ) &amp;&amp;
           allow_screen_content_tools )
         palette_mode_info( )
     transform_type( )
@@ -4672,13 +4677,12 @@ get_scan( plane, txSz ) {
 
 <pre class="syntax"><code>intra_angle_info( ) {
     if ( MiSize &gt;= BLOCK_8X8 ) {
-        n = 2 * MAX_ANGLE_DELTA + 1
         if ( is_directional_mode( YMode ) ) {
-            <b class="syntax-element">angle_delta_y</b>                                                    U(n)
+            <b class="syntax-element">angle_delta_y</b>                                                    S
             AngleDeltaY = angle_delta_y - MAX_ANGLE_DELTA
         }
         if ( is_directional_mode( UVMode ) ) {
-            <b class="syntax-element">angle_delta_uv</b>                                                   U(n)
+            <b class="syntax-element">angle_delta_uv</b>                                                   S
             AngleDeltaUV = angle_delta_uv - MAX_ANGLE_DELTA
         }
     }
@@ -6009,6 +6013,9 @@ col = 0..MiCols-1.</p>
         <p>UVModeCdf is set to a copy of Default_Uv_Mode_Cdf</p>
       </li>
       <li>
+        <p>AngleDeltaCdf[ i ] is set to a copy of Default_Angle_Delta_Cdf for i = 0..DIRECTIONAL_MODES-1</p>
+      </li>
+      <li>
         <p>PartitionW8Cdf is set to a copy of Default_Partition_W8_Cdf</p>
       </li>
       <li>
@@ -6400,7 +6407,7 @@ filtered, and the edge direction (vertical or horizontal) being filtered.</p>
 and loop_filter_sharpness together determine when a block edge is filtered, and
 by how much the filtering can change the sample values.</p>
 
-<p>The loop filter process is described in <a href="#inverse-transform-process">section 7.9</a>.</p>
+<p>The loop filter process is described in <a href="#loop-filter-process">section 7.10</a>.</p>
 
 <p><strong>loop_filter_delta_enabled</strong> equal to 1 means that the filter level depends on
 the mode and reference frame used to predict a block. loop_filter_delta_enabled
@@ -6438,7 +6445,7 @@ previous frame.</p>
 <p>The residual is specified via decoded coefficients which are adjusted by one of
 four quantization parameters before the inverse transform is applied. The
 choice depends on the plane (Y or UV) and coefficient position (DC/AC
-coefficient). The Dequantization process is specified in <a href="#prediction-processes">section 7.7</a>.</p>
+coefficient). The Dequantization process is specified in <a href="#reconstruction-and-dequantization">section 7.8</a>.</p>
 
 <p><strong>base_q_idx</strong> indicates the base frame qindex. This is used for Y AC
 coefficients and as the base value for the other quantizers.</p>
@@ -8065,11 +8072,11 @@ difference.</p>
 
 <p><strong>predict_intra</strong> is a function call that indicates the conceptual point where
 intra prediction happens. When this function is called, the intra prediction
-process specified in <a href="#find-mv-list-process">section 7.6.1</a> is invoked.</p>
+process specified in <a href="#intra-prediction-process">section 7.7.1</a> is invoked.</p>
 
 <p><strong>predict_inter</strong> is a function call that indicates the conceptual point where
 inter prediction happens. When this function is called, the inter prediction
-process specified in <a href="#compound-context-process">section 7.6.2</a> is invoked.</p>
+process specified in <a href="#inter-prediction-process">section 7.7.2</a> is invoked.</p>
 
 <p><strong>predW</strong> and <strong>predH</strong> are variables containing the smallest size that can be used for
 inter prediction.
@@ -8091,7 +8098,7 @@ a smaller block size for each of the corresponding luma blocks.</p>
 
 <p><strong>predict_palette</strong> is a function call that indicates the conceptual point where
 palette prediction happens. When this function is called, the palette prediction
-process specified in <a href="#find-mv-stack-process">section 7.6.3</a> is invoked.</p>
+process specified in <a href="#palette-prediction-process">section 7.7.3</a> is invoked.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The predict_inter, predict_intra, predict_palette, and
 predict_chroma_from_luma functions do not affect the syntax
@@ -8104,11 +8111,11 @@ decode process.</p>
 
 <p><strong>reconstruct</strong> is a function call that indicates the conceptual point where
 inverse transform and reconstruction happens. When this function is called,
-the reconstruction process specified in <a href="#inter-prediction-process">section 7.7.2</a> is invoked.</p>
+the reconstruction process specified in <a href="#reconstruct-process">section 7.8.2</a> is invoked.</p>
 
 <p><strong>predict_chroma_from_luma</strong> is a function call that indicates the conceptual
 point where predicting chroma from luma happens. When this function is called,
-the predict chroma from luma process specified in <a href="#has-overlappable-candidates-process">section 7.6.4</a> is invoked.</p>
+the predict chroma from luma process specified in <a href="#predict-chroma-from-luma-process">section 7.7.4</a> is invoked.</p>
 
 <p><strong>MaxLumaW</strong> and <strong>MaxLumaH</strong> are needed for chroma from luma prediction and
 store the extent of luma pixels that can be used for prediction.</p>
@@ -8656,23 +8663,12 @@ In other words, when this process is invoked, both of the following must be true
             posValid = get_block_position( y8, x8, projMv, 0 )
             if ( posValid ) {
                 for ( dst = LAST_FRAME; dst &lt;= ALTREF_FRAME; dst++ ) {
-                    if ( dst == ALTREF_FRAME ) {
-                        useDst = src == ALTREF_FRAME
-                    } else if (dst == ALTREF2_FRAME ) {
-                        useDst = src &gt;= ALTREF2_FRAME
-                    } else if (dst == BWDREF_FRAME ) {
-                        useDst = 1
-                    } else {
-                        useDst = srcRef &gt;= dst
+                    projMv = get_mv_projection( mv, srcRef, src, dst )
+                    if ( check_backward( dst ) ) {
+                        projMv[ 0 ] = -projMv[ 0 ]
+                        projMv[ 1 ] = -projMv[ 1 ]
                     }
-                    if ( useDst ) {
-                        projMv = get_mv_projection( mv, srcRef, src, dst )
-                        if ( check_backward( dst ) ) {
-                            projMv[ 0 ] = -projMv[ 0 ]
-                            projMv[ 1 ] = -projMv[ 1 ]
-                        }
-                        MotionFieldMvs[ dst ][ PosY8 ][ PosX8 ][ refStamp ] = projMv
-                    }
+                    MotionFieldMvs[ dst ][ PosY8 ][ PosX8 ][ refStamp ] = projMv
                 }
             }
         }
@@ -8735,7 +8731,7 @@ We wish to use the motion vector for predictions using a different reference fra
 <p>The projected motion vector is specified as follows:</p>
 
 <pre><code class="language-c">for ( i = 0; i &lt; 2; i++ )
-    projMv[ i ] = Round2( mv[ i ] * dstOffset * Div_Mult[ mvOffset ], 14 )
+    projMv[ i ] = Round2Signed( mv[ i ] * dstOffset * Div_Mult[ mvOffset ], 14 )
 </code></pre>
 
 <p>where Div_Mult is a constant lookup table specified as:</p>
@@ -15236,6 +15232,9 @@ prefixed with “Tile”.  This copying produces the following arrays:</p>
     <p>TileUVModeCdf</p>
   </li>
   <li>
+    <p>TileAngleDeltaCdf</p>
+  </li>
+  <li>
     <p>TilePartitionW8Cdf</p>
   </li>
   <li>
@@ -15636,6 +15635,10 @@ variable ctx is computed as Size_Group[ MiSize ].</p>
 
 <p><strong>uv_mode</strong>: The cdf for uv_mode is given by TileUVModeCdf[ ctx ] where the
 variable ctx is set equal to YMode.</p>
+
+<p><strong>angle_delta_y</strong>: The cdf for angle_delta_y is given by TileAngleDeltaCdf[YMode - V_PRED].</p>
+
+<p><strong>angle_delta_uv</strong>: The cdf for angle_delta_uv is given by TileAngleDeltaCdf[UVMode - V_PRED].</p>
 
 <p><strong>partition</strong>: The variable ctx is computed as follows:</p>
 
@@ -18901,6 +18904,18 @@ type with the horizontal and vertical operations transposed.</p>
   { 4015, 6473, 9853, 10285, 10655, 11032, 11431, 12199,
     12738, 14760, 16121, 17263, 28612, 32768, 0 },
 }
+</code></pre>
+
+<pre><code class="language-c">Default_Angle_Delta_Cdf[ DIRECTIONAL_MODES ][(2 * MAX_ANGLE_DELTA + 1) + 1] = {
+  { 2340, 5327, 7611, 23102, 27196, 30546, 32768, 0 },
+  { 3267, 8071, 11970, 21822, 25619, 30034, 32768, 0 },
+  { 3417, 9937, 12286, 16420, 19941, 30669, 32768, 0 },
+  { 5167, 11735, 15254, 16662, 20697, 28276, 32768, 0 },
+  { 1728, 10973, 14103, 18547, 22684, 27007, 32768, 0 },
+  { 2764, 10700, 12517, 16957, 20590, 30390, 32768, 0 },
+  { 2407, 12749, 16527, 20823, 22781, 29642, 32768, 0 },
+  { 3068, 10132, 12079, 16542, 19943, 30448, 32768, 0 }
+};
 </code></pre>
 
 <pre><code class="language-c">Default_Partition_W8_Cdf[ PARTITION_CONTEXTS_W8 ][ PARTITION_TYPES_W8 + 1 ] = {
