@@ -87,6 +87,7 @@ The specification has been updated to include the following list of adopted expe
 | segment_zeromv                |
 | loop_restoration              |
 | striped_loop_restoration      |
+| amvr                          | Bug 1048 not yet fixed in code or spec
 {:.table .table-sm .table-bordered }
 
 ### Excluded Experiments
@@ -105,7 +106,6 @@ The specification has not yet been updated with the following experiments:
 | CICP                          | No code for this yet
 | Timecodes                     | No code for this yet
 | coef_ctx_reduce               | 
-| amvr                          |
 | segment_pred_last             |
 | tx64x64                       |
 | ext-intra-mod                 |
