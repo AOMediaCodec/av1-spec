@@ -3,6 +3,7 @@
 [section 7.6.1.2]: #spatial-motion-vector-candidate-process
 [section 6.7.11]: #tile-info-semantics
 [section 7.5.4]: #get-block-position-process
+[section 7.10.5.3]: #wide-filter-process
 [section 7.6.5]: #find-warp-samples-process
 [section 5.8.13]: #inter-tx-size-syntax
 [section 7.6.4]: #has-overlappable-candidates-process
@@ -15,7 +16,7 @@
 [section 7.10.4]: #adaptive-filter-strength-selection-process
 [section 5.1.1]: #obu-header-syntax
 [section 5.8.17]: #is-inter-syntax
-[section 9.3]: #default-cdf-tables
+[section 7.9.1.12]: #inverse-identity-transform-process
 [section 5.8.42]: #transform-type-syntax
 [section 5.8.48]: #clamp-mv-row-function
 [section 6.7.9]: #delta-quantizer-semantics
@@ -55,7 +56,7 @@
 [section 5.7.13]: #quantizer-index-delta-parameters-syntax
 [section 5.7.3]: #render-size-syntax
 [section 7.10.2]: #filter-size-process
-[section 7.7.1.1]: #intra-edge-filter-strength-selection-process
+[section 7.7.1.3]: #intra-edge-filter-strength-selection-process
 [section 5.7.24]: #decode-uniform-syntax
 [section 4.4]: #bitwise-operators
 [section 7.13]: #output-process
@@ -81,6 +82,7 @@
 [section 7.14]: #reference-frame-update-process
 [section 7.6.5.1]: #add-sample-process
 [section 6.8.18]: #inter-block-mode-info-semantics
+[section 9.3]: #default-cdf-tables
 [section 5.7.11]: #tile-info-syntax
 [section 7.7.2.10]: #segment-mask-process
 [section 7.4]: #cdf-update-process
@@ -91,7 +93,7 @@
 [section 7.6.3.1]: #scan-row-process
 [section 8.2.5]: #symbol-decoding-process
 [section 6.8.30]: #intra-angle-info-semantics
-[section 7.7.1.2]: #intra-edge-filter-process
+[section 7.7.1.6]: #intra-edge-filter-process
 [section 6.8.15]: #transform-type-semantics
 [section 6.1.3]: #trailing-bits-semantics
 [section 5.7.5]: #compute-image-size-function
@@ -180,8 +182,8 @@
 [section 8.2.3]: #exit-process-for-boolean-decoder
 [section 5.8.21]: #ref-frames-syntax
 [section 1]: #scope
-[section 7.10.5.3]: #wide-filter-process
-[section 7.9.1.12]: #inverse-identity-transform-process
+[section 7.7.1.2]: #intra-filter-type-process
+[section 7.7.1.4]: #intra-edge-upsample-selection-process
 [section 5.8.5]: #mode-info-syntax
 [section 5.7.25]: #inverse-recenter-function
 [section 7.7.2.9]: #wedge-mask-process
@@ -255,6 +257,7 @@
 [section 7.7.2.12]: #mask-blend-process
 [section B.2]: #raw-bitstream-syntax
 [section 5.7.9]: #delta-quantizer-syntax
+[section 7.7.1.5]: #intra-edge-upsample-process
 [section 5.8.51]: #decode-loop-restoration-syntax
 [section 6.6.2]: #metadata-high-dynamic-range-content-light-level-semantics
 [section 5.8.25]: #read-compound-type-syntax
@@ -280,6 +283,7 @@
 [section D.1]: #unimpressed-footer-syntax
 [section 4.9.1]: #fn
 [section 6.8.36]: #decode-loop-restoration-unit-semantics
+[section 7.7.1.1]: #filter-corner-process
 [section 7.10.3]: #adaptive-filter-strength-process
 [section 5.7.14]: #loop-filter-delta-parameters-syntax
 [section 7.9.1.8]: #inverse-identity-transform-4-process

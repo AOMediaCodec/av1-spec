@@ -88,6 +88,7 @@ The specification has been updated to include the following list of adopted expe
 | loop_restoration              |
 | striped_loop_restoration      |
 | amvr                          | Bug 1048 not yet fixed in code or spec
+| ext-intra-mod                 |
 {:.table .table-sm .table-bordered }
 
 ### Excluded Experiments
@@ -108,7 +109,6 @@ The specification has not yet been updated with the following experiments:
 | coef_ctx_reduce               | 
 | segment_pred_last             |
 | tx64x64                       |
-| ext-intra-mod                 |
 | horzonly_frame_superres       |
 {:.table .table-sm .table-bordered }
 

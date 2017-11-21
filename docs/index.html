@@ -34,7 +34,7 @@
 <p><em>Version 0.3</em><br />
 <em>© 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2017-11-20 08:12:08 -0800</em></p>
+<p><em>Last modified: 2017-11-21 03:32:58 -0800</em></p>
 
 <p class="alert alert-danger"><strong>Draft Document</strong><br />
 This document is a work in process draft, and will change substantially before
@@ -307,7 +307,11 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
       </li>
       <li><a href="#prediction-processes" id="markdown-toc-prediction-processes">Prediction Processes</a>        <ul>
           <li><a href="#intra-prediction-process" id="markdown-toc-intra-prediction-process">Intra Prediction Process</a>            <ul>
+              <li><a href="#filter-corner-process" id="markdown-toc-filter-corner-process">Filter Corner Process</a></li>
+              <li><a href="#intra-filter-type-process" id="markdown-toc-intra-filter-type-process">Intra Filter Type Process</a></li>
               <li><a href="#intra-edge-filter-strength-selection-process" id="markdown-toc-intra-edge-filter-strength-selection-process">Intra Edge Filter Strength Selection Process</a></li>
+              <li><a href="#intra-edge-upsample-selection-process" id="markdown-toc-intra-edge-upsample-selection-process">Intra Edge Upsample Selection Process</a></li>
+              <li><a href="#intra-edge-upsample-process" id="markdown-toc-intra-edge-upsample-process">Intra Edge Upsample Process</a></li>
               <li><a href="#intra-edge-filter-process" id="markdown-toc-intra-edge-filter-process">Intra Edge Filter Process</a></li>
             </ul>
           </li>
@@ -4692,8 +4696,7 @@ get_scan( plane, txSz ) {
 <h4 id="is-directional-mode-function">Is Directional Mode Function</h4>
 
 <pre class="syntax"><code>is_directional_mode( mode ) {
-    if ( ( mode &gt;= V_PRED ) &amp;&amp; ( mode &lt;= D63_PRED )
-         &amp;&amp; ( MiSize &gt;= BLOCK_8X8 ) ) {
+    if ( ( mode &gt;= V_PRED ) &amp;&amp; ( mode &lt;= D63_PRED ) ) {
         return 1
     }
     return 0
@@ -10114,20 +10117,27 @@ CurrFrame [ plane ][ y ][ x - 1 ].</p>
 
         <ul>
           <li>
+            <p>If (pAngle &gt; 90) and (pAngle &lt; 180) and (w + h) &gt;= 24), the
+filter corner process specified in <a href="#filter-corner-process">section 7.7.1.1</a> is invoked and the output assigned to both LeftCol[ -1 ] and AboveRow[ -1 ].</p>
+          </li>
+          <li>
+            <p>The intra filter type process specified in <a href="#intra-filter-type-process">section 7.7.1.2</a> is invoked and the output assigned to filterType.</p>
+          </li>
+          <li>
             <p>If haveAbove is equal to 1, the following steps apply:</p>
 
             <ul>
               <li>
-                <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.7.1.1</a> is invoked
-with the parameters w and pAngle - 90, and the result stored in the variable strength.</p>
+                <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.7.1.3</a> is invoked
+with w, h, filterType, and pAngle - 90 as inputs, and the output assigned to the variable strength.</p>
               </li>
               <li>
                 <p>The variable numPx is set equal to Min( ( ( pAngle &lt; 90 ) &amp;&amp; haveAboveRight ) ? 2 * w : w, 
 maxX - x + 1 ) + 1.</p>
               </li>
               <li>
-                <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.7.1.2</a> is invoked with the parameters
-numPx, strength and 0.</p>
+                <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.7.1.6</a> is invoked with the parameters
+numPx, strength, and 0 as inputs.</p>
               </li>
             </ul>
           </li>
@@ -10136,18 +10146,38 @@ numPx, strength and 0.</p>
 
             <ul>
               <li>
-                <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.7.1.1</a> is invoked
-with the parameters h and pAngle - 180, and the result stored in the variable strength.</p>
+                <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.7.1.3</a> is invoked
+with w, h, filterType, and pAngle - 180 as inputs, and the output assigned to the variable strength.</p>
               </li>
               <li>
                 <p>The variable numPx is set equal to Min( ( ( pAngle &gt; 180 ) &amp;&amp; haveBelowLeft ) ? 2 * h : h, 
 maxY - y + 1 ) + 1.</p>
               </li>
               <li>
-                <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.7.1.2</a> is invoked with the parameters
-numPx, strength and 1.</p>
+                <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.7.1.6</a> is invoked with the parameters
+numPx, strength, and 1 as inputs.</p>
               </li>
             </ul>
+          </li>
+          <li>
+            <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.7.1.4</a> is invoked with w, h, filterType, and pAngle - 90 as inputs,
+and the output assigned to the variable upsampleAbove.</p>
+          </li>
+          <li>
+            <p>The variable numPx is set equal to ( w + (pAngle &lt; 90 ? h : 0) ).</p>
+          </li>
+          <li>
+            <p>If upsampleAbove is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.7.1.5</a> is invoked with the parameters numPx, and 0 as inputs.</p>
+          </li>
+          <li>
+            <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.7.1.4</a> is invoked with w, h, filterType, and pAngle - 180 as inputs,
+and the output assigned to the variable upsampleLeft.</p>
+          </li>
+          <li>
+            <p>The variable numPx is set equal to ( h + (pAngle &lt; 180 ? w : 0) ).</p>
+          </li>
+          <li>
+            <p>If upsampleLeft is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.7.1.5</a> is invoked with the parameters numPx, and 1 as inputs.</p>
           </li>
         </ul>
       </li>
@@ -10189,19 +10219,19 @@ numPx, strength and 1.</p>
             <p>The variable idx is set equal to ( i + 1 ) * dx.</p>
           </li>
           <li>
-            <p>The variable base is set equal to idx &gt;&gt; 8.</p>
+            <p>The variable base is set equal to (idx &gt;&gt; ( 8 - upsampleAbove ) ) + (j « upsampleAbove).</p>
           </li>
           <li>
-            <p>The variable shift is set equal to idx &amp; 0xFF.</p>
+            <p>The variable shift is set equal to (idx « upsampleAbove) &amp; 0xFF.</p>
           </li>
           <li>
-            <p>The variable max_base_x is set equal to w + h - 1.</p>
+            <p>The variable maxBaseX is set equal to (w + h - 1) « upsampleAbove.</p>
           </li>
           <li>
-            <p>If base is less than max_base_x, pred[ i ][ j ] is set equal to Clip1( Round2( AboveRow[ base ] * ( 256 - shift ) + AboveRow[ base + 1 ] * shift, 8 ) ).</p>
+            <p>If base is less than maxBaseX, pred[ i ][ j ] is set equal to Clip1( Round2( AboveRow[ base ] * ( 256 - shift ) + AboveRow[ base + 1 ] * shift, 8 ) ).</p>
           </li>
           <li>
-            <p>Otherwise (base is greater than or equal to max_base_x), pred[ i ][ j ] is set equal to AboveRow[ max_base_x ].</p>
+            <p>Otherwise (base is greater than or equal to maxBaseX), pred[ i ][ j ] is set equal to AboveRow[ maxBaseX ].</p>
           </li>
         </ul>
       </li>
@@ -10213,14 +10243,14 @@ numPx, strength and 1.</p>
             <p>The variable idx is set equal to ( j &lt;&lt; 8 ) - ( i + 1 ) * dx.</p>
           </li>
           <li>
-            <p>The variable base is set equal to idx &gt;&gt; 8.</p>
+            <p>The variable base is set equal to idx &gt;&gt; ( 8 - upsampleAbove ).</p>
           </li>
           <li>
-            <p>If base is greater than or equal to -1, the following steps apply:</p>
+            <p>If base is greater than or equal to -(1 « upsampleAbove), the following steps apply:</p>
 
             <ul>
               <li>
-                <p>The variable shift is set equal to idx &amp; 0xFF.</p>
+                <p>The variable shift is set equal to (idx « upsampleAbove) &amp; 0xFF.</p>
               </li>
               <li>
                 <p>pred[ i ][ j ] is set equal to Clip1( Round2( AboveRow[ base ] * ( 256 - shift ) + AboveRow[ base + 1 ] * shift, 8 ) ).</p>
@@ -10228,17 +10258,17 @@ numPx, strength and 1.</p>
             </ul>
           </li>
           <li>
-            <p>Otherwise (base is less than -1), the following steps apply:</p>
+            <p>Otherwise (base is less than -(1 « upsampleAbove), the following steps apply:</p>
 
             <ul>
               <li>
                 <p>The variable idx is set equal to ( i &lt;&lt; 8 ) - ( j + 1 ) * dy.</p>
               </li>
               <li>
-                <p>The variable base is set equal to idx &gt;&gt; 8.</p>
+                <p>The variable base is set equal to idx &gt;&gt; ( 8 - upsampleLeft ).</p>
               </li>
               <li>
-                <p>The variable shift is set equal to idx &amp; 0xFF.</p>
+                <p>The variable shift is set equal to ( idx « upsampleLeft ) &amp; 0xFF.</p>
               </li>
               <li>
                 <p>pred[ i ][ j ] is set equal to Clip1( Round2( LeftCol[ base ] * ( 256 - shift ) + LeftCol[ base + 1 ] * shift, 8 ) ).</p>
@@ -10255,19 +10285,19 @@ numPx, strength and 1.</p>
             <p>The variable idx is set equal to ( j + 1 ) * dy.</p>
           </li>
           <li>
-            <p>The variable base is set equal to idx &gt;&gt; 8.</p>
+            <p>The variable base is set equal to ( idx &gt;&gt; ( 8 - upsampleLeft ) ) + ( i « upsampleLeft ).</p>
           </li>
           <li>
             <p>The variable shift is set equal to idx &amp; 0xFF.</p>
           </li>
           <li>
-            <p>The variable max_base_y is set equal to w + h - 1.</p>
+            <p>The variable MaxBaseY is set equal to ( w + h - 1 ) « upsampleLeft.</p>
           </li>
           <li>
-            <p>If base is less than max_base_y, pred[ i ][ j ] is set equal to Clip1( Round2( LeftCol[ base ] * ( 256 - shift ) + LeftCol[ base + 1 ] * shift, 8 ) ).</p>
+            <p>If base is less than MaxBaseY, pred[ i ][ j ] is set equal to Clip1( Round2( LeftCol[ base ] * ( 256 - shift ) + LeftCol[ base + 1 ] * shift, 8 ) ).</p>
           </li>
           <li>
-            <p>Otherwise (base is greater than or equal to max_base_y), pred[ i ][ j ] is set equal to LeftCol[ max_base_y ].</p>
+            <p>Otherwise (base is greater than or equal to MaxBaseY), pred[ i ][ j ] is set equal to LeftCol[ MaxBaseY ].</p>
           </li>
         </ul>
       </li>
@@ -10688,16 +10718,57 @@ to 1 &lt;&lt; ( BitDepth - 1 ) with i = 0..h-1 and j = 0..w-1.</p>
 for i = 0..h-1 and j = 0..w-1.</li>
 </ul>
 
+<h5 id="filter-corner-process">Filter Corner Process</h5>
+
+<p>This process uses a three tap filter to compute the value to be used for the top-left corner.</p>
+
+<p>The variable s is set equal to LeftCol[ 0 ] * 5 + AboveRow[ -1 ] * 6 + AboveRow[ 0 ] * 5.</p>
+
+<p>The output of this process is Round2(s, 4).</p>
+
+<h5 id="intra-filter-type-process">Intra Filter Type Process</h5>
+
+<p>The output of this process is a variable filterType that is set to 1 if either
+the block above or to the left uses a smooth prediction mode.</p>
+
+<p>The process is specified as follows:</p>
+
+<pre><code class="language-c">get_filter_type( ) {
+  aboveSmooth = 0
+  leftSmooth = 0
+  if (AvailU) {
+    aboveSmooth = is_smooth( YModes[ MiRow - 1 ][ MiCol ] )
+  }
+  if (AvailL) {
+    leftSmooth = is_smooth( YModes[ MiRow ][ MiCol - 1 ] )
+  }
+  return aboveSmooth || leftSmooth
+}
+</code></pre>
+
+<p>where the function is_smooth indicates if a prediction mode is one of the smooth intra modes and is specified as:</p>
+
+<pre><code class="language-c">is_smooth( mode ) {
+  return (mode == SMOOTH_PRED || mode == SMOOTH_V_PRED || mode == SMOOTH_H_PRED)
+}
+</code></pre>
+
 <h5 id="intra-edge-filter-strength-selection-process">Intra Edge Filter Strength Selection Process</h5>
 
 <p>The inputs to this process are:</p>
 
 <ul>
   <li>
-    <p>a transform size sz,</p>
+    <p>a variable w containing the width of the transform in samples,</p>
   </li>
   <li>
-    <p>an angle delta</p>
+    <p>a variable h containing the height of the transform in samples,</p>
+  </li>
+  <li>
+    <p>a variable filterType that is 0 or 1 that controls the strength of filtering,</p>
+  </li>
+  <li>
+    <p>a variable delta containing an angle difference in degrees.</p>
   </li>
 </ul>
 
@@ -10705,22 +10776,131 @@ for i = 0..h-1 and j = 0..w-1.</li>
 
 <p>The variable d is set equal to Abs( delta ).</p>
 
-<p>The output is generated by the following procedure:</p>
+<p>The variable blkWh (containing the sum of the dimensions) is set equal to w + h.</p>
 
-<ol>
+<p>The output variable strength is specified as follows:</p>
+
+<pre><code class="language-c">strength = 0
+if (filterType == 0) {
+    if (blkWh &lt;= 8) {
+        if (d &gt;= 56) strength = 1
+    } else if (blkWh &lt;= 12) {
+        if (d &gt;= 40) strength = 1
+    } else if (blkWh &lt;= 16) {
+        if (d &gt;= 40) strength = 1
+    } else if (blkWh &lt;= 24) {
+        if (d &gt;= 8) strength = 1
+        if (d &gt;= 16) strength = 2
+        if (d &gt;= 32) strength = 3
+    } else if (blkWh &lt;= 32) {
+        if (d &gt;= 1) strength = 1
+        if (d &gt;= 4) strength = 2
+        if (d &gt;= 32) strength = 3
+    } else {
+      if (d &gt;= 1) strength = 3
+    }
+} else {
+    if (blkWh &lt;= 8) {
+        if (d &gt;= 40) strength = 1
+        if (d &gt;= 64) strength = 2
+    } else if (blkWh &lt;= 16) {
+        if (d &gt;= 20) strength = 1
+        if (d &gt;= 48) strength = 2
+    } else if (blkWh &lt;= 24) {
+        if (d &gt;= 4) strength = 3
+    } else {
+        if (d &gt;= 1) strength = 3
+    }
+}
+</code></pre>
+
+<h5 id="intra-edge-upsample-selection-process">Intra Edge Upsample Selection Process</h5>
+
+<p>The inputs to this process are:</p>
+
+<ul>
   <li>
-    <p>If sz is equal to 4, return ( d &gt;= 56 &amp;&amp; d &lt; 90 ) ? 1 : 0.</p>
+    <p>a variable w containing the width of the transform in samples,</p>
   </li>
   <li>
-    <p>If sz is equal to 8, return ( d &lt; 8 || d &gt;= 90 ) ? 0 : ( d &lt; 32 ) ? 1 : 3.</p>
+    <p>a variable h containing the height of the transform in samples,</p>
   </li>
   <li>
-    <p>If sz is equal to 16, return ( d &lt; 4 || d &gt;= 90 ) ? 0 : ( d &lt; 16 ) ? 1 : 3.</p>
+    <p>a variable filterType that is 0 or 1 that controls the strength of filtering,</p>
   </li>
   <li>
-    <p>Otherwise ( sz is equal to 32 ), return ( d &lt; 16 ) ? 2 : ( d &lt; 90 ) ? 3 : 0.</p>
+    <p>a variable delta containing an angle difference in degrees.</p>
   </li>
-</ol>
+</ul>
+
+<p>The output is a flag useUpsample that is true if upsampling should be applied to the edge.</p>
+
+<p>The variable d is set equal to Abs( delta ).</p>
+
+<p>The variable blkWh (containing the sum of the dimensions) is set equal to w + h.</p>
+
+<p>The output variable useUpsample is specified as follows:</p>
+
+<pre><code class="language-c">if (d &lt;= 0 || d &gt;= 40) {
+    useUpsample = 0
+} else if ( filterType == 0 ) {
+    useUpsample = (blkWh &lt;= 16)
+} else {
+    useUpsample = (blkWh &lt;= 8)
+}
+</code></pre>
+
+<h5 id="intra-edge-upsample-process">Intra Edge Upsample Process</h5>
+
+<p>The inputs to this process are:</p>
+
+<ul>
+  <li>
+    <p>a variable numPx specifying the number of samples to filter,</p>
+  </li>
+  <li>
+    <p>a variable dir containing 0 when filtering the above samples, and 1 when filtering the left samples.</p>
+  </li>
+</ul>
+
+<p>The output of this process are upsampled samples in the AboveRow and LeftCol arrays.</p>
+
+<p>The variable buf is set depending on dir:</p>
+
+<ul>
+  <li>
+    <p>If dir is equal to 0, buf is set equal to a reference to AboveRow.</p>
+  </li>
+  <li>
+    <p>Otherwise (dir is equal to 1), buf is set equal to a reference to LeftCol.</p>
+  </li>
+</ul>
+
+<p class="alert alert-info"><strong>Note:</strong> buf is a reference to either AboveRow or LeftCol.
+“reference” indicates that modifying values in buf modifies values in the original array.</p>
+
+<p>When the process starts, entries -1 to numPx-1 are valid in buf and contain the original values.
+When the process completes, entries -2 to 2*numPx-2 are valid in buf and contain the upsampled values.</p>
+
+<p>An array dup of length numPx+3 is generated by extending buf by one sample at the start and end as follows:</p>
+
+<pre><code class="language-c">dup[ 0 ] = buf[ -1 ]
+for (i = -1; i &lt; numPx; i++) {
+    dup[ i + 1 ] = buf[ i ]
+}
+dup[ numPx + 2 ] = buf[ numPx - 1 ]
+</code></pre>
+
+<p>The upsampling process (modifying values in buf) is specified as follows:</p>
+
+<pre><code class="language-c">buf[-2] = dup[0]
+for (i = 0; i &lt; numPx; i++) {
+    s = -dup[i] + (9 * dup[i + 1]) + (9 * dup[i + 2]) - dup[i + 3]
+    s = Clip1( Round2(s, 4) )
+    buf[ 2 * i - 1 ] = s
+    buf[ 2 * i ] = dup[i + 2]
+}
+</code></pre>
 
 <h5 id="intra-edge-filter-process">Intra Edge Filter Process</h5>
 
@@ -10728,13 +10908,13 @@ for i = 0..h-1 and j = 0..w-1.</li>
 
 <ul>
   <li>
-    <p>A size sz,</p>
+    <p>a size sz,</p>
   </li>
   <li>
-    <p>A filter strength strength between 0 and 3 inclusive,</p>
+    <p>a filter strength strength between 0 and 3 inclusive,</p>
   </li>
   <li>
-    <p>An edge direction left (when equal to 1, it specifies a vertical edge; when equal to 0, it specifies
+    <p>an edge direction left (when equal to 1, it specifies a vertical edge; when equal to 0, it specifies
 a horizontal edge.</p>
   </li>
 </ul>
@@ -26943,6 +27123,10 @@ external means.</p>
         <td>amvr</td>
         <td>Bug 1048 not yet fixed in code or spec</td>
       </tr>
+      <tr>
+        <td>ext-intra-mod</td>
+        <td> </td>
+      </tr>
     </tbody>
   </table>
 
@@ -27004,10 +27188,6 @@ external means.</p>
       </tr>
       <tr>
         <td>tx64x64</td>
-        <td> </td>
-      </tr>
-      <tr>
-        <td>ext-intra-mod</td>
         <td> </td>
       </tr>
       <tr>
