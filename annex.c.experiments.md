@@ -100,16 +100,22 @@ The specification has not yet been updated with the following experiments:
 | q_adapt_probs                 | Bug 936 not yet fixed
 | txmg                          | Unclear if this is to be adopted
 | daala_tx                      | Unclear if this is to be adopted
-| filter_intra                  | Unclear if this is to be adopted
+| filter_intra                  | 
 | ext_tile                      | Code still under development
 | txk_sel                       | Bugs 869, 866 not yet fixed in code
 | lv_map                        | Bugs 840, 841 not yet fixed in code 
+| lv_map_multi                  | Bugs 840, 841 not yet fixed in code 
 | CICP                          | No code for this yet
 | Timecodes                     | No code for this yet
 | coef_ctx_reduce               | 
 | segment_pred_last             |
 | tx64x64                       |
 | horzonly_frame_superres       |
+| intrabc                       |
+| jnt_comp                      |
+| gm_ref_mv                     |
+| spatial_segmentation          |
+| simplify_tx_mode              |
 {:.table .table-sm .table-bordered }
 
 

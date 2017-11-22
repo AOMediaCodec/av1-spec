@@ -34,7 +34,7 @@
 <p><em>Version 0.3</em><br />
 <em>© 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2017-11-21 10:02:11 -0800</em></p>
+<p><em>Last modified: 2017-11-22 01:57:38 -0800</em></p>
 
 <p class="alert alert-danger"><strong>Draft Document</strong><br />
 This document is a work in process draft, and will change substantially before
@@ -2466,20 +2466,6 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
         if ( frame_type == INTRA_ONLY_FRAME ) {
             <b class="syntax-element">allow_screen_content_tools</b>                                       f(1)
         }
-        if ( error_resilient_mode ) {
-            reset_frame_context = 0
-        } else {
-            if ( frame_type == INTRA_ONLY_FRAME ) {
-                <b class="syntax-element">intra_reset_all</b>                                              f(1)
-                reset_frame_context = 1 + intra_reset_all
-            } else {
-                <b class="syntax-element">reset_frame_context</b>                                          f(1)
-                if ( reset_frame_context == 1 ) {
-                    <b class="syntax-element">intra_reset_all</b>                                          f(1)
-                    reset_frame_context = 1 + intra_reset_all
-                }
-            }
-        }
         if ( frame_type == INTRA_ONLY_FRAME ) {
             <b class="syntax-element">refresh_frame_flags</b>                                              f(8)
             frame_size( )
@@ -2595,8 +2581,8 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
         FrameWidth = frame_width_minus_1 + 1
         FrameHeight = frame_height_minus_1 + 1
     } else {
-        FrameWidth = MaxFrameWidth
-        FrameHeight = MaxFrameHeight
+        FrameWidth = max_frame_width_minus_1 + 1
+        FrameHeight = max_frame_height_minus_1 + 1
     }
     compute_image_size( )
 }
@@ -3748,9 +3734,6 @@ of the segmentation map covered by the current block.</p>
 </code></pre>
 
 <h4 id="intra-block-mode-info-syntax">Intra Block Mode Info Syntax</h4>
-
-<p>The predicted segment id is the smallest value found in the on-screen region
-of the segmentation map covered by the current block.</p>
 
 <pre class="syntax"><code>intra_block_mode_info( ) {
     RefFrame[ 0 ] = INTRA_FRAME
@@ -5884,19 +5867,6 @@ will be present in the frame headers of inter and intra-only frames.</p>
 will be present in the frame headers of inter and intra-only frames.  Otherwise, seq_force_integer_mv
 contains the value for force_integer_mv.</p>
 
-<p><strong>intra_reset_all</strong> equal to 1 indicates that all contexts should be reset;
-intra_reset_all equal to 0 indicates that only the context in the frame header
-should be reset.</p>
-
-<p><strong>reset_frame_context</strong> specifies whether the frame contexts are reset to
-default values:</p>
-
-<ul>
-  <li>0 means do not reset any frame context</li>
-  <li>1 resets just the context specified in the frame header</li>
-  <li>2 resets all contexts.</li>
-</ul>
-
 <p><strong>refresh_frame_flags</strong> contains a bitmask that specifies which reference frame
 slots will be updated with the current frame after it is decoded.</p>
 
@@ -6619,6 +6589,11 @@ the bitstream.</p>
 
 <p><strong>delta_lf_res</strong> specifies the left shift which should be applied to decoded
 loop filter delta values.</p>
+
+<p><strong>delta_lf_multi</strong> equal to 1 specifies that separate loop filter deltas are sent
+for horizontal luma edges, vertical luma edges, the U edges, and the V edges.
+delta_lf_multi equal to 0 specifies that the same loop filter delta is used for
+all edges.</p>
 
 <h4 id="global-motion-params-semantics">Global Motion Params Semantics</h4>
 
@@ -15334,7 +15309,7 @@ for j = 0..5.</p>
   </li>
 </ul>
 
-<p>save_cdfs( ctx ) is a function call that indicates that indicates that all the CDF arrays are saved into frame context number ctx in the range 0 to (NUM_REF_FRAMES - 1).
+<p>save_cdfs( ctx ) is a function call that indicates that all the CDF arrays are saved into frame context number ctx in the range 0 to (NUM_REF_FRAMES - 1).
 When this function is invoked the following takes place:</p>
 
 <ul>
@@ -27153,7 +27128,7 @@ external means.</p>
       </tr>
       <tr>
         <td>filter_intra</td>
-        <td>Unclear if this is to be adopted</td>
+        <td> </td>
       </tr>
       <tr>
         <td>ext_tile</td>
@@ -27165,6 +27140,10 @@ external means.</p>
       </tr>
       <tr>
         <td>lv_map</td>
+        <td>Bugs 840, 841 not yet fixed in code</td>
+      </tr>
+      <tr>
+        <td>lv_map_multi</td>
         <td>Bugs 840, 841 not yet fixed in code</td>
       </tr>
       <tr>
@@ -27189,6 +27168,26 @@ external means.</p>
       </tr>
       <tr>
         <td>horzonly_frame_superres</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>intrabc</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>jnt_comp</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>gm_ref_mv</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>spatial_segmentation</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>simplify_tx_mode</td>
         <td> </td>
       </tr>
     </tbody>
