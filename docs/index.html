@@ -34,7 +34,7 @@
 <p><em>Version 0.3</em><br />
 <em>© 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2017-11-22 01:57:38 -0800</em></p>
+<p><em>Last modified: 2017-11-22 12:53:21 -0800</em></p>
 
 <p class="alert alert-danger"><strong>Draft Document</strong><br />
 This document is a work in process draft, and will change substantially before
@@ -810,7 +810,7 @@ relate to the semantics of a particular syntax element are defined in
 
 <p>Additional constants are defined below:</p>
 
-<table class="table table-sm table-bordered table-striped">
+<table>
   <thead>
     <tr>
       <th>Symbol name</th>
@@ -917,7 +917,7 @@ relate to the semantics of a particular syntax element are defined in
     <tr>
       <td><code>REF_CONTEXTS</code></td>
       <td style="text-align: center">5</td>
-      <td>Number of contexts for <code>single_ref</code>, <code>comp_ref</code> and <code>comp_bwd_ref</code></td>
+      <td>Number of contexts for <code>single_ref</code>, <code>comp_ref</code> and <code>comp_bwdref</code></td>
     </tr>
     <tr>
       <td><code>MAX_SEGMENTS</code></td>
@@ -1026,7 +1026,7 @@ relate to the semantics of a particular syntax element are defined in
     </tr>
     <tr>
       <td><code>INTERP_FILTER_CONTEXTS</code></td>
-      <td style="text-align: center">4</td>
+      <td style="text-align: center">16</td>
       <td>Number of contexts for <code>interp_filter</code></td>
     </tr>
     <tr>
@@ -1163,6 +1163,11 @@ relate to the semantics of a particular syntax element are defined in
       <td><code>INTRA_MODES</code></td>
       <td style="text-align: center">13</td>
       <td>Number of values for <code>y_mode</code></td>
+    </tr>
+    <tr>
+      <td><code>UV_INTRA_MODES</code></td>
+      <td style="text-align: center">14</td>
+      <td>Number of values for <code>uv_mode</code></td>
     </tr>
     <tr>
       <td><code>COMPOUND_MODES</code></td>
@@ -1769,10 +1774,30 @@ relate to the semantics of a particular syntax element are defined in
       <td style="text-align: center">2</td>
       <td>Value that indicates the force_integer_mv syntax element is coded</td>
     </tr>
+    <tr>
+      <td><code>RESTORATION_TILESIZE_MAX</code></td>
+      <td style="text-align: center">256</td>
+      <td>Maximum size of a loop restoration tile</td>
+    </tr>
+    <tr>
+      <td><code>MAX_OFFSET_WIDTH</code></td>
+      <td style="text-align: center">8</td>
+      <td>TODO</td>
+    </tr>
+    <tr>
+      <td><code>MAX_OFFSET_HEIGHT</code></td>
+      <td style="text-align: center">0</td>
+      <td>TODO</td>
+    </tr>
+    <tr>
+      <td><code>WARP_PARAM_REDUCE_BITS</code></td>
+      <td style="text-align: center">6</td>
+      <td>TODO</td>
+    </tr>
   </tbody>
 </table>
 
-<h2 id="conventions">Conventions</h2>
+<h2 class="table table-sm table-bordered table-striped" id="conventions">Conventions</h2>
 
 <p>The mathematical operators and their precedence rules used to describe this
 Specification are similar to those used in the C programming language.
@@ -2821,7 +2846,7 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
             sizeSb = decode_uniform(maxHeight) + 1
             startSb += sizeSb
         }
-        MiRowStarts[ i ] = mi_rows
+        MiRowStarts[ i ] = MiRows
         TileRows = i
         TileRowsLog2 = tile_log2(1, TileRows)
     }
@@ -2938,7 +2963,7 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
     }
     if ( usesLr ) {
         <b class="syntax-element">lr_unit_shift</b>                                                        f(1)
-        if ( lr_unit_shift )
+        if ( lr_unit_shift ) {
             <b class="syntax-element">lr_unit_extra_shift</b>                                              f(1)
             lr_unit_shift += lr_unit_extra_shift
         }
@@ -3033,15 +3058,15 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
         if (is_global) {
             <b class="syntax-element">is_rot_zoom</b>                                                      f(1)
             if (is_rot_zoom) {
-                typ = ROTZOOM
+                type = ROTZOOM
             } else {
                 <b class="syntax-element">is_translation</b>                                               f(1)
-                typ = is_translation ? TRANSLATION : AFFINE
+                type = is_translation ? TRANSLATION : AFFINE
             }
         } else {
-            typ = IDENTITY
+            type = IDENTITY
         }
-        gm_type[ref] = typ
+        gm_type[ref] = type
 
         if (type &gt;= ROTZOOM) {
             read_global_param(type,ref,2)
@@ -3233,7 +3258,7 @@ However, these fractional bits will be discarded during the Setup Zero MV proces
         for ( pass = 0; pass &lt; 2; pass++ ) {
             RefSgrXqd[ plane ][ pass ] = Sgrproj_Xqd_Mid[ pass ]
             for ( i = 0; i &lt; WIENER_COEFFS; i++ ) {
-                RefLrWiener[ plane ][ pass ][ j ] = Wiener_Taps_Mid[ j]
+                RefLrWiener[ plane ][ pass ][ i ] = Wiener_Taps_Mid[ i ]
             }
         }
     }
@@ -3583,10 +3608,10 @@ to use a rectangular transform; the table is defined as:</p>
     bw4 = Num_4x4_Blocks_Wide[ MiSize ]
     bh4 = Num_4x4_Blocks_High[ MiSize ]
     if (tx_mode == TX_MODE_SELECT &amp;&amp; 
-          bsize &gt; BLOCK_4X4 &amp;&amp; is_inter &amp;&amp;
+          MiSize &gt; BLOCK_4X4 &amp;&amp; is_inter &amp;&amp;
           !skip &amp;&amp; !Lossless) {
         MinTxSize = TX_32X32
-        maxTxSz = Max_Tx_Size_Rect[bsize]
+        maxTxSz = Max_Tx_Size_Rect[ MiSize ]
         txW4 = Tx_Width[ maxTxSz ] / MI_SIZE
         txH4 = Tx_Height[ maxTxSz ] / MI_SIZE
         for ( row = MiRow; row &lt; MiRow + bh4; row += txH4 )
@@ -3781,7 +3806,7 @@ of the segmentation map covered by the current block.</p>
         YMode = NEAREST_NEARESTMV + compound_mode
     } else {
         <b class="syntax-element">new_mv</b>                                                               S
-        if ( newmv == 0 ) {
+        if ( new_mv == 0 ) {
             YMode = NEWMV
         } else if ( AllZero ) {
             YMode = GLOBALMV
@@ -3913,7 +3938,7 @@ of the segmentation map covered by the current block.</p>
                 <b class="syntax-element">comp_bwdref</b>                                                  S
                 if ( comp_bwdref == 0 ) {
                     <b class="syntax-element">comp_bwdref_p1</b>                                           S
-                    RefFrame[ 1 ] = comp_bwd_ref ?
+                    RefFrame[ 1 ] = comp_bwdref_p1 ?
                                      ALTREF2_FRAME : BWDREF_FRAME
                 } else {
                     RefFrame[ 1 ] = ALTREF_FRAME
@@ -4324,13 +4349,13 @@ previous candidate.</p>
 <p>transform_tree is used to read a number of transform blocks arranged in a transform tree.</p>
 
 <pre class="syntax"><code>transform_tree( plane, startX, startY, w, h ) {
+    subX = (plane &gt; 0) ? subsampling_x : 0
+    subY = (plane &gt; 0) ? subsampling_y : 0
     maxX = (MiCols * MI_SIZE) &gt;&gt; subX
     maxY = (MiRows * MI_SIZE) &gt;&gt; subY
     if ( startX &gt;= maxX || startY &gt;= maxY ) {
         return
     }
-    subX = (plane &gt; 0) ? subsampling_x : 0
-    subY = (plane &gt; 0) ? subsampling_y : 0
     row = ( startY &lt;&lt; subY ) &gt;&gt; MI_SIZE_LOG2
     col = ( startX &lt;&lt; subX ) &gt;&gt; MI_SIZE_LOG2
     lumaTxSz = InterTxSizes[ row ][ col ]
@@ -5151,7 +5176,7 @@ check_golden(refFrame) {
         subY = (plane == 0) ? 0 : subsampling_y
         w = Num_4x4_Blocks_Wide[ bSize ]
         h = Num_4x4_Blocks_High[ bSize ]
-        unitSize = LoopRestorationSize[ plane ].
+        unitSize = LoopRestorationSize[ plane ]
         unitRows = count_units_in_tile( unitSize, (MiRowEnd - MiRowStart) * MI_SIZE &gt;&gt; subY )
         unitCols = count_units_in_tile( unitSize, (MiColEnd - MiColStart) * MI_SIZE &gt;&gt; subX )
         relMiRow = r - MiRowStart
@@ -5202,7 +5227,7 @@ check_golden(refFrame) {
     }
     LrType[ TileNum ][ plane ][ unitRow ][ unitCol ] = restoration_type
     if (restoration_type == RESTORE_WIENER) {
-        for ( pass = 0; pass &lt; 2; pass++ )
+        for ( pass = 0; pass &lt; 2; pass++ ) {
             if (plane) {
                 firstCoeff = 1
                 LrWiener[ TileNum ][ plane ]
@@ -6055,16 +6080,16 @@ col = 0..MiCols-1.</p>
         <p>MvJointCdf[ i ] is set to a copy of Default_Mv_Joint_Cdf for i = 0..MV_CONTEXTS-1</p>
       </li>
       <li>
-        <p>MvClassCdf[ i ][ comp ] is set to a copy of Default_Mv_Class_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
+        <p>MvClassCdf[ i ] is set to a copy of Default_Mv_Class_Cdf for i = 0..MV_CONTEXTS-1</p>
       </li>
       <li>
         <p>MvClass0BitCdf[ i ][ comp ] is set to a copy of Default_Mv_Class0_Bit_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
       </li>
       <li>
-        <p>MvFrCdf[ i ][ comp ] is set to a copy of Default_Mv_Fr_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
+        <p>MvFrCdf[ i ] is set to a copy of Default_Mv_Fr_Cdf for i = 0..MV_CONTEXTS-1</p>
       </li>
       <li>
-        <p>MvClass0FrCdf[ i ][ comp ] is set to a copy of Default_Mv_Class0_Fr_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
+        <p>MvClass0FrCdf[ i ] is set to a copy of Default_Mv_Class0_Fr_Cdf for i = 0..MV_CONTEXTS-1</p>
       </li>
       <li>
         <p>MvClass0HpCdf[ i ][ comp ] is set to a copy of Default_Mv_Class0_Hp_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
@@ -6305,8 +6330,8 @@ process for frame_size_with_refs. found_ref equal to 0 indicates that the
 frame dimensions are not inferred from reference frame i.</p>
 
 <p>Once the FrameWidth and FrameHeight have been computed for an inter frame, it
-is a requirement of bitstream conformance that for at least one value of i in
-the range 0..2, all the following conditions are true:</p>
+is a requirement of bitstream conformance that for all values of i in
+the range 0..(REFS_PER_FRAME - 1), all the following conditions are true:</p>
 
 <ul>
   <li>2 * FrameWidth &gt;= RefFrameWidth[ ref_frame_idx[ i ] ]</li>
@@ -8501,7 +8526,7 @@ to an invalid motion vector of -32768, -32768 as follows:</p>
 
 <p>The variable lastIdx (representing which reference frame is used for LAST_FRAME) is set equal to ref_frame_idx[ 0 ].</p>
 
-<p>The variable curGoldDecodeOrder (representing the decode order for GOLD_FRAME of the current frame) is set equal to DecodeOrders[ GOLD_FRAME ].</p>
+<p>The variable curGoldDecodeOrder (representing the decode order for GOLDEN_FRAME of the current frame) is set equal to DecodeOrders[ GOLDEN_FRAME ].</p>
 
 <p>The variable lastAltDecodeOrder ( representing the decode order for ALTREF_FRAME of LAST_FRAME) is set equal to SavedDecodeOrders[ lastIdx ][ ALTREF_FRAME ].</p>
 
@@ -9003,7 +9028,7 @@ lower_mv_precision( mv )
 for (i = 0; i &lt; 2; i++) {
     mvRow = MiRow + offMvs4[i][0]
     mvCol = MiCol + offMvs4[i][1]
-    if (is_inside(mvcol, mvrow)) {
+    if (is_inside(mvCol, mvRow)) {
         counter += Mode_To_Counter[ YModes[ mvRow ][ mvCol ] ]
     }
 }
@@ -9157,8 +9182,8 @@ kept in memory</p>
 
 <pre><code class="language-c">i = 0
 while ( i &lt; bw4 ) {
-    mvRow = miRow + deltaRow
-    mvCol = miCol + deltaCol + i
+    mvRow = MiRow + deltaRow
+    mvCol = MiCol + deltaCol + i
     if (!is_inside(mvRow,mvCol))
         break
     len = Min(bw4, Num_4x4_Blocks_Wide[ MiSizes[ mvRow ][ mvCol ] ])
@@ -9202,8 +9227,8 @@ deltaCol += MiCol &amp; 1
 
 <pre><code class="language-c">i = 0
 while ( i &lt; bh4 ) {
-    mvRow = miRow + deltaRow + i
-    mvCol = miCol + deltaCol
+    mvRow = MiRow + deltaRow + i
+    mvCol = MiCol + deltaCol
     if (!is_inside(mvRow,mvCol))
         break
     len = Min(bh4, Num_4x4_Blocks_High[ MiSizes[ mvRow ][ mvCol ] ])
@@ -9278,8 +9303,8 @@ the add reference motion vector process in <a href="#add-reference-motion-vector
 
 <p>where tplSamplePos contains the offsets to search (in units of 4x4 pixels) and is specified as:</p>
 
-<pre><code class="language-c">voffset = Max(2, h4)
-hoffset = Max(2, w4)
+<pre><code class="language-c">voffset = Max(2, bh4)
+hoffset = Max(2, bw4)
 tplSamplePos[9][2] = {
     { -2, hoffset }, { 0, hoffset },  { voffset, hoffset },
     { voffset, 0 },  { voffset, -2 }, { voffset, -4 },
@@ -9674,24 +9699,22 @@ and all three fractional bits when force_integer_mv is equal to 1.</p>
 
 <p>The array DrlCtxStack is set as follows:</p>
 
-<pre><code class="language-c">for ( list = 0; list &lt; numLists; list++ ) {
-    for ( idx = 0; idx &lt; NumMvFound ; idx++ ) {
-        z = 0
-        if ( idx + 1 &lt; NumMvFound ) {
-            w0 = WeightStack[ idx ]
-            w1 = WeightStack[ idx + 1 ]
-            if (w0 &gt;= REF_CAT_LEVEL) {
-                if (w1 &lt; REF_CAT_LEVEL) {
-                    z = 2
-                }
-            } else {
-                if (w1 &lt; REF_CAT_LEVEL) {
-                    z = 3
-                }
+<pre><code class="language-c">for ( idx = 0; idx &lt; NumMvFound ; idx++ ) {
+    z = 0
+    if ( idx + 1 &lt; NumMvFound ) {
+        w0 = WeightStack[ idx ]
+        w1 = WeightStack[ idx + 1 ]
+        if (w0 &gt;= REF_CAT_LEVEL) {
+            if (w1 &lt; REF_CAT_LEVEL) {
+                z = 2
             }
-        }      
-        DrlCtxStack[ idx ][ list ] = z
-    }
+        } else {
+            if (w1 &lt; REF_CAT_LEVEL) {
+                z = 3
+            }
+        }
+    }      
+    DrlCtxStack[ idx ] = z
 }
 </code></pre>
 
@@ -9834,7 +9857,7 @@ suitable for use by overlapped motion compensation, or 0 otherwise.</p>
 
 <p>If RefFrames[ mvRow ][ mvCol ][ 0 ] has not been written for this frame, then this process immediately returns.</p>
 
-<p>If RefFrames[ mvRow ][ mvCol ][ 0 ] is not equal to RefFrames[ 0 ], then this process immediately returns.</p>
+<p>If RefFrames[ mvRow ][ mvCol ][ 0 ] is not equal to RefFrame[ 0 ], then this process immediately returns.</p>
 
 <p>If RefFrames[ mvRow ][ mvCol ][ 1 ] is not equal to NONE, then this process immediately returns.</p>
 
@@ -9862,8 +9885,8 @@ block in units of pixels.</p>
 cand[ 1 ] = midX * 8
 cand[ 2 ] = midY * 8 + Mvs[ candRow ][ candCol ][ 0 ][ 0 ]
 cand[ 3 ] = midY * 8 + Mvs[ candRow ][ candCol ][ 0 ][ 1 ]
-cand[ 4 ] = Abs( Mvs[ candRow ][ candCol ][ 0 ][ 0 ] - Mvs[ 0 ][ 0 ] ) + 
-            Abs( Mvs[ candRow ][ candCol ][ 0 ][ 1 ] - Mvs[ 0 ][ 1 ] )
+cand[ 4 ] = Abs( Mvs[ candRow ][ candCol ][ 0 ][ 0 ] - Mv[ 0 ][ 0 ] ) + 
+            Abs( Mvs[ candRow ][ candCol ][ 0 ][ 1 ] - Mv[ 0 ][ 1 ] )
 </code></pre>
 
 <p>If this array cand is equal (in all 5 locations) to CandList[ i ] for any i &lt; NumSamples, then this process immediately returns.</p>
@@ -10009,7 +10032,7 @@ equal to ( 1 &lt;&lt; ( BitDepth - 1 ) ) - 1.</p>
 
     <ul>
       <li>
-        <p>The variable aboveLimit is set equal to Min( maxX, x + ( haveAboveRight ? 2 * txw : txw ) - 1 ).</p>
+        <p>The variable aboveLimit is set equal to Min( maxX, x + ( haveAboveRight ? 2 * w : w ) - 1 ).</p>
       </li>
       <li>
         <p>AboveRow[ i ] is set equal to CurrFrame[ plane ][ y-1 ][ Min(aboveLimit, x+i) ].</p>
@@ -10034,7 +10057,7 @@ equal to ( 1 &lt;&lt; ( BitDepth - 1 ) ) + 1.</p>
 
     <ul>
       <li>
-        <p>The variable leftLimit is set equal to Min( maxY, y + ( haveBelowLeft ? 2 * txh : txh ) - 1 ).</p>
+        <p>The variable leftLimit is set equal to Min( maxY, y + ( haveBelowLeft ? 2 * h : h ) - 1 ).</p>
       </li>
       <li>
         <p>LeftCol[ i ] is set equal to CurrFrame[ plane ][ Min(leftLimit, y+i) ][ x-1 ].</p>
@@ -11724,7 +11747,7 @@ delta = Round2Signed( delta0, WARP_PARAM_REDUCE_BITS) &lt;&lt; WARP_PARAM_REDUCE
 
 <ul>
   <li>
-    <p>If n &gt; DUT_LUT_BITS, f is set equal to Round2( e, n - DIV_LUT_BITS ).</p>
+    <p>If n &gt; DIV_LUT_BITS, f is set equal to Round2( e, n - DIV_LUT_BITS ).</p>
   </li>
   <li>
     <p>Otherwise, f is set equal to e &lt;&lt; ( DIV_LUT_BITS - n ).</p>
@@ -11789,8 +11812,8 @@ delta = Round2Signed( delta0, WARP_PARAM_REDUCE_BITS) &lt;&lt; WARP_PARAM_REDUCE
 }
 w4 = Num_4x4_Blocks_Wide[MiSize]
 h4 = Num_4x4_Blocks_High[MiSize]
-midY = MiRow * 4 + bh * 2 - 1
-midX = MiCol * 4 + bw * 2 - 1
+midY = MiRow * 4 + h4 * 2 - 1
+midX = MiCol * 4 + w4 * 2 - 1
 suy = midY * 8
 sux = midX * 8
 duy = suy + Mv[0][0]
@@ -11851,6 +11874,8 @@ regularize the solution.</p>
     LocalWarpParams[4] = nondiag(  A[1][1] * By[0] - A[0][1] * By[1])
     LocalWarpParams[5] = diag(    -A[0][1] * By[0] + A[0][0] * By[1])
 
+    mvx = Mv[ 0 ][ 1 ]
+    mvy = Mv[ 0 ][ 0 ]
     vx = mvx * (1 &lt;&lt; (WARPEDMODEL_PREC_BITS - 3)) -
          (midX * (LocalWarpParams[2] - (1 &lt;&lt; WARPEDMODEL_PREC_BITS)) + midY * LocalWarpParams[3])
     vy = mvy * (1 &lt;&lt; (WARPEDMODEL_PREC_BITS - 3)) -
@@ -12278,9 +12303,6 @@ Wedge_Codebook[3][16][3] = {
 <p>The input to this process is:</p>
 
 <ul>
-  <li>
-    <p>an array preds containing the predicted samples,</p>
-  </li>
   <li>
     <p>a variable plane specifying which plane is being predicted,</p>
   </li>
@@ -13286,7 +13308,7 @@ i = 0..(n3-1), for j = 0..3.</p>
   <li>
     <p>If n is greater than or equal to 4, invoke B( 8 + 16 * i + 5 * j + 2 * k, 9 + 16 * i +
 3 * j + 2 * k, 8 + ( ( 1 - j ) &lt;&lt; 4 ) + ( ( 1 - ( i ^ j ) ) &lt;&lt; 5 ), highPrecision, 1 )
-for i = 0..(n4-1), for j = 0..1.</p>
+for i = 0..(n4-1), for j = 0..1, for k = 0..1.</p>
   </li>
   <li>
     <p>If n is greater than or equal to 4, invoke H( 16 * i + j, 8 + 16 * i + j, 0 ), for i =
@@ -13643,7 +13665,7 @@ equal to 0.</p>
   </li>
 </ul>
 
-<p>If onScreen is equal to 0 and i is equal to 0, then this process immediately returns and no filtering is applied to this edge.</p>
+<p>If onScreen is equal to 0, then this process immediately returns and no filtering is applied to this edge.</p>
 
 <p>The variables xP and yP (containing the location in the current plane) are derived as follows:</p>
 
@@ -14653,8 +14675,8 @@ tile that includes the current block.</p>
 
 <p>The filtering is applied as follows:</p>
 
-<pre><code class="language-c">startX = (c * MI_SIZE ) &gt;&gt; sub
-startY = (r * MI_SIZE ) &gt;&gt; sub
+<pre><code class="language-c">x0 = (c * MI_SIZE ) &gt;&gt; sub
+y0 = (r * MI_SIZE ) &gt;&gt; sub
 size = 8 &gt;&gt; sub
 for ( i = 0; i &lt; size; i++ ) {
     for (j = 0; j &lt; size; j++) {
@@ -14664,14 +14686,14 @@ for ( i = 0; i &lt; size; i++ ) {
         min = x
         for (k = 0; k &lt; 2; k++) {
             for (sign = -1; sign &lt;= 1; sign += 2) {
-                p = cdef_get_at(plane, x0, y0, i, j, dir, k,  sign)
+                p = cdef_get_at(plane, x0, y0, i, j, dir, k,  sign, sub)
                 sum += Cdef_Pri_Taps[(priStr &gt;&gt; coeffShift) &amp; 1][k] * constrain(p - x, priStr, damping)
                 if (p != CDEF_VERY_LARGE) {
                     max = Max(p, max)
                     min = Min(p, min)
                 }
                 for ( dirOff = -2; dirOff &lt;= 2; dirOff += 4) {
-                    s = cdef_get_at(plane, x0, y0, i, j, (dir + dirOff) &amp; 7, k,  sign)
+                    s = cdef_get_at(plane, x0, y0, i, j, (dir + dirOff) &amp; 7, k,  sign, sub)
                     sum += Cdef_Sec_Taps[(priStr &gt;&gt; coeffShift) &amp; 1][k] * constrain(s - x, secStr, damping)
                     if (s != CDEF_VERY_LARGE) {
                         max = Max(s, max)
@@ -14709,7 +14731,7 @@ Cdef_Sec_Taps[2][2] = {
 
 <p>and cdef_get_at fetches a pixel from CurrFrame if it is available, or returns CDEF_VERY_LARGE otherwise, and is defined as:</p>
 
-<pre><code class="language-c">cdef_get_at(plane, x0, y0, i, j, dir, k, sign) {
+<pre><code class="language-c">cdef_get_at(plane, x0, y0, i, j, dir, k, sign, sub) {
     y = y0 + i + sign * Cdef_Directions[dir][k][0]
     x = x0 + j + sign * Cdef_Directions[dir][k][1]
     candidateR = (y &lt;&lt; sub) &gt;&gt; MI_SIZE_LOG2
@@ -14802,9 +14824,9 @@ plane as follows:</p>
 
 <p>The variable StripeStartY (specifying the start of the stripe in units of samples in the current plane) is set equal to ( (-8 + stripeNum * 64) &gt;&gt; subY ).</p>
 
-<p>The variable StripeEndY (specifying the end of the stripe in units of samples in the current plane) is set equal to stripeStart + (64 &gt;&gt; subY) - 1.</p>
+<p>The variable StripeEndY (specifying the end of the stripe in units of samples in the current plane) is set equal to StripeStartY + (64 &gt;&gt; subY) - 1.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> StripeStart and StripeEnd are used by the get source sample process to decide whether to fetch from CurrFrame or CdefFrame.</p>
+<p class="alert alert-info"><strong>Note:</strong> StripeStartY and StripeEndY are used by the get source sample process to decide whether to fetch from CurrFrame or CdefFrame.</p>
 
 <p>The variable unitSize (specifying the size of restoration units in units of samples in the current plane) is set equal to LoopRestorationSize[ plane ].</p>
 
@@ -14879,10 +14901,10 @@ if larger blocks are used - provided all contained samples belong to the same lo
 
 <ul>
   <li>
-    <p>If rType is equal to RESTORE_WIENER, the Wiener filter process specified in <a href="#wiener-filter-process">section 7.12.4</a> is invoked with plane, unitRow, unitCol, x, y, w, h as inputs.</p>
+    <p>If rType is equal to RESTORE_WIENER, the Wiener filter process specified in <a href="#wiener-filter-process">section 7.12.4</a> is invoked with plane, unitRow, unitCol, x, y, w, and h as inputs.</p>
   </li>
   <li>
-    <p>Otherwise, if rType is equal to RESTORE_SGRPROJ, the self guided filter process specified in <a href="#self-guided-filter-process">section 7.12.2</a> is invoked with plane, unitRow, unitCol, row, and col as inputs.</p>
+    <p>Otherwise, if rType is equal to RESTORE_SGRPROJ, the self guided filter process specified in <a href="#self-guided-filter-process">section 7.12.2</a> is invoked with plane, unitRow, unitCol, x, y, w, and h as inputs.</p>
   </li>
   <li>
     <p>Otherwise (rType is equal to RESTORE_NONE), no filtering is applied.</p>
@@ -14977,7 +14999,7 @@ for ( i = 0; i &lt; h; i++ ) {
 <p>The 2d arrays A and B (note these arrays are valid for coordinates including an extra sample around the boundary) are prepared as follows:</p>
 
 <pre><code class="language-c">n = ( 2 * r + 1 ) * ( 2 * r + 1 )
-n2e = n * n * eps;
+n2e = n * n * eps
 s = (((1 &lt;&lt; SGRPROJ_MTABLE_BITS) + n2e / 2) / n2e)
 for ( i = -1; i &lt; h + 1; i++ ) {
     for ( j = -1; j &lt; w + 1; j++ ) {
@@ -15030,7 +15052,7 @@ and the output assigned to variable c.</p>
 
 <p>The constant lookup table Sgr_Params is specified as:</p>
 
-<pre><code class="language-c">Sgr_Params[ SGRPROJ_PARAMS ][ 4 ] = {
+<pre><code class="language-c">Sgr_Params[ (1 &lt;&lt; SGRPROJ_PARAMS_BITS) ][ 4 ] = {
   { 2, 12, 1, 4 },  { 2, 15, 1, 6 },  { 2, 18, 1, 8 },  { 2, 20, 1, 9 },
   { 2, 22, 1, 10 }, { 2, 25, 1, 11 }, { 2, 35, 1, 12 }, { 2, 45, 1, 13 },
   { 2, 55, 1, 14 }, { 2, 65, 1, 15 }, { 2, 75, 1, 16 }, { 2, 30, 1, 6 },
@@ -15900,7 +15922,7 @@ if ( !AvailL ) {
         leftH = Tx_Height[ InterTxSizes[ row  ][ col - 1] ]
 }
 txW = Tx_Width[txSz]
-txh = Tx_Height[txSz]
+txH = Tx_Height[txSz]
 above = aboveW &lt; txW
 left = leftH &lt; txH
 ctx = TXFM_PARTITION_CONTEXTS - 1
@@ -16102,7 +16124,7 @@ if ( AvailU &amp;&amp; AvailL ) {
         ctx = 2
     } else {
         if ( !LeftSingle )
-            ctx = 4 * (!check_last(left_ref_frame[fwd_ref_sign_idx]))
+            ctx = 4 * (!check_last(LeftRefFrame[ ref_frame_sign_bias[ BWDREF_FRAME ] ]))
         else if (check_last(left0))
             ctx = 0
         else
@@ -16171,7 +16193,7 @@ if ( AvailU &amp;&amp; AvailL ) {
         ctx = 2
     } else {
         if ( !LeftSingle )
-            ctx = 4 * (!check_golden(left_ref_frame[fwd_ref_sign_idx]))
+            ctx = 4 * (!check_golden(LeftRefFrame[ ref_frame_sign_bias[ BWDREF_FRAME ] ]))
         else if (check_golden(left0))
             ctx = 0
         else
@@ -16190,6 +16212,34 @@ arfCount = count_refs( ALTREF_FRAME )
 ctx = ref_count_ctx( brfarf2Count, arfCount )
 </code></pre>
 
+<p>where count_refs is defined as:</p>
+
+<pre><code class="language-c">count_refs(frameType) {
+    c = 0
+    if ( AvailU ) {
+        if ( AboveRefFrame[ 0 ] == frameType ) c++
+        if ( AboveRefFrame[ 1 ] == frameType ) c++
+    }
+    if ( AvailL ) {
+        if ( LeftRefFrame[ 0 ] == frameType ) c++
+        if ( LeftRefFrame[ 1 ] == frameType ) c++
+    }
+    return c
+}
+</code></pre>
+
+<p>and ref_count_ctx is defined as:</p>
+
+<pre><code class="language-c">ref_count_ctx(counts0, counts1) {
+  if (counts0 &lt; counts1)
+    return 0
+  else if (counts0 == counts1)
+    return 1
+  else
+    return 2
+}
+</code></pre>
+
 <p><strong>comp_bwdref_p1</strong>: the cdf is given by TileCompBwdRefCdf[ ctx ][ 1 ] where ctx is
 computed by:</p>
 
@@ -16197,6 +16247,8 @@ computed by:</p>
 arf2Count = count_refs( ALTREF2_FRAME )
 ctx = ref_count_ctx( brfCount, arf2Count )
 </code></pre>
+
+<p>where count_refs and ref_count_ctx are the same as given in the CDF selection process for comp_bwdref.</p>
 
 <p><strong>single_ref_p1</strong>: the cdf is given by TileSingleRefCdf[ ctx ][ 0 ] where
 ctx is computed by:</p>
@@ -16257,6 +16309,8 @@ ctx is computed by:</p>
 arfCount = count_refs( ALTREF_FRAME )
 ctx = ref_count_ctx( brfarf2Count, arfCount )
 </code></pre>
+
+<p>where count_refs and ref_count_ctx are the same as given in the CDF selection process for comp_bwdref.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The context calculation for single_ref_p2 is the same as for
 comp_bwdref. ctx can only equal 0, 1, or 2 for single_ref_p2.</p>
@@ -16321,25 +16375,25 @@ if ( AvailU &amp;&amp; AvailL ) {
             else
                 ctx = 1 + 2 * (check_last_or_last2(crf1) || check_last_or_last2(crf2))
         }
-    } else if ( AvailU ) {
-        if ( AboveIntra || (check_backward(above0) &amp;&amp; AboveSingle) )
-            ctx= 2
-        else if ( AboveSingle )
-            ctx= 4 * check_last_or_last2(above0)
-        else
-            ctx= 3 * ( check_last_or_last2(above0) ||
-                       check_last_or_last2(above1) )
-    } else if ( AvailL ) {
-        if ( LeftIntra || (check_backward(left0) &amp;&amp; LeftSingle) )
-            ctx = 2
-        else if ( LeftSingle )
-            ctx = 4 * check_last_or_last2(left0)
-        else
-            ctx = 3 * ( check_last_or_last2(left0) ||
-                        check_last_or_last2(left1) )
-    } else
+    }
+} else if ( AvailU ) {
+    if ( AboveIntra || (check_backward(above0) &amp;&amp; AboveSingle) )
+        ctx= 2
+    else if ( AboveSingle )
+        ctx= 4 * check_last_or_last2(above0)
+    else
+        ctx= 3 * ( check_last_or_last2(above0) ||
+                   check_last_or_last2(above1) )
+} else if ( AvailL ) {
+    if ( LeftIntra || (check_backward(left0) &amp;&amp; LeftSingle) )
         ctx = 2
-}
+    else if ( LeftSingle )
+        ctx = 4 * check_last_or_last2(left0)
+    else
+        ctx = 3 * ( check_last_or_last2(left0) ||
+                    check_last_or_last2(left1) )
+} else
+    ctx = 2
 </code></pre>
 
 <p><strong>single_ref_p4</strong>: the cdf is given by TileSingleRefCdf[ ctx ][ 3 ] where
@@ -16402,25 +16456,25 @@ if ( AvailU &amp;&amp; AvailL ) {
             else
                 ctx = 1 + 2 * (check_last(crf1) || check_last(crf2))
         }
-    } else if ( AvailU ) {
-        if ( AboveIntra || (!check_last_or_last2(above0) &amp;&amp; AboveSingle) )
-            ctx= 2
-        else if ( AboveSingle )
-            ctx= 4 * check_last(above0)
-        else
-            ctx= 3 * ( check_last(above0) ||
-                       check_last(above1) )
-    } else if ( AvailL ) {
-        if ( LeftIntra || (!check_last_or_last2(left0) &amp;&amp; LeftSingle) )
-            ctx = 2
-        else if ( LeftSingle )
-            ctx = 4 * check_last(left0)
-        else
-            ctx = 3 * ( check_last(left0) ||
-                        check_last(left1) )
-    } else
+    }
+} else if ( AvailU ) {
+    if ( AboveIntra || (!check_last_or_last2(above0) &amp;&amp; AboveSingle) )
+        ctx= 2
+    else if ( AboveSingle )
+        ctx= 4 * check_last(above0)
+    else
+        ctx= 3 * ( check_last(above0) ||
+                   check_last(above1) )
+} else if ( AvailL ) {
+    if ( LeftIntra || (!check_last_or_last2(left0) &amp;&amp; LeftSingle) )
         ctx = 2
-}
+    else if ( LeftSingle )
+        ctx = 4 * check_last(left0)
+    else
+        ctx = 3 * ( check_last(left0) ||
+                    check_last(left1) )
+} else
+    ctx = 2
 </code></pre>
 
 <p><strong>single_ref_p5</strong>: the cdf is given by TileSingleRefCdf[ ctx ][ 4 ] where
@@ -16483,25 +16537,25 @@ if ( AvailU &amp;&amp; AvailL ) {
             else
                 ctx = 1 + 2 * (check_last3(crf1) || check_last3(crf2))
         }
-    } else if ( AvailU ) {
-        if ( AboveIntra || (!check_golden_or_last3(above0) &amp;&amp; AboveSingle) )
-            ctx= 2
-        else if ( AboveSingle )
-            ctx= 4 * check_last3(above0)
-        else
-            ctx= 3 * ( check_last3(above0) ||
-                       check_last3(above1) )
-    } else if ( AvailL ) {
-        if ( LeftIntra || (!check_golden_or_last3(left0) &amp;&amp; LeftSingle) )
-            ctx = 2
-        else if ( LeftSingle )
-            ctx = 4 * check_last3(left0)
-        else
-            ctx = 3 * ( check_last3(left0) ||
-                        check_last3(left1) )
-    } else
+    }
+} else if ( AvailU ) {
+    if ( AboveIntra || (!check_golden_or_last3(above0) &amp;&amp; AboveSingle) )
+        ctx= 2
+    else if ( AboveSingle )
+        ctx= 4 * check_last3(above0)
+    else
+        ctx= 3 * ( check_last3(above0) ||
+                   check_last3(above1) )
+} else if ( AvailL ) {
+    if ( LeftIntra || (!check_golden_or_last3(left0) &amp;&amp; LeftSingle) )
         ctx = 2
-}
+    else if ( LeftSingle )
+        ctx = 4 * check_last3(left0)
+    else
+        ctx = 3 * ( check_last3(left0) ||
+                    check_last3(left1) )
+} else
+    ctx = 2
 </code></pre>
 
 <p><strong>single_ref_p6</strong>: the cdf is given by TileSingleRefCdf[ ctx ][ 5 ] where
@@ -16511,6 +16565,8 @@ ctx is computed by:</p>
 arf2Count = count_refs( ALTREF2_FRAME )
 ctx = ref_count_ctx( brfCount, arf2Count )
 </code></pre>
+
+<p>where count_refs and ref_count_ctx are the same as given in the CDF selection process for comp_bwdref.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The context calculation for single_ref_p6 is the same as
 for comp_bwdref_p1. ctx can only equal 0, 1, or 2 for single_ref_p6.</p>
@@ -16584,7 +16640,7 @@ for comp_bwdref_p1. ctx can only equal 0, 1, or 2 for single_ref_p6.</p>
   </tbody>
 </table>
 
-<p><strong>compound_mode</strong>: the cdf is given by TileCompoundModeCdf[ CompoundContext ].</p>
+<p><strong>compound_mode</strong>: the cdf is given by TileCompoundModeCdf[ CompoundModeContext ].</p>
 
 <p><strong>interp_filter</strong>: the cdf is given by TileInterpFilterCdf[ ctx ]
 where ctx is computed by:</p>
@@ -16716,7 +16772,7 @@ if ( AvailL &amp;&amp; PaletteSizes[ 0 ][ MiRow ][ MiCol - 1 ] &gt; 0 )
 </code></pre>
 
 <p><strong>has_palette_uv</strong>: the cdf is given by
-TilePaletteUVModeCdf[ MiSize - BLOCK_8X8 ][ ctx ] where ctx is computed as
+TilePaletteUVModeCdf[ ctx ] where ctx is computed as
 follows:</p>
 
 <pre><code class="language-c">ctx = ( PaletteSizeY &gt; 0 ) ? 1 : 0
@@ -16929,6 +16985,16 @@ if (AvailU &amp;&amp; !AboveIntra &amp;&amp; AvailL &amp;&amp; !LeftIntra) {
 }
 </code></pre>
 
+<p>where is_samedir_ref_pair is defined as:</p>
+
+<pre><code class="language-c">is_samedir_ref_pair(ref0, ref1) {
+  if (ref0 &lt;= INTRA_FRAME || ref1 &lt;= INTRA_FRAME)
+    return 0
+
+  return (ref0 &gt;= BWDREF_FRAME) == (ref1 &gt;= BWDREF_FRAME)
+}
+</code></pre>
+
 <p><strong>uni_comp_ref</strong>: The cdf is given by TileUniCompRefCdf[ ctx ][ 0 ], where ctx is computed as follows:</p>
 
 <pre><code class="language-c">fwdCount = count_refs( LAST_FRAME )
@@ -16941,6 +17007,8 @@ bwdCount += count_refs( ALTREF_FRAME )
 ctx = ref_count_ctx( fwdCount, bwdCount )
 </code></pre>
 
+<p>where count_refs and ref_count_ctx are the same as given in the CDF selection process for comp_bwdref.</p>
+
 <p><strong>uni_comp_ref_p1</strong>: The cdf is given by TileUniCompRefCdf[ ctx ][ 1 ], where ctx is computed as follows:</p>
 
 <pre><code class="language-c">last2Count = count_refs( LAST2_FRAME )
@@ -16948,12 +17016,16 @@ last3GoldCount = count_refs( LAST3_FRAME ) + count_refs( GOLDEN_FRAME )
 ctx = ref_count_ctx( last2Count, last3GoldCount )
 </code></pre>
 
+<p>where count_refs and ref_count_ctx are the same as given in the CDF selection process for comp_bwdref.</p>
+
 <p><strong>uni_comp_ref_p2</strong>: The cdf is given by TileUniCompRefCdf[ ctx ][ 2 ], where ctx is computed as follows:</p>
 
 <pre><code class="language-c">last3Count = count_refs( LAST3_FRAME )
 goldCount = count_refs( GOLDEN_FRAME )
 ctx = ref_count_ctx( last3Count, goldCount )
 </code></pre>
+
+<p>where count_refs and ref_count_ctx are the same as given in the CDF selection process for comp_bwdref.</p>
 
 <p><strong>compound_type</strong>: The cdf is given by TileCompoundTypeCdf[ MiSize ].</p>
 
@@ -19028,7 +19100,7 @@ type with the horizontal and vertical operations transposed.</p>
 }
 </code></pre>
 
-<pre><code class="language-c">Default_Uv_Mode_Cdf[ INTRA_MODES ][ INTRA_MODES + 1 ] = {
+<pre><code class="language-c">Default_Uv_Mode_Cdf[ INTRA_MODES ][ UV_INTRA_MODES + 1 ] = {
   { 18377, 18815, 19743, 20178, 20560, 20889, 21359, 22098,
     22481, 24563, 25781, 26662, 28396, 32768, 0 },
   { 5350, 16837, 17066, 17360, 17692, 18778, 18969, 19206,
@@ -19157,7 +19229,7 @@ type with the horizontal and vertical operations transposed.</p>
 }
 </code></pre>
 
-<pre><code class="language-c">Default_Mv_Bit_Cdf[ MV_BIT_CONTEXTS ][ 3 ] = {
+<pre><code class="language-c">Default_Mv_Bit_Cdf[ MV_OFFSET_BITS ][ 3 ] = {
   { 136*128, 32768, 0 },
   { 140*128, 32768, 0 },
   { 148*128, 32768, 0 },
