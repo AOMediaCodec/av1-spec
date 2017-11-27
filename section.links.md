@@ -9,6 +9,7 @@
 [section 7.6.4]: #has-overlappable-candidates-process
 [section 6.8.21]: #read-inter-intra-semantics
 [section 7.3]: #frame-order-constraints
+[section 8.1]: #parsing-process-for-fn
 [section 6.7.15]: #global-param-semantics
 [section 6.8.4]: #decode-block-semantics
 [section 6.4]: #temporal-delimiter-obu-semantics
@@ -16,7 +17,7 @@
 [section 7.10.4]: #adaptive-filter-strength-selection-process
 [section 5.1.1]: #obu-header-syntax
 [section 5.8.17]: #is-inter-syntax
-[section 7.9.1.12]: #inverse-identity-transform-process
+[section 7.9.1.13]: #inverse-identity-transform-process
 [section 5.8.42]: #transform-type-syntax
 [section 5.8.48]: #clamp-mv-row-function
 [section 6.7.9]: #delta-quantizer-semantics
@@ -204,7 +205,7 @@
 [section 6.3.1]: #color-config-semantics
 [section 6.5]: #padding-obu-semantics
 [section 7.11.1]: #cdef-block-process
-[section 8.1]: #parsing-process-for-fn
+[section 7.9.1.12]: #inverse-identity-transform-64-process
 [section 6.3]: #sequence-header-obu-semantics
 [section 6.7]: #frame-header-obu-semantics
 [section 5.8.43]: #get-transform-set-function

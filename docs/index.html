@@ -34,7 +34,7 @@
 <p><em>Version 0.3</em><br />
 <em>© 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2017-11-22 12:53:21 -0800</em></p>
+<p><em>Last modified: 2017-11-27 08:35:03 -0800</em></p>
 
 <p class="alert alert-danger"><strong>Draft Document</strong><br />
 This document is a work in process draft, and will change substantially before
@@ -352,6 +352,7 @@ Find document build instructions in the <a href="README.html">README</a>.</p>
               <li><a href="#inverse-identity-transform-8-process" id="markdown-toc-inverse-identity-transform-8-process">Inverse Identity Transform 8 Process</a></li>
               <li><a href="#inverse-identity-transform-16-process" id="markdown-toc-inverse-identity-transform-16-process">Inverse Identity Transform 16 Process</a></li>
               <li><a href="#inverse-identity-transform-32-process" id="markdown-toc-inverse-identity-transform-32-process">Inverse Identity Transform 32 Process</a></li>
+              <li><a href="#inverse-identity-transform-64-process" id="markdown-toc-inverse-identity-transform-64-process">Inverse Identity Transform 64 Process</a></li>
               <li><a href="#inverse-identity-transform-process" id="markdown-toc-inverse-identity-transform-process">Inverse Identity Transform Process</a></li>
             </ul>
           </li>
@@ -1056,17 +1057,17 @@ relate to the semantics of a particular syntax element are defined in
     </tr>
     <tr>
       <td><code>TX_SIZES</code></td>
-      <td style="text-align: center">4</td>
+      <td style="text-align: center">5</td>
       <td>Number of square transform sizes</td>
     </tr>
     <tr>
       <td><code>TX_SIZES_ALL</code></td>
-      <td style="text-align: center">10</td>
+      <td style="text-align: center">13</td>
       <td>Number of transform sizes (including non-square sizes)</td>
     </tr>
     <tr>
       <td><code>TX_MODES</code></td>
-      <td style="text-align: center">5</td>
+      <td style="text-align: center">6</td>
       <td>Number of values for <code>tx_mode</code></td>
     </tr>
     <tr>
@@ -1691,7 +1692,7 @@ relate to the semantics of a particular syntax element are defined in
     </tr>
     <tr>
       <td><code>TXFM_PARTITION_CONTEXTS</code></td>
-      <td style="text-align: center">16</td>
+      <td style="text-align: center">22</td>
       <td>Number of contexts for txfm_split</td>
     </tr>
     <tr>
@@ -1711,7 +1712,7 @@ relate to the semantics of a particular syntax element are defined in
     </tr>
     <tr>
       <td><code>MAX_TX_DEPTH</code></td>
-      <td style="text-align: center">3</td>
+      <td style="text-align: center">2</td>
       <td>Number of contexts for tx_size when the maximum transform size is 8x8</td>
     </tr>
     <tr>
@@ -1768,6 +1769,16 @@ relate to the semantics of a particular syntax element are defined in
       <td><code>SGRPROJ_SGR_BITS</code></td>
       <td style="text-align: center">8</td>
       <td>Internal precision bits for core selfguided_restoration</td>
+    </tr>
+    <tr>
+      <td><code>EC_PROB_SHIFT</code></td>
+      <td style="text-align: center">6</td>
+      <td>Number of bits to reduce CDF precision during arithmetic coding</td>
+    </tr>
+    <tr>
+      <td><code>EC_MIN_PROB</code></td>
+      <td style="text-align: center">4</td>
+      <td>Minimum probability assigned to each symbol during arithmetic coding</td>
     </tr>
     <tr>
       <td><code>SELECT_INTEGER_MV</code></td>
@@ -2999,6 +3010,10 @@ Segmentation_Feature_Signed[ SEG_LVL_MAX ] = { 1, 1, 1, 1, 1, 0, 0, 0 }
             <b class="syntax-element">tx_mode</b>                                                          f(2)
             TxMode = tx_mode
         }
+        if (TxMode == ALLOW_32X32) {
+            <b class="syntax-element">tx_mode_64x64</b>                                                    f(1)
+            TxMode += tx_mode_64x64
+        }
     }
 }
 </code></pre>
@@ -3592,7 +3607,8 @@ to use a rectangular transform; the table is defined as:</p>
     TX_8X8,
     TX_16X16,
     TX_32X32,
-    TX_32X32
+    TX_64X64,
+    TX_64X64
 }
 </code></pre>
 
@@ -3662,16 +3678,19 @@ to use a rectangular transform; the table is defined as:</p>
 <p>where Split_Tx_Size defines the transform size to use if txfm_split is equal to 1, and is defined as:</p>
 
 <pre><code class="language-c">Split_Tx_Size[TX_SIZES_ALL] = {
-  TX_4X4,    // TX_4X4
-  TX_4X4,    // TX_8X8
-  TX_8X8,    // TX_16X16
-  TX_16X16,  // TX_32X32
-  TX_4X4,    // TX_4X8
-  TX_4X4,    // TX_8X4
-  TX_8X8,    // TX_8X16
-  TX_8X8,    // TX_16X8
-  TX_16X16,  // TX_16X32
-  TX_16X16,  // TX_32X16
+  TX_4X4,
+  TX_4X4,
+  TX_8X8,
+  TX_16X16,
+  TX_32X32,
+  TX_4X4,
+  TX_4X4,
+  TX_8X8,
+  TX_8X8,
+  TX_16X16,
+  TX_16X16,
+  TX_32X32,
+  TX_32X32,
 }
 </code></pre>
 
@@ -4211,10 +4230,10 @@ previous candidate.</p>
         candRow = (MiRow &gt;&gt; subY) &lt;&lt; subY
         candCol = (MiCol &gt;&gt; subX) &lt;&lt; subX
 
-        isInterIntra = ( is_inter &amp;&amp; RefFrame[ 1 ] == INTRA_FRAME )
-        isCFL = (plane &gt; 0 &amp;&amp; !is_inter &amp;&amp; UVMode == UV_CFL_PRED)
+        IsInterIntra = ( is_inter &amp;&amp; RefFrame[ 1 ] == INTRA_FRAME )
+        IsCFL = (plane &gt; 0 &amp;&amp; !is_inter &amp;&amp; UVMode == UV_CFL_PRED)
 
-        if ( isInterIntra ) {
+        if ( IsInterIntra ) {
             if ( interintra_mode == II_DC_PRED ) mode = DC_PRED
             else if ( interintra_mode == II_V_PRED ) mode = V_PRED
             else if ( interintra_mode == II_H_PRED ) mode = H_PRED
@@ -4223,7 +4242,7 @@ previous candidate.</p>
             mode = DC_PRED
         }
 
-        if ( isInterIntra || isCFL ) {
+        if ( IsInterIntra || IsCFL ) {
             predict_intra( plane, baseX, baseY,
                            AvailL,
                            AvailU,
@@ -4248,6 +4267,8 @@ previous candidate.</p>
             if ( someUseIntra ) {
                 predW = num4x4W * 4
                 predH = num4x4H * 4
+                candRow = MiRow
+                candCol = MiCol
             }
             r = 0
             for( y = 0; y &lt; num4x4H * 4; y += predH ) {
@@ -4299,7 +4320,7 @@ previous candidate.</p>
         if ( ( ( plane == 0 ) &amp;&amp; PaletteSizeY ) ||
              ( ( plane != 0 ) &amp;&amp; PaletteSizeUV ) ) {
             predict_palette( plane, startX, startY, x, y, txSz )
-        } else if ( isCFL ) {
+        } else if ( IsCFL ) {
             predict_chroma_from_luma( plane, startX, startY, txSz )
         } else {
             mode = ( plane == 0 ) ? YMode : UVMode
@@ -4364,7 +4385,10 @@ previous candidate.</p>
     isLumaSquare = ( lumaW == lumaH )
     isSquare = ( w == h )
     becomingRect = isLumaSquare &amp;&amp; !isSquare
-    if ( w &lt;= lumaW &amp;&amp; h &lt;= lumaH &amp;&amp; !becomingRect) {
+    uses64 = w == 64 || h == 64 
+    isSubsampled = subX || subY
+    forceSplit = uses64 &amp;&amp; isSubsampled
+    if ( w &lt;= lumaW &amp;&amp; h &lt;= lumaH &amp;&amp; !becomingRect &amp;&amp; !forceSplit) {
         txSz = find_tx_size( w, h )
         transform_block( plane, startX, startY, txSz, 0, 0 )
     } else {
@@ -4447,7 +4471,7 @@ for the specified plane.
 <h4 id="token-syntax">Token Syntax</h4>
 
 <pre class="syntax"><code>tokens( plane, startX, startY, txSz ) {
-    segEob = Tx_Width[ txSz ] * Tx_Height[ txSz ]
+    segEob = Min( 1024, Tx_Width[ txSz ] * Tx_Height[ txSz ] )
     PlaneTxType = compute_tx_type( plane, txSz )
     scan = get_scan( plane, txSz )
     for ( i = 0; i &lt; segEob; i++ )
@@ -4526,7 +4550,7 @@ for the specified plane.
         return Mrow_Scan_16x32
     else if ( txSz == TX_32X16 )
         return Mrow_Scan_32x16
-    return mrow_scan_32x32
+    return Mrow_Scan_32x32
 }
 
 get_row_scan( txSz ) {
@@ -4534,7 +4558,7 @@ get_row_scan( txSz ) {
         return Row_Scan_4x4
     else if ( txSz == TX_8X8 )
         return Row_Scan_8x8
-    return row_scan_16x16
+    return Row_Scan_16x16
 }
 
 get_mcol_scan( txSz ) {
@@ -4556,7 +4580,7 @@ get_mcol_scan( txSz ) {
         return Mcol_Scan_16x32
     else if ( txSz == TX_32X16 )
         return Mcol_Scan_32x16
-    return mcol_scan_32x32
+    return Mcol_Scan_32x32
 }
 
 get_col_scan( txSz ) {
@@ -4590,6 +4614,10 @@ get_default_scan( txSz ) {
 }
 
 get_scan( plane, txSz ) {
+    if ( Tx_Size_Sqr_Up[ txSz ] == TX_64X64 ) {
+        return Default_Scan_32x32
+    }
+    
     preferRow = ( PlaneTxType == ADST_DCT ||
                   PlaneTxType == V_DCT ||
                   PlaneTxType == V_ADST ||
@@ -4649,7 +4677,7 @@ get_scan( plane, txSz ) {
     if ( cat &lt; 6 ) {
         extraBitCount = Extra_Bits[ token ][ 1 ]
     } else {
-        extraBitCount = BitDepth + 3 + Max( 0, Tx_Size_Sqr_Up[ tx_size ] )
+        extraBitCount = BitDepth + 3 + Max( 0, Tx_Size_Sqr_Up[ Min( TX_32X32, tx_size ) ] )
         extraBitCount = Min( 18, ( ( extraBitCount + 3 ) &gt;&gt; 2 ) &lt;&lt; 2 )
     }
     
@@ -6035,6 +6063,9 @@ col = 0..MiCols-1.</p>
         <p>Tx32x32Cdf is set to a copy of Default_Tx_32x32_Cdf</p>
       </li>
       <li>
+        <p>Tx64x64Cdf is set to a copy of Default_Tx_64x64_Cdf</p>
+      </li>
+      <li>
         <p>TxfmSplitCdf is set to a copy of Default_Txfm_Split_Cdf</p>
       </li>
       <li>
@@ -6685,6 +6716,10 @@ the range 0 to n-1.</p>
     </tr>
     <tr>
       <td style="text-align: center">4</td>
+      <td style="text-align: center">ALLOW_64X64</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">5</td>
       <td style="text-align: center">TX_MODE_SELECT</td>
     </tr>
   </tbody>
@@ -6698,6 +6733,10 @@ the choice of size is specified explicitly for each block.</p>
 within each mode info header. tx_mode_select equal to 0 indicates that the
 transform mode is computed based on the size of the block and the maximum
 transform size allowed by the frame header.</p>
+
+<p><strong>tx_mode_64x64</strong> is an extra bit read if tx_mode is initially read as ALLOW_32X32,
+to determine whether to increment tx_mode to ALLOW_64X64. This reduces the number of
+bits read on average to determine tx_mode.</p>
 
 <h4 id="frame-reference-mode-semantics">Frame Reference Mode Semantics</h4>
 
@@ -7262,27 +7301,39 @@ bit is equal to 1.</p>
     </tr>
     <tr>
       <td style="text-align: center">4</td>
-      <td style="text-align: center">TX_4X8</td>
+      <td style="text-align: center">TX_64X64</td>
     </tr>
     <tr>
       <td style="text-align: center">5</td>
-      <td style="text-align: center">TX_8X4</td>
+      <td style="text-align: center">TX_4X8</td>
     </tr>
     <tr>
       <td style="text-align: center">6</td>
-      <td style="text-align: center">TX_8X16</td>
+      <td style="text-align: center">TX_8X4</td>
     </tr>
     <tr>
       <td style="text-align: center">7</td>
-      <td style="text-align: center">TX_16X8</td>
+      <td style="text-align: center">TX_8X16</td>
     </tr>
     <tr>
       <td style="text-align: center">8</td>
-      <td style="text-align: center">TX_16X32</td>
+      <td style="text-align: center">TX_16X8</td>
     </tr>
     <tr>
       <td style="text-align: center">9</td>
+      <td style="text-align: center">TX_16X32</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">10</td>
       <td style="text-align: center">TX_32X16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">11</td>
+      <td style="text-align: center">TX_32X64</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">12</td>
+      <td style="text-align: center">TX_64X32</td>
     </tr>
   </tbody>
 </table>
@@ -10519,6 +10570,10 @@ following table:</p>
               <td style="text-align: center">5</td>
               <td style="text-align: center">Sm_Weights_Tx_32x32</td>
             </tr>
+            <tr>
+              <td style="text-align: center">6</td>
+              <td style="text-align: center">Sm_Weights_Tx_64x64</td>
+            </tr>
           </tbody>
         </table>
       </li>
@@ -10549,6 +10604,10 @@ following table:</p>
             <tr>
               <td style="text-align: center">5</td>
               <td style="text-align: center">Sm_Weights_Tx_32x32</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">6</td>
+              <td style="text-align: center">Sm_Weights_Tx_64x64</td>
             </tr>
           </tbody>
         </table>
@@ -10600,6 +10659,10 @@ following table:</p>
               <td style="text-align: center">5</td>
               <td style="text-align: center">Sm_Weights_Tx_32x32</td>
             </tr>
+            <tr>
+              <td style="text-align: center">6</td>
+              <td style="text-align: center">Sm_Weights_Tx_64x64</td>
+            </tr>
           </tbody>
         </table>
       </li>
@@ -10647,6 +10710,10 @@ following table:</p>
             <tr>
               <td style="text-align: center">5</td>
               <td style="text-align: center">Sm_Weights_Tx_32x32</td>
+            </tr>
+            <tr>
+              <td style="text-align: center">6</td>
+              <td style="text-align: center">Sm_Weights_Tx_64x64</td>
             </tr>
           </tbody>
         </table>
@@ -11044,7 +11111,7 @@ output is assigned to the 2D array preds[ refList ].</p>
   </li>
 </ol>
 
-<p>If isInterIntra is equal to 1, the following ordered steps apply:</p>
+<p>If IsInterIntra is equal to 1, the following ordered steps apply:</p>
 
 <ol>
   <li>
@@ -12827,8 +12894,19 @@ CurrFrame.</p>
   </li>
 </ul>
 
-<p>The variable dqDenom is set equal to 2 if txSize is equal to TX_32X32, otherwise
-dqDenom is set equal to 1.</p>
+<p>The variable dqDenom is derived as follows:</p>
+
+<ul>
+  <li>
+    <p>If txSize is equal to TX_32X32, TX_16X32, or TX_32X16, dqDenom is set equal to 2.</p>
+  </li>
+  <li>
+    <p>Otherwise, if txSize is equal to TX_64X64, TX_32X64, or TX_64X32, dqDenom is set equal to 4.</p>
+  </li>
+  <li>
+    <p>Otherwise, dqDenom is set equal to 1.</p>
+  </li>
+</ul>
 
 <p>The variable log2W (specifying the base 2 logarithm of the width of the transform
 block) is set equal to Tx_Width_Log2[ txSize ].</p>
@@ -13114,7 +13192,7 @@ of the length of the input array.</p>
 <h5 id="inverse-dct-process">Inverse DCT Process</h5>
 
 <p>This process performs an in-place inverse discrete cosine transform of the
-permuted array T which is of length 2<sup>n</sup> for 2 ≤ n ≤ 5.</p>
+permuted array T which is of length 2<sup>n</sup> for 2 ≤ n ≤ 6.</p>
 
 <p>The inputs to this process are:</p>
 
@@ -13140,15 +13218,25 @@ values should be used.</p>
 
 <ol>
   <li>
-    <p>If n is equal to 5, invoke B( 16 + i, 31 - i, 6 + ( brev( 3, 7-i ) &lt;&lt; 3 ), highPrecision, 0 )
+    <p>If n is equal to 6, invoke B(32 + i, 63 - i, 63 - 4*brev(4, i), 0) for i = 0..15.</p>
+  </li>
+  <li>
+    <p>If n is greater than or equal to 5, invoke B( 16 + i, 31 - i, 6 + ( brev( 3, 7-i ) &lt;&lt; 3 ), highPrecision, 0 )
 for i = 0..7.</p>
+  </li>
+  <li>
+    <p>If n is equal to 6, invoke H(32 + i<em>2, 33 + i</em>2, i&amp;1) for i = 0..15.</p>
   </li>
   <li>
     <p>If n is greater than or equal to 4, invoke B( 8 + i, 15 - i, 12 + ( brev( 2, 3 - i ) &lt;&lt; 7 ) ),
 highPrecision, 0) for i = 0..4.</p>
   </li>
   <li>
-    <p>If n is equal to 5, invoke H( 16 + 2 * i, 17 + 2 * i, i &amp; 1 ) for i = 0..7.</p>
+    <p>If n is greater than or equal to 5, invoke H( 16 + 2 * i, 17 + 2 * i, i &amp; 1 ) for i = 0..7.</p>
+  </li>
+  <li>
+    <p>If n is equal to 6, invoke B(62 - i<em>4 - j, 33 + i</em>4 + j, 60 - 16<em>brev(2, i) + 64</em>j, 1) for i = 0..3,
+for j = 0..1.</p>
   </li>
   <li>
     <p>If n is greater than or equal to 3, invoke B( 4 + i, 7 - i, 56 - 32 * i, highPrecision, 0 )
@@ -13158,8 +13246,11 @@ for i = 0..1.</p>
     <p>If n is greater than or equal to 4, invoke H( 8 + 2 * i, 9 + 2 * i, i &amp; 1 ) for i = 0..3.</p>
   </li>
   <li>
-    <p>If n is equal to 5, invoke B( 30 - 4 * i - j, 17 + 4 * i + j, 24 + (j &lt;&lt; 6) + ( ( 1 - i ) &lt;&lt; 5 ),
+    <p>If n is greater than or equal to 5, invoke B( 30 - 4 * i - j, 17 + 4 * i + j, 24 + (j &lt;&lt; 6) + ( ( 1 - i ) &lt;&lt; 5 ),
 highPrecision, 1 ) for i = 0..1, for j=0..1.</p>
+  </li>
+  <li>
+    <p>If n is equal to 6, invoke H(32 + i<em>4 + j, 35 + i</em>4 - j, i&amp;1) for i = 0..7, for j = 0..1.</p>
   </li>
   <li>
     <p>Invoke B( 2 * i, 2 * i + 1, 32 + 16 * i, highPrecision, 1 - i ) for i = 0..1.</p>
@@ -13169,10 +13260,14 @@ highPrecision, 1 ) for i = 0..1, for j=0..1.</p>
   </li>
   <li>
     <p>If n is greater than or equal to 4, invoke B( 14 - i, 9 + i, 48 + 64 * i, highPrecision, 1 ) for
-i = 0..1.</p>
+     i = 0..1.</p>
   </li>
   <li>
-    <p>If n is equal to 5, invoke H( 16 + 4 * i + j, 19 + 4 * i - j, i &amp; 1 ) for i = 0..3, for j = 0..1.</p>
+    <p>If n is greater than or equal to 5, invoke H( 16 + 4 * i + j, 19 + 4 * i - j, i &amp; 1 ) for i = 0..3, for j = 0..1.</p>
+  </li>
+  <li>
+    <p>If n is equal to 6, invoke B(61 - i<em>8 - j, 34 + i</em>8 + j, 56 - i<em>32 + (j»1)</em>64, 1) for i = 0..1, for
+j = 0..3.</p>
   </li>
   <li>
     <p>Invoke H( i, 3 - i, 0 ) for i = 0..1.</p>
@@ -13185,7 +13280,10 @@ i = 0..1.</p>
 for j = 0..1.</p>
   </li>
   <li>
-    <p>If n is equal to 5, invoke B( 29 - i, 18 + i, 48 + ( i &gt;&gt; 1 ) * 64, highPrecision, 1 ) for i = 0..3.</p>
+    <p>If n is greater than or equal to 5, invoke B( 29 - i, 18 + i, 48 + ( i &gt;&gt; 1 ) * 64, highPrecision, 1 ) for i = 0..3.</p>
+  </li>
+  <li>
+    <p>If n is equal to 6, invoke H(32 + 8<em>i + j, 39 + 8</em>i - j, i&amp;1) for i = 0..3, for j = 0..3.</p>
   </li>
   <li>
     <p>If n is greater than or equal to 3, invoke H( i, 7 - i, 0 ) for i = 0..3.</p>
@@ -13194,16 +13292,37 @@ for j = 0..1.</p>
     <p>If n is greater than or equal to 4, invoke B( 13 - i, 10 + i, 32, highPrecision, 1 ) for i = 0..1.</p>
   </li>
   <li>
-    <p>If n is equal to 5, invoke H( 16 + i * 8 + j, 23 + i * 8 - j, i ) for i = 0..1, for j = 0..3.</p>
+    <p>If n is greater than or equal to 5, invoke H( 16 + i * 8 + j, 23 + i * 8 - j, i ) for i = 0..1, for j = 0..3.</p>
+  </li>
+  <li>
+    <p>If n is equal to 5, invoke B(59-i, 36+i, i&lt;4 ? 48 : 112, 1) for i = 0..7.</p>
   </li>
   <li>
     <p>If n is greater than or equal to 4, invoke H( i, 15 - i, 0 ) for i = 0..7.</p>
   </li>
   <li>
-    <p>If n is equal to 5, invoke B( 27 - i, 20 + i, 32, highPrecision, 1 ) for i = 0..3.</p>
+    <p>If n is greater than or equal to 5, invoke B( 27 - i, 20 + i, 32, highPrecision, 1 ) for i = 0..3.</p>
   </li>
   <li>
-    <p>If n is equal to 5, invoke H( 0, 31 - i, 0 ) for i = 0..15.</p>
+    <p>If n is equal to 6, the following steps apply for i = 0..7:</p>
+
+    <ul>
+      <li>
+        <p>Invoke H(32+i, 47-i, 0).</p>
+      </li>
+      <li>
+        <p>Invoke H(48+i, 63-i, 1).</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>If n is greater than or equal to 5, invoke H( 0, 31 - i, 0 ) for i = 0..15.</p>
+  </li>
+  <li>
+    <p>If n is equal to 6, invoke B(55-i, 40+i, 32, 1) for i = 0..7.</p>
+  </li>
+  <li>
+    <p>If n is equal to 6, invoke H(i, 63-i, 0) for i = 0..31.</p>
   </li>
 </ol>
 
@@ -13396,10 +13515,18 @@ the following calculation for i = 0..31:</p>
 <pre><code class="language-c">T[ i ] = T[ i ] * 4
 </code></pre>
 
+<h5 id="inverse-identity-transform-64-process">Inverse Identity Transform 64 Process</h5>
+
+<p>The process does an in-place transform of the array T (of length 32) by
+the following calculation for i = 0..31:</p>
+
+<pre><code class="language-c">T[ i ] = Round2( T[ i ] * 92680, 14 )
+</code></pre>
+
 <h5 id="inverse-identity-transform-process">Inverse Identity Transform Process</h5>
 
 <p>This process performs an in-place identity transform process (with a size-dependent
-scaling factor) on the array T of size 2<sup>n</sup> for 2 ≤ n ≤ 5.</p>
+scaling factor) on the array T of size 2<sup>n</sup> for 2 ≤ n ≤ 6.</p>
 
 <p>The input to this process is a variable n that specifies the base 2 logarithm
 of the length of the input array.</p>
@@ -13420,8 +13547,12 @@ of the length of the input array.</p>
 <a href="#inverse-identity-transform-16-process">section 7.9.1.10</a>.</p>
   </li>
   <li>
-    <p>Otherwise (n is equal to 5), invoke the inverse identity transform 32 process in
+    <p>Otherwise if n is equal to 5, invoke the inverse identity transform 32 process in
 <a href="#inverse-identity-transform-32-process">section 7.9.1.11</a>.</p>
+  </li>
+  <li>
+    <p>Otherwise (n is equal to 6), invoke the inverse identity transform 64 process in
+<a href="#inverse-identity-transform-64-process">section 7.9.1.12</a>.</p>
   </li>
 </ul>
 
@@ -13483,7 +13614,7 @@ specified in <a href="#inverse-adst-process">section 7.9.1.6</a> with input vari
 highPrecision set equal to ( log2W &lt; 4 ).</p>
   </li>
   <li>
-    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.9.1.12</a> with the
+    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.9.1.13</a> with the
 input variable n equal to log2W.</p>
   </li>
   <li>
@@ -13535,7 +13666,7 @@ invoke the inverse ADST process as specified in <a href="#inverse-adst-process">
 variable n equal to log2H and the input variable highPrecision equal to 1.</p>
   </li>
   <li>
-    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.9.1.12</a> with the
+    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.9.1.13</a> with the
 input variable n equal to log2H.</p>
   </li>
   <li>
@@ -15430,6 +15561,9 @@ prefixed with “Tile”.  This copying produces the following arrays:</p>
     <p>TileTx32x32Cdf</p>
   </li>
   <li>
+    <p>TileTx64x64Cdf</p>
+  </li>
+  <li>
     <p>TileTxfmSplitCdf</p>
   </li>
   <li>
@@ -15700,7 +15834,8 @@ do {
   symbol++
   prev = cur
   f = ( 1 &lt;&lt; 15 ) - cdf[ symbol ]
-  cur = ( ( BoolRange &gt;&gt; 8 ) * f ) &gt;&gt; 7
+  cur = ((BoolRange &gt;&gt; 8) * (f &gt;&gt; EC_PROB_SHIFT)) &gt;&gt; (7 - EC_PROB_SHIFT)
+  cur += EC_MIN_PROB * (N - symbol - 1)
 } while ( BoolValue &lt; cur )
 </code></pre>
 
@@ -15738,7 +15873,11 @@ effect.</p>
 
 <p>The cumulative distribution is updated as follows:</p>
 
-<pre><code class="language-c">rate = 4 + ( cdf[N] &gt; 31 ) + floor ( log2 ( N ) )
+<pre><code class="language-c">if (N == 2) {
+    rate = 4 + (cdf[2] &gt; 7) + (cdf[2] &gt; 15) + 1
+} else {
+    rate = 4 + ( cdf[N] &gt; 31 ) + floor ( log2 ( N ) )
+}
 rate2 = 5
 tmp0 = 1 &lt;&lt; rate2
 tmp = tmp0
@@ -15753,7 +15892,8 @@ cdf[N] += (cdf[N] &lt; 32)
 
 <p class="alert alert-info"><strong>Note:</strong> The last entry of the cdf array is used to keep a count of the number
 of times the symbol has been decoded (up to a maximum of 32).  This allows the
-cdf to change faster for the first 32 times the symbol is decoded.</p>
+cdf to change faster for the first 32 times the symbol is decoded.
+Symbols with only 2 entries adapt fast for the first 8 times, then at a medium rate, then at a slow rate</p>
 
 <p>The return value from the function is given by symbol.</p>
 
@@ -15892,6 +16032,9 @@ where ctx is computed by:</p>
 <p>The cdf to return is given by:</p>
 
 <ul>
+  <li>
+    <p>TileTx64x64Cdf[ ctx ] if maxTxSize is equal to TX_64X64.</p>
+  </li>
   <li>
     <p>TileTx32x32Cdf[ ctx ] if maxTxSize is equal to TX_32X32.</p>
   </li>
@@ -18208,7 +18351,7 @@ square transform size that can be used for blocks of size x.</p>
   TX_4X4, TX_4X4, TX_4X4, TX_8X8,
   TX_8X8, TX_8X8, TX_16X16, TX_16X16,
   TX_16X16, TX_32X32, TX_32X32, TX_32X32,
-  TX_32X32, TX_32X32, TX_32X32, TX_32X32,
+  TX_64X64, TX_64X64, TX_64X64, TX_64X64,
   TX_4X4, TX_4X4, TX_8X8, TX_8X8,
   TX_16X16, TX_16X16, TX_32X32, TX_32X32
 }
@@ -18220,8 +18363,8 @@ transform size that can be used for blocks of size x (this can be either square 
 <pre><code class="language-c">Max_Tx_Size_Rect[ BLOCK_SIZES ] = {
   TX_4X4, TX_4X8, TX_8X4, TX_8X8,
   TX_8X16, TX_16X8, TX_16X16, TX_16X32,
-  TX_32X16, TX_32X32, TX_32X32, TX_32X32,
-  TX_32X32, TX_32X32, TX_32X32, TX_32X32,
+  TX_32X16, TX_32X32, TX_32X64, TX_64X32,
+  TX_64X64, TX_64X64, TX_64X64, TX_64X64,
   TX_4X8, TX_8X4, TX_8X16, TX_16X8,
   TX_16X32, TX_32X16, TX_32X32, TX_32X32
 }
@@ -18349,9 +18492,201 @@ or for a 4x4 block size.</p>
 }
 </code></pre>
 
-<pre><code class="language-c">Coefband_8x8_Plus[ 1024 ] = {
+<pre><code class="language-c">Coefband_8x8_Plus[ 4096 ] = {
     0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4,
     4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -18456,6 +18791,10 @@ Sm_Weights_Tx_8x8  [  8 ] = { 255, 197, 146, 105,  73,  50,  37,  32 }
 Sm_Weights_Tx_16x16[ 16 ] = { 255, 225, 196, 170, 145, 123, 102,  84,  68,  54,  43,  33,  26, 20, 17, 16 }
 Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 122, 111, 101, 92, 83, 74,
                               66,  59,  52,  45,  39,  34,  29,  25,  21,  17,  14,  12,  10,  9,  8,  8 }
+Sm_Weights_Tx_64x64[ 64 ] = { 255, 248, 240, 233, 225, 218, 210, 203, 196, 189, 182, 176, 169, 163, 156,
+                              150, 144, 138, 133, 127, 121, 116, 111, 106, 101, 96, 91, 86, 82, 77, 73, 69,
+                              65, 61, 57, 54, 50, 47, 44, 41, 38, 35, 32, 29, 27, 25, 22, 20, 18, 16, 15,
+                              13, 12, 10, 9, 8, 7, 6, 6, 5, 5, 4, 4, 4 }
 </code></pre>
 
 <pre><code class="language-c">Mode_To_Angle[ INTRA_MODES ] = { 0, 90, 180, 45, 135, 111, 157, 203, 67, 0, 0, 0, 0 }
@@ -18481,6 +18820,25 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+  },
+  {
+    
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
   },
   {
     
@@ -18504,13 +18862,6 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
-  },
-  {
-    
-    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
@@ -18518,6 +18869,7 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
   {
     
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
@@ -18527,10 +18879,13 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_4X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
   },
   {
     
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_8X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
@@ -18540,10 +18895,13 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_8X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_8X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
   },
   {
     
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_8X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X8, TX_4X4 }, { TX_4X4, TX_4X4 } },
@@ -18553,6 +18911,8 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X4 }, { TX_4X8, TX_4X4 } },
     { { TX_8X8, TX_8X4 }, { TX_4X8, TX_4X4 } },
     { { TX_8X8, TX_8X4 }, { TX_4X8, TX_4X4 } },
+    { { TX_8X8, TX_8X4 }, { TX_4X8, TX_4X4 } },
+    { { TX_8X8, TX_8X4 }, { TX_4X8, TX_4X4 } },
   },
   {
     
@@ -18560,12 +18920,15 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_4X4, TX_4X4 } },
     { { TX_8X8, TX_8X8 }, { TX_4X4, TX_4X4 } },
     { { TX_8X8, TX_8X8 }, { TX_4X4, TX_4X4 } },
+    { { TX_8X16, TX_8X8 }, { TX_4X4, TX_4X4 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X16, TX_8X8 }, { TX_4X8, TX_4X8 } },  
     { { TX_8X16, TX_8X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X16, TX_8X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X16, TX_8X8 }, { TX_4X8, TX_4X8 } },
+    { { TX_8X16, TX_8X8 }, { TX_4X8, TX_4X8 } },
+    { { TX_8X16, TX_8X8 }, { TX_4X8, TX_4X8 } },
   },
   {
     
@@ -18573,10 +18936,13 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_4X4 }, { TX_8X8, TX_4X4 } },
     { { TX_8X8, TX_4X4 }, { TX_8X8, TX_4X4 } },
     { { TX_8X8, TX_4X4 }, { TX_8X8, TX_4X4 } },
+    { { TX_16X8, TX_4X4 }, { TX_8X8, TX_4X4 } },
     { { TX_4X8, TX_4X4 }, { TX_4X8, TX_4X4 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_16X8, TX_8X4 }, { TX_8X8, TX_8X4 } },
     { { TX_16X8, TX_8X4 }, { TX_8X8, TX_8X4 } },  
+    { { TX_16X8, TX_8X4 }, { TX_8X8, TX_8X4 } },
+    { { TX_16X8, TX_8X4 }, { TX_8X8, TX_8X4 } },
     { { TX_16X8, TX_8X4 }, { TX_8X8, TX_8X4 } },
     { { TX_16X8, TX_8X4 }, { TX_8X8, TX_8X4 } },
   },
@@ -18584,6 +18950,7 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
+    { { TX_16X16, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
@@ -18592,6 +18959,8 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_16X8, TX_16X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X8 }, { TX_8X16, TX_8X8 } },
     { { TX_16X16, TX_16X8 }, { TX_8X16, TX_8X8 } },
+    { { TX_16X16, TX_16X8 }, { TX_8X16, TX_8X8 } },
+    { { TX_16X16, TX_16X8 }, { TX_8X16, TX_8X8 } },
   },
   {
     
@@ -18599,11 +18968,14 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_8X8, TX_8X8 } },
+    { { TX_16X32, TX_16X16 }, { TX_8X8, TX_8X8 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_8X16, TX_8X16 }, { TX_8X16, TX_8X16 } },
     { { TX_16X8, TX_16X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X32, TX_16X16 }, { TX_8X16, TX_8X16 } },  
+    { { TX_16X32, TX_16X16 }, { TX_8X16, TX_8X16 } },
+    { { TX_16X32, TX_16X16 }, { TX_8X16, TX_8X16 } },
     { { TX_16X32, TX_16X16 }, { TX_8X16, TX_8X16 } },
   },
   {
@@ -18612,12 +18984,15 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_8X8 }, { TX_16X16, TX_8X8 } },
     { { TX_16X16, TX_8X8 }, { TX_16X16, TX_8X8 } },
+    { { TX_32X16, TX_8X8 }, { TX_16X16, TX_8X8 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_8X16, TX_8X8 }, { TX_8X16, TX_8X8 } },
     { { TX_16X8, TX_16X8 }, { TX_16X8, TX_16X8 } },
     { { TX_32X16, TX_16X8 }, { TX_16X16, TX_16X8 } },
-    { { TX_32X16, TX_16X8 }, { TX_16X16, TX_16X8 } },  
+    { { TX_32X16, TX_16X8 }, { TX_16X16, TX_16X8 } },
+    { { TX_32X16, TX_16X8 }, { TX_16X16, TX_16X8 } },
+    { { TX_32X16, TX_16X8 }, { TX_16X16, TX_16X8 } },
   },
   {
     
@@ -18625,12 +19000,15 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_16X16, TX_16X16 } },
     { { TX_32X32, TX_16X16 }, { TX_16X16, TX_16X16 } },
+    { { TX_32X32, TX_16X16 }, { TX_16X16, TX_16X16 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_8X16, TX_8X16 }, { TX_8X16, TX_8X16 } },
     { { TX_16X8, TX_16X8 }, { TX_16X8, TX_16X8 } },
     { { TX_16X32, TX_16X16 }, { TX_16X32, TX_16X16 } },
     { { TX_32X16, TX_32X16 }, { TX_16X16, TX_16X16 } },
+    { { TX_32X32, TX_16X16 }, { TX_16X16, TX_16X16 } },
+    { { TX_32X32, TX_16X16 }, { TX_16X16, TX_16X16 } },
   },
   {
     
@@ -18638,12 +19016,15 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_16X16, TX_16X16 } },
     { { TX_32X32, TX_32X32 }, { TX_16X16, TX_16X16 } },
+    { { TX_32X32, TX_32X32 }, { TX_16X16, TX_16X16 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_8X16, TX_8X16 }, { TX_8X16, TX_8X16 } },
     { { TX_16X8, TX_16X8 }, { TX_16X8, TX_16X8 } },
     { { TX_16X32, TX_16X32 }, { TX_16X16, TX_16X16 } },
     { { TX_32X16, TX_32X16 }, { TX_16X16, TX_16X16 } },
+    { { TX_32X64, TX_32X32 }, { TX_16X16, TX_16X32 } },
+    { { TX_32X32, TX_32X32 }, { TX_16X16, TX_16X16 } },
   },
   {
     
@@ -18651,12 +19032,15 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_16X16, TX_16X16 } },
     { { TX_32X32, TX_16X16 }, { TX_32X32, TX_16X16 } },
+    { { TX_32X32, TX_16X16 }, { TX_32X32, TX_16X16 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_8X16, TX_8X16 }, { TX_8X16, TX_8X16 } },
     { { TX_16X8, TX_16X8 }, { TX_16X8, TX_16X8 } },
     { { TX_16X32, TX_16X16 }, { TX_16X32, TX_16X16 } },
     { { TX_32X16, TX_16X16 }, { TX_32X16, TX_16X16 } },
+    { { TX_32X32, TX_16X16 }, { TX_32X32, TX_16X16 } },
+    { { TX_64X32, TX_16X16 }, { TX_32X32, TX_32X16 } },
   },
   {
     
@@ -18664,12 +19048,15 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_16X16, TX_16X16 } },
     { { TX_32X32, TX_32X32 }, { TX_32X32, TX_32X32 } },
+    { { TX_64X64, TX_32X32 }, { TX_32X32, TX_32X32 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_8X16, TX_8X16 }, { TX_8X16, TX_8X16 } },
     { { TX_16X8, TX_16X8 }, { TX_16X8, TX_16X8 } },
     { { TX_16X32, TX_16X32 }, { TX_16X32, TX_16X32 } },
     { { TX_32X16, TX_32X16 }, { TX_32X16, TX_16X16 } },
+    { { TX_32X64, TX_32X32 }, { TX_16X16, TX_16X32 } },
+    { { TX_64X32, TX_16X16 }, { TX_32X32, TX_32X16 } },
   },
   {
     
@@ -18677,12 +19064,15 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_16X16, TX_16X16 } },
     { { TX_32X32, TX_32X32 }, { TX_32X32, TX_32X32 } },
+    { { TX_64X64, TX_32X32 }, { TX_32X32, TX_32X32 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_8X16, TX_8X16 }, { TX_8X16, TX_8X16 } },
     { { TX_16X8, TX_16X8 }, { TX_16X8, TX_16X8 } },
     { { TX_16X32, TX_16X32 }, { TX_16X32, TX_16X32 } },
     { { TX_32X16, TX_32X16 }, { TX_32X16, TX_32X16 } },
+    { { TX_32X64, TX_32X32 }, { TX_16X16, TX_16X16 } },
+    { { TX_64X32, TX_16X16 }, { TX_32X32, TX_16X16 } },
   },
   {
     
@@ -18690,12 +19080,15 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_16X16, TX_16X16 } },
     { { TX_32X32, TX_32X32 }, { TX_32X32, TX_32X32 } },
+    { { TX_64X64, TX_32X32 }, { TX_32X32, TX_32X32 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_8X16, TX_8X16 }, { TX_8X16, TX_8X16 } },
     { { TX_16X8, TX_16X8 }, { TX_16X8, TX_16X8 } },
     { { TX_16X32, TX_16X32 }, { TX_16X32, TX_16X32 } },
     { { TX_32X16, TX_32X16 }, { TX_32X16, TX_32X16 } },
+    { { TX_32X64, TX_32X32 }, { TX_16X16, TX_16X16 } },
+    { { TX_64X32, TX_16X16 }, { TX_32X32, TX_16X16 } },
   },
   {
     
@@ -18703,25 +19096,15 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_16X16, TX_16X16 } },
     { { TX_32X32, TX_32X32 }, { TX_32X32, TX_32X32 } },
+    { { TX_64X64, TX_32X32 }, { TX_32X32, TX_32X32 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_8X16, TX_8X16 }, { TX_8X16, TX_8X16 } },
     { { TX_16X8, TX_16X8 }, { TX_16X8, TX_16X8 } },
     { { TX_16X32, TX_16X32 }, { TX_16X32, TX_16X32 } },
     { { TX_32X16, TX_32X16 }, { TX_32X16, TX_32X16 } },
-  },
-  {
-    
-    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X8, TX_4X8 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X8, TX_4X8 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X8, TX_4X8 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X8, TX_4X8 }, { TX_4X4, TX_4X4 } },
-    { { TX_4X8, TX_4X8 }, { TX_4X4, TX_4X4 } },
+    { { TX_32X64, TX_32X32 }, { TX_16X16, TX_16X16 } },
+    { { TX_64X32, TX_16X16 }, { TX_32X32, TX_16X16 } },
   },
   {
     
@@ -18730,15 +19113,35 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
-    { { TX_8X4, TX_4X4 }, { TX_8X4, TX_4X4 } },
-    { { TX_8X4, TX_4X4 }, { TX_8X4, TX_4X4 } },
-    { { TX_8X4, TX_4X4 }, { TX_8X4, TX_4X4 } },
-    { { TX_8X4, TX_4X4 }, { TX_8X4, TX_4X4 } },
-    { { TX_8X4, TX_4X4 }, { TX_8X4, TX_4X4 } },
+    { { TX_4X8, TX_4X8 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X8, TX_4X8 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X8, TX_4X8 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X8, TX_4X8 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X8, TX_4X8 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
   },
   {
     
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_8X4, TX_4X4 }, { TX_8X4, TX_4X4 } },
+    { { TX_8X4, TX_4X4 }, { TX_8X4, TX_4X4 } },
+    { { TX_8X4, TX_4X4 }, { TX_8X4, TX_4X4 } },
+    { { TX_8X4, TX_4X4 }, { TX_8X4, TX_4X4 } },
+    { { TX_8X4, TX_4X4 }, { TX_8X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+  },
+  {
+    
+    { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_8X8, TX_8X8 }, { TX_4X4, TX_4X4 } },
     { { TX_8X8, TX_8X8 }, { TX_4X4, TX_4X4 } },
     { { TX_8X8, TX_8X8 }, { TX_4X4, TX_4X4 } },
     { { TX_8X8, TX_8X8 }, { TX_4X4, TX_4X4 } },
@@ -18748,10 +19151,13 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X16, TX_8X16 }, { TX_4X8, TX_4X8 } },
     { { TX_8X16, TX_8X16 }, { TX_4X8, TX_4X8 } },
+    { { TX_8X8, TX_8X8 }, { TX_4X4, TX_4X4 } },
+    { { TX_8X8, TX_8X8 }, { TX_4X4, TX_4X4 } },
   },
   {
     
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
+    { { TX_8X8, TX_4X4 }, { TX_8X8, TX_4X4 } },
     { { TX_8X8, TX_4X4 }, { TX_8X8, TX_4X4 } },
     { { TX_8X8, TX_4X4 }, { TX_8X8, TX_4X4 } },
     { { TX_8X8, TX_4X4 }, { TX_8X8, TX_4X4 } },
@@ -18761,11 +19167,14 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_16X8, TX_8X4 }, { TX_16X8, TX_8X4 } },
     { { TX_16X8, TX_8X4 }, { TX_16X8, TX_8X4 } },
     { { TX_16X8, TX_8X4 }, { TX_16X8, TX_8X4 } },
+    { { TX_8X8, TX_4X4 }, { TX_8X8, TX_4X4 } },
+    { { TX_8X8, TX_4X4 }, { TX_8X8, TX_4X4 } },
   },
   {
     
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
+    { { TX_16X16, TX_16X16 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_8X8, TX_8X8 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
@@ -18774,11 +19183,14 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_16X8, TX_16X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X32, TX_16X32 }, { TX_8X16, TX_8X16 } },
     { { TX_16X16, TX_16X16 }, { TX_8X16, TX_8X16 } },
+    { { TX_16X16, TX_16X16 }, { TX_8X8, TX_8X8 } },
+    { { TX_16X16, TX_16X16 }, { TX_8X8, TX_8X8 } },
   },
   {
     
     { { TX_4X4, TX_4X4 }, { TX_4X4, TX_4X4 } },
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
+    { { TX_16X16, TX_8X8 }, { TX_16X16, TX_8X8 } },
     { { TX_16X16, TX_8X8 }, { TX_16X16, TX_8X8 } },
     { { TX_16X16, TX_8X8 }, { TX_16X16, TX_8X8 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
@@ -18787,6 +19199,8 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_16X8, TX_16X8 }, { TX_16X8, TX_16X8 } },
     { { TX_16X16, TX_16X8 }, { TX_16X16, TX_16X8 } },
     { { TX_32X16, TX_16X8 }, { TX_32X16, TX_16X8 } },
+    { { TX_16X16, TX_8X8 }, { TX_16X16, TX_8X8 } },
+    { { TX_16X16, TX_8X8 }, { TX_16X16, TX_8X8 } },
   },
   {
     
@@ -18794,10 +19208,12 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_16X16, TX_16X16 } },
     { { TX_32X32, TX_32X32 }, { TX_16X16, TX_16X16 } },
+    { { TX_32X32, TX_32X32 }, { TX_16X16, TX_16X16 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_8X16, TX_8X16 }, { TX_8X16, TX_8X16 } },
     { { TX_16X8, TX_16X8 }, { TX_16X8, TX_16X8 } },
+    //TODO: TX_64X64
   },
   {
     
@@ -18805,10 +19221,12 @@ Sm_Weights_Tx_32x32[ 32 ] = { 255, 240, 225, 210, 196, 182, 169, 157, 145, 133, 
     { { TX_8X8, TX_8X8 }, { TX_8X8, TX_8X8 } },
     { { TX_16X16, TX_16X16 }, { TX_16X16, TX_16X16 } },
     { { TX_32X32, TX_16X16 }, { TX_32X32, TX_16X16 } },
+    { { TX_32X32, TX_16X16 }, { TX_32X32, TX_16X16 } },
     { { TX_4X8, TX_4X8 }, { TX_4X8, TX_4X8 } },
     { { TX_8X4, TX_8X4 }, { TX_8X4, TX_8X4 } },
     { { TX_8X16, TX_8X16 }, { TX_8X16, TX_8X16 } },
     { { TX_16X8, TX_16X8 }, { TX_16X8, TX_16X8 } },
+    //TODO: TX_64X64
   },
 }
 </code></pre>
@@ -18821,12 +19239,15 @@ Tx_Size_Sqr[ t ] returns a square tx size with side length Min( w, h ).</p>
     TX_8X8,
     TX_16X16,
     TX_32X32,
+    TX_64X64,
     TX_4X4,
     TX_4X4,
     TX_8X8,
     TX_8X8,
     TX_16X16,
     TX_16X16,
+    TX_32X32,
+    TX_32X32
 }
 </code></pre>
 
@@ -18838,12 +19259,15 @@ Tx_Size_Sqr_Up[ t ] returns a square tx size with side length Max( w, h ).</p>
     TX_8X8,
     TX_16X16,
     TX_32X32,
+    TX_64X64,
     TX_8X8,
     TX_8X8,
     TX_16X16,
     TX_16X16,
     TX_32X32,
     TX_32X32,
+    TX_64X64,
+    TX_64X64
 }
 </code></pre>
 
@@ -18851,7 +19275,7 @@ Tx_Size_Sqr_Up[ t ] returns a square tx size with side length Max( w, h ).</p>
 Tx_Width[ t ] returns w.</p>
 
 <pre><code class="language-c">Tx_Width[ TX_SIZES_ALL ] = {
-    4,  8, 16, 32, 4,  8, 8,  16, 16, 32
+    4,  8, 16, 32, 64, 4,  8, 8,  16, 16, 32, 32, 64
 }
 </code></pre>
 
@@ -18859,7 +19283,7 @@ Tx_Width[ t ] returns w.</p>
 Tx_Height[ t ] returns h.</p>
 
 <pre><code class="language-c">Tx_Height[ TX_SIZES_ALL ] = {
-    4,  8, 16, 32, 8,  4, 16, 8,  32, 16
+    4,  8, 16, 32, 64, 8,  4, 16, 8,  32, 16, 64, 32
 }
 </code></pre>
 
@@ -18867,7 +19291,7 @@ Tx_Height[ t ] returns h.</p>
 Tx_Width_Log2[ t ] returns the base 2 logarithm of w.</p>
 
 <pre><code class="language-c">Tx_Width_Log2[ TX_SIZES_ALL ] = {
-    2, 3, 4, 5, 2, 3, 3, 4, 4, 5
+    2, 3, 4, 5, 6, 2, 3, 3, 4, 4, 5, 5, 6
 }
 </code></pre>
 
@@ -18875,7 +19299,7 @@ Tx_Width_Log2[ t ] returns the base 2 logarithm of w.</p>
 Tx_Height_Log2[ t ] returns the base 2 logarithm of h.</p>
 
 <pre><code class="language-c">Tx_Height_Log2[ TX_SIZES_ALL ] = {
-    2, 3, 4, 5, 3, 2, 4, 3, 5, 4
+    2, 3, 4, 5, 6, 3, 2, 4, 3, 5, 4, 6, 5
 }
 </code></pre>
 
@@ -18890,8 +19314,8 @@ Transpose_Tx_Size[ t ] returns a transform size with width h
 and height w.</p>
 
 <pre><code class="language-c">Transpose_Tx_Size[ TX_SIZES_ALL ] = {
-  TX_4X4, TX_8X8, TX_16X16, TX_32X32, TX_8X4,
-  TX_4X8, TX_16X8, TX_8X16, TX_32X16, TX_16X32,
+  TX_4X4, TX_8X8, TX_16X16, TX_32X32, TX_64X64, TX_8X4,
+  TX_4X8, TX_16X8, TX_8X16, TX_32X16, TX_16X32, TX_64X32, TX_32X64
 }
 </code></pre>
 
@@ -19170,33 +19594,39 @@ type with the horizontal and vertical operations transposed.</p>
 }
 </code></pre>
 
+<pre><code class="language-c">Default_Tx_64x64_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 2 ] = {
+  { 5782, 11475, 32768, 0 },
+  { 16803, 22759, 32768, 0 }
+}
+</code></pre>
+
 <pre><code class="language-c">Default_Tx_32x32_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 2 ] = {
-  { 384, 17588, 19782, 32768, 0 },
-  { 640, 7166, 8466, 32768, 0 }
+  { 12986, 15180, 32768, 0 },
+  { 24302, 25602, 32768, 0 }
 }
 </code></pre>
 
-<pre><code class="language-c">Default_Tx_16x16_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 1 ] = {
-  { 2560, 20496, 32768, 0 },
-  { 1920, 14091, 32768, 0 }
+<pre><code class="language-c">Default_Tx_16x16_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 2 ] = {
+  { 12272, 30172, 32768, 0 },
+  { 18677, 30848, 32768, 0 }
 }
 </code></pre>
 
-<pre><code class="language-c">Default_Tx_8x8_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH ] = {
-  { 12800, 32768, 0 },
-  { 8448, 32768, 0 }
+<pre><code class="language-c">Default_Tx_8x8_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 1 ] = {
+  { 19968, 32768, 0 },
+  { 24320, 32768, 0 }
 }
 </code></pre>
 
 <pre><code class="language-c">Default_Txfm_Split_Cdf[ TXFM_PARTITION_CONTEXTS ][ 3 ] = {
-  { 250*128, 32768, 0 }, { 231*128, 32768, 0 },
-  { 212*128, 32768, 0 }, { 241*128, 32768, 0 },
-  { 166*128, 32768, 0 }, { 66*128, 32768, 0 },
-  { 241*128, 32768, 0 }, { 230*128, 32768, 0 },
-  { 135*128, 32768, 0 }, { 243*128, 32768, 0 },
-  { 154*128, 32768, 0 }, { 64*128, 32768, 0 },
-  { 248*128, 32768, 0 }, { 161*128, 32768, 0 },
-  {  63*128, 32768, 0 }, { 128*128, 32768, 0 },
+  { 249*128, 32768, 0 }, { 240*128, 32768, 0 }, { 223*128, 32768, 0 },
+  { 249*128, 32768, 0 }, { 229*128, 32768, 0 }, { 177*128, 32768, 0 },
+  { 250*128, 32768, 0 }, { 243*128, 32768, 0 }, { 208*128, 32768, 0 },
+  { 226*128, 32768, 0 }, { 187*128, 32768, 0 }, { 145*128, 32768, 0 },
+  { 236*128, 32768, 0 }, { 204*128, 32768, 0 }, { 150*128, 32768, 0 },
+  { 183*128, 32768, 0 }, { 149*128, 32768, 0 }, { 125*128, 32768, 0 },
+  { 181*128, 32768, 0 }, { 146*128, 32768, 0 }, { 113*128, 32768, 0 },
+  { 128*128, 32768, 0 },
 }
 </code></pre>
 
@@ -20383,6 +20813,32 @@ type with the horizontal and vertical operations transposed.</p>
       },
     },
   },
+  {
+    {
+      {
+        { 2240, 5407, 18304, 25601, 27911, 32768, 0 },
+        { 960, 4633, 8197, 16254, 18796, 32768, 0 },
+        { 192, 3061, 3557, 8701, 9762, 32768, 0 },
+      },
+      {
+        { 4672, 6927, 23534, 29846, 30928, 32768, 0 },
+        { 3776, 6784, 18075, 25863, 27926, 32768, 0 },
+        { 1344, 5588, 12166, 20966, 23504, 32768, 0 },
+      },
+    },
+    {
+      {
+        { 23232, 24301, 30231, 31582, 32091, 32768, 0 },
+        { 7872, 11041, 22542, 27086, 29145, 32768, 0 },
+        { 1344, 3989, 18125, 25340, 27820, 32768, 0 },
+      },
+      {
+        { 25280, 25678, 32446, 32622, 32724, 32768, 0 },
+        { 10560, 11822, 28682, 29919, 31276, 32768, 0 },
+        { 3264, 5170, 21779, 24026, 27905, 32768, 0 },
+      },
+    },
+  },
 }
 </code></pre>
 
@@ -20905,6 +21361,180 @@ type with the horizontal and vertical operations transposed.</p>
           { 28609, 30847, 32745, 32751, 32768, 0 },
           { 21313, 24377, 31986, 32098, 32768, 0 },
           { 32705, 32709, 32739, 32741, 32768, 0 },
+          { 4929, 5579, 16402, 16866, 32768, 0 },
+          { 3009, 3246, 10158, 10533, 32768, 0 },
+        },
+      },
+    },
+  },
+  {
+    {
+      {
+        {
+          { 11969, 15846, 25660, 26667, 32768, 0 },
+          { 11713, 15794, 25737, 26760, 32768, 0 },
+          { 9281, 12675, 23181, 24351, 32768, 0 },
+          { 7105, 8757, 18383, 19437, 32768, 0 },
+          { 4289, 4579, 11353, 11792, 32768, 0 },
+          { 1857, 1874, 4695, 4777, 32768, 0 },
+        },
+        {
+          { 20929, 22297, 29370, 29646, 32768, 0 },
+          { 17473, 18985, 28079, 28413, 32768, 0 },
+          { 13121, 14064, 24902, 25217, 32768, 0 },
+          { 9793, 10214, 20069, 20329, 32768, 0 },
+          { 5825, 5987, 13350, 13559, 32768, 0 },
+          { 2241, 2260, 5520, 5600, 32768, 0 },
+        },
+        {
+          { 25921, 26891, 31632, 31729, 32768, 0 },
+          { 18241, 19463, 29222, 29419, 32768, 0 },
+          { 11585, 12065, 23294, 23488, 32768, 0 },
+          { 6593, 6686, 16153, 16234, 32768, 0 },
+          { 3137, 3170, 8751, 8821, 32768, 0 },
+          { 1345, 1359, 3739, 3824, 32768, 0 },
+        },
+        {
+          { 27713, 28504, 32068, 32132, 32768, 0 },
+          { 19265, 20354, 29789, 29943, 32768, 0 },
+          { 11201, 11538, 22701, 22848, 32768, 0 },
+          { 6337, 6424, 15268, 15353, 32768, 0 },
+          { 3649, 3681, 9052, 9121, 32768, 0 },
+          { 1601, 1618, 4584, 4667, 32768, 0 },
+        },
+        {
+          { 30913, 31044, 32635, 32640, 32768, 0 },
+          { 22081, 22261, 30452, 30477, 32768, 0 },
+          { 10561, 10625, 21535, 21568, 32768, 0 },
+          { 6081, 6130, 14369, 14423, 32768, 0 },
+          { 3777, 3809, 9156, 9225, 32768, 0 },
+          { 1857, 1875, 4936, 5018, 32768, 0 },
+        },
+      },
+      {
+        {
+          { 19393, 22016, 31280, 31444, 32768, 0 },
+          { 21185, 24329, 31706, 31865, 32768, 0 },
+          { 20673, 23240, 31186, 31379, 32768, 0 },
+          { 17857, 20035, 29594, 29889, 32768, 0 },
+          { 13633, 14929, 24883, 25337, 32768, 0 },
+          { 7873, 8416, 17452, 17886, 32768, 0 },
+        },
+        {
+          { 25665, 27145, 32256, 32314, 32768, 0 },
+          { 21057, 22826, 31465, 31576, 32768, 0 },
+          { 13633, 14885, 27873, 28088, 32768, 0 },
+          { 8769, 9515, 21941, 22248, 32768, 0 },
+          { 6209, 6594, 15598, 15950, 32768, 0 },
+          { 1985, 2014, 6855, 6931, 32768, 0 },
+        },
+        {
+          { 26817, 27824, 32362, 32399, 32768, 0 },
+          { 21185, 22321, 31389, 31466, 32768, 0 },
+          { 13761, 14154, 27163, 27245, 32768, 0 },
+          { 8897, 9011, 20600, 20659, 32768, 0 },
+          { 4673, 4774, 15044, 15131, 32768, 0 },
+          { 193, 194, 384, 479, 32768, 0 },
+        },
+        {
+          { 28865, 29687, 32655, 32667, 32768, 0 },
+          { 23233, 24218, 32080, 32118, 32768, 0 },
+          { 15041, 15444, 28787, 28845, 32768, 0 },
+          { 9921, 10248, 22818, 22944, 32768, 0 },
+          { 7745, 7866, 16591, 16702, 32768, 0 },
+          { 193, 194, 384, 479, 32768, 0 },
+        },
+        {
+          { 31169, 31559, 32741, 32744, 32768, 0 },
+          { 24769, 25583, 32347, 32370, 32768, 0 },
+          { 15937, 16169, 29120, 29152, 32768, 0 },
+          { 7489, 7578, 22647, 22677, 32768, 0 },
+          { 7617, 7689, 19849, 19887, 32768, 0 },
+          { 2113, 2183, 7202, 7377, 32768, 0 },
+        },
+      },
+    },
+    {
+      {
+        {
+          { 15937, 29000, 32210, 32434, 32768, 0 },
+          { 12353, 26626, 31533, 31993, 32768, 0 },
+          { 11457, 29187, 30896, 31750, 32768, 0 },
+          { 5697, 21278, 28169, 29764, 32768, 0 },
+          { 7489, 8855, 13365, 15620, 32768, 0 },
+          { 4289, 4833, 8572, 10108, 32768, 0 },
+        },
+        {
+          { 25025, 30783, 32603, 32666, 32768, 0 },
+          { 24385, 29586, 31803, 32142, 32768, 0 },
+          { 22337, 23002, 27573, 27903, 32768, 0 },
+          { 10945, 12336, 21900, 22590, 32768, 0 },
+          { 8257, 8830, 19986, 20298, 32768, 0 },
+          { 10945, 10990, 18660, 18701, 32768, 0 },
+        },
+        {
+          { 29761, 31473, 32693, 32715, 32768, 0 },
+          { 20417, 24512, 31394, 31650, 32768, 0 },
+          { 11713, 13283, 25819, 26206, 32768, 0 },
+          { 13121, 14099, 21909, 22514, 32768, 0 },
+          { 193, 248, 9546, 9614, 32768, 0 },
+          { 2497, 2524, 7050, 7125, 32768, 0 },
+        },
+        {
+          { 30657, 31885, 32691, 32715, 32768, 0 },
+          { 19393, 26050, 31698, 31988, 32768, 0 },
+          { 15809, 15863, 24985, 25008, 32768, 0 },
+          { 23489, 28138, 32751, 32756, 32768, 0 },
+          { 16449, 16450, 16545, 16593, 32768, 0 },
+          { 2369, 2395, 6822, 6898, 32768, 0 },
+        },
+        {
+          { 32705, 32744, 32766, 32767, 32768, 0 },
+          { 21953, 24962, 32156, 32246, 32768, 0 },
+          { 13121, 15358, 26284, 26835, 32768, 0 },
+          { 5697, 7417, 20132, 20885, 32768, 0 },
+          { 4417, 4939, 15104, 15535, 32768, 0 },
+          { 2625, 2680, 8218, 8338, 32768, 0 },
+        },
+      },
+      {
+        {
+          { 24257, 30554, 32719, 32738, 32768, 0 },
+          { 17217, 27413, 32617, 32667, 32768, 0 },
+          { 22977, 27600, 32482, 32552, 32768, 0 },
+          { 16833, 24360, 30746, 31293, 32768, 0 },
+          { 17089, 20060, 28880, 29370, 32768, 0 },
+          { 10945, 11009, 21900, 21932, 32768, 0 },
+        },
+        {
+          { 27201, 30217, 32736, 32745, 32768, 0 },
+          { 22721, 27676, 32749, 32754, 32768, 0 },
+          { 5057, 12431, 25246, 26620, 32768, 0 },
+          { 193, 321, 22016, 22048, 32768, 0 },
+          { 5313, 5363, 13839, 13894, 32768, 0 },
+          { 2625, 2652, 7276, 7351, 32768, 0 },
+        },
+        {
+          { 27713, 30739, 32759, 32762, 32768, 0 },
+          { 26177, 30430, 32756, 32760, 32768, 0 },
+          { 193, 384, 32706, 32707, 32768, 0 },
+          { 9409, 9528, 21591, 21646, 32768, 0 },
+          { 193, 194, 384, 479, 32768, 0 },
+          { 2881, 2913, 8427, 8498, 32768, 0 },
+        },
+        {
+          { 28993, 31156, 32747, 32753, 32768, 0 },
+          { 25153, 28701, 32754, 32758, 32768, 0 },
+          { 16449, 16544, 32737, 32738, 32768, 0 },
+          { 193, 321, 22016, 22048, 32768, 0 },
+          { 193, 194, 384, 479, 32768, 0 },
+          { 2753, 2789, 8909, 8979, 32768, 0 },
+        },
+        {
+          { 30785, 32088, 32765, 32766, 32768, 0 },
+          { 22977, 26623, 32750, 32754, 32768, 0 },
+          { 21953, 21954, 22017, 22049, 32768, 0 },
+          { 5697, 7486, 20238, 21009, 32768, 0 },
           { 4929, 5579, 16402, 16866, 32768, 0 },
           { 3009, 3246, 10158, 10533, 32768, 0 },
         },
@@ -21690,7 +22320,7 @@ Default_Coef_Extra_Bits_Cat6_S5_Cdf[ 5 ] = { 32513, 32641, 32767, 32768, 0 }
 
 <h3 id="quantizer-matrix-tables">Quantizer Matrix Tables</h3>
 
-<pre><code class="language-c">Qm_Offset[ TX_SIZES_ALL ] = { 0, 16, 80, 336, 1360, 1392, 1424, 1552, 1680, 2192 }
+<pre><code class="language-c">Qm_Offset[ TX_SIZES_ALL ] = { 0, 16, 80, 336, 336, 1360, 1392, 1424, 1552, 1680, 2192, 336, 336 }
 </code></pre>
 
 <pre><code class="language-c">Quantizer_Matrix[ 15 ][ 2 ][ QM_TOTAL_SIZE ] = {
