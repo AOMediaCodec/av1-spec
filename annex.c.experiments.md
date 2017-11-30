@@ -50,7 +50,7 @@ The specification has been updated to include the following list of adopted expe
 | ec_multisymbol                |
 | ec_smallmul                   |
 | ext_inter                     | Bug 857, 858, 951 not yet fixed in code or spec
-| ext_refs                      | Bug 78 not yet fixed in code or spec
+| ext_refs                      | 
 | ext-intra                     |
 | ext-tx                        |
 | filter_7bit                   |
@@ -89,6 +89,10 @@ The specification has been updated to include the following list of adopted expe
 | striped_loop_restoration      |
 | amvr                          | Bug 1048 not yet fixed in code or spec
 | ext-intra-mod                 |
+| segment_pred_last             | Bug 1091 not yet fixed in code
+| txmg                          |
+| tx64x64                       |
+| gm_ref_mv                     |
 {:.table .table-sm .table-bordered }
 
 ### Excluded Experiments
@@ -98,7 +102,6 @@ The specification has not yet been updated with the following experiments:
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
 | q_adapt_probs                 | Bug 936 not yet fixed
-| txmg                          | Unclear if this is to be adopted
 | daala_tx                      | Unclear if this is to be adopted
 | filter_intra                  | 
 | ext_tile                      | Code still under development
@@ -108,12 +111,9 @@ The specification has not yet been updated with the following experiments:
 | CICP                          | No code for this yet
 | Timecodes                     | No code for this yet
 | coef_ctx_reduce               | 
-| segment_pred_last             |
-| tx64x64                       |
 | horzonly_frame_superres       |
 | intrabc                       |
 | jnt_comp                      |
-| gm_ref_mv                     |
 | spatial_segmentation          |
 | simplify_tx_mode              |
 {:.table .table-sm .table-bordered }
