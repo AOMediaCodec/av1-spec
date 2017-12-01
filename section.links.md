@@ -3,7 +3,7 @@
 [section 7.6.1.2]: #spatial-motion-vector-candidate-process
 [section 6.7.11]: #tile-info-semantics
 [section 7.5.4]: #get-block-position-process
-[section 7.10.5.3]: #wide-filter-process
+[section 6.8.26]: #coefficients-semantics
 [section 7.6.5]: #find-warp-samples-process
 [section 5.8.13]: #inter-tx-size-syntax
 [section 7.6.4]: #has-overlappable-candidates-process
@@ -79,7 +79,6 @@
 [section 6.7.1]: #uncompressed-header-semantics
 [section 9]: #additional-tables
 [section 7.5]: #motion-field-estimation-process
-[section 7.10.1]: #edge-loop-filter-process
 [section 7.14]: #reference-frame-update-process
 [section 7.6.5.1]: #add-sample-process
 [section 6.8.18]: #inter-block-mode-info-semantics
@@ -110,7 +109,7 @@
 [section 6.1.1]: #obu-header-semantics
 [section 6.7.19]: #frame-reference-mode-semantics
 [section 7.12.5]: #wiener-coefficient-process
-[section 5.8.34]: #token-syntax
+[section 7.6.3.4]: #temporal-scan-process
 [section 4.9.2]: #len
 [section 5.3.1]: #color-config-syntax
 [section 5.8.12]: #tx-size-syntax
@@ -131,7 +130,7 @@
 [section 5.4]: #temporal-delimiter-obu-syntax
 [section 5.8.6]: #intra-frame-mode-info-syntax
 [section 5.8.18]: #get-segment-id-function
-[section 6.8.26]: #transform-block-semantics
+[section 7.9.1.5]: #inverse-adst-output-array-permutation-process
 [section 5.7.16]: #loop-restoration-params-syntax
 [section 5.8.40]: #read-cfl-alphas-syntax
 [section 4.6]: #mathematical-functions
@@ -168,7 +167,6 @@
 [section 5.8.27]: #mv-syntax
 [section 5.8.2]: #clear-block-decoded-flags-function
 [section 6.7.18]: #tx-mode-semantics
-[section 7.6.3.4]: #temporal-scan-process
 [section 5.7]: #frame-header-obu-syntax
 [section 7.5.1]: #forward-projection-process
 [section 5.5]: #padding-obu-syntax
@@ -199,6 +197,7 @@
 [section 5.8.39]: #is-directional-mode-function
 [section 5.8.37]: #coef-syntax
 [section 5.1.3]: #trailing-bits-syntax
+[section 5.8.34]: #coefficients-syntax
 [section 5.7.1]: #uncompressed-header-syntax
 [section 7.1]: #general
 [section 6.8.10]: #cdef-params-semantics
@@ -243,7 +242,7 @@
 [section 5.8.7]: #intra-segment-id-syntax
 [section 4.8]: #functions
 [section B.1]: #overview-1
-[section 7.9.1.5]: #inverse-adst-output-array-permutation-process
+[section 7.10.1]: #edge-loop-filter-process
 [section 6.8.19]: #ref-frames-semantics
 [section 7.6.3.9]: #lower-precision-process
 [section 4.3]: #relational-operators
@@ -265,6 +264,7 @@
 [section 6.1]: #obu-semantics
 [section 6.6]: #metadata-obu-semantics
 [section 8]: #parsing-process
+[section 7.10.5.3]: #wide-filter-process
 [section 8.2]: #parsing-process-for-boolean-decoder
 [section 6.8.33]: #palette-tokens-semantics
 [section 5.8.14]: #var-tx-size-syntax
