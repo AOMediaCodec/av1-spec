@@ -45,6 +45,7 @@
 [section 7]: #decoding-process
 [section 7.6.1]: #find-mv-list-process
 [section 5.7.10]: #segmentation-params-syntax
+[section 5.8.50]: #clear-cdef-function
 [section 7.7.3]: #palette-prediction-process
 [section 6.8.28]: #token-semantics
 [section 5.8.44]: #palette-tokens-syntax
@@ -87,7 +88,7 @@
 [section 7.7.2.10]: #segment-mask-process
 [section 7.4]: #cdf-update-process
 [section 4.9.3]: #sun
-[section 6.8.12]: #tx-size-semantics
+[section 5.8.51]: #read-cdef-syntax
 [section 7.6.3]: #find-mv-stack-process
 [section 6.8.7]: #skip-semantics
 [section 7.6.3.1]: #scan-row-process
@@ -104,8 +105,7 @@
 [section 6.8.8]: #quantizer-index-delta-semantics
 [section 6.1.2]: #obu-extension-header-semantics
 [section 7.10.5.2]: #narrow-filter-process
-[section 5.8.52]: #decode-loop-restoration-unit-syntax
-[section 5.8.50]: #decode-cdef-syntax
+[section 5.8.53]: #decode-loop-restoration-unit-syntax
 [section 6.1.1]: #obu-header-semantics
 [section 6.7.19]: #frame-reference-mode-semantics
 [section 7.12.5]: #wiener-coefficient-process
@@ -221,6 +221,7 @@
 [section 6.7.13]: #loop-filter-delta-parameters-semantics
 [section 5.8.41]: #palette-mode-info-syntax
 [section 7.9.1]: #1d-transforms
+[section 6.8.12]: #tx-size-semantics
 [section 7.6.3.6]: #add-reference-motion-vector-process
 [section 6.8.17]: #intra-block-mode-info-semantics
 [section 6]: #bitstream-semantics
@@ -258,7 +259,7 @@
 [section B.2]: #raw-bitstream-syntax
 [section 5.7.9]: #delta-quantizer-syntax
 [section 7.7.1.5]: #intra-edge-upsample-process
-[section 5.8.51]: #decode-loop-restoration-syntax
+[section 5.8.52]: #decode-loop-restoration-syntax
 [section 6.6.2]: #metadata-high-dynamic-range-content-light-level-semantics
 [section 5.8.25]: #read-compound-type-syntax
 [section 6.1]: #obu-semantics
