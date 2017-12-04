@@ -155,13 +155,12 @@
 [section 7.12.6]: #get-source-sample-process
 [section 5.8]: #tile-group-obu-syntax
 [section 7.9.1.11]: #inverse-identity-transform-32-process
-[section A]: #annex-a-levels
 [section 7.7.2.8]: #overlap-blending-process
 [section 7.6.5.2]: #sort-sample-process
 [section 2]: #terms-and-definitions
 [section 5.7.19]: #global-motion-params-syntax
 [section 5]: #bitstream-syntax
-[section 6.8.35]: #decode-cdf-semantics
+[section A]: #annex-a-levels
 [section 5.8.19]: #intra-block-mode-info-syntax
 [section 5.2]: #reserved-obu-syntax
 [section 5.8.27]: #mv-syntax
@@ -289,6 +288,7 @@
 [section 7.10.3]: #adaptive-filter-strength-process
 [section 5.7.14]: #loop-filter-delta-parameters-syntax
 [section 7.9.1.8]: #inverse-identity-transform-4-process
+[section 6.8.35]: #read-cdef-semantics
 [section 3]: #symbols-and-abbreviated-terms
 [section 6.8.32]: #palette-mode-info-semantics
 [section 6.7.14]: #global-motion-params-semantics
