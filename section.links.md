@@ -33,7 +33,7 @@
 [section 7.9.1.9]: #inverse-identity-transform-8-process
 [section 5.7.26]: #inv-recenter-noneg-function
 [section 6.8.14]: #var-tx-size-semantics
-[section 7.12.2]: #self-guided-filter-process
+[section 7.13.2]: #self-guided-filter-process
 [section 7.7.1]: #intra-prediction-process
 [section 7.7.4]: #predict-chroma-from-luma-process
 [section 5.8.26]: #get-mode-function
@@ -49,7 +49,7 @@
 [section 7.7.3]: #palette-prediction-process
 [section 6.8.28]: #token-semantics
 [section 5.8.44]: #palette-tokens-syntax
-[section 7.12]: #loop-restoration-process
+[section 7.13]: #loop-restoration-process
 [section 7.10]: #loop-filter-process
 [section 7.8.2]: #reconstruct-process
 [section 5.8.32]: #get-tx-size-function
@@ -61,7 +61,7 @@
 [section 7.7.1.3]: #intra-edge-filter-strength-selection-process
 [section 5.7.24]: #decode-uniform-syntax
 [section 4.4]: #bitwise-operators
-[section 7.13]: #output-process
+[section 7.14]: #output-process
 [section 7.6.3.5]: #temporal-sample-process
 [section 6.7.16]: #decode-subexp-semantics
 [section 6.7.6]: #interpolation-filter-semantics
@@ -80,7 +80,7 @@
 [section 6.7.1]: #uncompressed-header-semantics
 [section 9]: #additional-tables
 [section 7.5]: #motion-field-estimation-process
-[section 7.14]: #reference-frame-update-process
+[section 7.15]: #reference-frame-update-process
 [section 7.6.5.1]: #add-sample-process
 [section 6.8.18]: #inter-block-mode-info-semantics
 [section 9.3]: #default-cdf-tables
@@ -90,6 +90,7 @@
 [section 4.9.3]: #sun
 [section 5.8.51]: #read-cdef-syntax
 [section 7.6.3]: #find-mv-stack-process
+[section 7.12]: #upscaling-process
 [section 6.8.7]: #skip-semantics
 [section 7.6.3.1]: #scan-row-process
 [section 8.2.5]: #symbol-decoding-process
@@ -108,7 +109,7 @@
 [section 5.8.53]: #decode-loop-restoration-unit-syntax
 [section 6.1.1]: #obu-header-semantics
 [section 6.7.19]: #frame-reference-mode-semantics
-[section 7.12.5]: #wiener-coefficient-process
+[section 7.13.5]: #wiener-coefficient-process
 [section 7.6.3.4]: #temporal-scan-process
 [section 4.9.2]: #len
 [section 5.3.1]: #color-config-syntax
@@ -152,7 +153,7 @@
 [section 7.7.2.7]: #overlapped-motion-compensation-process
 [section 7.2]: #decode-frame-process
 [section 5.6]: #metadata-obu-syntax
-[section 7.12.6]: #get-source-sample-process
+[section 7.13.6]: #get-source-sample-process
 [section 5.8]: #tile-group-obu-syntax
 [section 7.9.1.11]: #inverse-identity-transform-32-process
 [section 7.7.2.8]: #overlap-blending-process
@@ -216,7 +217,7 @@
 [section 7.9]: #inverse-transform-process
 [section 5.8.29]: #residual-syntax
 [section B]: #annex-b-raw-bitstream-format
-[section 7.12.1]: #loop-restore-block-process
+[section 7.13.1]: #loop-restore-block-process
 [section 6.7.13]: #loop-filter-delta-parameters-semantics
 [section 5.8.41]: #palette-mode-info-syntax
 [section 7.9.1]: #1d-transforms
@@ -249,9 +250,9 @@
 [section 7.7.2.11]: #inter-intra-mask-process
 [section 6.8.16]: #is-inter-semantics
 [section 6.6.3]: #metadata-high-dynamic-range-mastering-display-color-volume-semantics
-[section 7.12.4]: #wiener-filter-process
+[section 7.13.4]: #wiener-filter-process
 [section 7.5.3]: #get-mv-position-process
-[section 7.12.3]: #box-filter-process
+[section 7.13.3]: #box-filter-process
 [section 7.7.2.5]: #resolve-divisor-process
 [section 5.8.15]: #inter-frame-mode-info-syntax
 [section 7.7.2.12]: #mask-blend-process
