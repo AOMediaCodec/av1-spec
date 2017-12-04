@@ -23,7 +23,7 @@ The specification has been updated to include the following list of adopted expe
 | chroma_sub8x8                 |
 | colorspace_headers            |
 | compound_segment              | Bug 929 not yet fixed in code or spec
-| dependent_horztiles           | May only be needed when no tile groups present?
+| dependent_horztiles           |
 | ext_delta_q                   |
 | ext-comp-refs                 |
 | interintra                    |
@@ -40,7 +40,7 @@ The specification has been updated to include the following list of adopted expe
 | alt_intra                     |
 | aom_qm                        |
 | cb4x4                         |
-| cdef                          | Needs modification to support striped mode
+| cdef                          |
 | compound_round                |
 | convolve_round                |
 | daala_ec                      |
@@ -93,6 +93,9 @@ The specification has been updated to include the following list of adopted expe
 | txmg                          |
 | tx64x64                       |
 | gm_ref_mv                     |
+| txk_sel                       | Bugs 869, 866 not yet fixed in code
+| lv_map                        | Bugs 840, 841 not yet fixed in code 
+| lv_map_multi                  | Bugs 840, 841 not yet fixed in code 
 {:.table .table-sm .table-bordered }
 
 ### Excluded Experiments
@@ -105,9 +108,6 @@ The specification has not yet been updated with the following experiments:
 | daala_tx                      | Unclear if this is to be adopted
 | filter_intra                  | 
 | ext_tile                      | Code still under development
-| txk_sel                       | Bugs 869, 866 not yet fixed in code
-| lv_map                        | Bugs 840, 841 not yet fixed in code 
-| lv_map_multi                  | Bugs 840, 841 not yet fixed in code 
 | CICP                          | No code for this yet
 | Timecodes                     | No code for this yet
 | coef_ctx_reduce               | 
@@ -116,6 +116,7 @@ The specification has not yet been updated with the following experiments:
 | jnt_comp                      |
 | spatial_segmentation          |
 | simplify_tx_mode              |
+| monochrome                    |
 {:.table .table-sm .table-bordered }
 
 
