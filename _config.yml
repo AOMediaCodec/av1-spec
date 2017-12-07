@@ -31,10 +31,14 @@ kramdown:
   syntax_highlighter: rouge
   syntax_highlighter_opts:
     disable: true
-gems:
+#gems:
+# - jekyll-github-metadata
 exclude:
   - Gemfile
   - Gemfile.lock
   - node_modules
 sass:
     style: compressed
+
+# GitHub metadata
+#repository: AOMediaCodec/av1-spec

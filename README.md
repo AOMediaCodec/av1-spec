@@ -1,14 +1,3 @@
----
-layout: page
-title: Authoring Notes, AV1 Bitstream &amp; Decoding Process Specification
----
-
-
-# {{ page.title }}
-{:.no_toc}
-
-
-![AV1 logo graphic](images/av1-logo-297x142.png)
 
 This document provides instructions for working with the [draft] AV1 Bitstream
 &amp; Decoding Process Specification.
@@ -18,12 +7,6 @@ The specification document is built from plaintext section and subsection
 site generator tool.
 
 
-**Contents**
-
-* TOC
-{:toc}
-
-
 ## Building Locally
 
 Contributors will want to preview their edits locally before submitting patches
@@ -31,14 +14,13 @@ for review. Doing so requires a sane Ruby and rubygems environment. We use
 [rbenv] and [bundler] to "groom" the project environment and avoid conflicts.
 
 **Note** that all commands are to be run as an ordinary, unprivileged user.
-{:.alert .alert-info }
 
 
 ### Ruby and rbenv
 
-This project currently depends on Ruby v2.3.0. Because your distro may lack this
+This project currently depends on Ruby v2.4.1. Because your distro may lack this
 version -- or installing it may conflict with your system's installed version --
-first **[install rbenv]**, then install Ruby v2.3.0 within it (again, in
+first **[install rbenv]**, then install Ruby v2.4.1 within it (again, in
 userland).
 
 ~~~~~ bash
@@ -49,9 +31,10 @@ $ rbenv install -l
 2.3.0-preview1
 2.3.0-preview2
 2.3.0
+2.4.1
 
 # install a Ruby version:
-$ rbenv install 2.3.0
+$ rbenv install 2.4.1
 ~~~~~
 
 Depending on your distro and environment, you may have trouble building a
@@ -75,7 +58,7 @@ $ gem env home
 ### Clone the Repo
 
 ~~~~~ bash
-git clone https://aomedia.googlesource.com/av1-spec
+git clone git@github.com:AOMediaCodec/av1-spec.git
 cd av1-spec
 ~~~~~
 
@@ -85,11 +68,11 @@ cd av1-spec
 In the directory of your local clone, do:
 
 ~~~~~ bash
-rbenv local 2.3.0
+rbenv local 2.4.1
 ~~~~~
 
 Regardless of any other Rubies installed on your system, the project environment
-will now use v2.3.0 and gems appropriate for it.
+will now use v2.4.1 and gems appropriate for it.
 
 
 ### Install Gem Dependencies with Bundler
@@ -105,7 +88,6 @@ Bundler will set dependencies and install needed gems as listed in
 
 **Note** that you may need Ruby development headers installed on your system
 for some gems to compile successfully.
-{:.alert .alert-info }
 
 
 ### Build and Preview Locally with Jekyll
@@ -148,7 +130,7 @@ npm install
 To transform the Jekyll-generated HTML file (`_site/index.html`), run `grunt` in
 the project directory. This will apply the text transformations described in
 Grunt's `replace` task (see `Gruntfile`) and will write the output to
-`_site/av1-spec.html`.
+`docs/index.html`.
 
 Currently this method is used to "bold" the names of syntax elements within
 syntax tables. For example, the tokenized string `@@syntax_element` will be
@@ -156,25 +138,13 @@ replaced with `<b>syntax_element</b>`. This reduces the clutter of HTML elements
 within the source text files.
 
 
-## Git at Google, and Gerrit
-
-The project is [hosted on Git at Google](https://aomedia.googlesource.com/),
-which uses the Gerrit code review tool. Prospective contributors must have a
-Google account and a working knowledge of [Gerrit]. In particular, contributors
-must install the Gerrit [commit-msg] script in their local repo for Gerrit to
-accept any patches they push to it for review.
-
-
-
-[draft]: .
+[draft]: https://aomediacodec.github.io/av1-spec/
 [Markdown]: https://daringfireball.net/projects/markdown/
 [kramdown]: https://kramdown.gettalong.org/
 [Jekyll]: https://jekyllrb.com/
 [rbenv]: https://github.com/rbenv/rbenv
 [bundler]: http://bundler.io/
 [install rbenv]: https://github.com/rbenv/rbenv#installation
-[Gerrit]: https://gerrit-review.googlesource.com/Documentation/
-[commit-msg]: https://gerrit-review.googlesource.com/Documentation/cmd-hook-commit-msg.html
 [GruntJS]: https://gruntjs.com/
 [NodeJS]: https://nodejs.org/
 [npm]: https://www.npmjs.org/

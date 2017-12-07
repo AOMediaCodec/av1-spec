@@ -1,7 +1,6 @@
 ---
 layout: page
 title: AV1 Bitstream &amp; Decoding Process Specification
-version: Version 0.3
 version_date: Released 2017-xx-xx
 ---
 

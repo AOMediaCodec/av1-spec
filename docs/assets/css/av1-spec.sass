@@ -1,0 +1,213 @@
+---
+---
+/*
+ * style.sass
+ */
+@import url('https://fonts.googleapis.com/css?family=Inconsolata')
+
+$monofont: 'Inconsolata', monospace
+$gridcolor: #ddd
+$gridweight: 2px
+
+pre.syntax
+  background-color: #fff
+  background-image: linear-gradient(90deg, transparent 40em, #abced4 40em, #abced4 40.1em, transparent 40.1em), linear-gradient($gridcolor .1em, transparent .1em)
+  background-size: 100% 1.3em
+  border-left: $gridweight solid $gridcolor
+  border-right: $gridweight solid $gridcolor
+  border-bottom: $gridweight solid $gridcolor
+  white-space: pre
+  font-family: $monofont
+  font-size: 1em
+  padding: 0 1em
+  line-height: 1.3
+  width: 50em
+  // Generate a "Type" heading above 2nd column.
+  &:before
+    content: "Type\A"
+    font-weight: bold
+    padding-left: 39.5em
+  code
+    font-family: $monofont
+
+table
+  .table-conventions
+    th
+      display: none
+    td:first-child
+      white-space: nowrap
+  .table-xyhead
+    th, td:first-child
+      background-color: #9bbb59
+    th
+      color: #000
+      font-weight: normal
+
+table.syntax // Experimental
+  font-family: $monofont
+  font-size: 1em
+  margin-bottom: 1em
+  td, th
+    border: 1px solid #ccc
+    padding-left: .5em
+    padding-right: .5em
+  td code
+    color: #333
+    background-color: #fff
+    font-size: 1em
+    padding: 0
+  td:first-child
+    text-align: center
+  td:nth-child(2)
+    white-space: pre
+    width: 100%
+  th
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+    color: #fff
+    background-color: #333
+
+b.syntax-element // Temporary: adjust syntax element columnar spacing
+  padding-right: 1em
+
+figure
+  figcaption
+    text-align: center
+    font-style: italic
+    margin: 1em auto
+
+
+// Rules that vary with viewport size
+//
+// Custom, iPhone Retina
+@media only screen and (min-width : 320px)
+
+// Extra Small Devices, Phones
+@media only screen and (min-width : 480px)
+
+// Small Devices, Tablets
+@media only screen and (min-width : 768px)
+
+// Medium Devices, Desktops
+@media only screen and (min-width : 992px)
+  figure
+    max-width: 80%
+
+// Large Devices, Wide Screens
+@media only screen and (min-width : 1200px)
+  figure
+    max-width: 60%
+
+
+// Auto heading-number styles
+
+body
+  counter-reset: h2
+
+h2
+  counter-reset: h3
+
+h3
+  counter-reset: h4
+
+h4
+  counter-reset: h5
+
+h5
+  counter-reset: h6
+
+h2:before
+  counter-increment: h2
+  content: counter(h2) ". "
+
+h3:before
+  counter-increment: h3
+  content: counter(h2) "." counter(h3) ". "
+
+h4:before
+  counter-increment: h4
+  content: counter(h2) "." counter(h3) "." counter(h4) ". "
+
+h5:before
+  counter-increment: h5
+  content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) ". "
+
+h6:before
+  counter-increment: h6
+  content: counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) ". "
+
+h2.no_count:before, h3.no_count:before, h4.no_count:before, h5.no_count:before, h6.no_count:before
+  content: ""
+  counter-increment: none
+
+div.annex
+  counter-reset: h2
+  h2:before
+    counter-increment: h2
+    content: ""
+  h3:before
+    counter-increment: h3
+    content: counter(h2, upper-alpha) "." counter(h3) ". "
+  h4:before
+    counter-increment: h4
+    content: counter(h2, upper-alpha) "." counter(h3) "." counter(h4) ". "
+  h5:before
+    counter-increment: h5
+    content: counter(h2, upper-alpha) "." counter(h3) "." counter(h4) "." counter(h5) ". "
+  h6:before
+    counter-increment: h6
+    content: counter(h2, upper-alpha) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) ". "
+
+// Bootstrap-style documentation callouts
+
+.bs-callout
+  padding: 20px
+  margin: 20px 0
+  border: 1px solid #eee
+  border-left-width: 5px
+  border-radius: 3px
+  h4
+    margin-top: 0
+    margin-bottom: 5px
+  p:last-child
+    margin-bottom: 0
+  code
+    border-radius: 3px
+  + .bs-callout
+    margin-top: -5px
+
+.bs-callout-default
+  border-left-color: #777
+  h4
+    color: #777
+
+.bs-callout-primary
+  border-left-color: #428bca
+  h4
+    color: #428bca
+
+.bs-callout-success
+  border-left-color: #5cb85c
+  h4
+    color: #5cb85c
+
+.bs-callout-danger
+  border-left-color: #d9534f
+  h4
+    color: #d9534f
+
+.bs-callout-warning
+  border-left-color: #f0ad4e
+  h4
+    color: #f0ad4e
+
+.bs-callout-info
+  border-left-color: #5bc0de
+  h4
+    color: #5bc0de
+
+// Bootstrap overrides
+
+code, kbd, pre, samp
+  font-family: $monofont
+  font-size: 1em
+  line-height: 1.3
