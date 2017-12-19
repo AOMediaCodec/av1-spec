@@ -96,6 +96,7 @@ The specification has been updated to include the following list of adopted expe
 | txk_sel                       | Bugs 869, 866 not yet fixed in code
 | lv_map                        | Bugs 840, 841 not yet fixed in code 
 | lv_map_multi                  | Bugs 840, 841 not yet fixed in code 
+| simplify_tx_mode              |
 {:.table .table-sm .table-bordered }
 
 ### Excluded Experiments
@@ -115,7 +116,6 @@ The specification has not yet been updated with the following experiments:
 | intrabc                       |
 | jnt_comp                      |
 | spatial_segmentation          |
-| simplify_tx_mode              |
 | monochrome                    |
 {:.table .table-sm .table-bordered }
 
