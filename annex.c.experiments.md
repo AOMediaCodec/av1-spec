@@ -12,91 +12,86 @@ The specification has been updated to include the following list of adopted expe
 
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
-| ext_partition                 | 
-| max_tile                      | Bug 980 not yet fixed in code or spec
-| new_multisymbol               |
-| palette_delta_encoding        |
 | HLS R19                       |
+| alt_intra                     |
 | altref2                       |
+| amvr                          | Bug 1048 not yet fixed in code or spec
+| aom_qm                        |
+| cb4x4                         |
+| cdef                          |
 | cdef_singlepass               |
 | cfl                           | Bug 928 not yet fixed in code or spec
 | chroma_sub8x8                 |
 | colorspace_headers            |
-| compound_segment              | Bug 929 not yet fixed in code or spec
-| dependent_horztiles           |
-| ext_delta_q                   |
-| ext-comp-refs                 |
-| interintra                    |
-| loopfiltering_across_tiles    |
-| mv_compress                   |
-| palette_throughput            |
-| reference_buffer              |
-| smooth_hv                     |
-| tempmv_signaling              |
-| wedge                         |
-| frame_size                    |
-| parallel_deblocking           |
-| tmv                           |
-| alt_intra                     |
-| aom_qm                        |
-| cb4x4                         |
-| cdef                          |
 | compound_round                |
+| compound_segment              | Bug 929 not yet fixed in code or spec
 | convolve_round                |
 | daala_ec                      |
+| deblock_13tap                 |
 | delta_q                       |
+| dependent_horztiles           |
 | dual_filter                   |
 | ec_adapt                      |
 | ec_multisymbol                |
 | ec_smallmul                   |
-| ext_inter                     | Bug 857, 858, 951 not yet fixed in code or spec
-| ext_refs                      | 
+| ext-comp-refs                 |
 | ext-intra                     |
+| ext-intra-mod                 |
 | ext-tx                        |
+| ext_delta_q                   |
+| ext_inter                     | Bug 857, 858, 951 not yet fixed in code or spec
+| ext_partition                 | 
+| ext_partition_types           | Bug 914 not yet fixed in code or spec
+| ext_refs                      | 
+| ext_warped_motion             | Included in spec, but not yet adopted
 | filter_7bit                   |
+| frame_marker                  |
+| frame_size                    |
 | global_motion                 |
+| gm_ref_mv                     |
 | independent_row_tile          |
+| interintra                    |
+| intra_edge                    |
+| kf_ctx                        |
+| loop_restoration              |
+| loopfilter_level              |
+| loopfiltering_across_tiles    |
+| lv_map                        | Bugs 840, 841 not yet fixed in code 
+| lv_map_multi                  | Bugs 840, 841 not yet fixed in code 
+| max_tile                      | Bug 980 not yet fixed in code or spec
+| mfmv                          |
 | misc_fixes                    |
 | motion_var                    |
+| mv_compress                   |
+| new_multisymbol               |
 | new_tokenset                  |
+| no_frame_context_signalling   |
 | one_sided_compound            |
 | palette                       |
+| palette_delta_encoding        |
+| palette_throughput            |
+| parallel_deblocking           |
 | rect_intra_pred               |
 | rect_tx                       |
 | ref-mv                        | Bug 981 not yet fixed in code or spec
-| restricted                    |
-| segmentation                  |
-| map                           |
-| update                        |
+| reference_buffer              |
+| restricted segmentation map update |
+| segment_pred_last             | Bug 1091 not yet fixed in code
+| segment_zeromv                |
+| short_filter                  |
 | simp_mv_pred                  |
+| simple_bwd_adapt              |
+| simplify_tx_mode              |
+| smooth_hv                     |
+| striped_loop_restoration      |
+| tempmv_signaling              |
 | tile_groups                   |
+| tx64x64                       |
+| txk_sel                       | Bugs 869, 866 not yet fixed in code
+| txmg                          |
 | var_tx                        |
 | warped_motion                 | Bug 950 not yet fixed in code or spec
-| ext_warped_motion             | Included in spec, but not yet adopted
-| loopfilter_level              |
-| deblock_13tap                 |
-| gm_ref_mv                     |
-| kf_ctx                        |
-| intra_edge                    |
-| simple_bwd_adapt              |
-| ext_partition_types           | Bug 914 not yet fixed in code or spec
-| mfmv                          |
-| short_filter                  |
-| frame_marker                  |
-| no_frame_context_signalling   |
-| segment_zeromv                |
-| loop_restoration              |
-| striped_loop_restoration      |
-| amvr                          | Bug 1048 not yet fixed in code or spec
-| ext-intra-mod                 |
-| segment_pred_last             | Bug 1091 not yet fixed in code
-| txmg                          |
-| tx64x64                       |
-| gm_ref_mv                     |
-| txk_sel                       | Bugs 869, 866 not yet fixed in code
-| lv_map                        | Bugs 840, 841 not yet fixed in code 
-| lv_map_multi                  | Bugs 840, 841 not yet fixed in code 
-| simplify_tx_mode              |
+| wedge                         |
 {:.table .table-sm .table-bordered }
 
 ### Excluded Experiments
@@ -105,18 +100,25 @@ The specification has not yet been updated with the following experiments:
 
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
-| q_adapt_probs                 | Bug 936 not yet fixed
-| daala_tx                      | Unclear if this is to be adopted
+| CICP                          |
+| Timecodes                     |
+| coef_ctx_reduce               |
+| dependent_horztilegroups      |
+| ext_skip                      |
+| ext_tile                      |
+| film_grain_noise              |
 | filter_intra                  | 
-| ext_tile                      | Code still under development
-| CICP                          | No code for this yet
-| Timecodes                     | No code for this yet
-| coef_ctx_reduce               | 
 | horzonly_frame_superres       |
 | intrabc                       |
 | jnt_comp                      |
+| loopfilter_across_tiles_ext   |
+| mono_video                    |
+| new_quant                     |
+| q_adapt_probs                 | Bug 936 not yet fixed
+| rect_tx_ext                   |
+| rect_tx_ext_intra             |
+| scalability                   |
 | spatial_segmentation          |
-| monochrome                    |
 {:.table .table-sm .table-bordered }
 
 
