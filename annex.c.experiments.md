@@ -29,6 +29,7 @@ The specification has been updated to include the following list of adopted expe
 | daala_ec                      |
 | deblock_13tap                 |
 | delta_q                       |
+| dependent_horztilegroups      |
 | dependent_horztiles           |
 | dual_filter                   |
 | ec_adapt                      |
@@ -56,6 +57,7 @@ The specification has been updated to include the following list of adopted expe
 | loop_restoration              |
 | loopfilter_level              |
 | loopfiltering_across_tiles    |
+| loopfilter_across_tiles_ext   |
 | lv_map                        | Bugs 840, 841 not yet fixed in code 
 | lv_map_multi                  | Bugs 840, 841 not yet fixed in code 
 | max_tile                      | Bug 980 not yet fixed in code or spec
@@ -103,7 +105,6 @@ The specification has not yet been updated with the following experiments:
 | CICP                          |
 | Timecodes                     |
 | coef_ctx_reduce               |
-| dependent_horztilegroups      |
 | ext_skip                      |
 | ext_tile                      |
 | film_grain_noise              |
@@ -111,7 +112,6 @@ The specification has not yet been updated with the following experiments:
 | horzonly_frame_superres       |
 | intrabc                       |
 | jnt_comp                      |
-| loopfilter_across_tiles_ext   |
 | mono_video                    |
 | new_quant                     |
 | q_adapt_probs                 | Bug 936 not yet fixed
