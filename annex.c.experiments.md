@@ -67,6 +67,7 @@ The specification has been updated to include the following list of adopted expe
 | max_tile                      | Bug 980 not yet fixed in code or spec
 | mfmv                          |
 | misc_fixes                    |
+| mono_video                    |
 | motion_var                    |
 | mv_compress                   |
 | new_multisymbol               |
@@ -108,14 +109,13 @@ The specification has not yet been updated with the following experiments:
 | ----------------------------- | ---------------------------
 | Timecodes                     |
 | coef_ctx_reduce               |
-| ext_qm..                      |
+| ext_qm                        |
 | ext_tile                      |
 | film_grain_noise              |
 | filter_intra                  |
 | frame_sign_bias               |
 | horzonly_frame_superres       |
 | jnt_comp                      |
-| mono_video                    |
 | new_quant                     |
 | opt_ref_mv                    |
 | q_adapt_probs                 | Bug 936 not yet fixed
