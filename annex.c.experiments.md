@@ -52,6 +52,7 @@ The specification has been updated to include the following list of adopted expe
 | gm_ref_mv                     |
 | independent_row_tile          |
 | interintra                    |
+| intrabc                       | Bugs 1229, 1230 not yet fixed in code or spec
 | intra_edge                    |
 | kf_ctx                        |
 | loop_restoration              |
@@ -110,7 +111,6 @@ The specification has not yet been updated with the following experiments:
 | film_grain_noise              |
 | filter_intra                  | 
 | horzonly_frame_superres       |
-| intrabc                       |
 | jnt_comp                      |
 | mono_video                    |
 | new_quant                     |
