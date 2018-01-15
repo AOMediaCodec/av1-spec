@@ -31,6 +31,7 @@ The specification has been updated to include the following list of adopted expe
 | delta_q                       |
 | dependent_horztilegroups      |
 | dependent_horztiles           |
+| dist_8x8                      |
 | dual_filter                   |
 | ec_adapt                      |
 | ec_multisymbol                |
@@ -107,16 +108,20 @@ The specification has not yet been updated with the following experiments:
 | CICP                          |
 | Timecodes                     |
 | coef_ctx_reduce               |
+| ext_qm..                      |
 | ext_tile                      |
 | film_grain_noise              |
-| filter_intra                  | 
+| filter_intra                  |
+| frame_sign_bias               |
 | horzonly_frame_superres       |
 | jnt_comp                      |
 | mono_video                    |
 | new_quant                     |
+| opt_ref_mv                    |
 | q_adapt_probs                 | Bug 936 not yet fixed
 | rect_tx_ext                   |
 | rect_tx_ext_intra             |
+| ref_adapt                     |
 | scalability                   |
 | spatial_segmentation          |
 {:.table .table-sm .table-bordered }
