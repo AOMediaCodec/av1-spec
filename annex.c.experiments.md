@@ -22,6 +22,7 @@ The specification has been updated to include the following list of adopted expe
 | cdef_singlepass               |
 | cfl                           | Bug 928 not yet fixed in code or spec
 | chroma_sub8x8                 |
+| CICP                          |
 | colorspace_headers            |
 | compound_round                |
 | compound_segment              | Bug 929 not yet fixed in code or spec
@@ -105,7 +106,6 @@ The specification has not yet been updated with the following experiments:
 
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
-| CICP                          |
 | Timecodes                     |
 | coef_ctx_reduce               |
 | ext_qm..                      |
