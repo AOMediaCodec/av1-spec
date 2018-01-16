@@ -50,6 +50,7 @@ The specification has been updated to include the following list of adopted expe
 | ext_warped_motion             | Included in spec, but not yet adopted
 | filter_7bit                   |
 | frame_marker                  |
+| frame_sign_bias               |
 | frame_size                    |
 | global_motion                 |
 | gm_ref_mv                     |
@@ -113,7 +114,6 @@ The specification has not yet been updated with the following experiments:
 | ext_tile                      |
 | film_grain_noise              |
 | filter_intra                  |
-| frame_sign_bias               |
 | horzonly_frame_superres       |
 | jnt_comp                      |
 | new_quant                     |
