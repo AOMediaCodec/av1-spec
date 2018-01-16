@@ -23,6 +23,7 @@ The specification has been updated to include the following list of adopted expe
 | cfl                           | Bug 928 not yet fixed in code or spec
 | chroma_sub8x8                 |
 | CICP                          |
+| coef_ctx_reduce               |
 | colorspace_headers            |
 | compound_round                |
 | compound_segment              | Bug 929 not yet fixed in code or spec
@@ -81,6 +82,7 @@ The specification has been updated to include the following list of adopted expe
 | parallel_deblocking           |
 | rect_intra_pred               |
 | rect_tx                       |
+| ref_adapt                     |
 | ref-mv                        | Bug 981 not yet fixed in code or spec
 | reference_buffer              |
 | restricted segmentation map update |
@@ -109,7 +111,6 @@ The specification has not yet been updated with the following experiments:
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
 | Timecodes                     |
-| coef_ctx_reduce               |
 | ext_qm                        |
 | ext_tile                      |
 | film_grain_noise              |
@@ -121,7 +122,6 @@ The specification has not yet been updated with the following experiments:
 | q_adapt_probs                 | Bug 936 not yet fixed
 | rect_tx_ext                   |
 | rect_tx_ext_intra             |
-| ref_adapt                     |
 | scalability                   |
 | spatial_segmentation          |
 {:.table .table-sm .table-bordered }
