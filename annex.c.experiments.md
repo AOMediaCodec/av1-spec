@@ -12,7 +12,6 @@ The specification has been updated to include the following list of adopted expe
 
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
-| HLS R19                       |
 | alt_intra                     |
 | altref2                       |
 | amvr                          | Bug 1048 not yet fixed in code or spec
@@ -55,10 +54,13 @@ The specification has been updated to include the following list of adopted expe
 | frame_size                    |
 | global_motion                 |
 | gm_ref_mv                     |
+| HLS R18                       |
+| HLS R19                       |
 | independent_row_tile          |
 | interintra                    |
 | intrabc                       | Bugs 1229, 1230 not yet fixed in code or spec
 | intra_edge                    |
+| jnt_comp                      | Bug 1239 not yet fixed in code or spec
 | kf_ctx                        |
 | loop_restoration              |
 | loopfilter_level              |
@@ -116,7 +118,6 @@ The specification has not yet been updated with the following experiments:
 | film_grain_noise              |
 | filter_intra                  |
 | horzonly_frame_superres       |
-| jnt_comp                      |
 | new_quant                     |
 | opt_ref_mv                    |
 | q_adapt_probs                 | Bug 936 not yet fixed
