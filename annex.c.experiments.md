@@ -38,15 +38,16 @@ The specification has been updated to include the following list of adopted expe
 | ec_multisymbol                |
 | ec_smallmul                   |
 | ext-comp-refs                 |
+| ext_delta_q                   |
 | ext-intra                     |
 | ext-intra-mod                 |
-| ext-tx                        |
-| ext_delta_q                   |
 | ext_inter                     | Bug 857, 858, 951 not yet fixed in code or spec
 | ext_partition                 | 
 | ext_partition_types           | Bug 914 not yet fixed in code or spec
+| ext_qm                        |
 | ext_refs                      | 
 | ext_skip                      |
+| ext-tx                        |
 | ext_warped_motion             | Included in spec, but not yet adopted
 | filter_7bit                   |
 | frame_marker                  |
@@ -113,7 +114,7 @@ The specification has not yet been updated with the following experiments:
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
 | Timecodes                     |
-| ext_qm                        |
+| ext_intra_mod2                |
 | ext_tile                      |
 | film_grain_noise              |
 | filter_intra                  |
@@ -125,6 +126,7 @@ The specification has not yet been updated with the following experiments:
 | rect_tx_ext_intra             |
 | scalability                   |
 | spatial_segmentation          |
+| tile_info_first               |
 {:.table .table-sm .table-bordered }
 
 
