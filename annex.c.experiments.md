@@ -19,13 +19,13 @@ The specification has been updated to include the following list of adopted expe
 | cb4x4                         |
 | cdef                          |
 | cdef_singlepass               |
-| cfl                           | Bug 928 not yet fixed in code or spec
+| cfl                           |
 | chroma_sub8x8                 |
 | CICP                          |
 | coef_ctx_reduce               |
 | colorspace_headers            |
 | compound_round                |
-| compound_segment              | Bug 929 not yet fixed in code or spec
+| compound_segment              |
 | convolve_round                |
 | daala_ec                      |
 | deblock_13tap                 |
@@ -41,14 +41,14 @@ The specification has been updated to include the following list of adopted expe
 | ext_delta_q                   |
 | ext-intra                     |
 | ext-intra-mod                 |
-| ext_inter                     | Bug 857, 858, 951 not yet fixed in code or spec
+| ext_inter                     | Bug 857, 951 not yet fixed in code or spec
 | ext_partition                 | 
-| ext_partition_types           | Bug 914 not yet fixed in code or spec
+| ext_partition_types           |
 | ext_qm                        |
 | ext_refs                      | 
 | ext_skip                      |
 | ext-tx                        |
-| ext_warped_motion             | Included in spec, but not yet adopted
+| ext_warped_motion             |
 | filter_7bit                   |
 | frame_marker                  |
 | frame_sign_bias               |
@@ -59,7 +59,7 @@ The specification has been updated to include the following list of adopted expe
 | HLS R19                       |
 | independent_row_tile          |
 | interintra                    |
-| intrabc                       | Bugs 1229, 1230 not yet fixed in code or spec
+| intrabc                       |
 | intra_edge                    |
 | jnt_comp                      | Bug 1239 not yet fixed in code or spec
 | kf_ctx                        |
@@ -67,9 +67,9 @@ The specification has been updated to include the following list of adopted expe
 | loopfilter_level              |
 | loopfiltering_across_tiles    |
 | loopfilter_across_tiles_ext   |
-| lv_map                        | Bugs 840, 841 not yet fixed in code 
-| lv_map_multi                  | Bugs 840, 841 not yet fixed in code 
-| max_tile                      | Bug 980 not yet fixed in code or spec
+| lv_map                        | Bug 840 not yet fixed in code 
+| lv_map_multi                  | 
+| max_tile                      |
 | mfmv                          |
 | misc_fixes                    |
 | mono_video                    |
@@ -86,7 +86,7 @@ The specification has been updated to include the following list of adopted expe
 | rect_intra_pred               |
 | rect_tx                       |
 | ref_adapt                     |
-| ref-mv                        | Bug 981 not yet fixed in code or spec
+| ref-mv                        |
 | reference_buffer              |
 | restricted segmentation map update |
 | segment_pred_last             | Bug 1091 not yet fixed in code
@@ -98,12 +98,13 @@ The specification has been updated to include the following list of adopted expe
 | smooth_hv                     |
 | striped_loop_restoration      |
 | tempmv_signaling              |
+| tile_info_first               |
 | tile_groups                   |
 | tx64x64                       |
 | txk_sel                       | Bugs 869, 866 not yet fixed in code
 | txmg                          |
 | var_tx                        |
-| warped_motion                 | Bug 950 not yet fixed in code or spec
+| warped_motion                 |
 | wedge                         |
 {:.table .table-sm .table-bordered }
 
@@ -121,12 +122,11 @@ The specification has not yet been updated with the following experiments:
 | horzonly_frame_superres       |
 | new_quant                     |
 | opt_ref_mv                    |
-| q_adapt_probs                 | Bug 936 not yet fixed
+| q_adapt_probs                 |
 | rect_tx_ext                   |
 | rect_tx_ext_intra             |
 | scalability                   |
 | spatial_segmentation          |
-| tile_info_first               |
 {:.table .table-sm .table-bordered }
 
 
