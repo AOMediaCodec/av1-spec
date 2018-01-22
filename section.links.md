@@ -1,7 +1,7 @@
 [section 6.2]: #reserved-obu-semantics
 [section 5.7.16]: #cdef-params-syntax
 [section 7.6.1.2]: #spatial-motion-vector-candidate-process
-[section 7.5.4]: #get-block-position-process
+[section 7.5.3]: #get-block-position-process
 [section 6.8.28]: #coefficients-semantics
 [section 7.6.5]: #find-warp-samples-process
 [section 5.8.14]: #inter-tx-size-syntax
@@ -63,7 +63,7 @@
 [section 7.9.1.6]: #inverse-adst-output-array-permutation-process
 [section 5.7.26]: #decode-uniform-syntax
 [section 4.4]: #bitwise-operators
-[section 7.14]: #output-process
+[section 7.10.5.3]: #wide-filter-process
 [section 7.6.3.5]: #temporal-sample-process
 [section 6.7.17]: #decode-subexp-semantics
 [section 6.7.7]: #interpolation-filter-semantics
@@ -91,6 +91,7 @@
 [section 5.7.12]: #tile-info-syntax
 [section 7.7.2.10]: #segment-mask-process
 [section 7.4]: #cdf-update-process
+[section 7.14]: #output-process
 [section 4.9.3]: #sun
 [section 5.8.52]: #read-cdef-syntax
 [section 8.2.3]: #exit-process-for-boolean-decoder
@@ -175,10 +176,10 @@
 [section 5.8.2]: #clear-block-decoded-flags-function
 [section 6.7.19]: #tx-mode-semantics
 [section 5.7]: #frame-header-obu-syntax
-[section 7.5.1]: #forward-projection-process
+[section 8.2]: #parsing-process-for-boolean-decoder
 [section 5.5]: #padding-obu-syntax
 [section 9.3]: #default-cdf-tables
-[section 7.5.2]: #backward-projection-process
+[section 8.2.1]: #initialization-process-for-boolean-decoder
 [section 5.7.13]: #tile-size-calculation-function
 [section 5.8.38]: #intra-angle-info-syntax
 [section 6.8.25]: #mv-component-semantics
@@ -259,7 +260,7 @@
 [section 6.8.17]: #is-inter-semantics
 [section 6.6.3]: #metadata-high-dynamic-range-mastering-display-color-volume-semantics
 [section 7.13.4]: #wiener-filter-process
-[section 7.5.3]: #get-mv-position-process
+[section 7.5.2]: #get-mv-projection-process
 [section 7.13.3]: #box-filter-process
 [section 7.7.2.5]: #resolve-divisor-process
 [section 5.8.16]: #inter-frame-mode-info-syntax
@@ -273,8 +274,7 @@
 [section 6.1]: #obu-semantics
 [section 6.6]: #metadata-obu-semantics
 [section 8]: #parsing-process
-[section 7.10.5.3]: #wide-filter-process
-[section 8.2]: #parsing-process-for-boolean-decoder
+[section 7.5.1]: #projection-process
 [section 6.8.32]: #palette-tokens-semantics
 [section 5.8.15]: #var-tx-size-syntax
 [section 4.5]: #assignment
@@ -315,5 +315,4 @@
 [section 6.8]: #tile-group-obu-semantics
 [section 8.2.2]: #boolean-decoding-process
 [section 7.7]: #prediction-processes
-[section 8.2.1]: #initialization-process-for-boolean-decoder
 [section 5.8.50]: #clamp-mv-col-function
