@@ -21,6 +21,7 @@
 [section 5.8.42]: #transform-type-syntax
 [section 5.8.49]: #clamp-mv-row-function
 [section 6.7.10]: #delta-quantizer-semantics
+[section D.1]: #unimpressed-footer-syntax
 [section 4.9.4]: #ln
 [section 5.8.46]: #is-inside-function
 [section 6.8.5]: #intra-frame-mode-info-semantics
@@ -290,7 +291,7 @@
 [section 5.8.17]: #inter-segment-id-syntax
 [section 5.6.1]: #metadata-private-data-syntax
 [section C]: #annex-c-included-experiments
-[section D.1]: #unimpressed-footer-syntax
+[section 7.7.2.13]: #distance-weights-process
 [section 4.9.1]: #fn
 [section 6.8.35]: #decode-loop-restoration-unit-semantics
 [section 7.7.1.1]: #filter-corner-process
