@@ -119,7 +119,7 @@ The specification has not yet been updated with the following experiments:
 | ext_tile                      |
 | film_grain_noise              |
 | filter_intra                  |
-| horzonly_frame_superres       |
+| horzonly_frame_superres       | Still need TileStartX/Y to be upscaled
 | new_quant                     |
 | opt_ref_mv                    |
 | q_adapt_probs                 |
