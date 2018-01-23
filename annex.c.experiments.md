@@ -57,6 +57,7 @@ The specification has been updated to include the following list of adopted expe
 | gm_ref_mv                     |
 | HLS R18                       |
 | HLS R19                       |
+| horzonly_frame_superres       |
 | independent_row_tile          |
 | interintra                    |
 | intrabc                       |
@@ -119,7 +120,6 @@ The specification has not yet been updated with the following experiments:
 | ext_tile                      |
 | film_grain_noise              |
 | filter_intra                  |
-| horzonly_frame_superres       | Still need TileStartX/Y to be upscaled
 | new_quant                     |
 | opt_ref_mv                    |
 | q_adapt_probs                 |
