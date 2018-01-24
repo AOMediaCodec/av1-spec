@@ -132,7 +132,7 @@
 [section 7.6.3.10]: #sorting-process
 [section 7.9.1.4]: #inverse-dct-process
 [section 5.8.45]: #palette-color-context-function
-[section 7.6.1.1]: #setup-zero-mv-process
+[section 7.5.2]: #get-mv-projection-process
 [section 5.8.4]: #decode-block-syntax
 [section 5.4]: #temporal-delimiter-obu-syntax
 [section 5.8.6]: #intra-frame-mode-info-syntax
@@ -163,7 +163,7 @@
 [section 5.8]: #tile-group-obu-syntax
 [section 7.9.1.16]: #inverse-identity-transform-32-process
 [section 7.7.2.8]: #overlap-blending-process
-[section 7.6.5.2]: #sort-sample-process
+[section 9.3]: #default-cdf-tables
 [section 7.9.1.9]: #inverse-adst16-process
 [section 2]: #terms-and-definitions
 [section 5.7.21]: #global-motion-params-syntax
@@ -178,7 +178,6 @@
 [section 5.7]: #frame-header-obu-syntax
 [section 8.2]: #parsing-process-for-boolean-decoder
 [section 5.5]: #padding-obu-syntax
-[section 9.3]: #default-cdf-tables
 [section 8.2.1]: #initialization-process-for-boolean-decoder
 [section 5.7.13]: #tile-size-calculation-function
 [section 5.8.38]: #intra-angle-info-syntax
@@ -214,6 +213,7 @@
 [section 6.5]: #padding-obu-semantics
 [section 7.11.1]: #cdef-block-process
 [section 7.9.1.17]: #inverse-identity-transform-64-process
+[section 7.6.1.1]: #setup-zero-mv-process
 [section 6.3]: #sequence-header-obu-semantics
 [section 6.7]: #frame-header-obu-semantics
 [section 5.8.43]: #get-transform-set-function
@@ -260,7 +260,7 @@
 [section 6.8.17]: #is-inter-semantics
 [section 6.6.3]: #metadata-high-dynamic-range-mastering-display-color-volume-semantics
 [section 7.13.4]: #wiener-filter-process
-[section 7.5.2]: #get-mv-projection-process
+[section C.2]: #included-experiments
 [section 7.13.3]: #box-filter-process
 [section 7.7.2.5]: #resolve-divisor-process
 [section 5.8.16]: #inter-frame-mode-info-syntax
@@ -309,7 +309,6 @@
 [section 8.3.1]: #cdf-selection-process
 [section 5.6.2]: #metadata-high-dynamic-range-content-light-level-syntax
 [section 7.11]: #cdef-process
-[section C.2]: #included-experiments
 [section 5.8.1]: #decode-tile-syntax
 [section 7.9.1.12]: #inverse-walsh-hadamard-transform-process
 [section 6.8]: #tile-group-obu-semantics
