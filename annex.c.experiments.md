@@ -86,6 +86,8 @@ The specification has been updated to include the following list of adopted expe
 | parallel_deblocking           |
 | rect_intra_pred               |
 | rect_tx                       |
+| rect_tx_ext                   |
+| rect_tx_ext_intra             |
 | ref_adapt                     |
 | ref-mv                        |
 | reference_buffer              |
@@ -123,8 +125,6 @@ The specification has not yet been updated with the following experiments:
 | new_quant                     |
 | opt_ref_mv                    |
 | q_adapt_probs                 |
-| rect_tx_ext                   |
-| rect_tx_ext_intra             |
 | scalability                   |
 | spatial_segmentation          |
 {:.table .table-sm .table-bordered }
