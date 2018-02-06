@@ -1,33 +1,31 @@
-## Annex A: Levels
+## Annex A: Profiles and Levels
 {:.no_count}
 
 
 ### Overview
 {:.no_toc .no_count}
 
-Levels specify restrictions on the capabilities needed to decode the bitstreams.
+Profiles and levels specify restrictions on the capabilities needed to decode the bitstreams.
 
-There is only a single level currently defined in this Specification. The level
-is called level 1.
+The profile specifies the bit depth and subsampling formats supported, while the level defines
+resolution and performance characteristics.
 
-Level 1 limits the bitstream to a worst case of roughly a 1080P 60fps 20Mbps
-stream by the following restrictions:
+#### Profiles
 
-  * Width must be less than or equal to 1920.
+There are three named profiles:
 
-  * Height must be less than or equal to 1080.
+  * "Main" compliant decoders must be able to decode streams with Profile equal to 0.
+  * "High" compliant decoders must be able to decode streams with Profile less than or equal to 1.
+  * "Professional" compliant decoders must be able to decode streams with Profile less than or equal to 2.
+  
+**Note:** Main profile consists of YUV 4:2:0 or monochrome sequences with bit depth equal to 8 or 10.
+High profile consists of YUV 4:4:4 sequences with bit depth equal to 8 or 10.
+Professional profile consists of YUV 4:2:2 sequences with bit depth equal to 8 or 10 or 12,
+4:2:0 sequences with bit depth equal to 12,
+and 4:4:4 sequences with bit depth equal to 12.
+{:.alert .alert-info }
 
-  * The number of frames per second must be less than or equal to 60 (this
-    includes both output frames and frames that are not output).
+#### Levels
 
-  * The size in bits for an intra frame must be less than or equal
-    to 100,000,000 / 60.
+TODO: Still under discussion.
 
-  * The size in bits for an inter frame must be less than or equal
-    to 50,000,000 / 60.
-
-  * The number of times the function read_bool is called for an intra frame
-    must be less than or equal to 2 * 100,000,000 / 60.
-
-  * The number of times the function read_bool is called for an inter frame must
-    be less than or equal to 2 * 50,000,000 / 60.
