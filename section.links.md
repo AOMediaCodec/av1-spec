@@ -22,7 +22,7 @@
 [section 5.8.49]: #clamp-mv-row-function
 [section 6.7.10]: #delta-quantizer-semantics
 [section D.1]: #unimpressed-footer-syntax
-[section 4.9.4]: #ln
+[section 4.9.5]: #ln
 [section 5.8.46]: #is-inside-function
 [section 6.8.5]: #intra-frame-mode-info-semantics
 [section 6.8.30]: #read-cfl-alphas-semantics
@@ -36,6 +36,7 @@
 [section 6.8.15]: #var-tx-size-semantics
 [section 7.13.2]: #self-guided-filter-process
 [section 7.7.1]: #intra-prediction-process
+[section A.1.1]: #profiles
 [section 7.7.4]: #predict-chroma-from-luma-process
 [section 5.8.27]: #get-mode-function
 [section 7.9.1.1]: #butterfly-functions
@@ -58,6 +59,7 @@
 [section 5.8.47]: #is-inside-filter-region-function
 [section 5.7.14]: #quantizer-index-delta-parameters-syntax
 [section 5.7.3]: #render-size-syntax
+[section 4.9.2]: #uvlc
 [section 7.10.2]: #filter-size-process
 [section 7.7.1.3]: #intra-edge-filter-strength-selection-process
 [section 7.9.1.6]: #inverse-adst-output-array-permutation-process
@@ -92,11 +94,12 @@
 [section 7.7.2.10]: #segment-mask-process
 [section 7.4]: #cdf-update-process
 [section 7.14]: #output-process
-[section 4.9.3]: #sun
+[section 4.9.4]: #sun
 [section 5.8.52]: #read-cdef-syntax
 [section 8.2.3]: #exit-process-for-boolean-decoder
 [section 7.6.3]: #find-mv-stack-process
 [section 7.12]: #upscaling-process
+[section A]: #annex-a-profiles-and-levels
 [section 6.8.8]: #skip-semantics
 [section 7.6.3.1]: #scan-row-process
 [section 8.2.5]: #symbol-decoding-process
@@ -117,7 +120,7 @@
 [section 6.7.21]: #frame-reference-mode-semantics
 [section 7.13.5]: #wiener-coefficient-process
 [section 7.6.3.4]: #temporal-scan-process
-[section 4.9.2]: #len
+[section 4.9.3]: #len
 [section 5.3.1]: #color-config-syntax
 [section 5.8.13]: #tx-size-syntax
 [section 7.9.1.5]: #inverse-adst-input-array-permutation-process
@@ -143,7 +146,7 @@
 [section 4.6]: #mathematical-functions
 [section 5.8.34]: #get-plane-residual-size-function
 [section 5.1.2]: #obu-extension-header-syntax
-[section 4.9.5]: #s
+[section 4.9.6]: #s
 [section 6.8.10]: #loop-filter-delta-semantics
 [section 8.3]: #parsing-process-for-cdf-encoded-syntax-elements
 [section 7.10.5]: #sample-filtering-process
@@ -168,7 +171,6 @@
 [section 2]: #terms-and-definitions
 [section 5.7.21]: #global-motion-params-syntax
 [section 5]: #bitstream-syntax
-[section A]: #annex-a-levels
 [section 5.8.20]: #intra-block-mode-info-syntax
 [section 7.9.1.7]: #inverse-adst4-process
 [section 5.2]: #reserved-obu-syntax
@@ -200,6 +202,7 @@
 [section 4.9]: #descriptors
 [section 7.11.2]: #cdef-direction-process
 [section 6.8.2]: #clear-block-decoded-flags-semantics
+[section A.1.2]: #levels
 [section 5.7.4]: #frame-size-with-refs-syntax
 [section 6.7.6]: #compute-image-size-semantics
 [section 5.8.39]: #is-directional-mode-function
@@ -219,7 +222,7 @@
 [section 5.8.43]: #get-transform-set-function
 [section 7.8.1]: #dequantization-functions
 [section 7.7.2.2]: #block-inter-prediction-process
-[section 4.9.6]: #un
+[section 4.9.7]: #un
 [section 7.6.3.11]: #context-and-clamping-process
 [section 5.1]: #obu-syntax
 [section 5.8.12]: #segmentation-feature-active-function
@@ -244,9 +247,10 @@
 [section 4.7]: #method-of-describing-bitstream-syntax
 [section 5.8.11]: #loop-filter-delta-syntax
 [section 5.7.24]: #decode-unsigned-subexp-with-ref-syntax
-[section 6.8.33]: #palette-color-context-semantics
+[section 6.3.2]: #timing-info-semantics
 [section 8.2.4]: #parsing-process-for-read_literal
 [section 7.7.2.3]: #block-warp-process
+[section 6.8.33]: #palette-color-context-semantics
 [section 6.8.1]: #decode-tile-semantics
 [section 6.8.21]: #read-motion-mode-semantics
 [section 5.8.7]: #intra-segment-id-syntax
@@ -296,6 +300,7 @@
 [section 6.8.35]: #decode-loop-restoration-unit-semantics
 [section 7.7.1.1]: #filter-corner-process
 [section 7.10.3]: #adaptive-filter-strength-process
+[section 5.3.2]: #timing-info-syntax
 [section 5.7.15]: #loop-filter-delta-parameters-syntax
 [section 7.9.1.13]: #inverse-identity-transform-4-process
 [section 6.8.34]: #read-cdef-semantics

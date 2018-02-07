@@ -85,6 +85,7 @@ The specification has been updated to include the following list of adopted expe
 | palette_delta_encoding        |
 | palette_throughput            |
 | parallel_deblocking           |
+| q_adapt_probs                 | This experiment currently has no effect
 | rect_intra_pred               |
 | rect_tx                       |
 | rect_tx_ext                   |
@@ -104,6 +105,7 @@ The specification has been updated to include the following list of adopted expe
 | tempmv_signaling              |
 | tile_info_first               |
 | tile_groups                   |
+| timecodes                     |
 | tx64x64                       |
 | txk_sel                       | Bugs 869, 866 not yet fixed in code
 | txmg                          |
@@ -118,13 +120,11 @@ The specification has not yet been updated with the following experiments:
 
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
-| Timecodes                     |
 | ext_tile                      |
 | film_grain_noise              |
 | filter_intra                  |
 | new_quant                     |
-| opt_ref_mv                    |
-| q_adapt_probs                 |
+| opt_ref_mv                    | Awaiting bug 1288 to be resolved
 | scalability                   |
 | spatial_segmentation          |
 {:.table .table-sm .table-bordered }
