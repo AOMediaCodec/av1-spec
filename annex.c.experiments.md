@@ -42,7 +42,7 @@ The specification has been updated to include the following list of adopted expe
 | ext-intra                     |
 | ext-intra-mod                 |
 | ext_intra_mod2                |
-| ext_inter                     | Bug 857, 951 not yet fixed in code or spec
+| ext_inter                     | Bug 857 not yet fixed in code or spec
 | ext_partition                 | 
 | ext_partition_types           |
 | ext_qm                        |
@@ -64,14 +64,14 @@ The specification has been updated to include the following list of adopted expe
 | interintra                    |
 | intrabc                       |
 | intra_edge                    |
-| jnt_comp                      | Bug 1239 not yet fixed in code or spec
+| jnt_comp                      |
 | kf_ctx                        |
 | loop_restoration              |
 | loopfilter_level              |
 | loopfiltering_across_tiles    |
 | loopfilter_across_tiles_ext   |
-| lv_map                        | Bug 840 not yet fixed in code 
-| lv_map_multi                  | 
+| lv_map                        |
+| lv_map_multi                  |
 | max_tile                      |
 | mfmv                          |
 | misc_fixes                    |
@@ -96,7 +96,7 @@ The specification has been updated to include the following list of adopted expe
 | reference_buffer              |
 | restricted segmentation map update |
 | scalability                   |
-| segment_pred_last             | Bug 1091 not yet fixed in code
+| segment_pred_last             |
 | segment_zeromv                |
 | short_filter                  |
 | simp_mv_pred                  |
@@ -110,7 +110,7 @@ The specification has been updated to include the following list of adopted expe
 | tile_groups                   |
 | timecodes                     |
 | tx64x64                       |
-| txk_sel                       | Bugs 869, 866 not yet fixed in code
+| txk_sel                       |
 | txmg                          |
 | var_tx                        |
 | warped_motion                 |

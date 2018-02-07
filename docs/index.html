@@ -33,7 +33,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-02-07 05:38:18 -0800</em></p>
+<p><em>Last modified: 2018-02-07 06:34:16 -0800</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -13860,11 +13860,16 @@ if (d0 == 0 || d1 == 0) {
     FwdWeight = Quant_Dist_Lookup[ 3 ][ order ]
     BckWeight = Quant_Dist_Lookup[ 3 ][ 1 - order ]
 } else {
-  for (i = 0; i &lt; 4; ++i) {
+  for (i = 0; i &lt; 3; ++i) {
     c0 = Quant_Dist_Weight[ i ][ order ]
     c1 = Quant_Dist_Weight[ i ][ 1 - order ]
-    if (d0 * c0 &lt; d1 * c1)
-      break
+    if ( order ) {
+      if ( d0 * c0 &gt; d1 * c1 )
+        break
+    } else {
+      if ( d0 * c0 &lt; d1 * c1 )
+        break
+    }
   }
   FwdWeight = Quant_Dist_Lookup[ i ][ order ]
   BckWeight = Quant_Dist_Lookup[ i ][ 1 - order ]
@@ -17095,7 +17100,7 @@ for ( i = 0; i &lt; h; i++ ) {
     <p>a variable set specifying the strength of the filtering,</p>
   </li>
   <li>
-    <p>a variable pass (equal to 0 or 1), specifying if we are generating the first or second filterred output.</p>
+    <p>a variable pass (equal to 0 or 1), specifying if we are generating the first or second filtered output.</p>
   </li>
 </ul>
 
@@ -17137,27 +17142,43 @@ for ( i = -1; i &lt; h + 1; i++ ) {
 }
 </code></pre>
 
+<p class="alert alert-info"><strong>Note:</strong> When pass is equal to 0, only odd rows (i.e. entries A[ i ][ j ] and B[ i ][ j ] with i odd) will be used to generate the output.</p>
+
 <p>where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.14.6</a> should be invoked
 and the output assigned to variable c.</p>
 
 <p>After A and B are prepared, the output array F is generated as follows:</p>
 
 <pre><code class="language-c">for ( i = 0; i &lt; h; i++ ) {
+    shift = 5
+    if ( pass == 0 &amp;&amp; ( i &amp; 1 ) ) {
+        shift = 4
+    }
     for ( j = 0; j &lt; w; j++ ) {
         a = 0
         b = 0
         for ( dy = -1 ; dy &lt;= 1; dy++ ) {
             for ( dx = -1; dx &lt;= 1; dx++ ) {
-                weight = (dx == 0 || dy == 0) ? 4 : 3
+                if ( pass == 0 ) {
+                    if ( (i + dy) &amp; 1 ) {
+                        weight = (dx == 0) ? 6 : 5
+                    } else {
+                        weight = 0
+                    }
+                } else {
+                    weight = (dx == 0 || dy == 0) ? 4 : 3
+                }
                 a += weight * A[ i + dy ][ j + dx ]
                 b += weight * B[ i + dy ][ j + dx ]
             }
         }
         v = a * UpscaledCdefFrame[ plane ][ y + i ][ x + j ] + b
-        F[ i ][ j ] = Round2( v, SGRPROJ_SGR_BITS + 5 - SGRPROJ_RST_BITS)
+        F[ i ][ j ] = Round2( v, SGRPROJ_SGR_BITS + shift - SGRPROJ_RST_BITS)
     }   
 }
 </code></pre>
+
+<p class="alert alert-info"><strong>Note:</strong> When pass is equal to 0, the weights for even rows of A and B are always equal to 0.</p>
 
 <p>The constant lookup table Sgr_Params is specified as:</p>
 
@@ -28948,7 +28969,7 @@ external means.</p>
       </tr>
       <tr>
         <td>ext_inter</td>
-        <td>Bug 857, 951 not yet fixed in code or spec</td>
+        <td>Bug 857 not yet fixed in code or spec</td>
       </tr>
       <tr>
         <td>ext_partition</td>
@@ -28976,6 +28997,10 @@ external means.</p>
       </tr>
       <tr>
         <td>ext_warped_motion</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>fast_sgr</td>
         <td> </td>
       </tr>
       <tr>
@@ -29032,7 +29057,7 @@ external means.</p>
       </tr>
       <tr>
         <td>jnt_comp</td>
-        <td>Bug 1239 not yet fixed in code or spec</td>
+        <td> </td>
       </tr>
       <tr>
         <td>kf_ctx</td>
@@ -29056,7 +29081,7 @@ external means.</p>
       </tr>
       <tr>
         <td>lv_map</td>
-        <td>Bug 840 not yet fixed in code</td>
+        <td> </td>
       </tr>
       <tr>
         <td>lv_map_multi</td>
@@ -29160,7 +29185,7 @@ external means.</p>
       </tr>
       <tr>
         <td>segment_pred_last</td>
-        <td>Bug 1091 not yet fixed in code</td>
+        <td> </td>
       </tr>
       <tr>
         <td>segment_zeromv</td>
@@ -29216,7 +29241,7 @@ external means.</p>
       </tr>
       <tr>
         <td>txk_sel</td>
-        <td>Bugs 869, 866 not yet fixed in code</td>
+        <td> </td>
       </tr>
       <tr>
         <td>txmg</td>
@@ -29268,10 +29293,6 @@ external means.</p>
       <tr>
         <td>opt_ref_mv</td>
         <td>Awaiting bug 1288 to be resolved</td>
-      </tr>
-      <tr>
-        <td>fast_sgr</td>
-        <td>Code still changing</td>
       </tr>
       <tr>
         <td>obu_move_length</td>
