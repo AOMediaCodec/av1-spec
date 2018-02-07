@@ -121,12 +121,12 @@ The specification has not yet been updated with the following experiments:
 
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
-| ext_tile                      |
-| film_grain_noise              |
-| filter_intra                  |
-| new_quant                     |
+| ext_tile                      | Waiting for definition of auxiliary stream
+| film_grain_noise              | Postprocessing effect only
+| filter_intra                  | Work in progress
+| new_quant                     | Work in progress
 | opt_ref_mv                    | Awaiting bug 1288 to be resolved
-| spatial_segmentation          |
+| spatial_segmentation          | Work in progress
 {:.table .table-sm .table-bordered }
 
 
