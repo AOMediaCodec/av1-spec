@@ -94,6 +94,7 @@ The specification has been updated to include the following list of adopted expe
 | ref-mv                        |
 | reference_buffer              |
 | restricted segmentation map update |
+| scalability                   |
 | segment_pred_last             | Bug 1091 not yet fixed in code
 | segment_zeromv                |
 | short_filter                  |
@@ -125,7 +126,6 @@ The specification has not yet been updated with the following experiments:
 | filter_intra                  |
 | new_quant                     |
 | opt_ref_mv                    | Awaiting bug 1288 to be resolved
-| scalability                   |
 | spatial_segmentation          |
 {:.table .table-sm .table-bordered }
 
