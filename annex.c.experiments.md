@@ -50,6 +50,7 @@ The specification has been updated to include the following list of adopted expe
 | ext_skip                      |
 | ext-tx                        |
 | ext_warped_motion             |
+| fast_sgr                      |
 | filter_7bit                   |
 | frame_marker                  |
 | frame_sign_bias               |
@@ -127,7 +128,6 @@ The specification has not yet been updated with the following experiments:
 | filter_intra                  | Work in progress
 | new_quant                     | Work in progress
 | opt_ref_mv                    | Awaiting bug 1288 to be resolved
-| fast_sgr                      | Code still changing
 | obu_move_length               | No code at present
 {:.table .table-sm .table-bordered }
 

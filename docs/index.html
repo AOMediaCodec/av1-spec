@@ -33,7 +33,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-02-07 03:50:25 -0800</em></p>
+<p><em>Last modified: 2018-02-07 05:38:18 -0800</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -145,6 +145,7 @@ not rely on its current contents.</p>
           <li><a href="#mode-info-syntax" id="markdown-toc-mode-info-syntax">Mode Info Syntax</a></li>
           <li><a href="#intra-frame-mode-info-syntax" id="markdown-toc-intra-frame-mode-info-syntax">Intra Frame Mode Info Syntax</a></li>
           <li><a href="#intra-segment-id-syntax" id="markdown-toc-intra-segment-id-syntax">Intra Segment ID Syntax</a></li>
+          <li><a href="#read-segment-id-syntax" id="markdown-toc-read-segment-id-syntax">Read Segment ID Syntax</a></li>
           <li><a href="#skip-mode-syntax" id="markdown-toc-skip-mode-syntax">Skip Mode Syntax</a></li>
           <li><a href="#skip-syntax" id="markdown-toc-skip-syntax">Skip Syntax</a></li>
           <li><a href="#quantizer-index-delta-syntax" id="markdown-toc-quantizer-index-delta-syntax">Quantizer Index Delta Syntax</a></li>
@@ -249,7 +250,9 @@ not rely on its current contents.</p>
           <li><a href="#decode-partition-semantics" id="markdown-toc-decode-partition-semantics">Decode Partition Semantics</a></li>
           <li><a href="#decode-block-semantics" id="markdown-toc-decode-block-semantics">Decode Block Semantics</a></li>
           <li><a href="#intra-frame-mode-info-semantics" id="markdown-toc-intra-frame-mode-info-semantics">Intra Frame Mode Info Semantics</a></li>
-          <li><a href="#intra-and-inter-segment-id-semantics" id="markdown-toc-intra-and-inter-segment-id-semantics">Intra and Inter Segment ID Semantics</a></li>
+          <li><a href="#intra-segment-id-semantics" id="markdown-toc-intra-segment-id-semantics">Intra Segment ID Semantics</a></li>
+          <li><a href="#read-segment-id-semantics" id="markdown-toc-read-segment-id-semantics">Read Segment ID Semantics</a></li>
+          <li><a href="#inter-segment-id-semantics" id="markdown-toc-inter-segment-id-semantics">Inter Segment ID Semantics</a></li>
           <li><a href="#skip-mode-semantics" id="markdown-toc-skip-mode-semantics">Skip Mode Semantics</a></li>
           <li><a href="#skip-semantics" id="markdown-toc-skip-semantics">Skip Semantics</a></li>
           <li><a href="#quantizer-index-delta-semantics" id="markdown-toc-quantizer-index-delta-semantics">Quantizer Index Delta Semantics</a></li>
@@ -976,6 +979,11 @@ relate to the semantics of a particular syntax element are defined in
       <td><code>MAX_SEGMENTS</code></td>
       <td style="text-align: center">8</td>
       <td>Number of segments allowed in segmentation map</td>
+    </tr>
+    <tr>
+      <td><code>SEGMENT_ID_CONTEXTS</code></td>
+      <td style="text-align: center">3</td>
+      <td>Number of contexts for <code>segment_id</code></td>
     </tr>
     <tr>
       <td><code>SEG_LVL_ALT_Q</code></td>
@@ -3090,6 +3098,7 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
 
 <pre class="syntax"><code>segmentation_params( ) {
     <b class="syntax-element">segmentation_enabled</b>                                                     f(1)
+    SegIdPreSkip = 0
     if ( segmentation_enabled == 1 ) {
         if ( FrameIsIntra || error_resilient_mode ) {
             segmentation_update_map = 1
@@ -3107,6 +3116,10 @@ each of the syntax elements is presented in <a href="#bitstream-semantics">Secti
                     <b class="syntax-element">feature_enabled</b>                                          f(1)
                     FeatureEnabled[ i ][ j ] = feature_enabled
                     if ( feature_enabled == 1 ) {
+                        if ( j &gt;= SEG_LVL_REF_FRAME ) {
+                            SegIdPreSkip = 1
+                        }
+                        LastActiveSegId = i
                         bitsToRead = Segmentation_Feature_Bits[ j ]
                         limit = Segmentation_Feature_Max[ j ]
                         if ( Segmentation_Feature_Signed[ j ] == 1 ) {
@@ -3880,9 +3893,13 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
 <h4 id="intra-frame-mode-info-syntax">Intra Frame Mode Info Syntax</h4>
 
 <pre class="syntax"><code>intra_frame_mode_info( ) {
-    intra_segment_id( )
+    skip = 0
+    if ( SegIdPreSkip )
+        intra_segment_id( )
     skip_mode = 0
     read_skip( )
+    if ( !SegIdPreSkip )
+        intra_segment_id( )
     read_cdef( )
     read_delta_qindex( )
     read_delta_lf( )
@@ -3933,10 +3950,68 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
 
 <pre class="syntax"><code>intra_segment_id( ) {
     if ( segmentation_enabled &amp;&amp; segmentation_update_map )
-        <b class="syntax-element">segment_id</b>                                                           S
+        read_segment_id( )
     else
         segment_id = 0
     Lossless = LosslessArray[ segment_id ]
+}
+</code></pre>
+
+<h4 id="read-segment-id-syntax">Read Segment ID Syntax</h4>
+
+<pre class="syntax"><code>read_segment_id( ) {
+    if ( AvailU &amp;&amp; AvailL )
+        prevUL = PrevSegmentIds[ MiRow - 1 ][ MiCol - 1 ]
+    else
+        prevUL = -1
+    if ( AvailU )
+        prevU = PrevSegmentIds[ MiRow - 1 ][ MiCol ]
+    else
+        prevU = -1
+    if ( AvailL )
+        prevL = PrevSegmentIds[ MiRow ][ MiCol - 1 ]
+    else
+        prevL = -1
+    if (prevU == -1)
+        pred = prevL == -1 ? 0 : prevL
+    else if (prevL == -1)
+        pred = prevU
+    else
+        pred = (prevUL == prevU) ? prevU : prevL
+    if ( skip ) {
+        segment_id = pred
+    } else {
+        <b class="syntax-element">segment_id</b>                                                           S
+        segment_id = neg_deinterleave( segment_id, pred, 
+                                       LastActiveSegId + 1 )
+    }
+}
+</code></pre>
+
+<p>where neg_deinterleave is a function defined as:</p>
+
+<pre><code class="language-c">neg_deinterleave(int diff, int ref, int max) {
+  if (!ref)
+    return diff
+  if (ref &gt;= (max - 1))
+    return max - diff - 1
+  if (2 * ref &lt; max) {
+    if (diff &lt;= 2 * ref) {
+      if (diff &amp; 1)
+        return ref + ((diff + 1) &gt;&gt; 1)
+      else
+        return ref - (diff &gt;&gt; 1)
+    }
+    return diff
+  } else {
+    if (diff &lt;= 2 * (max - ref - 1)) {
+      if (diff &amp; 1)
+        return ref + ((diff + 1) &gt;&gt; 1)
+      else
+        return ref - (diff &gt;&gt; 1)
+    }
+    return max - (diff + 1)
+  }
 }
 </code></pre>
 
@@ -4154,9 +4229,13 @@ can be encoded for each block size:</p>
     AboveIntra = AboveRefFrame[ 0 ] &lt;= INTRA_FRAME
     LeftSingle = LeftRefFrame[ 1 ] &lt;= INTRA_FRAME
     AboveSingle = AboveRefFrame[ 1 ] &lt;= INTRA_FRAME
-    inter_segment_id( )
+    skip = 0
+    inter_segment_id( 1 )
     read_skip_mode( )
     read_skip( )
+    if ( !SegIdPreSkip )
+        inter_segment_id( 0 )
+    Lossless = LosslessArray[ segment_id ]
     read_cdef( )
     read_delta_qindex( )
     read_delta_lf( )
@@ -4172,22 +4251,39 @@ can be encoded for each block size:</p>
 
 <h4 id="inter-segment-id-syntax">Inter Segment ID Syntax</h4>
 
-<pre class="syntax"><code>inter_segment_id( ) {
+<p>This is called before (preSkip equal to 1) and after (preSkip equal to 0) the skip syntax element has been read.</p>
+
+<pre class="syntax"><code>inter_segment_id( preSkip ) {
     if ( segmentation_enabled ) {
         predictedSegmentId = get_segment_id( )
         if ( segmentation_update_map ) {
+            if ( preSkip &amp;&amp; !SegIdPreSkip ) {
+                segment_id = 0
+                return
+            }
+            if ( !preSkip ) {
+                if ( skip ) {
+                    seg_id_predicted = 0
+                    for ( i = 0; i &lt; Num_4x4_Blocks_Wide[ MiSize ]; i++ )
+                        AboveSegPredContext[ MiCol + i ] = seg_id_predicted
+                    for ( i = 0; i &lt; Num_4x4_Blocks_High[ MiSize ]; i++ )
+                        LeftSegPredContext[ MiRow + i ] = seg_id_predicted
+                    read_segment_id( )
+                    return
+                }
+            }
             if ( segmentation_temporal_update == 1 ) {
                 <b class="syntax-element">seg_id_predicted</b>                                             S
                 if ( seg_id_predicted )
                     segment_id = predictedSegmentId
                 else
-                    <b class="syntax-element">segment_id</b>                                               S
+                    read_segment_id( )
                 for ( i = 0; i &lt; Num_4x4_Blocks_Wide[ MiSize ]; i++ )
                     AboveSegPredContext[ MiCol + i ] = seg_id_predicted
                 for ( i = 0; i &lt; Num_4x4_Blocks_High[ MiSize ]; i++ )
                     LeftSegPredContext[ MiRow + i ] = seg_id_predicted
             } else {
-                <b class="syntax-element">segment_id</b>                                                   S
+                read_segment_id( )
             }
         } else {
             segment_id = predictedSegmentId
@@ -4195,7 +4291,6 @@ can be encoded for each block size:</p>
     } else {
         segment_id = 0
     }
-    Lossless = LosslessArray[ segment_id ]
 }
 </code></pre>
 
@@ -7811,6 +7906,13 @@ as described in the semantics for setup_past_independence.</p>
 then it persists from frame to frame (until reset by a call to
 setup_past_independence).</p>
 
+<p><strong>SegIdPreSkip</strong> equal to 1 indicates that the segment id will be read before
+the skip syntax element.  SegIdPreSkip equal to 0 indicates that the skip syntax element
+will be read first.</p>
+
+<p><strong>LastActiveSegId</strong> indicates the highest numbered segment id that has some enabled feature.
+This is used when decoding the segment id to only decode choices corresponding to used segments.</p>
+
 <p><strong>segmentation_enabled</strong> equal to 1 indicates that this frame makes use of the
 segmentation tool; segmentation_enabled equal to 0 indicates that the frame
 does not use segmentation.</p>
@@ -8387,10 +8489,23 @@ values with the same interpretation as in the semantics for intra_frame_y_mode.<
 <p class="alert alert-info"><strong>Note:</strong> It is a requirement of bitstream conformance that, if uv_mode is equal to UV_CFL_PRED, 
 Max( Block_Width[ MiSize ], Block_Height[ MiSize ] ) &lt;= 32.</p>
 
-<h4 id="intra-and-inter-segment-id-semantics">Intra and Inter Segment ID Semantics</h4>
+<h4 id="intra-segment-id-semantics">Intra Segment ID Semantics</h4>
+
+<p><strong>Lossless</strong> is a variable which, if equal to 1, indicates that the block
+is coded using a special 4x4 transform designed for encoding frames that
+are bit-identical with the original frames.</p>
+
+<h4 id="read-segment-id-semantics">Read Segment ID Semantics</h4>
 
 <p><strong>segment_id</strong> specifies which segment is associated with the current intra
-block being decoded.</p>
+block being decoded.  It first read from the stream, and then postprocessed
+based on the predicted segment id.</p>
+
+<p>It is a requirement of bitstream conformance that the postprocessed value
+of segment_id (i.e. the value returned by neg_deinterleave) is in the range
+0 to LastActiveSegId (inclusive of endpoints).</p>
+
+<h4 id="inter-segment-id-semantics">Inter Segment ID Semantics</h4>
 
 <p><strong>seg_id_predicted</strong> equal to 1 specifies that the segment_id are taken from
 the segmentation map. seg_id_predicted equal to 0 specifies that the syntax
@@ -8398,10 +8513,6 @@ element segment_id are parsed.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> It is legal for seg_id_predicted to be equal to 0 even if the value
 coded for the segment_id is equal to predictedSegmentId.</p>
-
-<p><strong>Lossless</strong> is a variable which, if equal to 1, indicates that the block
-is coded using a special 4x4 transform designed for encoding frames that
-are bit-identical with the original frames.</p>
 
 <h4 id="skip-mode-semantics">Skip Mode Semantics</h4>
 
@@ -10096,7 +10207,7 @@ need to be projected.</p>
 <p>The following sections define the processes used for predicting the motion vectors.</p>
 
 <p>These processes are triggered at points defined by function calls to find_mv_list, compound_context, and find_mv_stack
-in the inter block mode info syntax described in <a href="#inter-block-mode-info-syntax">section 5.8.21</a>.</p>
+in the inter block mode info syntax described in <a href="#inter-block-mode-info-syntax">section 5.8.22</a>.</p>
 
 <h4 id="find-mv-list-process">Find MV List Process</h4>
 
@@ -11207,7 +11318,7 @@ values.</p>
 
 <p>These processes are triggered at points defined by function calls to
 predict_intra, predict_inter, predict_chroma_from_luma, and predict_palette in the residual syntax table described in
-<a href="#residual-syntax">section 5.8.30</a>.</p>
+<a href="#residual-syntax">section 5.8.31</a>.</p>
 
 <h4 id="intra-prediction-process">Intra Prediction Process</h4>
 
@@ -14147,7 +14258,7 @@ coefficient for a particular plane and is derived as follows:</p>
 <p>The reconstruct process is invoked to perform dequantization, inverse
 transform and reconstruction. This process is triggered at a point defined by
 a function call to reconstruct in the residual syntax table described in
-<a href="#residual-syntax">section 5.8.30</a>.</p>
+<a href="#residual-syntax">section 5.8.31</a>.</p>
 
 <p>The inputs to this process are:</p>
 
@@ -18057,7 +18168,17 @@ if (ctx != TXFM_PARTITION_CONTEXTS - 1) {
 }
 </code></pre>
 
-<p><strong>segment_id</strong>: the cdf is given by TileSegmentIdCdf.</p>
+<p><strong>segment_id</strong>: The cdf is given by TileSegmentId[ ctx ] where ctx is computed by:</p>
+
+<pre><code class="language-c">if (prevUL &lt; 0 || prevU &lt; 0 || prevL &lt; 0)
+    ctx = 0
+else if ((prevUL == prevU) &amp;&amp; (prevUL == prevL))
+    ctx = 2
+else if ((prevUL == prevU) || (prevUL == prevL) || (prevU == prevL))
+    ctx = 1
+else
+    ctx = 0
+</code></pre>
 
 <p><strong>seg_id_predicted</strong>: the cdf is given by TileSegmentIdPredictedCdf[ ctx ],
 where ctx is computed by:</p>
@@ -21549,10 +21670,10 @@ type with the horizontal and vertical operations transposed.</p>
 }
 </code></pre>
 
-<pre><code class="language-c">Default_Segment_Id_Cdf[ MAX_SEGMENTS + 1 ] = {
-  4096,  8192,  12288,
-  16384, 20480, 24576,
-  28672, 32768, 0
+<pre><code class="language-c">Default_Segment_Id_Cdf[ SEGMENT_ID_CONTEXTS ][ MAX_SEGMENTS + 1 ] = {
+  { 5622, 7893, 16093, 18233, 27809, 28373, 32533, 32768, 0 },
+  { 14274, 18230, 22557, 24935, 29980, 30851, 32344, 32768, 0 },
+  { 27527, 28487, 28723, 28890, 32397, 32647, 32679, 32768, 0 }
 }
 </code></pre>
 
@@ -29066,6 +29187,10 @@ external means.</p>
         <td> </td>
       </tr>
       <tr>
+        <td>spatial_segmentation</td>
+        <td> </td>
+      </tr>
+      <tr>
         <td>striped_loop_restoration</td>
         <td> </td>
       </tr>
@@ -29126,27 +29251,31 @@ external means.</p>
     <tbody>
       <tr>
         <td>ext_tile</td>
-        <td> </td>
+        <td>Waiting for definition of auxiliary stream</td>
       </tr>
       <tr>
         <td>film_grain_noise</td>
-        <td> </td>
+        <td>Postprocessing effect only</td>
       </tr>
       <tr>
         <td>filter_intra</td>
-        <td> </td>
+        <td>Work in progress</td>
       </tr>
       <tr>
         <td>new_quant</td>
-        <td> </td>
+        <td>Work in progress</td>
       </tr>
       <tr>
         <td>opt_ref_mv</td>
         <td>Awaiting bug 1288 to be resolved</td>
       </tr>
       <tr>
-        <td>spatial_segmentation</td>
-        <td> </td>
+        <td>fast_sgr</td>
+        <td>Code still changing</td>
+      </tr>
+      <tr>
+        <td>obu_move_length</td>
+        <td>No code at present</td>
       </tr>
     </tbody>
   </table>
