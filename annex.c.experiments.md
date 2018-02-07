@@ -102,6 +102,7 @@ The specification has been updated to include the following list of adopted expe
 | simple_bwd_adapt              |
 | simplify_tx_mode              |
 | smooth_hv                     |
+| spatial_segmentation          |
 | striped_loop_restoration      |
 | tempmv_signaling              |
 | tile_info_first               |
@@ -126,7 +127,8 @@ The specification has not yet been updated with the following experiments:
 | filter_intra                  | Work in progress
 | new_quant                     | Work in progress
 | opt_ref_mv                    | Awaiting bug 1288 to be resolved
-| spatial_segmentation          | Work in progress
+| fast_sgr                      | Code still changing
+| obu_move_length               | No code at present
 {:.table .table-sm .table-bordered }
 
 
