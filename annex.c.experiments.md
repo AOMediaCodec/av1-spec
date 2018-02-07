@@ -52,6 +52,7 @@ The specification has been updated to include the following list of adopted expe
 | ext_warped_motion             |
 | fast_sgr                      |
 | filter_7bit                   |
+| filter_intra                  |
 | frame_marker                  |
 | frame_sign_bias               |
 | frame_size                    |
@@ -125,7 +126,6 @@ The specification has not yet been updated with the following experiments:
 | ----------------------------- | ---------------------------
 | ext_tile                      | Waiting for definition of auxiliary stream
 | film_grain_noise              | Postprocessing effect only
-| filter_intra                  | Work in progress
 | new_quant                     | Work in progress
 | opt_ref_mv                    | Awaiting bug 1288 to be resolved
 | obu_move_length               | No code at present
