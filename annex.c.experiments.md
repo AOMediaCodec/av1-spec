@@ -80,6 +80,7 @@ The specification has been updated to include the following list of adopted expe
 | motion_var                    |
 | mv_compress                   |
 | new_multisymbol               |
+| new_quant                     |
 | new_tokenset                  |
 | no_frame_context_signalling   |
 | one_sided_compound            |
@@ -126,7 +127,6 @@ The specification has not yet been updated with the following experiments:
 | ----------------------------- | ---------------------------
 | ext_tile                      | Waiting for definition of auxiliary stream
 | film_grain_noise              | Awaiting bugs 1344,1345,1346,1347,1348,1349 to be resolved
-| new_quant                     | Work in progress
 | opt_ref_mv                    | Awaiting bug 1288 to be resolved
 | obu_move_length               | No code at present
 {:.table .table-sm .table-bordered }
