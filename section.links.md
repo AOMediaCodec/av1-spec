@@ -29,7 +29,7 @@
 [section 6.8.5]: #intra-frame-mode-info-semantics
 [section 6.8.33]: #read-cfl-alphas-semantics
 [section 6.8.27]: #mv-semantics
-[section 5.8.50]: #check-references-functions
+[section 5.7.29]: #film-grain-params-syntax
 [section 5.8.3]: #decode-partition-syntax
 [section 7.7.3.7]: #search-stack-process
 [section 6.7.11]: #segmentation-params-semantics
@@ -124,7 +124,7 @@
 [section 7.11.5.2]: #narrow-filter-process
 [section 5.8.56]: #decode-loop-restoration-unit-syntax
 [section 6.1.1]: #obu-header-semantics
-[section 6.7.21]: #frame-reference-mode-semantics
+[section 6.7.22]: #frame-reference-mode-semantics
 [section 5.8.8]: #read-segment-id-syntax
 [section 7.7.3.4]: #temporal-scan-process
 [section 4.9.3]: #len
@@ -133,6 +133,7 @@
 [section 7.10.1.5]: #inverse-adst-input-array-permutation-process
 [section 6.7.3]: #render-size-semantics
 [section 4.1]: #arithmetic-operators
+[section 9.3]: #default-cdf-tables
 [section 5.7.18]: #tx-mode-syntax
 [section 7.10.1.15]: #inverse-identity-transform-16-process
 [section 5.8.10]: #skip-syntax
@@ -184,11 +185,11 @@
 [section 5.2]: #reserved-obu-syntax
 [section 5.8.30]: #mv-syntax
 [section 5.8.2]: #clear-block-decoded-flags-function
-[section 6.7.19]: #tx-mode-semantics
+[section 6.7.20]: #tx-mode-semantics
 [section 5.7]: #frame-header-obu-syntax
 [section 8.2]: #parsing-process-for-boolean-decoder
 [section 5.5]: #padding-obu-syntax
-[section 9.3]: #default-cdf-tables
+[section 5.8.50]: #check-references-functions
 [section 8.2.1]: #initialization-process-for-boolean-decoder
 [section 5.7.13]: #tile-size-calculation-function
 [section 5.8.40]: #intra-angle-info-syntax
@@ -293,7 +294,7 @@
 [section 4.5]: #assignment
 [section 5.8.39]: #get-scan-function
 [section 7.10.1.11]: #inverse-adst-process
-[section 6.7.20]: #skip-mode-params-semantics
+[section 6.7.21]: #skip-mode-params-semantics
 [section 6.6.1]: #metadata-private-data-semantics
 [section 5.8.34]: #transform-tree-syntax
 [section 6.7.5]: #superres-params-semantics
@@ -317,6 +318,7 @@
 [section 7.14.5]: #wiener-coefficient-process
 [section 3]: #symbols-and-abbreviated-terms
 [section 6.8.34]: #palette-mode-info-semantics
+[section 6.7.19]: #film-grain-params-semantics
 [section 6.7.15]: #global-motion-params-semantics
 [section 4.2]: #logical-operators
 [section 7.8.2.6]: #warp-estimation-process
