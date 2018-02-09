@@ -45,6 +45,7 @@
 [section 7.10.1.1]: #butterfly-functions
 [section 6.8.29]: #residual-semantics
 [section 5.7.22]: #global-param-syntax
+[section 9.4]: #quantizer-matrix-tables
 [section 7.7.3.8]: #compound-search-stack-process
 [section 7]: #decoding-process
 [section 7.7.1]: #find-mv-list-process

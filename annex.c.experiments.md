@@ -80,7 +80,6 @@ The specification has been updated to include the following list of adopted expe
 | motion_var                    |
 | mv_compress                   |
 | new_multisymbol               |
-| new_quant                     |
 | new_tokenset                  |
 | no_frame_context_signalling   |
 | one_sided_compound            |
