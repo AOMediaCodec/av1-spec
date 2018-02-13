@@ -18,7 +18,7 @@
 [section 7.11.4]: #adaptive-filter-strength-selection-process
 [section 5.1.1]: #obu-header-syntax
 [section 5.8.19]: #is-inter-syntax
-[section 7.10.1.18]: #inverse-identity-transform-process
+[section 7.10.1.17]: #inverse-identity-transform-process
 [section 5.8.44]: #transform-type-syntax
 [section 5.8.51]: #clamp-mv-row-function
 [section 6.7.10]: #delta-quantizer-semantics
@@ -33,7 +33,7 @@
 [section 5.8.3]: #decode-partition-syntax
 [section 7.7.3.7]: #search-stack-process
 [section 6.7.11]: #segmentation-params-semantics
-[section 7.10.1.14]: #inverse-identity-transform-8-process
+[section 7.10.1.13]: #inverse-identity-transform-8-process
 [section 5.7.28]: #inv-recenter-noneg-function
 [section 6.8.17]: #var-tx-size-semantics
 [section 7.14.2]: #self-guided-filter-process
@@ -103,7 +103,6 @@
 [section 7.15]: #output-process
 [section 4.9.4]: #sun
 [section 5.8.54]: #read-cdef-syntax
-[section 8.2.3]: #exit-process-for-boolean-decoder
 [section 7.7.3]: #find-mv-stack-process
 [section 7.13]: #upscaling-process
 [section A]: #annex-a-profiles-and-levels
@@ -135,7 +134,7 @@
 [section 4.1]: #arithmetic-operators
 [section 9.3]: #default-cdf-tables
 [section 5.7.18]: #tx-mode-syntax
-[section 7.10.1.15]: #inverse-identity-transform-16-process
+[section 7.10.1.14]: #inverse-identity-transform-16-process
 [section 5.8.10]: #skip-syntax
 [section 6.7.18]: #decode-uniform-semantics
 [section 6.7.9]: #quantization-params-semantics
@@ -173,7 +172,7 @@
 [section 5.6]: #metadata-obu-syntax
 [section 7.6.2]: #get-mv-projection-process
 [section 5.8]: #tile-group-obu-syntax
-[section 7.10.1.16]: #inverse-identity-transform-32-process
+[section 7.10.1.15]: #inverse-identity-transform-32-process
 [section 7.8.2.8]: #overlap-blending-process
 [section 6.8.6]: #intra-segment-id-semantics
 [section 7.10.1.9]: #inverse-adst16-process
@@ -198,7 +197,7 @@
 [section D]: #bibliography
 [section 6.8.16]: #inter-tx-size-semantics
 [section 7.7.3.2]: #scan-col-process
-[section 7.10.1.10]: #inverse-adst32-process
+[section 8.2.3]: #exit-process-for-boolean-decoder
 [section 5.8.24]: #ref-frames-syntax
 [section 1]: #scope
 [section 7.8.1.2]: #intra-filter-type-process
@@ -224,7 +223,7 @@
 [section 6.3.1]: #color-config-semantics
 [section 6.5]: #padding-obu-semantics
 [section 7.12.1]: #cdef-block-process
-[section 7.10.1.17]: #inverse-identity-transform-64-process
+[section 7.10.1.16]: #inverse-identity-transform-64-process
 [section 7.7.1.1]: #setup-zero-mv-process
 [section 6.3]: #sequence-header-obu-semantics
 [section 6.7]: #frame-header-obu-semantics
@@ -293,7 +292,7 @@
 [section 5.8.16]: #var-tx-size-syntax
 [section 4.5]: #assignment
 [section 5.8.39]: #get-scan-function
-[section 7.10.1.11]: #inverse-adst-process
+[section 7.10.1.10]: #inverse-adst-process
 [section 6.7.21]: #skip-mode-params-semantics
 [section 6.6.1]: #metadata-private-data-semantics
 [section 5.8.34]: #transform-tree-syntax
@@ -312,7 +311,7 @@
 [section 7.11.3]: #adaptive-filter-strength-process
 [section 5.3.2]: #timing-info-syntax
 [section 5.7.15]: #loop-filter-delta-parameters-syntax
-[section 7.10.1.13]: #inverse-identity-transform-4-process
+[section 7.10.1.12]: #inverse-identity-transform-4-process
 [section 6.8.37]: #read-cdef-semantics
 [section 6.8.9]: #skip-mode-semantics
 [section 7.14.5]: #wiener-coefficient-process
@@ -327,7 +326,7 @@
 [section 5.6.2]: #metadata-high-dynamic-range-content-light-level-syntax
 [section 7.12]: #cdef-process
 [section 5.8.1]: #decode-tile-syntax
-[section 7.10.1.12]: #inverse-walsh-hadamard-transform-process
+[section 7.10.1.11]: #inverse-walsh-hadamard-transform-process
 [section 6.8]: #tile-group-obu-semantics
 [section 8.2.2]: #boolean-decoding-process
 [section 7.8]: #prediction-processes
