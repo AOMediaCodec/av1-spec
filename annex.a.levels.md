@@ -14,9 +14,9 @@ resolution and performance characteristics.
 
 There are three named profiles:
 
-  * "Main" compliant decoders must be able to decode streams with Profile equal to 0.
-  * "High" compliant decoders must be able to decode streams with Profile less than or equal to 1.
-  * "Professional" compliant decoders must be able to decode streams with Profile less than or equal to 2.
+  * "Main" compliant decoders must be able to decode streams with seq_profile equal to 0.
+  * "High" compliant decoders must be able to decode streams with seq_profile less than or equal to 1.
+  * "Professional" compliant decoders must be able to decode streams with seq_profile less than or equal to 2.
   
 **Note:** Main profile consists of YUV 4:2:0 or monochrome sequences with bit depth equal to 8 or 10.
 High profile consists of YUV 4:4:4 sequences with bit depth equal to 8 or 10.
