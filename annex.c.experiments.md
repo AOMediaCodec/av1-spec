@@ -127,7 +127,6 @@ The specification has not yet been updated with the following experiments:
 | ----------------------------- | ---------------------------
 | ext_tile                      | Waiting for definition of auxiliary stream
 | fwd_kf                        |
-| intra_edge2                   |
 | opt_ref_mv                    | Awaiting bug 1288 to be resolved
 | obu_move_length               | No code at present
 | obu_sizing                    |
