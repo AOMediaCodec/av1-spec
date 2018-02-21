@@ -22,7 +22,6 @@ The specification has been updated to include the following list of adopted expe
 | cfl                           |
 | chroma_sub8x8                 |
 | CICP                          |
-| coef_ctx_reduce               |
 | colorspace_headers            |
 | compound_round                |
 | compound_segment              |
@@ -32,15 +31,14 @@ The specification has been updated to include the following list of adopted expe
 | delta_q                       |
 | dependent_horztilegroups      |
 | dependent_horztiles           |
-| dist_8x8                      |
 | dual_filter                   |
 | ec_adapt                      |
 | ec_multisymbol                |
 | ec_smallmul                   |
-| ext-comp-refs                 |
+| ext_comp_refs                 |
 | ext_delta_q                   |
-| ext-intra                     |
-| ext-intra-mod                 |
+| ext_intra                     |
+| ext_intra_mod                 |
 | ext_intra_mod2                |
 | ext_inter                     | Bug 857 not yet fixed in code or spec
 | ext_partition                 | 
@@ -48,7 +46,7 @@ The specification has been updated to include the following list of adopted expe
 | ext_qm                        |
 | ext_refs                      | 
 | ext_skip                      |
-| ext-tx                        |
+| ext_tx                        |
 | ext_warped_motion             |
 | fast_sgr                      |
 | film_grain_noise              |
@@ -94,7 +92,7 @@ The specification has been updated to include the following list of adopted expe
 | rect_tx_ext                   |
 | rect_tx_ext_intra             |
 | ref_adapt                     |
-| ref-mv                        |
+| ref_mv                        |
 | reference_buffer              |
 | restricted segmentation map update |
 | scalability                   |
@@ -126,8 +124,11 @@ The specification has not yet been updated with the following experiments:
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
 | ext_tile                      | Waiting for definition of auxiliary stream
+| fwd_kf                        |
+| intra_edge2                   |
 | opt_ref_mv                    | Awaiting bug 1288 to be resolved
 | obu_move_length               | No code at present
+| obu_sizing                    |
 {:.table .table-sm .table-bordered }
 
 
