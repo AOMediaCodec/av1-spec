@@ -4,6 +4,7 @@
 [section 7.7.1.2]: #spatial-motion-vector-candidate-process
 [section 7.6.3]: #get-block-position-process
 [section 6.8.22]: #filter-intra-mode-info-semantics
+[section 7.15.1.4]: #add-noise-synthesis-process
 [section 7.7.5]: #find-warp-samples-process
 [section 5.8.15]: #inter-tx-size-syntax
 [section 7.7.4]: #has-overlappable-candidates-process
@@ -27,6 +28,7 @@
 [section 4.9.5]: #ln
 [section 5.8.49]: #is-inside-function
 [section 6.8.5]: #intra-frame-mode-info-semantics
+[section 7.15.1.2]: #generate-grain-process
 [section 6.8.33]: #read-cfl-alphas-semantics
 [section 6.8.27]: #mv-semantics
 [section 5.7.29]: #film-grain-params-syntax
@@ -105,6 +107,7 @@
 [section 5.8.55]: #read-cdef-syntax
 [section 7.7.3]: #find-mv-stack-process
 [section 7.13]: #upscaling-process
+[section 7.15.1]: #film-grain-synthesis-process
 [section 6.8.10]: #skip-semantics
 [section 7.7.3.1]: #scan-row-process
 [section 8.2.5]: #symbol-decoding-process
@@ -197,6 +200,7 @@
 [section D]: #bibliography
 [section 6.8.16]: #inter-tx-size-semantics
 [section 7.7.3.2]: #scan-col-process
+[section 7.15.1.3]: #scaling-lookup-initialization-process
 [section 8.2.3]: #exit-process-for-boolean-decoder
 [section 5.8.24]: #ref-frames-syntax
 [section 1]: #scope
@@ -212,6 +216,7 @@
 [section 7.12.2]: #cdef-direction-process
 [section 6.8.2]: #clear-block-decoded-flags-semantics
 [section A.1.2]: #levels
+[section 7.15.1.1]: #random-number-process
 [section 5.7.4]: #frame-size-with-refs-syntax
 [section 6.7.6]: #compute-image-size-semantics
 [section 5.8.42]: #is-directional-mode-function
