@@ -16,6 +16,7 @@ The specification has been updated to include the following list of adopted expe
 | altref2                       |
 | amvr                          | Bug 1048 not yet fixed in code or spec
 | aom_qm                        |
+| aom_qm_ext                    |
 | cb4x4                         |
 | cdef                          |
 | cdef_singlepass               |
