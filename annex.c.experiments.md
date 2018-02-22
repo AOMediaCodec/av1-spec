@@ -65,6 +65,7 @@ The specification has been updated to include the following list of adopted expe
 | interintra                    |
 | intrabc                       |
 | intra_edge                    |
+| intra_edge2                   |
 | jnt_comp                      |
 | kf_ctx                        |
 | loop_restoration              |
