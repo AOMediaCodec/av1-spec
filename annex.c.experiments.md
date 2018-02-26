@@ -41,7 +41,7 @@ The specification has been updated to include the following list of adopted expe
 | ext_intra                     |
 | ext_intra_mod                 |
 | ext_intra_mod2                |
-| ext_inter                     | Bug 857 not yet fixed in code or spec
+| ext_inter                     |
 | ext_partition                 | 
 | ext_partition_types           |
 | ext_qm                        |
