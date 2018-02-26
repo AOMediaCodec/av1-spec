@@ -1,4 +1,4 @@
-## Annex B: Raw Bitstream Format
+## Annex B: Bitstream Format
 {:.no_count}
 
 
@@ -8,13 +8,13 @@
 An AV1 bitstream consists of a number of OBUs that are normally held within
 a container format alongside audio and timing information.
 
-This annex defines a simple method of packing OBUs into a raw bitstream format.
+This annex defines a simple method of packing OBUs into a bitstream format.
 
-### Raw Bitstream Syntax
+### Bitstream Syntax
 {:.no_count}
 
 ~~~~~
-raw_bitstream( sz ) {
+bitstream( sz ) {
     while ( sz > 0 ) {
         @@obu_size                                                             le(4)
         open_bitstream_unit( obu_size )
@@ -25,7 +25,7 @@ raw_bitstream( sz ) {
 {:.syntax }
 
 
-### Raw Bitstream semantics
+### Bitstream semantics
 {:.no_count}
 
 **sz** specifies the number of bytes in the entire bitstream and is provided by

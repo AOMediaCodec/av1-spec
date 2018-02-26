@@ -119,7 +119,7 @@
 [section 7.10.1.3]: #inverse-dct-array-permutation-process
 [section 5.8.22]: #inter-block-mode-info-syntax
 [section 5.8.31]: #mv-component-syntax
-[section B.3]: #raw-bitstream-semantics
+[section B.3]: #bitstream-semantics
 [section 6.8.11]: #quantizer-index-delta-semantics
 [section 6.1.2]: #obu-extension-header-semantics
 [section 7.11.5.2]: #narrow-filter-process
@@ -180,7 +180,7 @@
 [section 7.10.1.9]: #inverse-adst16-process
 [section 2]: #terms-and-definitions
 [section 5.7.21]: #global-motion-params-syntax
-[section 5]: #bitstream-syntax
+[section 5]: #syntax-structures
 [section 5.7.12]: #tile-info-syntax
 [section 7.10.1.7]: #inverse-adst4-process
 [section 5.2]: #reserved-obu-syntax
@@ -249,7 +249,7 @@
 [section 6.8.15]: #tx-size-semantics
 [section 7.7.3.6]: #add-reference-motion-vector-process
 [section 6.8.20]: #intra-block-mode-info-semantics
-[section 6]: #bitstream-semantics
+[section 6]: #syntax-structures-semantics
 [section 7.8.2.1]: #motion-vector-scaling-process
 [section 5.7.7]: #interpolation-filter-syntax
 [section 5.7.8]: #loop-filter-params-syntax
@@ -282,11 +282,11 @@
 [section 7.8.2.5]: #resolve-divisor-process
 [section 5.8.17]: #inter-frame-mode-info-syntax
 [section 7.8.2.12]: #mask-blend-process
-[section B.2]: #raw-bitstream-syntax
+[section B.2]: #bitstream-syntax
 [section 5.7.10]: #delta-quantizer-syntax
 [section 7.8.1.5]: #intra-edge-upsample-process
 [section 5.8.56]: #decode-loop-restoration-syntax
-[section B]: #annex-b-raw-bitstream-format
+[section B]: #annex-b-bitstream-format
 [section 6.6.2]: #metadata-high-dynamic-range-content-light-level-semantics
 [section 5.8.28]: #read-compound-type-syntax
 [section 6.1]: #obu-semantics
