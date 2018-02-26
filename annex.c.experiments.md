@@ -127,9 +127,10 @@ The specification has not yet been updated with the following experiments:
 | ----------------------------- | ---------------------------
 | ext_tile                      | Waiting for definition of auxiliary stream
 | fwd_kf                        |
-| opt_ref_mv                    | Awaiting bug 1288 to be resolved
+| opt_ref_mv                    |
 | obu_move_length               | No code at present
 | obu_sizing                    |
+| lowprecision_blend            |
 {:.table .table-sm .table-bordered }
 
 
