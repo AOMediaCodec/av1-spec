@@ -84,6 +84,7 @@ The specification has been updated to include the following list of adopted expe
 | new_multisymbol               |
 | new_tokenset                  |
 | no_frame_context_signalling   |
+| obu_sizing                    |
 | one_sided_compound            |
 | palette                       |
 | palette_delta_encoding        |
@@ -128,9 +129,8 @@ The specification has not yet been updated with the following experiments:
 | ----------------------------- | ---------------------------
 | ext_tile                      | Waiting for definition of auxiliary stream
 | fwd_kf                        |
-| opt_ref_mv                    |
+| opt_ref_mv                    | Blocked by bug 1288
 | obu_move_length               | No code at present
-| obu_sizing                    |
 {:.table .table-sm .table-bordered }
 
 
