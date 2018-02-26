@@ -72,6 +72,7 @@ The specification has been updated to include the following list of adopted expe
 | loopfilter_level              |
 | loopfiltering_across_tiles    |
 | loopfilter_across_tiles_ext   |
+| lowprecision_blend            |
 | lv_map                        |
 | lv_map_multi                  |
 | max_tile                      |
@@ -130,7 +131,6 @@ The specification has not yet been updated with the following experiments:
 | opt_ref_mv                    |
 | obu_move_length               | No code at present
 | obu_sizing                    |
-| lowprecision_blend            |
 {:.table .table-sm .table-bordered }
 
 
