@@ -14,7 +14,7 @@ The specification has been updated to include the following list of adopted expe
 | ----------------------------- | ---------------------------
 | alt_intra                     |
 | altref2                       |
-| amvr                          | Bug 1048 not yet fixed in code or spec
+| amvr                          |
 | aom_qm                        |
 | aom_qm_ext                    |
 | cb4x4                         |
