@@ -90,7 +90,7 @@ The specification has been updated to include the following list of adopted expe
 | palette_delta_encoding        |
 | palette_throughput            |
 | parallel_deblocking           |
-| q_adapt_probs                 | This experiment currently has no effect
+| q_adapt_probs                 |
 | rect_intra_pred               |
 | rect_tx                       |
 | rect_tx_ext                   |
