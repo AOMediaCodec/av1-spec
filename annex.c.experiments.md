@@ -86,6 +86,7 @@ The specification has been updated to include the following list of adopted expe
 | no_frame_context_signalling   |
 | obu_sizing                    |
 | one_sided_compound            |
+| opt_ref_mv                    |
 | palette                       |
 | palette_delta_encoding        |
 | palette_throughput            |
@@ -129,7 +130,6 @@ The specification has not yet been updated with the following experiments:
 | ----------------------------- | ---------------------------
 | ext_tile                      | Waiting for definition of auxiliary stream
 | fwd_kf                        |
-| opt_ref_mv                    | Blocked by bug 1288
 | obu_move_length               | No code at present
 {:.table .table-sm .table-bordered }
 
