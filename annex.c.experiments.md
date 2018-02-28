@@ -107,6 +107,7 @@ The specification has been updated to include the following list of adopted expe
 | simp_mv_pred                  |
 | simple_bwd_adapt              |
 | simplify_tx_mode              |
+| skip_sgr                      |
 | smooth_hv                     |
 | spatial_segmentation          |
 | striped_loop_restoration      |
