@@ -53,6 +53,7 @@ The specification has been updated to include the following list of adopted expe
 | film_grain_noise              |
 | filter_7bit                   |
 | filter_intra                  |
+| frame_refs_signaling          |
 | frame_marker                  |
 | frame_sign_bias               |
 | frame_size                    |

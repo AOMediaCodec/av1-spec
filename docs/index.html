@@ -33,7 +33,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-02-28 01:53:38 -0800</em></p>
+<p><em>Last modified: 2018-03-01 04:09:16 -0800</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -297,6 +297,7 @@ not rely on its current contents.</p>
       <li><a href="#frame-order-constraints" id="markdown-toc-frame-order-constraints">Frame Order Constraints</a></li>
       <li><a href="#ordering-of-obus" id="markdown-toc-ordering-of-obus">Ordering of OBUs</a></li>
       <li><a href="#cdf-update-process" id="markdown-toc-cdf-update-process">CDF Update Process</a></li>
+      <li><a href="#set-frame-refs-process" id="markdown-toc-set-frame-refs-process">Set Frame Refs Process</a></li>
       <li><a href="#motion-field-estimation-process" id="markdown-toc-motion-field-estimation-process">Motion Field Estimation Process</a>        <ul>
           <li><a href="#projection-process" id="markdown-toc-projection-process">Projection Process</a></li>
           <li><a href="#get-mv-projection-process" id="markdown-toc-get-mv-projection-process">Get MV Projection Process</a></li>
@@ -2100,20 +2101,14 @@ the variable is less than or equal to <code>(1 &lt;&lt; (x-1))-1</code>.</p>
     <tr>
       <td>a &amp;&amp; b</td>
       <td>Logical AND operation between <code>a</code> and <code>b</code></td>
-      <td> </td>
-      <td> </td>
     </tr>
     <tr>
-      <td>a</td>
-      <td> </td>
-      <td>b</td>
+      <td>a || b</td>
       <td>Logical OR operation between <code>a</code> and <code>b</code></td>
     </tr>
     <tr>
       <td>!</td>
       <td>Logical NOT operation.</td>
-      <td> </td>
-      <td> </td>
     </tr>
   </tbody>
 </table>
@@ -2156,32 +2151,26 @@ the variable is less than or equal to <code>(1 &lt;&lt; (x-1))-1</code>.</p>
     <tr>
       <td>&amp;</td>
       <td>AND operation</td>
-      <td> </td>
     </tr>
     <tr>
-      <td> </td>
-      <td> </td>
+      <td>|</td>
       <td>OR operation</td>
     </tr>
     <tr>
       <td>^</td>
       <td>XOR operation</td>
-      <td> </td>
     </tr>
     <tr>
       <td>~</td>
       <td>Negation operation</td>
-      <td> </td>
     </tr>
     <tr>
       <td>a &gt;&gt; b</td>
       <td>Shift <code>a</code> in 2’s complement binary integer representation format to the right by <code>b</code> bit positions. This operator is only used with <code>b</code> being a non-negative integer. Bits shifted into the MSBs as a result of the right shift have a value equal to the MSB of <code>a</code> prior to the shift operation.</td>
-      <td> </td>
     </tr>
     <tr>
       <td>a &lt;&lt; b</td>
       <td>Shift <code>a</code> in 2’s complement binary integer representation format to the left by <code>b</code> bit positions. This operator is only used with <code>b</code> being a non-negative integer. Bits shifted into the LSBs as a result of the left shift have a value equal to <code>0</code>.</td>
-      <td> </td>
     </tr>
   </tbody>
 </table>
@@ -2851,13 +2840,24 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
             frame_size( )
             render_size( )
         } else {
-            if (frame_type == SWITCH_FRAME ) {
+            if ( frame_type == SWITCH_FRAME ) {
                 refresh_frame_flags = 0xFF
             } else {
                 <b class="syntax-element">refresh_frame_flags</b>                                          f(8)
             }
+            if ( error_resilient_mode ) {
+              frame_refs_short_signaling = 0
+            } else {
+              <b class="syntax-element">frame_refs_short_signaling</b>                                     f(1)
+              if ( frame_refs_short_signaling ) {
+                <b class="syntax-element">last_frame_idx</b>                                               f(3)
+                <b class="syntax-element">gold_frame_idx</b>                                               f(3)
+                set_frame_refs()
+              }
+            }
             for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {
-                <b class="syntax-element">ref_frame_idx[ i ]</b>                                           f(3)
+                if ( !frame_refs_short_signaling )
+                  <b class="syntax-element">ref_frame_idx[ i ]</b>                                         f(3)
                 if (frame_id_numbers_present_flag) {
                     n = delta_frame_id_length_minus2 + 2
                     <b class="syntax-element">delta_frame_id_minus1</b>                                    f(n)
@@ -2905,9 +2905,9 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         }
     }
     if ( error_resilient_mode ) {
-        frame_parallel_decoding_mode = 1
+        disable_frame_end_update_cdf = 1
     } else {
-        <b class="syntax-element">frame_parallel_decoding_mode</b>                                         f(1)
+        <b class="syntax-element">disable_frame_end_update_cdf</b>                                         f(1)
     }
     if ( FrameIsIntra || error_resilient_mode ) {
         setup_past_independence ( )
@@ -3784,7 +3784,7 @@ However, these fractional bits will be discarded during the Setup Zero MV proces
         exit_bool( )
     }
     if (tg_end == NumTiles - 1) {
-        if ( !error_resilient_mode &amp;&amp; !frame_parallel_decoding_mode ) {
+        if ( !disable_frame_end_update_cdf ) {
             update_cdf( )
         }
         decode_frame( )
@@ -4503,11 +4503,7 @@ of the segmentation map covered by the current block.</p>
     use_filter_intra = 0
     read_ref_frames( )
     isCompound = RefFrame[ 1 ] &gt; INTRA_FRAME
-    if ( isCompound ) {
-        find_mv_stack( -1 )
-    } else {
-        find_mv_stack( 0 )
-    }
+    find_mv_stack( isCompound )
     if ( skip_mode ) {
         YMode = NEAREST_NEARESTMV
     } else if ( seg_feature_active( SEG_LVL_SKIP ) ||
@@ -6175,10 +6171,18 @@ check_golden(refFrame) {
         <b class="syntax-element">lr_sgr_set</b>                                                           U(SGRPROJ_PARAMS_BITS)
         LrSgrSet[ TileNum ][ plane ][ unitRow ][ unitCol ] = lr_sgr_set
         for (i = 0; i &lt; 2; i++) {
+            radius = Sgr_Params[ lr_sgr_set ][ i * 2 ]
             min = Sgrproj_Xqd_Min[i]
             max = Sgrproj_Xqd_Max[i]
-            v = decode_signed_subexp_with_ref_bool(
+            if ( radius ) {
+              v = decode_signed_subexp_with_ref_bool(
                      min, max + 1, SGRPROJ_PRJ_SUBEXP_K, RefSgrXqd[ plane ][ i ])
+            } else {
+              v = 0
+              if ( i == 1 ) {
+                v = Clip3( min, max, (1 &lt;&lt; SGRPROJ_PRJ_BITS) - RefSgrXqd[ plane ][ 0 ] )
+              }
+            }
             LrSgrXqd[ TileNum ][ plane ][ unitRow ][ unitCol ][ i ] = v
             RefSgrXqd[ plane ][ i ] = v
         }
@@ -6196,7 +6200,7 @@ Sgrproj_Xqd_Min[2] = { -96, -32 }
 Sgrproj_Xqd_Max[2] = {  31,  95 }
 </code></pre>
 
-<p>and decode_signed_subexp_with_ref_bool
+<p>Sgr_Params is a constant lookup table defined in <a href="#box-filter-process">section 7.15.3</a> and decode_signed_subexp_with_ref_bool
 is a function specified as follows:</p>
 
 <pre class="syntax"><code class="language-c">decode_signed_subexp_with_ref_bool( low, high, k, r ) {
@@ -7365,7 +7369,19 @@ force_integer_mv equal to 0 specifies that motion vectors can contain fractional
 <p><strong>refresh_frame_flags</strong> contains a bitmask that specifies which reference frame
 slots will be updated with the current frame after it is decoded.</p>
 
-<p>See <a href="#reference-frame-update-process">section 7.16</a> for details of the frame update process.</p>
+<p>See <a href="#reference-frame-update-process">section 7.17</a> for details of the frame update process.</p>
+
+<p><strong>frame_refs_short_signaling</strong> equal to 1 indicates that only two reference frames are explicitly signaled.
+frame_refs_short_signaling equal to 0 indicates that all reference frames are explicitly signaled.</p>
+
+<p><strong>last_frame_idx</strong> specifies the reference frame to use for LAST_FRAME.</p>
+
+<p><strong>gold_frame_idx</strong> specifies the reference frame to use for GOLDEN_FRAME.</p>
+
+<p><strong>set_frame_refs</strong> is a function call that indicates the conceptual point where
+the ref_frame_idx values are computed (in the case when frame_refs_short_signaling is equal to 1, these syntax elements are computed instead of being explicitly signaled).
+When this function is called, the set frame refs
+process specified in <a href="#set-frame-refs-process">section 7.6</a> is invoked.</p>
 
 <p><strong>ref_frame_idx</strong> specifies which reference frames are used by inter frames. It
 is a requirement of bitstream conformance that the selected reference frames
@@ -7399,13 +7415,11 @@ specifies that motion vectors are specified to eighth pel precision.</p>
 from a previous frame can be used when decoding the current frame.
 can_use_previous equal to 0 specifies that this information will not be used.</p>
 
-<p><strong>frame_parallel_decoding_mode</strong> equal to 1 indicates that parallel decoding mode is enabled;
-frame_parallel_decoding_mode equal to 0 indicates that parallel decoding mode is disabled.</p>
+<p><strong>disable_frame_end_update_cdf</strong> equal to 1 indicates that the end of frame CDF update is disabled;
+disable_frame_end_update_cdf equal to 0 indicates that the end of frame CDF update is enabled.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> Parallel decoding mode means that the CDFs in the frame context are not updated at the
-end of the frame.
-This means that the next frame can start to be decoded as soon as the frame headers of the
-current frame have been processed.</p>
+<p class="alert alert-info"><strong>Note:</strong> It can be useful to disable the CDF update because it means the next frame can start to be decoded
+as soon as the frame headers of the current frame have been processed.</p>
 
 <p><strong>frame_offset_update</strong> provides a hint to the motion vector prediction as to how many frames later this frame is expected to be shown.</p>
 
@@ -7835,7 +7849,7 @@ SavedSegmentIds[ prevFrame ][ row ][ col ] for row = 0..MiRows-1, for col = 0..M
     <p>Otherwise, PrevSegmentIds[ row ][ col ] is set equal to 0 for row = 0..MiRows-1, for col = 0..MiCols-1.</p>
   </li>
   <li>
-    <p>If can_use_previous is equal to 1, the motion field estimation process in <a href="#motion-field-estimation-process">section 7.6</a> is invoked.</p>
+    <p>If can_use_previous is equal to 1, the motion field estimation process in <a href="#motion-field-estimation-process">section 7.7</a> is invoked.</p>
   </li>
 </ol>
 
@@ -7957,7 +7971,7 @@ filtered, and the edge direction (vertical or horizontal) being filtered.</p>
 and loop_filter_sharpness together determine when a block edge is filtered, and
 by how much the filtering can change the sample values.</p>
 
-<p>The loop filter process is described in <a href="#loop-filter-process">section 7.11</a>.</p>
+<p>The loop filter process is described in <a href="#loop-filter-process">section 7.12</a>.</p>
 
 <p><strong>loop_filter_delta_enabled</strong> equal to 1 means that the filter level depends on
 the mode and reference frame used to predict a block. loop_filter_delta_enabled
@@ -7995,7 +8009,7 @@ previous frame.</p>
 <p>The residual is specified via decoded coefficients which are adjusted by one of
 four quantization parameters before the inverse transform is applied. The
 choice depends on the plane (Y or UV) and coefficient position (DC/AC
-coefficient). The Dequantization process is specified in <a href="#reconstruction-and-dequantization">section 7.9</a>.</p>
+coefficient). The Dequantization process is specified in <a href="#reconstruction-and-dequantization">section 7.10</a>.</p>
 
 <p><strong>base_q_idx</strong> indicates the base frame qindex. This is used for Y AC
 coefficients and as the base value for the other quantizers.</p>
@@ -9633,7 +9647,7 @@ compound_idx equal to 0 indicates that the averaging scheme should be used for b
   </tbody>
 </table>
 
-<p class="alert alert-info"><strong>Note:</strong> COMPOUND_AVERAGE, COMPOUND_INTRA, and COMPOUND_DISTANCE cannot be directly signalled with the compound_type
+<p class="alert alert-info"><strong>Note:</strong> COMPOUND_AVERAGE, COMPOUND_INTRA, and COMPOUND_DISTANCE cannot be directly signaled with the compound_type
 syntax element but are inferred from other syntax elements.</p>
 
 <p><strong>wedge_index</strong> specifies the angle to be used during wedge blending:</p>
@@ -9880,11 +9894,11 @@ difference.</p>
 
 <p><strong>predict_intra</strong> is a function call that indicates the conceptual point where
 intra prediction happens. When this function is called, the intra prediction
-process specified in <a href="#intra-prediction-process">section 7.8.1</a> is invoked.</p>
+process specified in <a href="#intra-prediction-process">section 7.9.1</a> is invoked.</p>
 
 <p><strong>predict_inter</strong> is a function call that indicates the conceptual point where
 inter prediction happens. When this function is called, the inter prediction
-process specified in <a href="#inter-prediction-process">section 7.8.2</a> is invoked.</p>
+process specified in <a href="#inter-prediction-process">section 7.9.2</a> is invoked.</p>
 
 <p><strong>predW</strong> and <strong>predH</strong> are variables containing the smallest size that can be used for
 inter prediction.
@@ -9906,7 +9920,7 @@ a smaller block size for each of the corresponding luma blocks.</p>
 
 <p><strong>predict_palette</strong> is a function call that indicates the conceptual point where
 palette prediction happens. When this function is called, the palette prediction
-process specified in <a href="#palette-prediction-process">section 7.8.3</a> is invoked.</p>
+process specified in <a href="#palette-prediction-process">section 7.9.3</a> is invoked.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The predict_inter, predict_intra, predict_palette, and
 predict_chroma_from_luma functions do not affect the syntax
@@ -9916,11 +9930,11 @@ decode process.</p>
 
 <p><strong>reconstruct</strong> is a function call that indicates the conceptual point where
 inverse transform and reconstruction happens. When this function is called,
-the reconstruction process specified in <a href="#reconstruct-process">section 7.9.2</a> is invoked.</p>
+the reconstruction process specified in <a href="#reconstruct-process">section 7.10.2</a> is invoked.</p>
 
 <p><strong>predict_chroma_from_luma</strong> is a function call that indicates the conceptual
 point where predicting chroma from luma happens. When this function is called,
-the predict chroma from luma process specified in <a href="#predict-chroma-from-luma-process">section 7.8.4</a> is invoked.</p>
+the predict chroma from luma process specified in <a href="#predict-chroma-from-luma-process">section 7.9.4</a> is invoked.</p>
 
 <p><strong>MaxLumaW</strong> and <strong>MaxLumaH</strong> are needed for chroma from luma prediction and
 store the extent of luma pixels that can be used for prediction.</p>
@@ -9968,7 +9982,7 @@ If an increment equal to less than 3 is coded, it signifies that this was the fi
 4 sample granularity the cumulative sum of coefficient levels.</p>
 
 <p><strong>AboveDcContext</strong> and <strong>LeftDcContext</strong> are arrays that store at a 4 sample
-granularity 2 bits signalling the sign of the DC coefficient (zero being
+granularity 2 bits signaling the sign of the DC coefficient (zero being
 counted as a separate sign).</p>
 
 <h4 id="intra-angle-info-semantics">Intra Angle Info Semantics</h4>
@@ -10161,27 +10175,27 @@ those produced by the decoding process specified herein.</p>
 <ol>
   <li>
     <p>If loop_filter_level[ 0 ] is not equal to 0 or loop_filter_level[ 1 ] is not equal to 0, the loop
-filter process specified in <a href="#loop-filter-process">section 7.11</a> is invoked once the coded frame has been decoded.</p>
+filter process specified in <a href="#loop-filter-process">section 7.12</a> is invoked once the coded frame has been decoded.</p>
   </li>
   <li>
-    <p>The CDEF process specified in <a href="#cdef-process">section 7.12</a> is invoked.</p>
+    <p>The CDEF process specified in <a href="#cdef-process">section 7.13</a> is invoked.</p>
   </li>
   <li>
-    <p>The upscaling process specified in <a href="#upscaling-process">section 7.13</a> is invoked with CdefFrame as input and the output is assigned to UpscaledCdefFrame.</p>
+    <p>The upscaling process specified in <a href="#upscaling-process">section 7.14</a> is invoked with CdefFrame as input and the output is assigned to UpscaledCdefFrame.</p>
   </li>
   <li>
-    <p>The upscaling process specified in <a href="#upscaling-process">section 7.13</a> is invoked with CurrFrame as input and the output is assigned to UpscaledCurrFrame.</p>
+    <p>The upscaling process specified in <a href="#upscaling-process">section 7.14</a> is invoked with CurrFrame as input and the output is assigned to UpscaledCurrFrame.</p>
   </li>
   <li>
-    <p>The loop restoration process specified in <a href="#loop-restoration-process">section 7.14</a> is invoked.</p>
+    <p>The loop restoration process specified in <a href="#loop-restoration-process">section 7.15</a> is invoked.</p>
   </li>
   <li>
-    <p>The reference frame update process as specified in <a href="#reference-frame-update-process">section 7.16</a> is
+    <p>The reference frame update process as specified in <a href="#reference-frame-update-process">section 7.17</a> is
 invoked.</p>
   </li>
 </ol>
 
-<p>If show_existing_frame is equal to 1 or show_frame is equal to 1, the output process as specified in <a href="#output-process">section 7.15</a> is invoked.</p>
+<p>If show_existing_frame is equal to 1 or show_frame is equal to 1, the output process as specified in <a href="#output-process">section 7.16</a> is invoked.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> Although we specify that all samples in CurrFrame are upscaled, at most 2 lines above and below each stripe
 (defined by StripeStartY and StripeEndY) will end up being read.
@@ -10263,6 +10277,164 @@ with no prefix.  The name of the source for the copy is the name of the CDF arra
 prefixed with “Saved”.
 For example, the array YModeCdf will be updated with values equal to the contents of SavedYModeCdf.</p>
 
+<h3 id="set-frame-refs-process">Set Frame Refs Process</h3>
+
+<p>This process is triggered if the function set_frame_refs is called while reading the uncompressed header.</p>
+
+<p>The syntax elements in the ref_frame_idx array are computed based on:</p>
+
+<ul>
+  <li>the syntax elements last_frame_idx and gold_frame_idx,</li>
+  <li>the values stored within the RefOrderHint array (these values represent the expected output order of the frames).</li>
+</ul>
+
+<p>The reference buffers used for the LAST_FRAME and GOLDEN_FRAME references are sent explicitly and used to set the corresponding entries of ref_frame_idx as follows
+(the other entries are initialized to -1 and will be overwritten later in this process):</p>
+
+<pre><code class="language-c">for ( i = 0; i &lt; REFS_PER_FRAME; i++ )
+  ref_frame_idx[ i ] = -1
+ref_frame_idx[ LAST_FRAME - LAST_FRAME ] = last_frame_idx
+ref_frame_idx[ GOLDEN_FRAME - LAST_FRAME ] = gold_frame_idx
+</code></pre>
+
+<p>An array usedFrame marking which reference frames have been used is prepared as follows:</p>
+<pre><code class="language-c">for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
+  usedFrame[ i ] = 0
+usedFrame[ last_frame_idx ] = 1
+usedFrame[ gold_frame_idx ] = 1
+</code></pre>
+
+<p>The variable lastOrderHint (representing the expected output order for LAST_FRAME) is set equal to RefOrderHint[ last_frame_idx ].</p>
+
+<p>It is a requirement of bitstream conformance that lastOrderHint is strictly less than OrderHint.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> TODO: OrderHint has not been defined at this point in the decoding process so this process is ill-defined.
+See issue 1484.</p>
+
+<p>The variable goldOrderHint (representing the expected output order for GOLDEN_FRAME) is set equal to RefOrderHint[ gold_frame_idx ].</p>
+
+<p>It is a requirement of bitstream conformance that goldOrderHint is strictly less than OrderHint.</p>
+
+<p>The ALTREF_FRAME reference is set to be a backward reference to the frame with highest output order as follows:</p>
+
+<pre><code class="language-c">ref = find_latest_backward()
+if ( ref &gt;= 0 ) {
+  ref_frame_idx[ ALTREF_FRAME - LAST_FRAME ] = ref
+  usedFrame[ ref ] = 1
+}
+</code></pre>
+
+<p>where find_latest_backward is defined as:</p>
+
+<pre><code class="language-c">find_latest_backward() {
+  ref = -1
+  for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
+    hint = RefOrderHint[ i ]
+    if ( !usedFrame[ i ] &amp;&amp; 
+         hint &gt;= OrderHint &amp;&amp;
+         ( ref &lt; 0 || hint &gt;= latestOrderHint ) ) {
+      ref = i
+      latestOrderHint = hint
+    }
+  }
+  return ref
+}
+</code></pre>
+
+<p>The BWDREF_FRAME reference is set to be a backward reference to the closest frame as follows:</p>
+
+<pre><code class="language-c">ref = find_earliest_backward()
+if ( ref &gt;= 0 ) {
+  ref_frame_idx[ BWDREF_FRAME - LAST_FRAME ] = ref
+  usedFrame[ ref ] = 1
+}
+</code></pre>
+
+<p>where find_earliest_backward is defined as:</p>
+
+<pre><code class="language-c">find_earliest_backward() {
+  ref = -1
+  for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
+    hint = RefOrderHint[ i ]
+    if ( !usedFrame[ i ] &amp;&amp; 
+         hint &gt;= OrderHint &amp;&amp;
+         ( ref &lt; 0 || hint &lt; earliestOrderHint ) ) {
+      ref = i
+      earliestOrderHint = hint
+    }
+  }
+  return ref
+}
+</code></pre>
+
+<p>The ALTREF2_FRAME reference is set to the next closest backward reference as follows:</p>
+
+<pre><code class="language-c">ref = find_earliest_backward()
+if ( ref &gt;= 0 ) {
+  ref_frame_idx[ ALTREF2_FRAME - LAST_FRAME ] = ref
+  usedFrame[ ref ] = 1
+}
+</code></pre>
+
+<p>The remaining references are set to be forward references in anti-chronological order as follows:</p>
+
+<pre><code class="language-c">for ( i = 0; i &lt; REFS_PER_FRAME - 2; i++ ) {
+  refFrame = Ref_Frame_List[ i ]
+  if ( ref_frame_idx[ refFrame - LAST_FRAME ] &lt; 0 ) {
+    ref = find_latest_forward()
+    if ( ref &gt;= 0 ) {
+      ref_frame_idx[ refFrame - LAST_FRAME ] = ref
+      usedFrame[ ref ] = 1
+    }
+  }
+}
+</code></pre>
+
+<p>where Ref_Frame_List is specifed as:</p>
+
+<pre><code class="language-c">Ref_Frame_List[ REFS_PER_FRAME - 2 ] = {
+  LAST2_FRAME, LAST3_FRAME, BWDREF_FRAME, ALTREF2_FRAME, ALTREF_FRAME
+}
+</code></pre>
+
+<p>and find_latest_forward is defined as:</p>
+
+<pre><code class="language-c">find_latest_forward() {
+  ref = -1
+  for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
+    hint = RefOrderHint[ i ]
+    if ( !usedFrame[ i ] &amp;&amp; 
+         hint &lt; OrderHint &amp;&amp;
+         ( ref &lt; 0 || hint &gt;= latestOrderHint ) ) {
+      ref = i
+      latestOrderHint = hint
+    }
+  }
+  return ref
+}
+</code></pre>
+
+<p>Finally, any remaining references are set to the reference frame with smallest output order as follows:</p>
+
+<pre><code class="language-c">ref = -1
+for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
+  hint = RefOrderHint[ i ]
+  if ( ref &lt; 0 || hint &lt; earliestOrderHint ) {
+    ref = i
+    earliestOrderHint = hint
+  }
+}
+for ( i = 0; i &lt; REFS_PER_FRAME; i++ ) {
+  if ( ref_frame_idx[ i ] &lt; 0 ) {
+    ref_frame_idx[ i - LAST_FRAME ] = ref
+  }
+}
+</code></pre>
+
+<p class="alert alert-info"><strong>Note:</strong> Multiple reference frames can share the same value for OrderHint and care needs to be taken to handle this case consistently.
+The reference implementation uses an equivalent implementation based on sorting the reference frames based on their expected output order,
+with ties broken based on the reference buffer index.</p>
+
 <h3 id="motion-field-estimation-process">Motion Field Estimation Process</h3>
 
 <p>This process is triggered during the call to load_previous.</p>
@@ -10303,7 +10475,7 @@ to an invalid motion vector of -32768, -32768 as follows:</p>
 
 <p>The variable useLast (representing whether to project the motion vectors from LAST_FRAME) is set equal to ( lastAltOrderHint != curGoldOrderHint ).</p>
 
-<p>If useLast is equal to 1, the projection process in <a href="#projection-process">section 7.6.1</a> is invoked with src equal to LAST_FRAME, dir equal to 0, offsetSign equal to 1, and refStamp also passed as an input.
+<p>If useLast is equal to 1, the projection process in <a href="#projection-process">section 7.7.1</a> is invoked with src equal to LAST_FRAME, dir equal to 0, offsetSign equal to 1, and refStamp also passed as an input.
 (The output of this process is discarded.)</p>
 
 <p>The variable refStamp is set equal to MFMV_STACK_SIZE - 2.</p>
@@ -10316,7 +10488,7 @@ to an invalid motion vector of -32768, -32768 as follows:</p>
 
 <ul>
   <li>
-    <p>The projection process in <a href="#projection-process">section 7.6.1</a> is invoked with src equal to BWDREF_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, and
+    <p>The projection process in <a href="#projection-process">section 7.7.1</a> is invoked with src equal to BWDREF_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, and
 the output assigned to projOutput.</p>
   </li>
   <li>
@@ -10330,7 +10502,7 @@ the output assigned to projOutput.</p>
 
 <ul>
   <li>
-    <p>The projection process in <a href="#projection-process">section 7.6.1</a> is invoked with src equal to ALTREF2_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, and
+    <p>The projection process in <a href="#projection-process">section 7.7.1</a> is invoked with src equal to ALTREF2_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, and
 the output assigned to projOutput.</p>
   </li>
   <li>
@@ -10344,7 +10516,7 @@ the output assigned to projOutput.</p>
 
 <ul>
   <li>
-    <p>The projection process in <a href="#projection-process">section 7.6.1</a> is invoked with src equal to ALTREF_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, 
+    <p>The projection process in <a href="#projection-process">section 7.7.1</a> is invoked with src equal to ALTREF_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, 
 and the output assigned to projOutput.</p>
   </li>
   <li>
@@ -10352,7 +10524,7 @@ and the output assigned to projOutput.</p>
   </li>
 </ul>
 
-<p>If OrderHints[ LAST2_FRAME ] is greater than or equal to 0 and (refStamp &gt;= 0), the projection process in <a href="#projection-process">section 7.6.1</a> is invoked with
+<p>If OrderHints[ LAST2_FRAME ] is greater than or equal to 0 and (refStamp &gt;= 0), the projection process in <a href="#projection-process">section 7.7.1</a> is invoked with
 src equal to LAST2_FRAME, dir equal to 0, offsetSign equal to 1, and refStamp also passed as an input. (The output of this process is discarded.)</p>
 
 <h4 id="projection-process">Projection Process</h4>
@@ -10413,9 +10585,9 @@ at this point, with the output set equal to 0.</p>
 }
 </code></pre>
 
-<p>When the function get_mv_projection is called, the get mv projection process specified in <a href="#get-mv-projection-process">section 7.6.2</a> is invoked and the output assigned to projMv.</p>
+<p>When the function get_mv_projection is called, the get mv projection process specified in <a href="#get-mv-projection-process">section 7.7.2</a> is invoked and the output assigned to projMv.</p>
 
-<p>When the function get_block_position is called, the get block position process specified in <a href="#get-block-position-process">section 7.6.3</a> is invoked and the output assigned to posValid.
+<p>When the function get_block_position is called, the get block position process specified in <a href="#get-block-position-process">section 7.7.3</a> is invoked and the output assigned to posValid.
 This process also sets up the variables PosY8 and PosX8 representing the projected location in the motion field.</p>
 
 <p>The process now exits with the output set equal to 1.</p>
@@ -10545,13 +10717,13 @@ need to be projected.</p>
 
 <p>The entry point to these processes is triggered by the function call to find_mv_stack
 in the inter block mode info syntax described in <a href="#inter-block-mode-info-syntax">section 5.8.22</a>.
-This function call invokes the Find MV Stack Process specified in <a href="#find-mv-stack-process">section 7.7.1</a>.</p>
+This function call invokes the Find MV Stack Process specified in <a href="#find-mv-stack-process">section 7.8.1</a>.</p>
 
 <h4 id="find-mv-stack-process">Find MV Stack Process</h4>
 
 <p>This process is triggered by a function call to find_mv_stack.</p>
 
-<p>The input to this process is a variable refList containing 0 for single prediction, or -1 to signal compound prediction.</p>
+<p>The input to this process is a variable isCompound containing 0 for single prediction, or 1 to signal compound prediction.</p>
 
 <p>This process constructs an array RefStackMv containing motion vector candidates.</p>
 
@@ -10572,29 +10744,29 @@ when decoding inter prediction syntax elements.</p>
     <p>The variable NewMvFound (representing if we find a candidate that used NEWMV encoding) is set equal to 0.</p>
   </li>
   <li>
-    <p>The setup zero mv process specified in <a href="#setup-zero-mv-process">section 7.7.1.1</a> is invoked with the input 0 and the output is assigned to ZeroMvs[ 0 ].</p>
+    <p>The setup zero mv process specified in <a href="#setup-zero-mv-process">section 7.8.1.1</a> is invoked with the input 0 and the output is assigned to ZeroMvs[ 0 ].</p>
   </li>
   <li>
-    <p>If refList is equal to -1, the setup zero mv process specified in <a href="#setup-zero-mv-process">section 7.7.1.1</a> is invoked with the input 1 and the output is assigned to ZeroMvs[ 1 ].</p>
+    <p>If isCompound is equal to 1, the setup zero mv process specified in <a href="#setup-zero-mv-process">section 7.8.1.1</a> is invoked with the input 1 and the output is assigned to ZeroMvs[ 1 ].</p>
   </li>
   <li>
     <p>The variable FoundMatch is set equal to 0.</p>
   </li>
   <li>
-    <p>The scan row process in <a href="#scan-row-process">section 7.7.1.2</a> is invoked with deltaRow equal to -1 and refList as inputs.</p>
+    <p>The scan row process in <a href="#scan-row-process">section 7.8.1.2</a> is invoked with deltaRow equal to -1 and isCompound as inputs.</p>
   </li>
   <li>
     <p>The variable foundAboveMatch is set equal to FoundMatch, and FoundMatch is set equal to 0.</p>
   </li>
   <li>
-    <p>The scan col process in <a href="#scan-col-process">section 7.7.1.3</a> is invoked with deltaCol equal to -1 and refList as inputs.</p>
+    <p>The scan col process in <a href="#scan-col-process">section 7.8.1.3</a> is invoked with deltaCol equal to -1 and isCompound as inputs.</p>
   </li>
   <li>
     <p>The variable foundLeftMatch is set equal to FoundMatch, and FoundMatch is set equal to 0.</p>
   </li>
   <li>
-    <p>If Max( bw4, bh4 ) is less than or equal to 16, the scan point process in <a href="#scan-point-process">section 7.7.1.4</a> is invoked with deltaRow equal to -1, deltaCol equal to
-bw4, and refList as inputs.</p>
+    <p>If Max( bw4, bh4 ) is less than or equal to 16, the scan point process in <a href="#scan-point-process">section 7.8.1.4</a> is invoked with deltaRow equal to -1, deltaCol equal to
+bw4, and isCompound as inputs.</p>
   </li>
   <li>
     <p>If FoundMatch is equal to 1, the variable foundAboveMatch is set equal to 1.</p>
@@ -10615,20 +10787,11 @@ bw4, and refList as inputs.</p>
     <p>The variable ZeroMvContext is set equal to 0.</p>
   </li>
   <li>
-    <p>If refList is greater than or equal to 0 and can_use_previous is equal to 1,
-the temporal scan process in <a href="#temporal-scan-process">section 7.7.1.5</a> is invoked with refList as input (the temporal scan process affects ZeroMvContext).</p>
+    <p>If can_use_previous is equal to 1,
+the temporal scan process in <a href="#temporal-scan-process">section 7.8.1.5</a> is invoked with isCompound as input (the temporal scan process affects ZeroMvContext).</p>
   </li>
   <li>
-    <p>The scan point process in <a href="#scan-point-process">section 7.7.1.4</a> is invoked with deltaRow equal to -1, deltaCol equal to -1, and refList as inputs.</p>
-  </li>
-  <li>
-    <p>If FoundMatch is equal to 1, the variable foundAboveMatch is set equal to 1.</p>
-  </li>
-  <li>
-    <p>The variable FoundMatch is set equal to 0.</p>
-  </li>
-  <li>
-    <p>The scan row process in <a href="#scan-row-process">section 7.7.1.2</a> is invoked with deltaRow equal to -3 and refList as inputs.</p>
+    <p>The scan point process in <a href="#scan-point-process">section 7.8.1.4</a> is invoked with deltaRow equal to -1, deltaCol equal to -1, and isCompound as inputs.</p>
   </li>
   <li>
     <p>If FoundMatch is equal to 1, the variable foundAboveMatch is set equal to 1.</p>
@@ -10637,7 +10800,16 @@ the temporal scan process in <a href="#temporal-scan-process">section 7.7.1.5</a
     <p>The variable FoundMatch is set equal to 0.</p>
   </li>
   <li>
-    <p>The scan col process in <a href="#scan-col-process">section 7.7.1.3</a> is invoked with deltaCol equal to -3 and refList as inputs.</p>
+    <p>The scan row process in <a href="#scan-row-process">section 7.8.1.2</a> is invoked with deltaRow equal to -3 and isCompound as inputs.</p>
+  </li>
+  <li>
+    <p>If FoundMatch is equal to 1, the variable foundAboveMatch is set equal to 1.</p>
+  </li>
+  <li>
+    <p>The variable FoundMatch is set equal to 0.</p>
+  </li>
+  <li>
+    <p>The scan col process in <a href="#scan-col-process">section 7.8.1.3</a> is invoked with deltaCol equal to -3 and isCompound as inputs.</p>
   </li>
   <li>
     <p>If FoundMatch is equal to 1, the variable foundLeftMatch is set equal to 1.</p>
@@ -10646,7 +10818,7 @@ the temporal scan process in <a href="#temporal-scan-process">section 7.7.1.5</a
     <p>The variable FoundMatch is set equal to 0.</p>
   </li>
   <li>
-    <p>If bh4 is greater than 1, the scan row process in <a href="#scan-row-process">section 7.7.1.2</a> is invoked with deltaRow equal to -5 and refList as inputs.</p>
+    <p>If bh4 is greater than 1, the scan row process in <a href="#scan-row-process">section 7.8.1.2</a> is invoked with deltaRow equal to -5 and isCompound as inputs.</p>
   </li>
   <li>
     <p>If FoundMatch is equal to 1, the variable foundAboveMatch is set equal to 1.</p>
@@ -10655,7 +10827,7 @@ the temporal scan process in <a href="#temporal-scan-process">section 7.7.1.5</a
     <p>The variable Found Match is set equal to 0.</p>
   </li>
   <li>
-    <p>If bw4 is greater than 1, the scan col process in <a href="#scan-col-process">section 7.7.1.3</a> is invoked with deltaCol equal to -5 and refList as inputs.</p>
+    <p>If bw4 is greater than 1, the scan col process in <a href="#scan-col-process">section 7.8.1.3</a> is invoked with deltaCol equal to -5 and isCompound as inputs.</p>
   </li>
   <li>
     <p>If FoundMatch is equal to 1, the variable foundLeftMatch is set equal to 1.</p>
@@ -10664,16 +10836,16 @@ the temporal scan process in <a href="#temporal-scan-process">section 7.7.1.5</a
     <p>The variable TotalMatches (representing all found candidates) is set equal to foundAboveMatch + foundLeftMatch.</p>
   </li>
   <li>
-    <p>The sorting process in <a href="#sorting-process">section 7.7.1.11</a> is invoked with start equal to 0 and end equal to numNearest.</p>
+    <p>The sorting process in <a href="#sorting-process">section 7.8.1.11</a> is invoked with start equal to 0 and end equal to numNearest.</p>
   </li>
   <li>
-    <p>The sorting process in <a href="#sorting-process">section 7.7.1.11</a> is invoked with start equal to numNearest and end equal to NumMvFound.</p>
+    <p>The sorting process in <a href="#sorting-process">section 7.8.1.11</a> is invoked with start equal to numNearest and end equal to NumMvFound.</p>
   </li>
   <li>
-    <p>If NumMvFound is less than 2, the extra search process in <a href="#extra-search-process">section 7.7.1.12</a> is invoked with refList as input.</p>
+    <p>If NumMvFound is less than 2, the extra search process in <a href="#extra-search-process">section 7.8.1.12</a> is invoked with isCompound as input.</p>
   </li>
   <li>
-    <p>The context and clamping process in <a href="#context-and-clamping-process">section 7.7.1.14</a> is invoked with refList, and numNew as input.</p>
+    <p>The context and clamping process in <a href="#context-and-clamping-process">section 7.8.1.14</a> is invoked with isCompound, and numNew as input.</p>
   </li>
 </ol>
 
@@ -10719,7 +10891,7 @@ the temporal scan process in <a href="#temporal-scan-process">section 7.7.1.5</a
 lower_mv_precision( mv )
 </code></pre>
 
-<p>where the call to lower_mv_precision invokes the lower precision process specified in <a href="#lower-precision-process">section 7.7.1.10</a>.</p>
+<p>where the call to lower_mv_precision invokes the lower precision process specified in <a href="#lower-precision-process">section 7.8.1.10</a>.</p>
 
 <h5 id="scan-row-process">Scan Row Process</h5>
 
@@ -10730,7 +10902,7 @@ lower_mv_precision( mv )
     <p>a variable deltaRow specifying (in units of 4x4 pixels) how far above to look for motion vectors,</p>
   </li>
   <li>
-    <p>a variable refList specifying which set of motion vectors to predict, or -1 to signal compound prediction.</p>
+    <p>a variable isCompound containing 0 for single prediction, or 1 to signal compound prediction.</p>
   </li>
 </ul>
 
@@ -10778,12 +10950,12 @@ while ( i &lt; end4 ) {
         len = Max(2, len)
     if (useStep16)
         len = Max(4, len)
-    add_ref_mv_candidate( mvRow, mvCol, refList, len)
+    add_ref_mv_candidate( mvRow, mvCol, isCompound, len)
     i += len
 }
 </code></pre>
 
-<p>where the call to add_ref_mv_candidate invokes the process in <a href="#add-reference-motion-vector-process">section 7.7.1.7</a>.</p>
+<p>where the call to add_ref_mv_candidate invokes the process in <a href="#add-reference-motion-vector-process">section 7.8.1.7</a>.</p>
 
 <h5 id="scan-col-process">Scan Col Process</h5>
 
@@ -10794,7 +10966,7 @@ while ( i &lt; end4 ) {
     <p>a variable deltaCol specifying (in units of 4x4 pixels) how far left to look for motion vectors,</p>
   </li>
   <li>
-    <p>a variable refList specifying which set of motion vectors to predict, or -1 to signal compound prediction.</p>
+    <p>a variable isCompound containing 0 for single prediction, or 1 to signal compound prediction.</p>
   </li>
 </ul>
 
@@ -10825,12 +10997,12 @@ while ( i &lt; end4 ) {
         len = Max(2, len)
     if (useStep16)
         len = Max(4, len)
-    add_ref_mv_candidate( mvRow, mvCol, refList, len)
+    add_ref_mv_candidate( mvRow, mvCol, isCompound, len)
     i += len
 }
 </code></pre>
 
-<p>where the call to add_ref_mv_candidate invokes the process in <a href="#add-reference-motion-vector-process">section 7.7.1.7</a>.</p>
+<p>where the call to add_ref_mv_candidate invokes the process in <a href="#add-reference-motion-vector-process">section 7.8.1.7</a>.</p>
 
 <h5 id="scan-point-process">Scan Point Process</h5>
 
@@ -10844,7 +11016,7 @@ while ( i &lt; end4 ) {
     <p>a variable deltaCol specifying (in units of 4x4 pixels) how far left to look for a motion vector,</p>
   </li>
   <li>
-    <p>a variable refList specifying which set of motion vectors to predict, or -1 to signal compound prediction.</p>
+    <p>a variable isCompound containing 0 for single prediction, or 1 to signal compound prediction.</p>
   </li>
 </ul>
 
@@ -10856,11 +11028,11 @@ while ( i &lt; end4 ) {
 
 <p>If is_inside( mvRow, mvCol ) is equal to 1
 and RefFrames[ mvRow ][ mvCol ][ 0 ] has been written for this frame (this checks that the candidate location has been decoded),
-the add reference motion vector process in <a href="#add-reference-motion-vector-process">section 7.7.1.7</a> is invoked with mvRow, mvCol, refList, len as inputs.</p>
+the add reference motion vector process in <a href="#add-reference-motion-vector-process">section 7.8.1.7</a> is invoked with mvRow, mvCol, isCompound, len as inputs.</p>
 
 <h5 id="temporal-scan-process">Temporal Scan Process</h5>
 
-<p>The input to this process is a variable refList specifying which set of motion vectors to predict.</p>
+<p>The input to this process is a variable isCompound containing 0 for single prediction, or 1 to signal compound prediction.</p>
 
 <p>This process scans the motion vectors in a previous frame looking for candidates which use the same reference frame.</p>
 
@@ -10876,12 +11048,12 @@ the add reference motion vector process in <a href="#add-reference-motion-vector
 
 <pre><code class="language-c">for ( deltaRow = 0; deltaRow &lt; Min( bh4, 16 ) ; deltaRow += stepH4 ) {
     for ( deltaCol = 0; deltaCol &lt; Min( bw4, 16 ) ; deltaCol += stepW4 ) {
-        add_tpl_ref_mv( deltaRow, deltaCol, refList)
+        add_tpl_ref_mv( deltaRow, deltaCol, isCompound)
     }
 }
 </code></pre>
 
-<p>where the call to add_tpl_ref_mv invokes the temporal sample process in <a href="#temporal-sample-process">section 7.7.1.6</a>.</p>
+<p>where the call to add_tpl_ref_mv invokes the temporal sample process in <a href="#temporal-sample-process">section 7.8.1.6</a>.</p>
 
 <p>If bh4 is less than 2 or bw4 is less than 2, the process exits at this point.</p>
 
@@ -10891,7 +11063,7 @@ the add reference motion vector process in <a href="#add-reference-motion-vector
     deltaRow = tplSamplePos[ i ][ 0 ]
     deltaCol = tplSamplePos[ i ][ 1 ]
     if ( check_sb_border( deltaRow, deltaCol ) ) { 
-        add_tpl_ref_mv( deltaRow, deltaCol, refList)
+        add_tpl_ref_mv( deltaRow, deltaCol, isCompound)
     }
 }
 </code></pre>
@@ -10922,7 +11094,7 @@ the add reference motion vector process in <a href="#add-reference-motion-vector
     <p>variables deltaRow and deltaCol specifying (in units of 4x4 pixels) the offset to the candidate location,</p>
   </li>
   <li>
-    <p>a variable refList specifying which set of motion vectors to predict, or -1 to signal compound prediction.</p>
+    <p>a variable isCompound containing 0 for single prediction, or 1 to signal compound prediction.</p>
   </li>
 </ul>
 
@@ -10943,9 +11115,9 @@ the add reference motion vector process in <a href="#add-reference-motion-vector
 <p>The process is specified as follows:</p>
 
 <pre><code class="language-c">foundValidMv = 0
-if ( refList &gt;= 0 ) {
+if ( !isCompound ) {
     for ( i = 0; i &lt; MFMV_STACK_SIZE; i++ ) {
-        candMv = MotionFieldMvs[ RefFrame[ refList ] ][ y8 ][ x8 ][ i ] 
+        candMv = MotionFieldMvs[ RefFrame[ 0 ] ][ y8 ][ x8 ][ i ] 
         if ( candMv[ 0 ] == -1 &lt;&lt; 15 )
             continue
         foundValidMv = 1
@@ -11011,7 +11183,7 @@ if ( deltaRow == 0 &amp;&amp; deltaCol == 0 ) {
 }
 </code></pre>
 
-<p>where the call to lower_mv_precision invokes the lower precision process specified in <a href="#lower-precision-process">section 7.7.1.10</a>.</p>
+<p>where the call to lower_mv_precision invokes the lower precision process specified in <a href="#lower-precision-process">section 7.8.1.10</a>.</p>
 
 <h5 id="add-reference-motion-vector-process">Add Reference Motion Vector Process</h5>
 
@@ -11022,7 +11194,7 @@ if ( deltaRow == 0 &amp;&amp; deltaCol == 0 ) {
     <p>variables mvRow and mvCol specifying (in units of 4x4 pixels) the candidate location,</p>
   </li>
   <li>
-    <p>a variable refList specifying which set of motion vectors to predict, or -1 to signal compound prediction,</p>
+    <p>a variable isCompound containing 0 for single prediction, or 1 to signal compound prediction,</p>
   </li>
   <li>
     <p>a variable len specifying the weight attached to this motion vector.</p>
@@ -11033,17 +11205,17 @@ if ( deltaRow == 0 &amp;&amp; deltaCol == 0 ) {
 
 <p>If IsInters[ mvRow ][ mvCol ] is equal to 0, this process terminates immediately.</p>
 
-<p>If refList is greater than or equal to 0, the following applies for candList = 0..1:</p>
+<p>If isCompound is equal to 0, the following applies for candList = 0..1:</p>
 
 <ol>
-  <li>If RefFrames[ mvRow ][ mvCol ][ candList ] is equal to RefFrame[ refList ], the search stack process in <a href="#search-stack-process">section 7.7.1.8</a> is invoked with mvRow, mvCol, len, candList, refList as inputs.</li>
+  <li>If RefFrames[ mvRow ][ mvCol ][ candList ] is equal to RefFrame[ 0 ], the search stack process in <a href="#search-stack-process">section 7.8.1.8</a> is invoked with mvRow, mvCol, len, candList as inputs.</li>
 </ol>
 
-<p>Otherwise (refList is equal to -1), the following applies:</p>
+<p>Otherwise (isCompound is equal to 1), the following applies:</p>
 
 <ol>
   <li>If RefFrames[ mvRow ][ mvCol ][ 0 ] is equal to RefFrame[ 0 ] and RefFrames[ mvRow ][ mvCol ][ 1 ] is equal to RefFrame[ 1 ],
-the compound search stack process in <a href="#compound-search-stack-process">section 7.7.1.9</a> is invoked with mvRow, mvCol, refList, len as inputs.</li>
+the compound search stack process in <a href="#compound-search-stack-process">section 7.8.1.9</a> is invoked with mvRow, mvCol, len as inputs.</li>
 </ol>
 
 <h5 id="search-stack-process">Search Stack Process</h5>
@@ -11058,10 +11230,7 @@ the compound search stack process in <a href="#compound-search-stack-process">se
     <p>a variable candList specifying which list in the candidate matches our reference frame,</p>
   </li>
   <li>
-    <p>a variable len specifying the weight attached to this motion vector,</p>
-  </li>
-  <li>
-    <p>a variable refList specifying which set of motion vectors to predict.</p>
+    <p>a variable len specifying the weight attached to this motion vector.</p>
   </li>
 </ul>
 
@@ -11077,14 +11246,14 @@ the compound search stack process in <a href="#compound-search-stack-process">se
 
 <ul>
   <li>
-    <p>If ( candMode == GLOBALMV || candMode == GLOBAL_GLOBALMV) and ( GmType[ RefFrame[ refList ] ] &gt; TRANSLATION ) and ( large == 1 ), candMv is set equal to ZeroMvs[ refList ].</p>
+    <p>If ( candMode == GLOBALMV || candMode == GLOBAL_GLOBALMV) and ( GmType[ RefFrame[ 0 ] ] &gt; TRANSLATION ) and ( large == 1 ), candMv is set equal to ZeroMvs[ 0 ].</p>
   </li>
   <li>
     <p>Otherwise, candMv is set equal to Mvs[ mvRow ][ mvCol ][ candList ].</p>
   </li>
 </ul>
 
-<p>The lower precision process specified in <a href="#lower-precision-process">section 7.7.1.10</a> is invoked with candMv.</p>
+<p>The lower precision process specified in <a href="#lower-precision-process">section 7.8.1.10</a> is invoked with candMv.</p>
 
 <p>The variable weight is set equal to len * 2.</p>
 
@@ -11124,7 +11293,7 @@ the compound search stack process in <a href="#compound-search-stack-process">se
     <p>a variable candList specifying which list in the candidate matches our reference frame,</p>
   </li>
   <li>
-    <p>a variable len specifying the weight attached to this motion vector,</p>
+    <p>a variable len specifying the weight attached to this motion vector.</p>
   </li>
 </ul>
 
@@ -11144,7 +11313,7 @@ the compound search stack process in <a href="#compound-search-stack-process">se
   <li>If GmType[ RefFrame[ refList ] ] &gt; TRANSLATION, candMvs[ refList ] is set equal to ZeroMvs[ refList ].</li>
 </ul>
 
-<p>For i = 0..1, the lower precision process specified in <a href="#lower-precision-process">section 7.7.1.10</a> is invoked with candMvs[ i ].</p>
+<p>For i = 0..1, the lower precision process specified in <a href="#lower-precision-process">section 7.8.1.10</a> is invoked with candMvs[ i ].</p>
 
 <p>The variable weight is set equal to len * 2.</p>
 
@@ -11254,7 +11423,7 @@ and all three fractional bits when force_integer_mv is equal to 1.</p>
 
 <h5 id="extra-search-process">Extra Search Process</h5>
 
-<p>The input to this process is a variable refList specifying which set of motion vectors to predict, or -1 to signal compound prediction.</p>
+<p>The input to this process is a variable isCompound containing 0 for single prediction, or 1 to signal compound prediction.</p>
 
 <p>This process adds additional motion vectors to RefStackMv until it has 2 choices of motion vector by first searching the left and above neighbours
 for partially matching candidates, and second adding global motion candidates.</p>
@@ -11289,19 +11458,19 @@ for ( pass = 0; pass &lt; 2; pass++ ) {
     }
     if ( !is_inside( mvRow, mvCol ) )
       break
-    add_extra_mv_candidate( mvRow, mvCol, refList )
+    add_extra_mv_candidate( mvRow, mvCol, isCompound )
   }
 } 
 </code></pre>
 
 <p>The first pass searches the row above, the second searches the column to the left.</p>
 
-<p>The function call to add_extra_mv_candidate invokes the add extra mv candidate process specified in <a href="#add-extra-mv-candidate-process">section 7.7.1.13</a> with mvRow, mvCol, refList as inputs.</p>
+<p>The function call to add_extra_mv_candidate invokes the add extra mv candidate process specified in <a href="#add-extra-mv-candidate-process">section 7.8.1.13</a> with mvRow, mvCol, isCompound as inputs.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The reference code shows how idx can be incremented by larger amounts to
 avoid retesting the same candidate block multiple times (which will have no effect except for the first time the block is tested).</p>
 
-<p>If refList is equal to -1, the candidates in the RefIdMvs and RefDiffMvs arrays are added to the stack as follows:</p>
+<p>If isCompound is equal to 1, the candidates in the RefIdMvs and RefDiffMvs arrays are added to the stack as follows:</p>
 
 <pre><code class="language-c">for ( list = 0; list &lt; 2; list++ ) {
   compCount = 0
@@ -11339,7 +11508,7 @@ if ( NumMvFound == 1 ) {
 }
 </code></pre>
 
-<p>If refList is equal to 0, the candidates have already been added to RefStackMv,
+<p>If isCompound is equal to 0, the candidates have already been added to RefStackMv,
 and this process simply extends with global motion candidates as follows:</p>
 
 <pre><code class="language-c">for ( idx = NumMvFound; idx &lt; 2; idx++ ) {
@@ -11359,13 +11528,13 @@ whereas for compound prediction NumMvFound will always be greater or equal to 2 
     <p>variables mvRow and mvCol specifying (in units of 4x4 pixels) the candidate location,</p>
   </li>
   <li>
-    <p>a variable refList specifying 0 for single prediction, or -1 to signal compound prediction.</p>
+    <p>a variable isCompound containing 0 for single prediction, or 1 to signal compound prediction.</p>
   </li>
 </ul>
 
 <p>This process examines the candidate location to find possible motion vectors as follows:</p>
 
-<pre><code class="language-c">if ( refList &lt; 0 ) {
+<pre><code class="language-c">if ( isCompound ) {
   for ( candList = 0; candList &lt; 2; candList++ ) {
     candRef = RefFrames[ mvRow ][ mvCol ][ candList ]
     for ( list = 0; list &lt; 2; list++ ) {
@@ -11387,16 +11556,16 @@ whereas for compound prediction NumMvFound will always be greater or equal to 2 
     candRef = RefFrames[ mvRow ][ mvCol ][ candList ]
     if ( candRef &gt; INTRA_FRAME ) {
       candMv = Mvs[ mvRow ][ mvCol ][ candList ]
-      if ( RefFrameSignBias[ candRef ] != RefFrameSignBias[ RefFrame[refList] ] ) {
+      if ( RefFrameSignBias[ candRef ] != RefFrameSignBias[ RefFrame[ 0 ] ] ) {
         candMv[ 0 ] *= -1
         candMv[ 1 ] *= -1
       }
       for ( idx = 0; idx &lt; NumMvFound; idx++ ) {
-        if ( candMv != RefStackMv[ idx ][ refList ] )
+        if ( candMv != RefStackMv[ idx ][ 0 ] )
           break
       }
       if ( idx == NumMvFound ) {
-        RefStackMv[ idx ][ refList ] = candMv
+        RefStackMv[ idx ][ 0 ] = candMv
         WeightStack[ idx ] = 2
         NumMvFound++
       }
@@ -11411,7 +11580,7 @@ whereas for compound prediction NumMvFound will always be greater or equal to 2 
 
 <ul>
   <li>
-    <p>a variable refList specifying which set of motion vectors to predict, or -1 to signal compound prediction,</p>
+    <p>a variable isCompound containing 0 for single prediction, or 1 to signal compound prediction,</p>
   </li>
   <li>
     <p>a variable numNew specifying the number of NEWMV candidates found in the immediate neighbourhood.</p>
@@ -11424,7 +11593,7 @@ whereas for compound prediction NumMvFound will always be greater or equal to 2 
 
 <p>The variable bh (representing the height of the block in units of pixels) is set equal to Block_Height[ MiSize ].</p>
 
-<p>The variable numLists specifying the number of reference frames used for this block is set equal to ( (refList &lt; 0) ? 2 : 1 ).</p>
+<p>The variable numLists specifying the number of reference frames used for this block is set equal to ( isCompound ? 2 : 1 ).</p>
 
 <p>The array DrlCtxStack is set as follows:</p>
 
@@ -11525,16 +11694,16 @@ suitable for use by overlapped motion compensation, or 0 otherwise.</p>
 
 <ol>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.7.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to 0..(w4 - 1) (this adds candidates above the current block).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to 0..(w4 - 1) (this adds candidates above the current block).</p>
   </li>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.7.3.1</a> is invoked with deltaCol equal to -1, and deltaRow equal to 0..(h4 - 1) (this adds candidates to the left of the current block).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaCol equal to -1, and deltaRow equal to 0..(h4 - 1) (this adds candidates to the left of the current block).</p>
   </li>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.7.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to -1 (this adds a candidate to the top left).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to -1 (this adds a candidate to the top left).</p>
   </li>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.7.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to w4 (this adds a candidate to the top right).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to w4 (this adds a candidate to the top right).</p>
   </li>
   <li>
     <p>If NumSamples is equal to 0 and NumSamplesScanned is greater than 0, NumSamples is set equal to 1.</p>
@@ -11868,10 +12037,10 @@ CurrFrame [ plane ][ y ][ x - 1 ].</p>
             <ul>
               <li>
                 <p>If (pAngle &gt; 90) and (pAngle &lt; 180) and (w + h) &gt;= 24), the
-filter corner process specified in <a href="#filter-corner-process">section 7.8.1.1</a> is invoked and the output assigned to both LeftCol[ -1 ] and AboveRow[ -1 ].</p>
+filter corner process specified in <a href="#filter-corner-process">section 7.9.1.1</a> is invoked and the output assigned to both LeftCol[ -1 ] and AboveRow[ -1 ].</p>
               </li>
               <li>
-                <p>The intra filter type process specified in <a href="#intra-filter-type-process">section 7.8.1.2</a> is invoked with the input variable plane and the output assigned to
+                <p>The intra filter type process specified in <a href="#intra-filter-type-process">section 7.9.1.2</a> is invoked with the input variable plane and the output assigned to
 filterType.</p>
               </li>
               <li>
@@ -11879,14 +12048,14 @@ filterType.</p>
 
                 <ul>
                   <li>
-                    <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.8.1.3</a> is invoked
+                    <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.9.1.3</a> is invoked
 with w, h, filterType, and pAngle - 90 as inputs, and the output assigned to the variable strength.</p>
                   </li>
                   <li>
                     <p>The variable numPx is set equal to Min( w, ( maxX - x + 1 ) ) + ( pAngle &lt; 90 ? h : 0 ) + 1.</p>
                   </li>
                   <li>
-                    <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.8.1.6</a> is invoked with the parameters
+                    <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.9.1.6</a> is invoked with the parameters
 numPx, strength, and 0 as inputs.</p>
                   </li>
                 </ul>
@@ -11896,14 +12065,14 @@ numPx, strength, and 0 as inputs.</p>
 
                 <ul>
                   <li>
-                    <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.8.1.3</a> is invoked
+                    <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.9.1.3</a> is invoked
 with w, h, filterType, and pAngle - 180 as inputs, and the output assigned to the variable strength.</p>
                   </li>
                   <li>
                     <p>The variable numPx is set equal to Min( h, ( maxY - y + 1 ) ) + ( pAngle &gt; 180 ? w : 0 ) + 1.</p>
                   </li>
                   <li>
-                    <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.8.1.6</a> is invoked with the parameters
+                    <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.9.1.6</a> is invoked with the parameters
 numPx, strength, and 1 as inputs.</p>
                   </li>
                 </ul>
@@ -11911,24 +12080,24 @@ numPx, strength, and 1 as inputs.</p>
             </ul>
           </li>
           <li>
-            <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.8.1.4</a> is invoked with w, h, filterType, and pAngle - 90 as inputs,
+            <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.9.1.4</a> is invoked with w, h, filterType, and pAngle - 90 as inputs,
 and the output assigned to the variable upsampleAbove.</p>
           </li>
           <li>
             <p>The variable numPx is set equal to ( w + (pAngle &lt; 90 ? h : 0) ).</p>
           </li>
           <li>
-            <p>If upsampleAbove is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.8.1.5</a> is invoked with the parameters numPx and 0 as inputs.</p>
+            <p>If upsampleAbove is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.9.1.5</a> is invoked with the parameters numPx and 0 as inputs.</p>
           </li>
           <li>
-            <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.8.1.4</a> is invoked with w, h, filterType, and pAngle - 180 as inputs,
+            <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.9.1.4</a> is invoked with w, h, filterType, and pAngle - 180 as inputs,
 and the output assigned to the variable upsampleLeft.</p>
           </li>
           <li>
             <p>The variable numPx is set equal to ( h + (pAngle &lt; 180 ? w : 0) ).</p>
           </li>
           <li>
-            <p>If upsampleLeft is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.8.1.5</a> is invoked with the parameters numPx and 1 as inputs.</p>
+            <p>If upsampleLeft is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.9.1.5</a> is invoked with the parameters numPx and 1 as inputs.</p>
           </li>
         </ul>
       </li>
@@ -12844,11 +13013,11 @@ the following ordered steps:</p>
 <ol>
   <li>
     <p>If setting useWarp equal to 1 would result in the bitstream not being conformant
-    (due to either the requirement in the warp estimation process in <a href="#warp-estimation-process">section 7.8.2.6</a> about the determinant being non-zero,
-or the requirement in the setup shear process in <a href="#setup-shear-process">section 7.8.2.4</a> about the size of the shear) then useWarp is set equal to 0.</p>
+    (due to either the requirement in the warp estimation process in <a href="#warp-estimation-process">section 7.9.2.6</a> about the determinant being non-zero,
+or the requirement in the setup shear process in <a href="#setup-shear-process">section 7.9.2.4</a> about the size of the shear) then useWarp is set equal to 0.</p>
   </li>
   <li>
-    <p>If plane is equal to 0 and motion_mode is equal to LOCALWARP and useWarp is equal to 1, the warp estimation process in <a href="#warp-estimation-process">section 7.8.2.6</a> is invoked.</p>
+    <p>If plane is equal to 0 and motion_mode is equal to LOCALWARP and useWarp is equal to 1, the warp estimation process in <a href="#warp-estimation-process">section 7.9.2.6</a> is invoked.</p>
   </li>
   <li>
     <p>The motion vector array mv is set equal to Mvs[ candRow ][ candCol ][ refList ].</p>
@@ -12866,18 +13035,18 @@ or the requirement in the setup shear process in <a href="#setup-shear-process">
     </ul>
   </li>
   <li>
-    <p>The motion vector scaling process in <a href="#motion-vector-scaling-process">section 7.8.2.1</a> is invoked with
+    <p>The motion vector scaling process in <a href="#motion-vector-scaling-process">section 7.9.2.1</a> is invoked with
 plane, refIdx, x, y, mv as inputs and the output being the
 initial location startX, startY, and the step sizes stepX, stepY.</p>
   </li>
   <li>
-    <p>If useWarp is equal to 1, the block warp process in <a href="#block-warp-process">section 7.8.2.3</a> is invoked with
+    <p>If useWarp is equal to 1, the block warp process in <a href="#block-warp-process">section 7.9.2.3</a> is invoked with
 plane, refList, x, y, i8, j8, w, h as inputs and the
 output is merged into the 2D array preds[ refList ] for i8 = 0..((h-1) &gt;&gt; 3) and for j8 = 0..((w-1) &gt;&gt; 3).
 (Each invocation fills in a block of output of size w by h at x offset j8 * 8 and y offset i8 * 8.)</p>
   </li>
   <li>
-    <p>If useWarp is equal to 0, the block inter prediction process in <a href="#block-inter-prediction-process">section 7.8.2.2</a> is invoked with
+    <p>If useWarp is equal to 0, the block inter prediction process in <a href="#block-inter-prediction-process">section 7.9.2.2</a> is invoked with
 plane, refIdx, startX, startY, stepX, stepY, w, h, candRow, candCol as inputs and the
 output is assigned to the 2D array preds[ refList ].</p>
   </li>
@@ -12928,7 +13097,7 @@ output is assigned to the 2D array preds[ refList ].</p>
     <p>The variable log2H is set equal to log2( h )</p>
   </li>
   <li>
-    <p>The intra prediction process specified in <a href="#intra-prediction-process">section 7.8.1</a> is invoked with plane, x, y, haveLeft, haveAbove, haveAboveRight, haveBelowLeft, mode, log2W, log2H as inputs.  (This will write intra predicted samples into CurrFrame.)</p>
+    <p>The intra prediction process specified in <a href="#intra-prediction-process">section 7.9.1</a> is invoked with plane, x, y, haveLeft, haveAbove, haveAboveRight, haveBelowLeft, mode, log2W, log2H as inputs.  (This will write intra predicted samples into CurrFrame.)</p>
   </li>
 </ol>
 
@@ -12936,20 +13105,20 @@ output is assigned to the 2D array preds[ refList ].</p>
 
 <ul>
   <li>
-    <p>If compound_type is equal to COMPOUND_WEDGE and plane is equal to 0, the wedge mask process in <a href="#wedge-mask-process">section 7.8.2.9</a> is invoked with w, h as inputs.</p>
+    <p>If compound_type is equal to COMPOUND_WEDGE and plane is equal to 0, the wedge mask process in <a href="#wedge-mask-process">section 7.9.2.9</a> is invoked with w, h as inputs.</p>
   </li>
   <li>
-    <p>Otherwise if compound_type is equal to COMPOUND_INTRA, the inter intra mask process in <a href="#inter-intra-mask-process">section 7.8.2.11</a> is invoked with preds, plane, x, y, w, h as inputs.</p>
+    <p>Otherwise if compound_type is equal to COMPOUND_INTRA, the inter intra mask process in <a href="#inter-intra-mask-process">section 7.9.2.11</a> is invoked with preds, plane, x, y, w, h as inputs.</p>
   </li>
   <li>
-    <p>Otherwise if compound_type is equal to COMPOUND_SEG and plane is equal to 0, the segment mask process in <a href="#segment-mask-process">section 7.8.2.10</a> is invoked with preds, w, h as inputs.</p>
+    <p>Otherwise if compound_type is equal to COMPOUND_SEG and plane is equal to 0, the segment mask process in <a href="#segment-mask-process">section 7.9.2.10</a> is invoked with preds, w, h as inputs.</p>
   </li>
   <li>
     <p>Otherwise, no mask array is needed.</p>
   </li>
 </ul>
 
-<p>If compound_type is equal to COMPOUND_DISTANCE, the distance weights process in <a href="#distance-weights-process">section 7.8.2.13</a> is invoked with candRow and candCol as inputs.</p>
+<p>If compound_type is equal to COMPOUND_DISTANCE, the distance weights process in <a href="#distance-weights-process">section 7.9.2.13</a> is invoked with candRow and candCol as inputs.</p>
 
 <p>The inter predicted samples are then derived as
 follows:</p>
@@ -12970,11 +13139,11 @@ follows:</p>
    for i = 0..h-1 and j = 0..w-1.</p>
   </li>
   <li>
-    <p>Otherwise, the mask blend process in <a href="#mask-blend-process">section 7.8.2.12</a> is invoked with preds, plane, x, y, w, h as inputs.</p>
+    <p>Otherwise, the mask blend process in <a href="#mask-blend-process">section 7.9.2.12</a> is invoked with preds, plane, x, y, w, h as inputs.</p>
   </li>
 </ul>
 
-<p>If motion_mode is equal to OBMC, the overlapped motion compensation in <a href="#overlapped-motion-compensation-process">section 7.8.2.7</a> is invoked with plane, x, y, w, h as inputs.</p>
+<p>If motion_mode is equal to OBMC, the overlapped motion compensation in <a href="#overlapped-motion-compensation-process">section 7.9.2.7</a> is invoked with plane, x, y, w, h as inputs.</p>
 
 <h5 id="motion-vector-scaling-process">Motion Vector Scaling Process</h5>
 
@@ -13406,7 +13575,7 @@ subY) - 1.</p>
 
 <p>(dstX and dstY specify the destination location in the luma plane using WARPEDMODEL_PREC_BITS bits of precision).</p>
 
-<p>The setup shear process specified in <a href="#setup-shear-process">section 7.8.2.4</a> is invoked with warpParams as input, and the outputs are assigned to alpha, beta, gamma, and delta.</p>
+<p>The setup shear process specified in <a href="#setup-shear-process">section 7.9.2.4</a> is invoked with warpParams as input, and the outputs are assigned to alpha, beta, gamma, and delta.</p>
 
 <p>The sub-sample interpolation is effected via two one-dimensional convolutions.
 First a horizontal filter is used to build up a temporary array, and then this
@@ -13575,7 +13744,7 @@ for (i1 = -7; i1 &lt; 8; i1++) {
 
 <p>The variable beta0 is set equal to Clip3( -32768, 32767, warpParams[ 3 ] ).</p>
 
-<p>The resolve divisor process specified in <a href="#resolve-divisor-process">section 7.8.2.5</a> is invoked with warpParams[ 2 ] as input, and the outputs assigned to divShift and divFactor.</p>
+<p>The resolve divisor process specified in <a href="#resolve-divisor-process">section 7.9.2.5</a> is invoked with warpParams[ 2 ] as input, and the outputs assigned to divShift and divFactor.</p>
 
 <p>The variable v is set equal to ( warpParams[ 4 ] &lt;&lt; WARPEDMODEL_PREC_BITS ).</p>
 
@@ -13712,7 +13881,7 @@ for (i = 0; i &lt; NumSamples; i++) {
 
 <p>It is a requirement of bitstream conformance that det is not equal to 0.</p>
 
-<p>The resolve divisor process specified in <a href="#resolve-divisor-process">section 7.8.2.5</a> is invoked with det as input, and the outputs assigned to divShift and divFactor.</p>
+<p>The resolve divisor process specified in <a href="#resolve-divisor-process">section 7.9.2.5</a> is invoked with det as input, and the outputs assigned to divShift and divFactor.</p>
 
 <p>The local warp parameters in LocalWarpParams are derived as follows:</p>
 
@@ -13859,12 +14028,12 @@ if ( AvailL ) {
     <p>The variable predY is set equal to (y4 * 4) &gt;&gt; subY.</p>
   </li>
   <li>
-    <p>The motion vector scaling process in <a href="#motion-vector-scaling-process">section 7.8.2.1</a> is invoked with
+    <p>The motion vector scaling process in <a href="#motion-vector-scaling-process">section 7.9.2.1</a> is invoked with
 plane, refIdx, predX, predY, mv as inputs and the output being the
 initial location startX, startY, and the step sizes stepX, stepY.</p>
   </li>
   <li>
-    <p>The block inter prediction process in <a href="#block-inter-prediction-process">section 7.8.2.2</a> is invoked with
+    <p>The block inter prediction process in <a href="#block-inter-prediction-process">section 7.9.2.2</a> is invoked with
 plane, refIdx, startX, startY, stepX, stepY, predW, predH, candRow, candCol as inputs and the
 output is assigned to the 2D array obmcPred.</p>
   </li>
@@ -13872,7 +14041,7 @@ output is assigned to the 2D array obmcPred.</p>
     <p>obmcPred[ i ][ j ] is set equal to Clip1( obmcPred[ i ][ j ] ) for i = 0..predH-1 and j = 0..predW-1.</p>
   </li>
   <li>
-    <p>The blending process in <a href="#overlap-blending-process">section 7.8.2.8</a> is invoked with plane, predX, predY, predW, predH, pass, obmcPred, and mask as inputs.</p>
+    <p>The blending process in <a href="#overlap-blending-process">section 7.9.2.8</a> is invoked with plane, predX, predY, predW, predH, pass, obmcPred, and mask as inputs.</p>
   </li>
 </ol>
 
@@ -14805,7 +14974,7 @@ flipLR is set equal to 0.</p>
     q2 ) / dqDenom.</p>
   </li>
   <li>
-    <p>Invoke the 2D inverse transform block process defined in <a href="#2d-inverse-transform">section 7.10.2</a>
+    <p>Invoke the 2D inverse transform block process defined in <a href="#2d-inverse-transform">section 7.11.2</a>
 with the variables txSize, txType and transpose as input. The inverse transform outputs are stored
 in the Residual buffer.</p>
   </li>
@@ -14834,7 +15003,7 @@ BitDepth bits.</p>
 <h3 id="inverse-transform-process">Inverse Transform Process</h3>
 
 <p>This section details the inverse transforms used during the reconstruction
-processes detailed in <a href="#reconstruction-and-dequantization">section 7.9</a>.</p>
+processes detailed in <a href="#reconstruction-and-dequantization">section 7.10</a>.</p>
 
 <h4 id="1d-transforms">1D Transforms</h4>
 
@@ -15058,7 +15227,7 @@ permuted array T which is of length 2<sup>n</sup> for 2 ≤ n ≤ 6.</p>
     <p>If n is equal to 6, invoke B( 32 + i, 63 - i, 63 - 4 * brev( 4, i ), 0 ) for i = 0..15.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
 input variable n and the input variable r equal to 16.</p>
   </li>
   <li>
@@ -15069,7 +15238,7 @@ for i = 0..7.</p>
     <p>If n is equal to 6, invoke H( 32 + i * 2, 33 + i * 2, i &amp; 1 ) for i = 0..15.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
 input variable n and the input variable r equal to 16.</p>
   </li>
   <li>
@@ -15084,7 +15253,7 @@ input variable n and the input variable r equal to 16.</p>
 for j = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
 input variable n and the input variable r equal to 16.</p>
   </li>
   <li>
@@ -15102,7 +15271,7 @@ input variable n and the input variable r equal to 16.</p>
     <p>If n is equal to 6, invoke H( 32 + i * 4 + j, 35 + i * 4 - j, i &amp; 1 ) for i = 0..7, for j = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
      input variable n and the input variable r equal to 16.</p>
   </li>
   <li>
@@ -15123,7 +15292,7 @@ input variable n and the input variable r equal to 16.</p>
 j = 0..3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
      input variable n and the input variable r equal to 16.</p>
   </li>
   <li>
@@ -15143,7 +15312,7 @@ for j = 0..1.</p>
     <p>If n is equal to 6, invoke H( 32 + 8 * i + j, 39 + 8 * i - j, i &amp; 1) for i = 0..3, for j = 0..3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
      input variable n and the input variable r equal to 16.</p>
   </li>
   <li>
@@ -15159,7 +15328,7 @@ for j = 0..1.</p>
     <p>If n is equal to 6, invoke B( 59 - i, 36 + i, i &lt; 4 ? 48 : 112, 1 ) for i = 0..7.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
      input variable n and the input variable r equal to 16.</p>
   </li>
   <li>
@@ -15181,7 +15350,7 @@ for j = 0..1.</p>
     </ul>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
      input variable n and the input variable r equal to 16.</p>
   </li>
   <li>
@@ -15191,14 +15360,14 @@ for j = 0..1.</p>
     <p>If n is equal to 6, invoke B( 55 - i, 40 + i, 32, 1 ) for i = 0..7.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
      input variable n and the input variable r equal to 16.</p>
   </li>
   <li>
     <p>If n is equal to 6, invoke H( i, 63 - i, 0 ) for i = 0..31.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
      input variable n and the input variable r equal to 16.</p>
   </li>
 </ol>
@@ -15329,7 +15498,7 @@ of the length of the input array.</p>
 
 <ol>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 2 and the input variable r equal to 16.</p>
   </li>
   <li>
@@ -15392,7 +15561,7 @@ T[ 3 ] = Round2( x0 + x1 - x3, 12 )
     </table>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
   with the input variable n equal to 2 and the input variable r equal to 16.</p>
   </li>
 </ol>
@@ -15407,54 +15576,54 @@ T[ 3 ] = Round2( x0 + x1 - x3, 12 )
 
 <ol>
   <li>
-    <p>Invoke the ADST input array permutation process specified in <a href="#inverse-adst-input-array-permutation-process">section 7.10.1.5</a> with the 
+    <p>Invoke the ADST input array permutation process specified in <a href="#inverse-adst-input-array-permutation-process">section 7.11.1.5</a> with the 
 input variable n set to 3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 3 and the input variable r equal to 16.</p>
   </li>
   <li>
     <p>Invoke B( 2 * i, 2 * i + 1, 60 - 16 * i, 1 ) for i = 0..3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 3 and the input variable r equal to 16.</p>
   </li>
   <li>
     <p>Invoke H( i, 4 + i, 0 ) for i = 0..3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 3 and the input variable r equal to 16.</p>
   </li>
   <li>
     <p>Invoke B( 4 + 3 * i, 5 + i, 48 - 32 * i, 1 ) for i = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 3 and the input variable r equal to 16.</p>
   </li>
   <li>
     <p>Invoke H( 4 * j + i, 2 + 4 * j + i, 0 ) for i = 0..1, for j = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 3 and the input variable r equal to 16.</p>
   </li>
   <li>
     <p>Invoke B( 2 + 4 * i, 3 + 4 * i, 32, 1 ) for i = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 3 and the input variable r equal to 16.</p>
   </li>
   <li>
-    <p>Invoke the ADST output array permutation process specified in <a href="#inverse-adst-output-array-permutation-process">section 7.10.1.6</a> with the 
+    <p>Invoke the ADST output array permutation process specified in <a href="#inverse-adst-output-array-permutation-process">section 7.11.1.6</a> with the 
 input variable n set to 3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 3 and the input variable r equal to 16.</p>
   </li>
 </ol>
@@ -15469,25 +15638,25 @@ with the input variable n equal to 3 and the input variable r equal to 16.</p>
 
 <ol>
   <li>
-    <p>Invoke the ADST input array permutation process specified in <a href="#inverse-adst-input-array-permutation-process">section 7.10.1.5</a> with the 
+    <p>Invoke the ADST input array permutation process specified in <a href="#inverse-adst-input-array-permutation-process">section 7.11.1.5</a> with the 
 input variable n set to 4.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 4 and the input variable r equal to 16.</p>
   </li>
   <li>
     <p>Invoke B( 2 * i, 2 * i + 1, 62 - 8 * i, 1 ) for i = 0..7.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 4 and the input variable r equal to 16.</p>
   </li>
   <li>
     <p>Invoke H( i, 8 + i, 0 ) for i = 0..7.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 4 and the input variable r equal to 16.</p>
   </li>
   <li>
@@ -15495,14 +15664,14 @@ with the input variable n equal to 4 and the input variable r equal to 16.</p>
 for i = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 4 and the input variable r equal to 16.</p>
   </li>
   <li>
     <p>Invoke H( 8 * j + i, 4 + 8 * j + i, 0 ) for i = 0..3, for j = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 4 and the input variable r equal to 16.</p>
   </li>
   <li>
@@ -15510,29 +15679,29 @@ with the input variable n equal to 4 and the input variable r equal to 16.</p>
 for i = 0..1, for j = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 4 and the input variable r equal to 16.</p>
   </li>
   <li>
     <p>Invoke H( 4 * j + i, 2 + 4 * j + i, 0 ) for i = 0..1, for j = 0..3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 4 and the input variable r equal to 16.</p>
   </li>
   <li>
     <p>Invoke B( 2 + 4 * i, 3 + 4 * i, 32, 1 ) for i = 0..3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 4 and the input variable r equal to 16.</p>
   </li>
   <li>
-    <p>Invoke the ADST output array permutation process specified in <a href="#inverse-adst-output-array-permutation-process">section 7.10.1.6</a> with the 
+    <p>Invoke the ADST output array permutation process specified in <a href="#inverse-adst-output-array-permutation-process">section 7.11.1.6</a> with the 
 input variable n set to 4.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to 4 and the input variable r equal to 16.</p>
   </li>
 </ol>
@@ -15557,15 +15726,15 @@ with the input variable n equal to 4 and the input variable r equal to 16.</p>
 
 <ul>
   <li>
-    <p>If n is equal to 2, invoke the inverse ADST4 process in <a href="#inverse-adst4-process">section 7.10.1.7</a>, with the input
+    <p>If n is equal to 2, invoke the inverse ADST4 process in <a href="#inverse-adst4-process">section 7.11.1.7</a>, with the input
 variable clamp.</p>
   </li>
   <li>
-    <p>Otherwise, if n is equal to 3, invoke the inverse ADST8 process in <a href="#inverse-adst8-process">section 7.10.1.8</a>, with the
+    <p>Otherwise, if n is equal to 3, invoke the inverse ADST8 process in <a href="#inverse-adst8-process">section 7.11.1.8</a>, with the
 input variable clamp.</p>
   </li>
   <li>
-    <p>Otherwise (n is equal to 4), invoke the inverse ADST16 process in <a href="#inverse-adst16-process">section 7.10.1.9</a>, with the
+    <p>Otherwise (n is equal to 4), invoke the inverse ADST16 process in <a href="#inverse-adst16-process">section 7.11.1.9</a>, with the
 input variable clamp.</p>
   </li>
 </ul>
@@ -15648,23 +15817,23 @@ of the length of the input array.</p>
 <ul>
   <li>
     <p>If n is equal to 2, invoke the inverse identity transform 4 process in
-<a href="#inverse-identity-transform-4-process">section 7.10.1.12</a>.</p>
+<a href="#inverse-identity-transform-4-process">section 7.11.1.12</a>.</p>
   </li>
   <li>
     <p>Otherwise, if n is equal to 3, invoke the inverse identity transform 8 process in
-<a href="#inverse-identity-transform-8-process">section 7.10.1.13</a>.</p>
+<a href="#inverse-identity-transform-8-process">section 7.11.1.13</a>.</p>
   </li>
   <li>
     <p>Otherwise, if n is equal to 4, invoke the inverse identity transform 16 process in
-<a href="#inverse-identity-transform-16-process">section 7.10.1.14</a>.</p>
+<a href="#inverse-identity-transform-16-process">section 7.11.1.14</a>.</p>
   </li>
   <li>
     <p>Otherwise if n is equal to 5, invoke the inverse identity transform 32 process in
-<a href="#inverse-identity-transform-32-process">section 7.10.1.15</a>.</p>
+<a href="#inverse-identity-transform-32-process">section 7.11.1.15</a>.</p>
   </li>
   <li>
     <p>Otherwise (n is equal to 6), invoke the inverse identity transform 64 process in
-<a href="#inverse-identity-transform-64-process">section 7.10.1.16</a>.</p>
+<a href="#inverse-identity-transform-64-process">section 7.11.1.16</a>.</p>
   </li>
 </ul>
 
@@ -15728,7 +15897,7 @@ j = 0..(w-1).</p>
   </li>
   <li>
     <p>If Lossless is equal to 1, invoke the Inverse WHT process as specified in
-<a href="#inverse-walsh-hadamard-transform-process">section 7.10.1.11</a> with shift equal to 2.</p>
+<a href="#inverse-walsh-hadamard-transform-process">section 7.11.1.11</a> with shift equal to 2.</p>
   </li>
   <li>
     <p>Otherwise, if txType is equal to one of DCT_DCT, ADST_DCT, FLIPADST_DCT or H_DCT,
@@ -15736,15 +15905,15 @@ apply an inverse DCT as follows:</p>
 
     <ol>
       <li>
-        <p>If clampRow is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+        <p>If clampRow is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to log2W and the input variable r equal to 16.</p>
       </li>
       <li>
-        <p>Invoke the inverse DCT permutation process as specified in <a href="#inverse-dct-array-permutation-process">section 7.10.1.3</a> with the input
+        <p>Invoke the inverse DCT permutation process as specified in <a href="#inverse-dct-array-permutation-process">section 7.11.1.3</a> with the input
 variable n equal to log2W.</p>
       </li>
       <li>
-        <p>Invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.10.1.4</a> with the
+        <p>Invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.11.1.4</a> with the
 input variable n equal to log2W, and the input variable clamp equal to clampRow.</p>
       </li>
     </ol>
@@ -15752,18 +15921,18 @@ input variable n equal to log2W, and the input variable clamp equal to clampRow.
   <li>
     <p>Otherwise if txType is equal to one of DCT_ADST, ADST_ADST, DCT_FLIPADST, FLIPADST_FLIPADST, 
 ADST_FLIPADST, FLIPADST_ADST, H_ADST, or H_FLIPADST, invoke the inverse ADST process as 
-specified in <a href="#inverse-adst-process">section 7.10.1.10</a> with input variable n equal to log2W, and the input variable clamp set
+specified in <a href="#inverse-adst-process">section 7.11.1.10</a> with input variable n equal to log2W, and the input variable clamp set
 equal to clampRow.</p>
   </li>
   <li>
-    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.10.1.17</a> with the
+    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.11.1.17</a> with the
 input variable n equal to log2W.</p>
   </li>
   <li>
     <p>Set T[ j ] equal to Round2( T[ j ], rowShift ) for j = 0..(w-1).</p>
   </li>
   <li>
-    <p>Invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the input variable n equal to log2W
+    <p>Invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the input variable n equal to log2W
 and the input variable r equal to Max( BitDepth + 6, 16 ).</p>
   </li>
   <li>
@@ -15779,7 +15948,7 @@ and the input variable r equal to Max( BitDepth + 6, 16 ).</p>
   </li>
   <li>
     <p>If Lossless is equal to 1, invoke the Inverse WHT process as specified in
-<a href="#inverse-walsh-hadamard-transform-process">section 7.10.1.11</a> with shift equal to 0.</p>
+<a href="#inverse-walsh-hadamard-transform-process">section 7.11.1.11</a> with shift equal to 0.</p>
   </li>
   <li>
     <p>Otherwise, if txType is equal to one of DCT_DCT, DCT_ADST, DCT_FLIPADST or
@@ -15787,15 +15956,15 @@ V_DCT, apply an inverse DCT as follows:</p>
 
     <ol>
       <li>
-        <p>If clampCol is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a>
+        <p>If clampCol is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
 with the input variable n equal to log2H and the input variable r equal to 16.</p>
       </li>
       <li>
         <p>Invoke the inverse DCT permutation process as specified in
-<a href="#inverse-dct-array-permutation-process">section 7.10.1.3</a> with the input variable n equal to log2H.</p>
+<a href="#inverse-dct-array-permutation-process">section 7.11.1.3</a> with the input variable n equal to log2H.</p>
       </li>
       <li>
-        <p>Invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.10.1.4</a>
+        <p>Invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.11.1.4</a>
 with the input variable n equal to log2H, and the input variable clamp equal to clampCol.</p>
       </li>
     </ol>
@@ -15803,18 +15972,18 @@ with the input variable n equal to log2H, and the input variable clamp equal to 
   <li>
     <p>Otherwise, if txType is equal to one of ADST_DCT, ADST_ADST, FLIPADST_DCT, 
 FLIPADST_FLIPADST, ADST_FLIPADST, FLIPADST_ADST, V_ADST, or V_FLIPADST,
-invoke the inverse ADST process as specified in <a href="#inverse-adst-process">section 7.10.1.10</a> with input variable n equal to
+invoke the inverse ADST process as specified in <a href="#inverse-adst-process">section 7.11.1.10</a> with input variable n equal to
 log2H, and the input variable clamp equal to clampCol.</p>
   </li>
   <li>
-    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.10.1.17</a> with the
+    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.11.1.17</a> with the
 input variable n equal to log2H.</p>
   </li>
   <li>
     <p>T[ i ] is set equal to Round2( T[ i ], colShift ) for i = 0..(h-1).</p>
   </li>
   <li>
-    <p>Invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.10.1.2</a> with the input variable n
+    <p>Invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the input variable n
 equal to log2H and the input variable r equal to BitDepth + 1.</p>
   </li>
   <li>
@@ -15859,7 +16028,7 @@ follows:</p>
 </code></pre>
 
 <p>When the function loop_filter_edge is called, the edge loop filter process specified
-in <a href="#edge-loop-filter-process">section 7.11.1</a> is invoked with the variables plane, pass, row, and col as inputs.</p>
+in <a href="#edge-loop-filter-process">section 7.12.1</a> is invoked with the variables plane, pass, row, and col as inputs.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The loop filter is an integral part of the decoding process, in that
 the results of loop filtering are used in the prediction of subsequent frames.</p>
@@ -16061,16 +16230,16 @@ to 1.</p>
   </li>
 </ul>
 
-<p>The filter size process specified in <a href="#filter-size-process">section 7.11.2</a> is invoked with the inputs
+<p>The filter size process specified in <a href="#filter-size-process">section 7.12.2</a> is invoked with the inputs
 txSz, prevTxSz, pass, subX, subY, and plane, and the output assigned to
 the variable filterSize (containing the maximum filter size that can be
 used).</p>
 
-<p>The adaptive filter strength process specified in <a href="#adaptive-filter-strength-process">section 7.11.3</a> is invoked with
+<p>The adaptive filter strength process specified in <a href="#adaptive-filter-strength-process">section 7.12.3</a> is invoked with
 the inputs row, col, plane, and pass, and the output assigned to the variables
 lvl, limit, blimit, and thresh.</p>
 
-<p>If lvl is equal to 0, the adaptive filter strength process specified in <a href="#adaptive-filter-strength-process">section 7.11.3</a> is invoked with
+<p>If lvl is equal to 0, the adaptive filter strength process specified in <a href="#adaptive-filter-strength-process">section 7.12.3</a> is invoked with
 the inputs prevRow, prevCol, plane, and pass, and the output assigned to the variables
 lvl, limit, blimit, and thresh.</p>
 
@@ -16078,7 +16247,7 @@ lvl, limit, blimit, and thresh.</p>
 
 <ul>
   <li>If applyFilter is equal to 1 and lvl is greater than zero, the sample
-  filtering process specified in <a href="#sample-filtering-process">section 7.11.5</a> is invoked with the input variable
+  filtering process specified in <a href="#sample-filtering-process">section 7.12.5</a> is invoked with the input variable
   x set equal to xP + dy * i, the input variable y set equal to yP + dx * i,
   and the variables plane, limit, blimit, thresh, dx, dy,
   and filterSize supplied as inputs.</li>
@@ -16189,7 +16358,7 @@ DeltaLFs[ row ][ col ][ ( plane == 0 ) ? pass : ( plane + 1 ) ].</p>
     </ol>
   </li>
   <li>
-    <p>The adaptive filter strength selection process specified in <a href="#adaptive-filter-strength-selection-process">section 7.11.4</a> is invoked, with segment,
+    <p>The adaptive filter strength selection process specified in <a href="#adaptive-filter-strength-selection-process">section 7.12.4</a> is invoked, with segment,
 ref, modeType, deltaLF, plane, and pass as inputs, and the output being the output variable
 lvl.</p>
   </li>
@@ -16325,7 +16494,7 @@ being filtered,</p>
 
 <p>The outputs of this process are modified values in the array CurrFrame.</p>
 
-<p>First the filter mask process specified in <a href="#filter-mask-process">section 7.11.5.1</a> is invoked with the
+<p>First the filter mask process specified in <a href="#filter-mask-process">section 7.12.5.1</a> is invoked with the
 inputs x, y, plane, limit, blimit, thresh, dx, dy, and filterSize, and the
 output is assigned to the variables hevMask, filterMask, flatMask, and
 flatMask2.</p>
@@ -16339,16 +16508,16 @@ dx, dy as follows:</p>
   </li>
   <li>
     <p>Otherwise, if filterSize is equal to TX_4X4 or flatMask is equal to 0, the
-narrow filter process specified in <a href="#narrow-filter-process">section 7.11.5.2</a> is invoked with the
+narrow filter process specified in <a href="#narrow-filter-process">section 7.12.5.2</a> is invoked with the
 additional input variable hevMask.</p>
   </li>
   <li>
     <p>Otherwise, if filterSize is equal to TX_8X8 or flatMask2 is equal to 0,
-the wide filter process specified in <a href="#wide-filter-process">section 7.11.5.3</a> is invoked with the
+the wide filter process specified in <a href="#wide-filter-process">section 7.12.5.3</a> is invoked with the
 additional input variable log2Size set to 3.</p>
   </li>
   <li>
-    <p>Otherwise, the wide filter process specified in <a href="#wide-filter-process">section 7.11.5.3</a> is invoked
+    <p>Otherwise, the wide filter process specified in <a href="#wide-filter-process">section 7.12.5.3</a> is invoked
 with the additional input variable log2Size set to 4.</p>
   </li>
 </ul>
@@ -16677,7 +16846,7 @@ for (r = 0; r &lt; MiRows; r += step4) {
 }
 </code></pre>
 
-<p>When the cdef_block function is called, the CDEF block process specified in <a href="#cdef-block-process">section 7.12.1</a> is invoked with r, c, and idx as inputs.</p>
+<p>When the cdef_block function is called, the CDEF block process specified in <a href="#cdef-block-process">section 7.13.1</a> is invoked with r, c, and idx as inputs.</p>
 
 <h4 id="cdef-block-process">CDEF Block Process</h4>
 
@@ -16725,7 +16894,7 @@ CdefFrame will be overwritten later in this process.</p>
 
 <p>The variable skip is set equal to Skips[ r ][ c ].</p>
 
-<p>If skip is equal to 0, the CDEF direction process specified in <a href="#cdef-direction-process">section 7.12.2</a> is invoked with r and c as inputs, and the outputs assigned to variables yDir and var.</p>
+<p>If skip is equal to 0, the CDEF direction process specified in <a href="#cdef-direction-process">section 7.13.2</a> is invoked with r and c as inputs, and the outputs assigned to variables yDir and var.</p>
 
 <p>If skip is equal to 0, the following ordered steps apply:</p>
 
@@ -16749,7 +16918,7 @@ CdefFrame will be overwritten later in this process.</p>
     <p>The variable damping is set equal to CdefDamping + coeffShift.</p>
   </li>
   <li>
-    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.12.3</a> is invoked with plane equal to 0, r, c, priStr, secStr, damping, and dir as input.</p>
+    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.13.3</a> is invoked with plane equal to 0, r, c, priStr, secStr, damping, and dir as input.</p>
   </li>
   <li>
     <p>If NumPlanes is equal to 1, the process terminates at this point (i.e. filtering is not done for the U and V planes).</p>
@@ -16767,10 +16936,10 @@ CdefFrame will be overwritten later in this process.</p>
     <p>The variable damping is set equal to CdefDamping + coeffShift - 1.</p>
   </li>
   <li>
-    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.12.3</a> is invoked with plane equal to 1, r, c, priStr, secStr, damping, and dir as input.</p>
+    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.13.3</a> is invoked with plane equal to 1, r, c, priStr, secStr, damping, and dir as input.</p>
   </li>
   <li>
-    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.12.3</a> is invoked with plane equal to 2, r, c, priStr, secStr, damping, and dir as input.</p>
+    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.13.3</a> is invoked with plane equal to 2, r, c, priStr, secStr, damping, and dir as input.</p>
   </li>
 </ol>
 
@@ -17128,7 +17297,7 @@ Samples outside the current stripe are fetched from UpscaledCurrFrame (these sam
 }
 </code></pre>
 
-<p>When loop_restore_block is called, the loop restore block process in <a href="#loop-restore-block-process">section 7.14.1</a> is invoked with plane, row, and col as inputs.</p>
+<p>When loop_restore_block is called, the loop restore block process in <a href="#loop-restore-block-process">section 7.15.1</a> is invoked with plane, row, and col as inputs.</p>
 
 <h4 id="loop-restore-block-process">Loop Restore Block Process</h4>
 
@@ -17268,10 +17437,10 @@ if larger blocks are used - provided all contained samples belong to the same lo
 
 <ul>
   <li>
-    <p>If rType is equal to RESTORE_WIENER, the Wiener filter process specified in <a href="#wiener-filter-process">section 7.14.4</a> is invoked with plane, unitRow, unitCol, x, y, w, and h as inputs.</p>
+    <p>If rType is equal to RESTORE_WIENER, the Wiener filter process specified in <a href="#wiener-filter-process">section 7.15.4</a> is invoked with plane, unitRow, unitCol, x, y, w, and h as inputs.</p>
   </li>
   <li>
-    <p>Otherwise, if rType is equal to RESTORE_SGRPROJ, the self guided filter process specified in <a href="#self-guided-filter-process">section 7.14.2</a> is invoked with plane, unitRow, unitCol, x, y, w, and h as inputs.</p>
+    <p>Otherwise, if rType is equal to RESTORE_SGRPROJ, the self guided filter process specified in <a href="#self-guided-filter-process">section 7.15.2</a> is invoked with plane, unitRow, unitCol, x, y, w, and h as inputs.</p>
   </li>
   <li>
     <p>Otherwise (rType is equal to RESTORE_NONE), no filtering is applied.</p>
@@ -17297,7 +17466,7 @@ if larger blocks are used - provided all contained samples belong to the same lo
   </li>
 </ul>
 
-<p>The arrays flt1 and flt2 are prepared by the following ordered steps:</p>
+<p>The arrays flt0 and flt1 are prepared by the following ordered steps:</p>
 
 <ol>
   <li>
@@ -17307,13 +17476,13 @@ if larger blocks are used - provided all contained samples belong to the same lo
     <p>The variable pass is set equal to 0.</p>
   </li>
   <li>
-    <p>The box filter process specified in <a href="#box-filter-process">section 7.14.3</a> is invoked with plane, x, y, w, h, set, and pass as inputs, and the output assigned to flt1.</p>
+    <p>The box filter process specified in <a href="#box-filter-process">section 7.15.3</a> is invoked with plane, x, y, w, h, set, and pass as inputs, and the output assigned to flt0.</p>
   </li>
   <li>
     <p>The variable pass is set equal to 1.</p>
   </li>
   <li>
-    <p>The box filter process specified in <a href="#box-filter-process">section 7.14.3</a> is invoked with plane, x, y, w, h, set, and pass as inputs, and the output assigned to flt2.</p>
+    <p>The box filter process specified in <a href="#box-filter-process">section 7.15.3</a> is invoked with plane, x, y, w, h, set, and pass as inputs, and the output assigned to flt1.</p>
   </li>
 </ol>
 
@@ -17322,13 +17491,21 @@ if larger blocks are used - provided all contained samples belong to the same lo
 <pre><code class="language-c">xqd0 = LrSgrXqd[ TileNum ][ plane ][ unitRow ][ unitCol ][ 0 ]
 xqd1 = LrSgrXqd[ TileNum ][ plane ][ unitRow ][ unitCol ][ 1 ]
 xq0 = xqd0
-xq1 = (1 &lt;&lt; SGRPROJ_PRJ_BITS) - xq0 - xqd1
+r0 = Sgr_Params[ set ][ 0 ]
+r1 = Sgr_Params[ set ][ 2 ]
+if ( r1 == 0 ) {
+  xq1 = 0
+} else {
+  xq1 = (1 &lt;&lt; SGRPROJ_PRJ_BITS) - xq0 - xqd1
+}
 for ( i = 0; i &lt; h; i++ ) {
     for ( j = 0; j &lt; w; j++ ) {
         u = UpscaledCdefFrame[ plane ][ y + i ][ x + j ] &lt;&lt; SGRPROJ_RST_BITS
-        f1 = flt1[ i ][ j ] - u
-        f2 = flt2[ i ][ j ] - u
-        v = xq0 * f1 + xq1 * f2 + (u &lt;&lt; SGRPROJ_PRJ_BITS)
+        v = u &lt;&lt; SGRPROJ_PRJ_BITS
+        if ( r0 )
+          v += xq0 * ( flt0[ i ][ j ] - u )
+        if ( r1 )
+          v += xq1 * ( flt1[ i ][ j ] - u )
         w = Round2( v, SGRPROJ_RST_BITS + SGRPROJ_PRJ_BITS )
         LrFrame[ plane ][ y + i ][ x + j ] = Clip1( w )
     }
@@ -17360,6 +17537,8 @@ for ( i = 0; i &lt; h; i++ ) {
 <p>The output of this process is a 2d array F.</p>
 
 <p>The variable r (specifying that the box filters have side length 2*r+1) is set equal to Sgr_Params[ set ][ pass * 2 + 0 ].</p>
+
+<p>If r is equal to 0, then this process immediately terminates.</p>
 
 <p>The variable eps (specifying a scaling for the output) is set equal to Sgr_Params[ set ][ pass * 2 + 1 ].</p>
 
@@ -17397,7 +17576,7 @@ for ( i = -1; i &lt; h + 1; i++ ) {
 
 <p class="alert alert-info"><strong>Note:</strong> When pass is equal to 0, only odd rows (i.e. entries A[ i ][ j ] and B[ i ][ j ] with i odd) will be used to generate the output.</p>
 
-<p>where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.14.6</a> should be invoked
+<p>where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.15.6</a> should be invoked
 and the output assigned to variable c.</p>
 
 <p>After A and B are prepared, the output array F is generated as follows:</p>
@@ -17436,10 +17615,10 @@ and the output assigned to variable c.</p>
 <p>The constant lookup table Sgr_Params is specified as:</p>
 
 <pre><code class="language-c">Sgr_Params[ (1 &lt;&lt; SGRPROJ_PARAMS_BITS) ][ 4 ] = {
-  { 2, 12, 1, 4 },  { 2, 15, 1, 6 },  { 2, 18, 1, 8 },  { 2, 20, 1, 9 },
-  { 2, 22, 1, 10 }, { 2, 25, 1, 11 }, { 2, 35, 1, 12 }, { 2, 45, 1, 13 },
-  { 2, 55, 1, 14 }, { 2, 65, 1, 15 }, { 2, 75, 1, 16 }, { 2, 30, 1, 6 },
-  { 2, 50, 1, 12 }, { 2, 60, 1, 13 }, { 2, 70, 1, 14 }, { 2, 80, 1, 15 }
+  { 2, 12, 1, 4 },  { 2, 15, 1, 6 },  { 2, 18, 1, 8 },  { 2, 21, 1, 9 },
+  { 2, 24, 1, 10 }, { 2, 29, 1, 11 }, { 2, 36, 1, 12 }, { 2, 45, 1, 13 },
+  { 2, 56, 1, 14 }, { 2, 68, 1, 15 }, { 0, 0, 1, 5 },   { 0, 0, 1, 8 },
+  { 0, 0, 1, 11 },  { 0, 0, 1, 14 },  { 2, 30, 0, 0 },  { 2, 75, 0, 0 }
 }
 </code></pre>
 
@@ -17468,9 +17647,9 @@ and the output assigned to variable c.</p>
 First a horizontal filter is used to build up a temporary array, and then this
 array is vertically filtered to obtain the final prediction.</p>
 
-<p>The Wiener coefficient process specified in <a href="#wiener-coefficient-process">section 7.14.5</a> is invoked with an input of LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 0 ] and the output assigned to vfilter.</p>
+<p>The Wiener coefficient process specified in <a href="#wiener-coefficient-process">section 7.15.5</a> is invoked with an input of LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 0 ] and the output assigned to vfilter.</p>
 
-<p>The Wiener coefficient process specified in <a href="#wiener-coefficient-process">section 7.14.5</a> is invoked with an input of LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 1 ] and the output assigned to hfilter.</p>
+<p>The Wiener coefficient process specified in <a href="#wiener-coefficient-process">section 7.15.5</a> is invoked with an input of LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 1 ] and the output assigned to hfilter.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The horizontal filter needs to be applied before the vertical filter, but the horizontal coefficients are sent after the vertical coefficients.</p>
 
@@ -17493,7 +17672,7 @@ for ( r = 0; r &lt; h + 7; r++ ) {
 }
 </code></pre>
 
-    <p>Where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.14.6</a> should be invoked.</p>
+    <p>Where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.15.6</a> should be invoked.</p>
 
     <p class="alert alert-info"><strong>Note:</strong> The intermediate result is clipped so that ( intermediate[ r ][ c ] + offset ) fits in an unsigned variable with (BitDepth + 3) bits.</p>
   </li>
@@ -17662,7 +17841,7 @@ with x = 0..((w + subX) &gt;&gt; subX) - 1 and y = 0..((h + subY) &gt;&gt; subY)
 </ul>
 
 <p>If film_grain_params_present is equal to 1 and apply_grain is equal to 1, then
-the film grain synthesis process specified in <a href="#film-grain-synthesis-process">section 7.15.1</a> is invoked with inputs of w, h, subX, and subY.
+the film grain synthesis process specified in <a href="#film-grain-synthesis-process">section 7.16.1</a> is invoked with inputs of w, h, subX, and subY.
 (This process modifies the output arrays OutY, OutU, OutV).</p>
 
 <p>Finally, the output of the decoding process is defined to be the arrays OutY, OutU, OutV where the bit depth for each sample is BitDepth.</p>
@@ -17702,13 +17881,13 @@ the film grain synthesis process specified in <a href="#film-grain-synthesis-pro
     <p>The variable GrainMax is set equal to (256 &lt;&lt; (BitDepth - 8)) - 1 - GrainCenter.</p>
   </li>
   <li>
-    <p>The generate grain process specified in <a href="#generate-grain-process">section 7.15.1.2</a> is invoked.</p>
+    <p>The generate grain process specified in <a href="#generate-grain-process">section 7.16.1.2</a> is invoked.</p>
   </li>
   <li>
-    <p>The scaling lookup initialization process specified in <a href="#scaling-lookup-initialization-process">section 7.15.1.3</a> is invoked.</p>
+    <p>The scaling lookup initialization process specified in <a href="#scaling-lookup-initialization-process">section 7.16.1.3</a> is invoked.</p>
   </li>
   <li>
-    <p>The add noise process specified in <a href="#add-noise-synthesis-process">section 7.15.1.4</a> is invoked with w, h, subX, and subY as inputs.</p>
+    <p>The add noise process specified in <a href="#add-noise-synthesis-process">section 7.16.1.4</a> is invoked with w, h, subX, and subY as inputs.</p>
   </li>
 </ol>
 
@@ -17748,7 +17927,7 @@ for ( y = 0; y &lt; 73; y++ ) {
 }
 </code></pre>
 
-<p>where the function call get_random_number invokes the random number process specified in <a href="#random-number-process">section 7.15.1.1</a>.</p>
+<p>where the function call get_random_number invokes the random number process specified in <a href="#random-number-process">section 7.16.1.1</a>.</p>
 
 <p>Then an auto-regressive filter is applied to the white noise as follows:</p>
 
@@ -17773,11 +17952,15 @@ for ( y = 3; y &lt; 73; y++ ) {
 
 <p>The chroma grain is generated in a similar way, except the filtering includes a coefficient that introduces a correlation with the luma grain.</p>
 
+<p>The variable chromaW (representing the width of the chroma noise array) is set equal to (subX ? 44 : 82).</p>
+
+<p>The variable chromaH (representing the height of the chroma noise array) is set equal to (subY ? 38 : 73).</p>
+
 <p>White noise arrays CbGrain and CrGrain 44 samples wide and 38 samples high are generated as follows:</p>
 
 <pre><code class="language-c">shift = 12 - BitDepth - grain_scale_shift
-for ( y = 0; y &lt; 38; y++ ) {
-  for ( x = 0; x &lt; 44; x++ ) {
+for ( y = 0; y &lt; chromaH; y++ ) {
+  for ( x = 0; x &lt; chromaW; x++ ) {
     if ( num_cb_points &gt; 0 ) {
       g = Gaussian_Sequence[ get_random_number( 11 ) ]
     } else {
@@ -17797,8 +17980,8 @@ for ( y = 0; y &lt; 38; y++ ) {
 <p>Then the auto-regressive filter is applied as follows:</p>
 
 <pre><code class="language-c">shift = ar_coeff_shift_minus_6 + 6
-for ( y = 3; y &lt; 38; y++ ) {
-  for ( x = 3; x &lt; 44 - 3; x++ ) {
+for ( y = 3; y &lt; chromaH; y++ ) {
+  for ( x = 3; x &lt; chromaW - 3; x++ ) {
     s0 = 0
     pos = 0
     for ( deltaRow = -ar_coeff_lag; deltaRow &lt;= 0; deltaRow++ ) {
@@ -17808,10 +17991,12 @@ for ( y = 3; y &lt; 38; y++ ) {
         if ( deltaRow == 0 &amp;&amp; deltaCol == 0 ) {
           if ( num_y_points &gt; 0 ) {
             luma = 0
-            for ( i = 0; i &lt; 2; i++ )
-              for ( j = 0; j &lt; 2; j++ )
-                luma += LumaGrain[ (y &lt;&lt; 1) - 3 + i ][ (x &lt;&lt; 1) - 3 + j ]
-            luma = Round2( luma, 2 )
+            lumaX = ( (x - 3) &lt;&lt; subX ) + 3
+            lumaY = ( (y - 3) &lt;&lt; subY ) + 3
+            for ( i = 0; i &lt;= subY; i++ )
+              for ( j = 0; j &lt;= subX; j++ )
+                luma += LumaGrain[ lumaY + i ][ lumaX + j ]
+            luma = Round2( luma, subX + subY )
             s0 += luma * c0
             s1 += luma * c1
           }
@@ -17910,7 +18095,7 @@ get_y( plane, i ) {
 <p>noiseStripe[ lumaNum ][ 0 ] is 34 samples high and w samples wide
 (a few additional samples across are actually written to the array, but these are never read) and contains noise for the luma component.</p>
 
-<p>noiseStripe[ lumaNum ][ 1 ] and noiseStripe[ lumaNum ][ 2 ] are 17 samples high and w/2 samples wide and contain noise for the chroma components.</p>
+<p>noiseStripe[ lumaNum ][ 1 ] and noiseStripe[ lumaNum ][ 2 ] are (34 » subY) samples high and (w » subX) samples wide and contain noise for the chroma components.</p>
 
 <p>noiseStripe represents the result of constructing square grain blocks and blending horizontally adjacent blocks together
 (although blending is only applied if overlap_flag is equal to 1) and is constructed as follows:</p>
@@ -17924,38 +18109,38 @@ for ( y = 0; y &lt; h/2 ; y += 16 ) {
     rand = get_random_number( 8 )
     offsetX = rand &gt;&gt; 4
     offsetY = rand &amp; 15
-    lumaOffsetX = 9 + offsetX * 2
-    lumaOffsetY = 9 + offsetY * 2
-    chromaOffsetX = 6 + offsetX
-    chromaOffsetY = 6 + offsetY
-    for ( i = 0; i &lt; 32 + 2 ; i++ ) {
-      for ( j = 0; j &lt; 32 + 2 ; j++ ) {
-        g = LumaGrain[ lumaOffsetY + i ][ lumaOffsetX + j ]
-        if ( j &lt; 2 &amp;&amp; overlap_flag &amp;&amp; x &gt; 0 ) {
-          old = noiseStripe[ lumaNum ][ 0 ][ i ][ x * 2 + j ]
-          if ( j == 0 ) {
-            v = old * 27 + g * 17
-          } else {
-            v = old * 17 + g * 27
-          }
-          g = Clip3( GrainMin, GrainMax, Round2(g, 5) )
-        }
-        noiseStripe[ lumaNum ][ 0 ][ i ][ x * 2 + j ] = g
-      }
-    }
-    for ( i = 0; i &lt; 16 + 1; i++ ) {
-      for ( j = 0; j &lt; 16 + 1; j++ ) {
-        for ( plane = 1; plane &lt; 3; plane++ ) {
-          if ( plane == 1 )
-            g = CbGrain[ chromaOffsetY + i ][ chromaOffsetX + j ]
+    for ( plane = 0 ; plane &lt; NumPlanes; plane++ )
+      planeSubX = ( plane &gt; 0) ? subX : 0
+      planeSubY = ( plane &gt; 0) ? subY : 0
+      planeOffsetX = planeSubX ? 6 + offsetX : 9 + offsetX * 2
+      planeOffsetY = planeSubY ? 6 + offsetY : 9 + offsetY * 2
+      for ( i = 0; i &lt; 34 &gt;&gt; planeSubY ; i++ ) {
+        for ( j = 0; j &lt; 34 &gt;&gt; planeSubX ; j++ ) {
+          if ( plane == 0 )
+            g = LumaGrain[ planeOffsetY + i ][ planeOffsetX + j ]
+          else if ( plane == 1 )
+            g = CbGrain[ planeOffsetY + i ][ planeOffsetX + j ]
           else
-            g = CrGrain[ chromaOffsetY + i ][ chromaOffsetX + j ]
-          if ( j == 0 &amp;&amp; overlap_flag &amp;&amp; x &gt; 0 ) {
-            old = noiseStripe[ lumaNum ][ plane ][ i ][ x + j ]
-            v = old * 23 + g * 22
-            g = Clip3( GrainMin, GrainMax, Round2(g, 5) )
+            g = CrGrain[ planeOffsetY + i ][ planeOffsetX + j ]
+          if ( planeSubX == 0 ) {
+            if ( j &lt; 2 &amp;&amp; overlap_flag &amp;&amp; x &gt; 0 ) {
+              old = noiseStripe[ lumaNum ][ plane ][ i ][ x * 2 + j ]
+              if ( j == 0 ) {
+                v = old * 27 + g * 17
+              } else {
+                v = old * 17 + g * 27
+              }
+              g = Clip3( GrainMin, GrainMax, Round2(g, 5) )
+            }
+            noiseStripe[ lumaNum ][ plane ][ i ][ x * 2 + j ] = g
+          } else {
+            if ( j == 0 &amp;&amp; overlap_flag &amp;&amp; x &gt; 0 ) {
+              old = noiseStripe[ lumaNum ][ plane ][ i ][ x + j ]
+              v = old * 23 + g * 22
+              g = Clip3( GrainMin, GrainMax, Round2(g, 5) )
+            }
+            noiseStripe[ lumaNum ][ plane ][ i ][ x + j ] = g
           }
-          noiseStripe[ lumaNum ][ plane ][ i ][ x + j ] = g
         }
       }
     }
@@ -17966,33 +18151,30 @@ for ( y = 0; y &lt; h/2 ; y += 16 ) {
 
 <p>Then the noise stripes are blended together to form a noise image noiseImage as follows:</p>
 
-<pre><code class="language-c">for ( y = 0; y &lt; h ; y++ ) {
-  lumaNum = y &gt;&gt; 5
-  i = y &amp; 31
-  for ( x = 0; x &lt; w ; x++ ) {
-    g = noiseStripe[ lumaNum ][ 0 ][ i ][ x ]
-    if ( i &lt; 2 &amp;&amp; lumaNum &gt; 0 &amp;&amp; overlap_flag )
-      old = noiseStripe[ lumaNum - 1 ][ 0 ][ i + 32 ][ x ]
-      if ( i == 0 ) {
-        v = old * 27 + g * 17
-      } else {
-        v = old * 17 + g * 27
-      }
-      g = Clip3( GrainMin, GrainMax, Round2(g, 5) )
-    }
-    noiseImage[ 0 ][ y ][ x ] = g
-  }
-}
-for ( y = 0; y &lt; h/2 ; y++ ) {
-  lumaNum = y &gt;&gt; 4
-  i = y &amp; 15
-  for ( x = 0; x &lt; w/2 ; x++ ) {
-    for ( plane = 1; plane &lt; 3; plane++ ) {
+<pre><code class="language-c">for ( plane = 0; plane &lt; NumPlanes; plane++ ) {
+  planeSubX = ( plane &gt; 0) ? subX : 0
+  planeSubY = ( plane &gt; 0) ? subY : 0
+  for ( y = 0; y &lt; ( h &gt;&gt; planeSubY ) ; y++ ) {
+    lumaNum = y &gt;&gt; ( 4 + planeSubY )
+    i = y - (lumaNum &lt;&lt; ( 4 + planeSubY ) )
+    for ( x = 0; x &lt; (w &gt;&gt; planeSubX) ; x++ ) {
       g = noiseStripe[ lumaNum ][ plane ][ i ][ x ]
-      if ( i &lt; 1 &amp;&amp; lumaNum &gt; 0 &amp;&amp; overlap_flag )
-        old = noiseStripe[ lumaNum - 1 ][ plane ][ i + 16 ][ x ]
-        v = old * 23 + g * 22
-        g = Clip3( GrainMin, GrainMax, Round2(g, 5) )
+      if ( planeSubY == 0 ) {
+        if ( i &lt; 2 &amp;&amp; lumaNum &gt; 0 &amp;&amp; overlap_flag )
+          old = noiseStripe[ lumaNum - 1 ][ plane ][ i + 32 ][ x ]
+          if ( i == 0 ) {
+            v = old * 27 + g * 17
+          } else {
+            v = old * 17 + g * 27
+          }
+          g = Clip3( GrainMin, GrainMax, Round2(g, 5) )
+        }
+      } else {
+        if ( i &lt; 1 &amp;&amp; lumaNum &gt; 0 &amp;&amp; overlap_flag )
+          old = noiseStripe[ lumaNum - 1 ][ plane ][ i + 16 ][ x ]
+          v = old * 23 + g * 22
+          g = Clip3( GrainMin, GrainMax, Round2(g, 5) )
+        }
       }
       noiseImage[ plane ][ y ][ x ] = g
     }
@@ -18016,20 +18198,14 @@ and 1 line buffer for each chroma component.</p>
   maxChroma = maxLuma
 }
 ScalingShift = grain_scaling_minus_8 + 8
-for ( y = 0; y &lt; h ; y++ ) {
-  for ( x = 0; x &lt; w ; x++ ) {
-    orig = OutY[ y ][ x ]
-    noise = noiseImage[ 0 ][ y ][ x ]
-    noise = Round2( scale_lut( 0, orig ) * noise, ScalingShift)
-    if ( num_y_points &gt; 0 ) {
-      OutY[ y ][ x ] = Clip3( minValue, maxLuma, orig + noise )
-    }
-  }
-}
-for ( y = 0; y &lt; h/2 ; y++ ) {
-  for ( x = 0; x &lt; w/2 ; x++ ) {
-    averageLuma = Round2( OutY[ y * 2 ][ x * 2 ] + OutY[ y * 2 ][ x * 2 + 1 ], 1)
-    
+for ( y = 0; y &lt; (h &gt;&gt; subY) ; y++ ) {
+  for ( x = 0; x &lt; (w &gt;&gt; subX) ; x++ ) {
+    lumaX = x &lt;&lt; subX
+    lumaY = y &lt;&lt; subY
+    if ( subX )
+      averageLuma = Round2( OutY[ lumaY ][ lumaX ] + OutY[ lumaY ][ lumaX 1 ], 1)
+    else
+      averageLuma = OutY[ lumaY ][ lumaX ]
     if ( num_cb_points &gt; 0 ) {
       orig = OutU[ y ][ x ]
       if ( chroma_scaling_from_luma ) {
@@ -18054,6 +18230,16 @@ for ( y = 0; y &lt; h/2 ; y++ ) {
       noise = noiseImage[ 2 ][ y ][ x ]
       noise = Round2( scale_lut( 2, merged ) * noise, ScalingShift)
       OutV[ y ][ x ] = Clip3( minValue, maxChroma, orig + noise )
+    }
+  }
+}
+for ( y = 0; y &lt; h ; y++ ) {
+  for ( x = 0; x &lt; w ; x++ ) {
+    orig = OutY[ y ][ x ]
+    noise = noiseImage[ 0 ][ y ][ x ]
+    noise = Round2( scale_lut( 0, orig ) * noise, ScalingShift)
+    if ( num_y_points &gt; 0 ) {
+      OutY[ y ][ x ] = Clip3( minValue, maxLuma, orig + noise )
     }
   }
 }
@@ -31628,6 +31814,10 @@ This can be useful for encoder implementations that want to leave a fixed amount
         <td> </td>
       </tr>
       <tr>
+        <td>frame_refs_signaling</td>
+        <td> </td>
+      </tr>
+      <tr>
         <td>frame_marker</td>
         <td> </td>
       </tr>
@@ -31841,6 +32031,10 @@ This can be useful for encoder implementations that want to leave a fixed amount
       </tr>
       <tr>
         <td>simplify_tx_mode</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>skip_sgr</td>
         <td> </td>
       </tr>
       <tr>
