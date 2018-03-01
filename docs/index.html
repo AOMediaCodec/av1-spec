@@ -33,7 +33,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-01 04:09:16 -0800</em></p>
+<p><em>Last modified: 2018-03-01 08:34:06 -0800</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -76,9 +76,10 @@ not rely on its current contents.</p>
           <li><a href="#uvlc" id="markdown-toc-uvlc">uvlc()</a></li>
           <li><a href="#len" id="markdown-toc-len">le(n)</a></li>
           <li><a href="#sun" id="markdown-toc-sun">su(n)</a></li>
+          <li><a href="#nsn" id="markdown-toc-nsn">ns(n)</a></li>
           <li><a href="#ln" id="markdown-toc-ln">L(n)</a></li>
-          <li><a href="#s" id="markdown-toc-s">S</a></li>
-          <li><a href="#un" id="markdown-toc-un">U(n)</a></li>
+          <li><a href="#s" id="markdown-toc-s">S()</a></li>
+          <li><a href="#nsn-1" id="markdown-toc-nsn-1">NS(n)</a></li>
         </ul>
       </li>
     </ul>
@@ -132,7 +133,6 @@ not rely on its current contents.</p>
           <li><a href="#decode-signed-subexp-with-ref-syntax" id="markdown-toc-decode-signed-subexp-with-ref-syntax">Decode Signed Subexp With Ref Syntax</a></li>
           <li><a href="#decode-unsigned-subexp-with-ref-syntax" id="markdown-toc-decode-unsigned-subexp-with-ref-syntax">Decode Unsigned Subexp With Ref Syntax</a></li>
           <li><a href="#decode-subexp-syntax" id="markdown-toc-decode-subexp-syntax">Decode Subexp Syntax</a></li>
-          <li><a href="#decode-uniform-syntax" id="markdown-toc-decode-uniform-syntax">Decode Uniform Syntax</a></li>
           <li><a href="#inverse-recenter-function" id="markdown-toc-inverse-recenter-function">Inverse Recenter Function</a></li>
           <li><a href="#inv-recenter-noneg-function" id="markdown-toc-inv-recenter-noneg-function">Inv Recenter Noneg Function</a></li>
           <li><a href="#film-grain-params-syntax" id="markdown-toc-film-grain-params-syntax">Film Grain Params Syntax</a></li>
@@ -2050,7 +2050,7 @@ Specification are similar to those used in the C programming language.
 However, the operation of integer division with truncation is specifically
 defined.</p>
 
-<p>In addition, an array with 2 elements used to hold a motion vector (indicated
+<p>In addition, a length 2 array used to hold a motion vector (indicated
 by the variable name ending with the letters <code>Mv</code> or <code>Mvs</code>) can be accessed
 using either normal array notation (e.g. <code>Mv[ 0 ]</code> and <code>Mv[ 1 ]</code>), or by just
 the name (e.g., <code>Mv</code>). The only operations defined when using the name are
@@ -2221,6 +2221,24 @@ and Round2Signed) are defined as follows:</p>
 
 <p><img src="assets/images/formula-round2signed.svg.png" class=".img-fluid" alt="" /></p>
 
+<p>The FloorLog2(x) function is defined to be the floor of the base 2 logarithm of the input x.</p>
+
+<p>The input x will always be an integer, and will always be greater than or equal to 1.</p>
+
+<p>This function extracts the location of the most significant bit in x.</p>
+
+<p>An equivalent definition (using the pseudo-code notation introduced in the following section) is:</p>
+
+<pre><code class="language-c">FloorLog2( n ) {
+  s = 0
+  while (x != 0) {
+    x = x &gt;&gt; 1
+    s++
+  }
+  return s - 1
+}
+</code></pre>
+
 <h3 id="method-of-describing-bitstream-syntax">Method of describing bitstream syntax</h3>
 
 <p>The description style of the syntax is similar to the C programming language.
@@ -2386,7 +2404,7 @@ is byte aligned.</p>
 
 <h4 id="sun">su(n)</h4>
 
-<p>Signed integer converted from an n+1 unsigned integer in the bitstream.
+<p>Signed integer converted from an n+1 bits unsigned integer in the bitstream.
 (The unsigned integer corresponds to the bottom n+1 bits of the signed integer.)
 The parsing process for this descriptor is specified below:</p>
 
@@ -2399,24 +2417,11 @@ The parsing process for this descriptor is specified below:</p>
 }
 </code></pre>
 
-<h4 id="ln">L(n)</h4>
+<h4 id="nsn">ns(n)</h4>
 
-<p>Unsigned arithmetic encoded n-bit number encoded as n flags (a “literal”). The
-flags are read from high to low order.  The syntax element is set equal to the
-return value of read_literal( n ) (see <a href="#parsing-process-for-read_literal">section 8.2.4</a> for a specification of
-this process).</p>
+<p>Unsigned encoded integer with maximum number of values n (i.e. output in range 0..n-1).</p>
 
-<h4 id="s">S</h4>
-
-<p>An arithmetic encoded symbol coded from a small alphabet of at most 16 entries.</p>
-
-<p>The symbol is decoded based on a context sensitive CDF (see <a href="#parsing-process-for-cdf-encoded-syntax-elements">section 8.3</a> for the specification of this process).</p>
-
-<h4 id="un">U(n)</h4>
-
-<p>Unsigned arithmetic encoded number with maximum number of values n (i.e. output in range 0..n-1).</p>
-
-<p>This descriptor is similar to L(ceil(log2(n))), but reduces wastage incurred when encoding non-power of two
+<p>This descriptor is similar to f(ceil(log2(n))), but reduces wastage incurred when encoding non-power of two
 value ranges by encoding 1 fewer bits for the lower part of the value range. For example, when
 n is equal to 5, the encodings are as follows (full binary encodings are also presented for
 comparison):</p>
@@ -2458,15 +2463,50 @@ comparison):</p>
   </tbody>
 </table>
 
-<p>The parsing process for this descriptor is specified below:</p>
+<p>The parsing process for this descriptor is specified as:</p>
 
-<pre class="syntax"><code>U( n ) {
-    w = floor(log2(n)) + 1
+<pre class="syntax"><code>ns( n ) {
+    w = FloorLog2(n) + 1
     m = (1 &lt;&lt; w) - n
-    <b class="syntax-element">v</b>                                                                        L( w - 1 )
+    <b class="syntax-element">v</b>                                                                        f(w - 1)
     if (v &lt; m)
         return v
-    <b class="syntax-element">extra_bit</b>                                                                L( 1 )
+    <b class="syntax-element">extra_bit</b>                                                                f(1)
+    return (v &lt;&lt; 1) - m + extra_bit
+}
+</code></pre>
+
+<p>The abbreviation ns stands for non-symmetric.
+This encoding is non-symmetric because the values are not all coded with the same number of bits.</p>
+
+<h4 id="ln">L(n)</h4>
+
+<p>Unsigned arithmetic encoded n-bit number encoded as n flags (a “literal”). The
+flags are read from high to low order.  The syntax element is set equal to the
+return value of read_literal( n ) (see <a href="#parsing-process-for-read_literal">section 8.2.4</a> for a specification of
+this process).</p>
+
+<h4 id="s">S()</h4>
+
+<p>An arithmetic encoded symbol coded from a small alphabet of at most 16 entries.</p>
+
+<p>The symbol is decoded based on a context sensitive CDF (see <a href="#parsing-process-for-cdf-encoded-syntax-elements">section 8.3</a> for the specification of this process).</p>
+
+<h4 id="nsn-1">NS(n)</h4>
+
+<p>Unsigned arithmetic encoded integer with maximum number of values n (i.e. output in range 0..n-1).</p>
+
+<p>This descriptor is the same as ns(n) except the underlying bits are coded arithmetically.</p>
+
+<p>The parsing process for this descriptor is specified as:</p>
+
+<pre class="syntax"><code>NS( n ) {
+    w = FloorLog2(n) + 1
+    m = (1 &lt;&lt; w) - n
+    <b class="syntax-element">v</b>                                                                        L(w - 1)
+    if (v &lt; m)
+        return v
+    <b class="syntax-element">extra_bit</b>                                                                L(1)
     return (v &lt;&lt; 1) - m + extra_bit
 }
 </code></pre>
@@ -2595,11 +2635,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         BitDepth = high_bitdepth ? 10 : 8
     }
     if ( seq_profile == 1 ) {
-        monochrome = 0
+        mono_chrome = 0
     } else {
-        <b class="syntax-element">monochrome</b>                                                           f(1)
+        <b class="syntax-element">mono_chrome</b>                                                          f(1)
     }
-    NumPlanes = monochrome ? 1 : 3
+    NumPlanes = mono_chrome ? 1 : 3
     <b class="syntax-element">color_description_present_flag</b>                                           f(1)
     if ( color_description_present_flag ) {
         <b class="syntax-element">color_primaries</b>                                                      f(8)
@@ -2610,7 +2650,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         transfer_characteristics = TC_UNSPECIFIED
         matrix_coefficients = MC_UNSPECIFIED
     }
-    if ( monochrome ) {
+    if ( mono_chrome ) {
         color_range = 1
         subsampling_x = 1
         subsampling_y = 1
@@ -3247,7 +3287,8 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
         for ( i = 0; startSb &lt; sbCols &amp;&amp; i &lt; MAX_TILE_COLS; i++ ) {
             MiColStarts[ i ] = startSb &lt;&lt; sbShift
             maxWidth = Min(sbCols - startSb, MAX_TILE_WIDTH_SB)
-            sizeSb = decode_uniform(maxWidth) + 1
+            <b class="syntax-element">width_in_sbs_minus_1</b>                                             ns(maxWidth)
+            sizeSb = width_in_sbs_minus_1 + 1
             widestTileSb = Max( sizeSb, widestTileSb )
             startSb += sizeSb
         }
@@ -3265,28 +3306,32 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
         for ( i = 0; startSb &lt; sbRows &amp;&amp; i &lt; MAX_TILE_ROWS; i++ ) {
             MiRowStarts[ i ] = startSb &lt;&lt; sbShift
             maxHeight = Min(sbRows - startSb, maxTileHeightSb)
-            sizeSb = decode_uniform(maxHeight) + 1
+            <b class="syntax-element">height_in_sbs_minus_1</b>                                            ns(maxHeight)
+            sizeSb = height_in_sbs_minus_1 + 1
             startSb += sizeSb
         }
         MiRowStarts[ i ] = MiRows
         TileRows = i
         TileRowsLog2 = tile_log2(1, TileRows)
     }
-    startMi = 0
-    maxTileHeightMi = maxTileHeightSb &lt;&lt; sbShift
-    for (i = 0; i &lt; TileRows; i++) {
-      if (MiRowStarts[i+1] - startMi &gt; maxTileHeightMi) {
-        AllowDependentTileRow[i] = 0
-        startMi = MiRowStarts[i+1]
-      } else {
-        AllowDependentTileRow[i] = 1
-      }
-    }
-    AllowDependentTileRow[ 0 ] = 0
-    if ( TileRowsLog2 &gt; 0 )
+    if ( TileRowsLog2 &gt; 0 ) {
         <b class="syntax-element">dependent_tiles</b>                                                      f(1)
-    else
+        if ( dependent_tiles ) {
+            AllowDependentTileRow[ 0 ] = 0
+            startMi = 0
+            maxTileHeightMi = maxTileHeightSb &lt;&lt; sbShift
+            for (i = 0; i &lt; TileRows; i++) {
+                if (MiRowStarts[i+1] - startMi &gt; maxTileHeightMi) {
+                    AllowDependentTileRow[i] = 0
+                    startMi = MiRowStarts[i+1]
+                } else {
+                    AllowDependentTileRow[i] = 1
+                }
+            }
+        }
+    } else {
         dependent_tiles = 0
+    }
     if ( TileColsLog2 &gt; 0 )
         <b class="syntax-element">loop_filter_across_tiles_v</b>                                           f(1)
     else
@@ -3406,8 +3451,8 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
         } else {
             lr_uv_shift = 0
         }
-        LoopRestorationSize[1] = LoopRestorationSize[0] &gt;&gt; lr_uv_shift
-        LoopRestorationSize[2] = LoopRestorationSize[0] &gt;&gt; lr_uv_shift
+        LoopRestorationSize[ 1 ] = LoopRestorationSize[ 0 ] &gt;&gt; lr_uv_shift
+        LoopRestorationSize[ 2 ] = LoopRestorationSize[ 0 ] &gt;&gt; lr_uv_shift
     }
 }
 </code></pre>
@@ -3627,7 +3672,8 @@ However, these fractional bits will be discarded during the Setup Zero MV proces
         b2 = i ? k + i - 1 : k
         a = 1 &lt;&lt; b2
         if (numSyms &lt;= mk + 3 * a) {
-            return decode_uniform(numSyms - mk) + mk
+            <b class="syntax-element">subexp_final_bits</b>                                                ns(numSyms - mk)
+            return subexp_final_bits + mk
         } else {
             <b class="syntax-element">subexp_more_bits</b>                                                 f(1)
             if (subexp_more_bits) {
@@ -3639,19 +3685,6 @@ However, these fractional bits will be discarded during the Setup Zero MV proces
             }
         }
     }
-}
-</code></pre>
-
-<h4 id="decode-uniform-syntax">Decode Uniform Syntax</h4>
-
-<pre class="syntax"><code>decode_uniform( n ) {
-    w = floor(log2(n)) + 1
-    m = (1 &lt;&lt; w) - n
-    <b class="syntax-element">v</b>                                                                        f( w - 1 )
-    if (v &lt; m)
-        return v
-    <b class="syntax-element">extra_bit</b>                                                                f( 1 )
-    return (v &lt;&lt; 1) - m + extra_bit
 }
 </code></pre>
 
@@ -3698,10 +3731,10 @@ However, these fractional bits will be discarded during the Setup Zero MV proces
         <b class="syntax-element">point_y_value[ i ]</b>                                                   f(8)
         <b class="syntax-element">point_y_scaling[ i ]</b>                                                 f(8)
     }
-    if ( !monochrome ) {
+    if ( !mono_chrome ) {
         <b class="syntax-element">chroma_scaling_from_luma</b>                                             f(1)
     }
-    if ( monochrome || chroma_scaling_from_luma ) {
+    if ( mono_chrome || chroma_scaling_from_luma ) {
         num_cb_points = 0
         num_cr_points = 0
     } else {
@@ -3864,12 +3897,12 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
     if (bSize &lt; BLOCK_8X8) {
         partition = PARTITION_NONE
     } else if ( hasRows &amp;&amp; hasCols ) {
-        <b class="syntax-element">partition</b>                                                            S
+        <b class="syntax-element">partition</b>                                                            S()
     } else if ( hasCols ) {
-        <b class="syntax-element">split_or_horz</b>                                                        S
+        <b class="syntax-element">split_or_horz</b>                                                        S()
         partition = split_or_horz ? PARTITION_SPLIT : PARTITION_HORZ
     } else if ( hasRows ) {
-        <b class="syntax-element">split_or_vert</b>                                                        S
+        <b class="syntax-element">split_or_vert</b>                                                        S()
         partition = split_or_vert ? PARTITION_SPLIT : PARTITION_VERT
     } else {
         partition = PARTITION_SPLIT
@@ -4041,7 +4074,7 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
     RefFrame[ 0 ] = INTRA_FRAME
     RefFrame[ 1 ] = NONE
     if ( allow_intrabc ) {
-        <b class="syntax-element">use_intrabc</b>                                                          S
+        <b class="syntax-element">use_intrabc</b>                                                          S()
     } else {
         use_intrabc = 0
     }
@@ -4059,11 +4092,11 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
     } else {
         is_inter = 0
         read_tx_size( 1 )
-        <b class="syntax-element">intra_frame_y_mode</b>                                                   S
+        <b class="syntax-element">intra_frame_y_mode</b>                                                   S()
         YMode = intra_frame_y_mode
         intra_angle_info_y( )
         if (HasChroma) {
-            <b class="syntax-element">uv_mode</b>                                                          S
+            <b class="syntax-element">uv_mode</b>                                                          S()
             UVMode = uv_mode
             if (UVMode == UV_CFL_PRED) {
                 read_cfl_alphas( )
@@ -4119,7 +4152,7 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
     if ( skip ) {
         segment_id = pred
     } else {
-        <b class="syntax-element">segment_id</b>                                                           S
+        <b class="syntax-element">segment_id</b>                                                           S()
         segment_id = neg_deinterleave( segment_id, pred, 
                                        LastActiveSegId + 1 )
     }
@@ -4162,7 +4195,7 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
          Block_Height[ MiSize ] &lt; 8 ) {
         skip_mode = 0
     } else {
-        <b class="syntax-element">skip_mode</b>                                                            S
+        <b class="syntax-element">skip_mode</b>                                                            S()
     }
 }
 </code></pre>
@@ -4173,7 +4206,7 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
     if ( seg_feature_active( SEG_LVL_SKIP ) ) {
         skip = 1
     } else {
-        <b class="syntax-element">skip</b>                                                                 S
+        <b class="syntax-element">skip</b>                                                                 S()
     }
 }
 </code></pre>
@@ -4185,7 +4218,7 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
     if ( MiSize == sbSize &amp;&amp; skip )
         return
     if ( ReadDeltas ) {
-        <b class="syntax-element">delta_q_abs</b>                                                          S
+        <b class="syntax-element">delta_q_abs</b>                                                          S()
         if ( delta_q_abs == DELTA_Q_SMALL ) {
             <b class="syntax-element">delta_q_rem_bits</b>                                                 L(3)
             delta_q_rem_bits++
@@ -4213,7 +4246,7 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
             frameLfCount = ( NumPlanes &gt; 1 ) ? FRAME_LF_COUNT : ( FRAME_LF_COUNT - 2 )
         }
         for ( i = 0; i &lt; frameLfCount; i++ ) {
-            <b class="syntax-element">delta_lf_abs</b>                                                     S
+            <b class="syntax-element">delta_lf_abs</b>                                                     S()
             if ( delta_lf_abs == DELTA_LF_SMALL ) {
                 <b class="syntax-element">delta_lf_rem_bits</b>                                            L(3)
                 n = delta_lf_rem_bits + 1
@@ -4257,7 +4290,7 @@ seg_feature_active( feature ) {
     
     if ( MiSize &gt; BLOCK_4X4 ) {
         if ( allowSelect &amp;&amp; TxMode == TX_MODE_SELECT ) {
-            <b class="syntax-element">tx_depth</b>                                                         S
+            <b class="syntax-element">tx_depth</b>                                                         S()
             TxSize = maxRectTxSize
             for ( i = 0; i &lt; tx_depth; i++ )
                 TxSize = Split_Tx_Size[ TxSize ]
@@ -4338,7 +4371,7 @@ can be encoded for each block size:</p>
     if (txSz == TX_4X4 || depth == MAX_VARTX_DEPTH) {
         txfm_split = 0
     } else {
-        <b class="syntax-element">txfm_split</b>                                                           S
+        <b class="syntax-element">txfm_split</b>                                                           S()
     }
     w4 = Tx_Width[ txSz ] / MI_SIZE
     h4 = Tx_Height[ txSz ] / MI_SIZE
@@ -4415,7 +4448,7 @@ can be encoded for each block size:</p>
                 }
             }
             if ( segmentation_temporal_update == 1 ) {
-                <b class="syntax-element">seg_id_predicted</b>                                             S
+                <b class="syntax-element">seg_id_predicted</b>                                             S()
                 if ( seg_id_predicted )
                     segment_id = predictedSegmentId
                 else
@@ -4444,7 +4477,7 @@ can be encoded for each block size:</p>
     } else if ( seg_feature_active ( SEG_LVL_REF_FRAME ) ) {
         is_inter = FeatureData[ segment_id ][ SEG_LVL_REF_FRAME ] != INTRA_FRAME
     } else {
-        <b class="syntax-element">is_inter</b>                                                             S
+        <b class="syntax-element">is_inter</b>                                                             S()
     }
 }
 </code></pre>
@@ -4472,11 +4505,11 @@ of the segmentation map covered by the current block.</p>
 <pre class="syntax"><code>intra_block_mode_info( ) {
     RefFrame[ 0 ] = INTRA_FRAME
     RefFrame[ 1 ] = NONE
-    <b class="syntax-element">y_mode</b>                                                                   S
+    <b class="syntax-element">y_mode</b>                                                                   S()
     YMode = y_mode
     intra_angle_info_y( )
     if (HasChroma) {
-        <b class="syntax-element">uv_mode</b>                                                              S
+        <b class="syntax-element">uv_mode</b>                                                              S()
         UVMode = uv_mode
         if (UVMode == UV_CFL_PRED) {
             read_cfl_alphas( )
@@ -4510,18 +4543,18 @@ of the segmentation map covered by the current block.</p>
          seg_feature_active( SEG_LVL_GLOBALMV ) ) {
         YMode = GLOBALMV
     } else if ( isCompound ) {
-        <b class="syntax-element">compound_mode</b>                                                        S
+        <b class="syntax-element">compound_mode</b>                                                        S()
         YMode = NEAREST_NEARESTMV + compound_mode
     } else {
-        <b class="syntax-element">new_mv</b>                                                               S
+        <b class="syntax-element">new_mv</b>                                                               S()
         if ( new_mv == 0 ) {
             YMode = NEWMV
         } else {
-            <b class="syntax-element">zero_mv</b>                                                          S
+            <b class="syntax-element">zero_mv</b>                                                          S()
             if ( zero_mv == 0 ) {
                 YMode = GLOBALMV
             } else {
-                <b class="syntax-element">ref_mv</b>                                                       S
+                <b class="syntax-element">ref_mv</b>                                                       S()
                 YMode = (ref_mv == 0) ? NEARESTMV : NEARMV
             }
         }
@@ -4530,7 +4563,7 @@ of the segmentation map covered by the current block.</p>
     if (YMode == NEWMV || YMode == NEW_NEWMV) {
         for (idx = 0; idx &lt; 2; idx++) {
             if (NumMvFound &gt; idx + 1) {
-                <b class="syntax-element">drl_mode</b>                                                     S
+                <b class="syntax-element">drl_mode</b>                                                     S()
                 if (drl_mode == 0) {
                   RefMvIdx = idx
                   break
@@ -4542,7 +4575,7 @@ of the segmentation map covered by the current block.</p>
         RefMvIdx = 1
         for (idx = 1; idx &lt; 3; idx++) {
             if (NumMvFound &gt; idx + 1) {
-                <b class="syntax-element">drl_mode</b>                                                     S
+                <b class="syntax-element">drl_mode</b>                                                     S()
                 if ( drl_mode == 0 ) {
                     RefMvIdx = idx
                     break
@@ -4558,7 +4591,7 @@ of the segmentation map covered by the current block.</p>
     if ( interpolation_filter == SWITCHABLE ) {
         for ( dir = 0; dir &lt; ( enable_dual_filter ? 2 : 1 ); dir++ ) {
             if ( needs_interp_filter( ) ) {
-                <b class="syntax-element">interp_filter[ dir ]</b>                                         S
+                <b class="syntax-element">interp_filter[ dir ]</b>                                         S()
             } else {
                 interp_filter[ dir ] = EIGHTTAP
             }
@@ -4598,9 +4631,9 @@ of the segmentation map covered by the current block.</p>
 <pre class="syntax"><code>filter_intra_mode_info( ) {
     if ( YMode == DC_PRED &amp;&amp; PaletteSizeY == 0 &amp;&amp;
          Max( Tx_Width[ TxSize ], Tx_Height[ TxSize ] ) &lt;= 32 ) {
-        <b class="syntax-element">use_filter_intra</b>                                                     S
+        <b class="syntax-element">use_filter_intra</b>                                                     S()
         if ( use_filter_intra ) {
-            <b class="syntax-element">filter_intra_mode</b>                                                S
+            <b class="syntax-element">filter_intra_mode</b>                                                S()
         }
     }
 }
@@ -4621,20 +4654,20 @@ of the segmentation map covered by the current block.</p>
         RefFrame[ 1 ] = NONE
     } else {
         if ( reference_select )
-            <b class="syntax-element">comp_mode</b>                                                        S
+            <b class="syntax-element">comp_mode</b>                                                        S()
         else
             comp_mode = SINGLE_REFERENCE
         if ( comp_mode == COMPOUND_REFERENCE ) {
-            <b class="syntax-element">comp_ref_type</b>                                                    S
+            <b class="syntax-element">comp_ref_type</b>                                                    S()
             if (comp_ref_type == UNIDIR_COMP_REFERENCE) {
-                <b class="syntax-element">uni_comp_ref</b>                                                 S
+                <b class="syntax-element">uni_comp_ref</b>                                                 S()
                 if (uni_comp_ref) {
                     RefFrame[0] = BWDREF_FRAME
                     RefFrame[1] = ALTREF_FRAME
                 } else {
-                    <b class="syntax-element">uni_comp_ref_p1</b>                                          S
+                    <b class="syntax-element">uni_comp_ref_p1</b>                                          S()
                     if (uni_comp_ref_p1) {
-                        <b class="syntax-element">uni_comp_ref_p2</b>                                      S
+                        <b class="syntax-element">uni_comp_ref_p2</b>                                      S()
                         if (uni_comp_ref_p2) {
                           RefFrame[0] = LAST_FRAME
                           RefFrame[1] = GOLDEN_FRAME
@@ -4648,19 +4681,19 @@ of the segmentation map covered by the current block.</p>
                     }
                 }
             } else {
-                <b class="syntax-element">comp_ref</b>                                                     S
+                <b class="syntax-element">comp_ref</b>                                                     S()
                 if ( comp_ref == 0 ) {
-                    <b class="syntax-element">comp_ref_p1</b>                                              S
+                    <b class="syntax-element">comp_ref_p1</b>                                              S()
                     RefFrame[ 0 ] = comp_ref_p1 ?
                                     LAST_FRAME : LAST2_FRAME
                 } else {
-                    <b class="syntax-element">comp_ref_p2</b>                                              S
+                    <b class="syntax-element">comp_ref_p2</b>                                              S()
                     RefFrame[ 0 ] = comp_ref_p2 ?
                                     GOLDEN_FRAME : LAST3_FRAME
                 }
-                <b class="syntax-element">comp_bwdref</b>                                                  S
+                <b class="syntax-element">comp_bwdref</b>                                                  S()
                 if ( comp_bwdref == 0 ) {
-                    <b class="syntax-element">comp_bwdref_p1</b>                                           S
+                    <b class="syntax-element">comp_bwdref_p1</b>                                           S()
                     RefFrame[ 1 ] = comp_bwdref_p1 ?
                                      ALTREF2_FRAME : BWDREF_FRAME
                 } else {
@@ -4668,24 +4701,24 @@ of the segmentation map covered by the current block.</p>
                 }
             }
         } else {
-            <b class="syntax-element">single_ref_p1</b>                                                    S
+            <b class="syntax-element">single_ref_p1</b>                                                    S()
             if ( single_ref_p1 ) {
-                <b class="syntax-element">single_ref_p2</b>                                                S
+                <b class="syntax-element">single_ref_p2</b>                                                S()
                 if ( single_ref_p2 == 0 ) {
-                    <b class="syntax-element">single_ref_p6</b>                                            S
+                    <b class="syntax-element">single_ref_p6</b>                                            S()
                     RefFrame[ 0 ] = single_ref_p6 ?
                                      ALTREF2_FRAME : BWDREF_FRAME
                 } else {
                     RefFrame[ 0 ] = ALTREF_FRAME
                 }
             } else {
-                <b class="syntax-element">single_ref_p3</b>                                                S
+                <b class="syntax-element">single_ref_p3</b>                                                S()
                 if ( single_ref_p3 ) {
-                    <b class="syntax-element">single_ref_p5</b>                                            S
+                    <b class="syntax-element">single_ref_p5</b>                                            S()
                     RefFrame[ 0 ] = single_ref_p5 ?
                                      GOLDEN_FRAME : LAST3_FRAME
                 } else {
-                    <b class="syntax-element">single_ref_p4</b>                                            S
+                    <b class="syntax-element">single_ref_p4</b>                                            S()
                     RefFrame[ 0 ] = single_ref_p4 ?
                                      LAST2_FRAME : LAST_FRAME
                 }
@@ -4766,10 +4799,10 @@ of the segmentation map covered by the current block.</p>
     }
     find_warp_samples()
     if ( force_integer_mv || NumSamples == 0) {
-        <b class="syntax-element">use_obmc</b>                                                             S
+        <b class="syntax-element">use_obmc</b>                                                             S()
         motion_mode = use_obmc ? OBMC : SIMPLE
     } else {
-        <b class="syntax-element">motion_mode</b>                                                          S
+        <b class="syntax-element">motion_mode</b>                                                          S()
     }
 }
 </code></pre>
@@ -4779,15 +4812,15 @@ of the segmentation map covered by the current block.</p>
 <pre class="syntax"><code>read_interintra_mode( isCompound ) {
     if ( !skip_mode &amp;&amp; allow_interintra_compound &amp;&amp; !isCompound &amp;&amp; 
          MiSize &gt;= BLOCK_8X8 &amp;&amp; MiSize &lt;= BLOCK_32X32) {
-        <b class="syntax-element">interintra</b>                                                           S
+        <b class="syntax-element">interintra</b>                                                           S()
         if (interintra) {
-            <b class="syntax-element">interintra_mode</b>                                                  S
+            <b class="syntax-element">interintra_mode</b>                                                  S()
             RefFrame[1] = INTRA_FRAME
             AngleDeltaY = 0
             AngleDeltaUV = 0
             n = Wedge_Bits[ MiSize ]
             if ( n &gt; 0 ) {
-                <b class="syntax-element">wedge_interintra</b>                                             S
+                <b class="syntax-element">wedge_interintra</b>                                             S()
                 if (wedge_interintra) {
                     <b class="syntax-element">wedge_index</b>                                              L(n)
                     wedge_sign = 0
@@ -4813,12 +4846,12 @@ of the segmentation map covered by the current block.</p>
     }
     if ( isCompound ) {
         if ( allow_masked_compound &amp;&amp; Wedge_Bits[ MiSize ] &gt; 0 ) {
-            <b class="syntax-element">comp_group_idx</b>                                                   S
+            <b class="syntax-element">comp_group_idx</b>                                                   S()
         } else {
             comp_group_idx = 0
         }
         if ( comp_group_idx == 0 ) {
-            <b class="syntax-element">compound_idx</b>                                                     S
+            <b class="syntax-element">compound_idx</b>                                                     S()
             compound_type = compound_idx ? COMPOUND_DISTANCE :
                                            COMPOUND_AVERAGE
             return
@@ -4830,7 +4863,7 @@ of the segmentation map covered by the current block.</p>
         if ( n == 0 ) {
             compound_type = COMPOUND_SEG
         } else {
-            <b class="syntax-element">compound_type</b>                                                    S
+            <b class="syntax-element">compound_type</b>                                                    S()
         }
         if ( compound_type == COMPOUND_WEDGE ) {
             <b class="syntax-element">wedge_index</b>                                                      L(n)
@@ -4886,7 +4919,7 @@ of the segmentation map covered by the current block.</p>
     } else {
         MvCtx = 0
     }
-    <b class="syntax-element">mv_joint</b>                                                                 S
+    <b class="syntax-element">mv_joint</b>                                                                 S()
     if ( mv_joint == MV_JOINT_HZVNZ || mv_joint == MV_JOINT_HNZVNZ )
         diffMv[ 0 ] = read_mv_component( 0 )
     if ( mv_joint == MV_JOINT_HNZVZ || mv_joint == MV_JOINT_HNZVNZ )
@@ -4899,16 +4932,16 @@ of the segmentation map covered by the current block.</p>
 <h4 id="mv-component-syntax">MV Component Syntax</h4>
 
 <pre class="syntax"><code>read_mv_component( comp ) {
-    <b class="syntax-element">mv_sign</b>                                                                  S
-    <b class="syntax-element">mv_class</b>                                                                 S
+    <b class="syntax-element">mv_sign</b>                                                                  S()
+    <b class="syntax-element">mv_class</b>                                                                 S()
     if ( mv_class == MV_CLASS_0 ) {
-        <b class="syntax-element">mv_class0_bit</b>                                                        S
+        <b class="syntax-element">mv_class0_bit</b>                                                        S()
         if ( force_integer_mv )
             mv_class0_fr = 3
         else
-            <b class="syntax-element">mv_class0_fr</b>                                                     S
+            <b class="syntax-element">mv_class0_fr</b>                                                     S()
         if ( allow_high_precision_mv )
-            <b class="syntax-element">mv_class0_hp</b>                                                     S
+            <b class="syntax-element">mv_class0_hp</b>                                                     S()
         else
             mv_class0_hp = 1
         mag = ( ( mv_class0_bit &lt;&lt; 3 ) |
@@ -4917,16 +4950,16 @@ of the segmentation map covered by the current block.</p>
     } else {
         d = 0
         for ( i = 0; i &lt; mv_class; i++ ) {
-            <b class="syntax-element">mv_bit</b>                                                           S
+            <b class="syntax-element">mv_bit</b>                                                           S()
             d |= mv_bit &lt;&lt; i
         }
         mag = CLASS0_SIZE &lt;&lt; ( mv_class + 2 )
         if ( force_integer_mv )
             mv_fr = 3
         else
-            <b class="syntax-element">mv_fr</b>                                                            S
+            <b class="syntax-element">mv_fr</b>                                                            S()
         if ( allow_high_precision_mv )
-            <b class="syntax-element">mv_hp</b>                                                            S
+            <b class="syntax-element">mv_hp</b>                                                            S()
         else
             mv_hp = 1
         mag += ( ( d &lt;&lt; 3 ) | ( mv_fr &lt;&lt; 1 ) | mv_hp ) + 1
@@ -5232,7 +5265,7 @@ for the specified plane.
     culLevel = 0
     dcCategory = 0
     
-    <b class="syntax-element">all_zero</b>                                                                 S
+    <b class="syntax-element">all_zero</b>                                                                 S()
     if ( all_zero ) {
         c = 0
         if ( plane == 0 ) {
@@ -5250,32 +5283,32 @@ for the specified plane.
     
         eobMultisize = Tx_Width_Log2[ txSz ] + Tx_Height_Log2[ txSz ] - 4
         if ( eobMultisize == 0 ) {
-            <b class="syntax-element">eob_pt_16</b>                                                        S
+            <b class="syntax-element">eob_pt_16</b>                                                        S()
             eobPt = eob_pt_16 + 1
         } else if ( eobMultisize == 1 ) {
-            <b class="syntax-element">eob_pt_32</b>                                                        S
+            <b class="syntax-element">eob_pt_32</b>                                                        S()
             eobPt = eob_pt_32 + 1
         } else if ( eobMultisize == 2 ) {
-            <b class="syntax-element">eob_pt_64</b>                                                        S
+            <b class="syntax-element">eob_pt_64</b>                                                        S()
             eobPt = eob_pt_64 + 1
         } else if ( eobMultisize == 3 ) {
-            <b class="syntax-element">eob_pt_128</b>                                                       S
+            <b class="syntax-element">eob_pt_128</b>                                                       S()
             eobPt = eob_pt_128 + 1
         } else if ( eobMultisize == 4 ) {
-            <b class="syntax-element">eob_pt_256</b>                                                       S
+            <b class="syntax-element">eob_pt_256</b>                                                       S()
             eobPt = eob_pt_256 + 1
         } else if ( eobMultisize == 5 ) {
-            <b class="syntax-element">eob_pt_512</b>                                                       S
+            <b class="syntax-element">eob_pt_512</b>                                                       S()
             eobPt = eob_pt_512 + 1
         } else {
-            <b class="syntax-element">eob_pt_1024</b>                                                      S
+            <b class="syntax-element">eob_pt_1024</b>                                                      S()
             eobPt = eob_pt_1024 + 1
         }
 
         eob = ( eobPt &lt; 2 ) ? eobPt : ( ( 1 &lt;&lt; ( eobPt - 2 ) ) + 1 )
         eobShift = Max( -1, eobPt - 3 )
         if ( eobShift &gt;= 0 ) {
-            <b class="syntax-element">eob_extra</b>                                                        S
+            <b class="syntax-element">eob_extra</b>                                                        S()
             if ( eob_extra ) {
                 eob += ( 1 &lt;&lt; eobShift )
             }
@@ -5290,10 +5323,10 @@ for the specified plane.
         }
         for ( c = eob - 1; c &gt;= 0; c-- ) {
             if ( c == ( eob - 1 ) ) {
-                <b class="syntax-element">coeff_base_eob</b>                                               S
+                <b class="syntax-element">coeff_base_eob</b>                                               S()
                 level = coeff_base_eob + 1
             } else {
-                <b class="syntax-element">coeff_base</b>                                                   S
+                <b class="syntax-element">coeff_base</b>                                                   S()
                 level = coeff_base
             }
             
@@ -5301,7 +5334,7 @@ for the specified plane.
                 for ( idx = 0;
                       idx &lt; COEFF_BASE_RANGE / ( BR_CDF_SIZE - 1 );
                       idx++ ) {
-                    <b class="syntax-element">coeff_br</b>                                                 S
+                    <b class="syntax-element">coeff_br</b>                                                 S()
                     level += coeff_br
                     if ( coeff_br &lt; ( BR_CDF_SIZE - 1 ) )
                         break
@@ -5315,7 +5348,7 @@ for the specified plane.
             if ( Quant[ pos ] != 0 ) {
                 culLevel += Quant[ pos ]
                 if ( c == 0 ) {
-                    <b class="syntax-element">dc_sign</b>                                                  S
+                    <b class="syntax-element">dc_sign</b>                                                  S()
                     signs[ c ] = dc_sign
                 } else {
                     <b class="syntax-element">sign_bit</b>                                                 L(1)
@@ -5380,24 +5413,24 @@ for the specified plane.
     if ( Lossless || txSzSqrUp &gt; TX_32X32 )
         return DCT_DCT
         
-    set = get_tx_set( txSz )
+    txSet = get_tx_set( txSz )
     
     if ( plane == 0 ) {
         txType = TxTypes[ blockY ][ blockX ]
-        if ( !Tx_Type_In_Set[ set ][ txType ] )
+        if ( !Tx_Type_In_Set[ txSet ][ txType ] )
             return DCT_DCT
         return txType
     }
     
     if ( RefFrame[ 0 ] != INTRA_FRAME ) {
         txType = TxTypes[ blockY &lt;&lt; subsampling_y ][ blockX &lt;&lt; subsampling_x ]
-        if ( !Tx_Type_In_Set[ set ][ txType ] )
+        if ( !Tx_Type_In_Set[ txSet ][ txType ] )
             return DCT_DCT
         return txType
     }
     
     txType = Mode_To_Txfm[ UVMode ]
-    if ( !Tx_Type_In_Set[ set ][ txType ] )
+    if ( !Tx_Type_In_Set[ txSet ][ txType ] )
         return DCT_DCT
     return txType
 }
@@ -5533,7 +5566,7 @@ get_scan( plane, txSz ) {
     AngleDeltaY = 0
     if ( MiSize &gt;= BLOCK_8X8 ) {
         if ( is_directional_mode( YMode ) ) {
-            <b class="syntax-element">angle_delta_y</b>                                                    S
+            <b class="syntax-element">angle_delta_y</b>                                                    S()
             AngleDeltaY = angle_delta_y - MAX_ANGLE_DELTA
         }
     }
@@ -5546,7 +5579,7 @@ get_scan( plane, txSz ) {
     AngleDeltaUV = 0
     if ( MiSize &gt;= BLOCK_8X8 ) {
         if ( is_directional_mode( UVMode ) ) {
-            <b class="syntax-element">angle_delta_uv</b>                                                   S
+            <b class="syntax-element">angle_delta_uv</b>                                                   S()
             AngleDeltaUV = angle_delta_uv - MAX_ANGLE_DELTA
         }
     }
@@ -5566,11 +5599,11 @@ get_scan( plane, txSz ) {
 <h4 id="read-cfl-alphas-syntax">Read CFL Alphas Syntax</h4>
 
 <pre class="syntax"><code>read_cfl_alphas() {
-    <b class="syntax-element">cfl_alpha_signs</b>                                                          S
+    <b class="syntax-element">cfl_alpha_signs</b>                                                          S()
     signU = (cfl_alpha_signs + 1 ) / 3
     signV = (cfl_alpha_signs + 1 ) % 3
     if (signU != CFL_SIGN_ZERO) {
-        <b class="syntax-element">cfl_alpha_u</b>                                                          S
+        <b class="syntax-element">cfl_alpha_u</b>                                                          S()
         CflAlphaU = 1 + cfl_alpha_u
         if (signU == CFL_SIGN_NEG)
             CflAlphaU = -CflAlphaU
@@ -5578,7 +5611,7 @@ get_scan( plane, txSz ) {
       CflAlphaU = 0
     }
     if (signV != CFL_SIGN_ZERO) {
-        <b class="syntax-element">cfl_alpha_v</b>                                                          S
+        <b class="syntax-element">cfl_alpha_v</b>                                                          S()
         CflAlphaV = 1 + cfl_alpha_v
         if (signV == CFL_SIGN_NEG)
             CflAlphaV = -CflAlphaV
@@ -5593,9 +5626,9 @@ get_scan( plane, txSz ) {
 <pre class="syntax"><code>palette_mode_info( ) {
     bsizeCtx = Mi_Width_Log2[ MiSize ] + Mi_Height_Log2[ MiSize ]
     if ( YMode == DC_PRED ) {
-        <b class="syntax-element">has_palette_y</b>                                                        S
+        <b class="syntax-element">has_palette_y</b>                                                        S()
         if ( has_palette_y ) {
-            <b class="syntax-element">palette_size_y_minus_2</b>                                           S
+            <b class="syntax-element">palette_size_y_minus_2</b>                                           S()
             PaletteSizeY = palette_size_y_minus_2 + 2
             cacheN = get_palette_cache( 0 )
             idx = 0
@@ -5629,9 +5662,9 @@ get_scan( plane, txSz ) {
         }
     }
     if ( UVMode == DC_PRED &amp;&amp; HasChroma ) {
-        <b class="syntax-element">has_palette_uv</b>                                                       S
+        <b class="syntax-element">has_palette_uv</b>                                                       S()
         if ( has_palette_uv ) {
-            <b class="syntax-element">palette_size_uv_minus_2</b>                                          S
+            <b class="syntax-element">palette_size_uv_minus_2</b>                                          S()
             PaletteSizeUV = palette_size_uv_minus_2 + 2
             cacheN = get_palette_cache( 1 )
             idx = 0
@@ -5766,7 +5799,7 @@ is specified as follows:</p>
          !skip &amp;&amp;
          !seg_feature_active( SEG_LVL_SKIP ) ) {
         if ( is_inter ) {
-            <b class="syntax-element">inter_tx_type</b>                                                    S
+            <b class="syntax-element">inter_tx_type</b>                                                    S()
             if ( set == 1 )
                 TxType = Tx_Type_Inter_Inv_Set1[ inter_tx_type ]
             else if ( set == 2 )
@@ -5774,7 +5807,7 @@ is specified as follows:</p>
             else
                 TxType = Tx_Type_Inter_Inv_Set3[ inter_tx_type ]
         } else {
-            <b class="syntax-element">intra_tx_type</b>                                                    S
+            <b class="syntax-element">intra_tx_type</b>                                                    S()
             if ( set == 1 )
                 TxType = Tx_Type_Intra_Inv_Set1[ intra_tx_type ]
             else
@@ -5834,12 +5867,12 @@ Tx_Type_Inter_Inv_Set3[ 2 ]  = { IDTX, DCT_DCT }
     onscreenWidth = Min( blockWidth, (MiCols - MiCol) * MI_SIZE )
 
     if ( PaletteSizeY ) {
-        <b class="syntax-element">color_index_map_y</b>                                                    U(PaletteSizeY)
+        <b class="syntax-element">color_index_map_y</b>                                                    NS(PaletteSizeY)
         ColorMapY[0][0] = color_index_map_y
         for ( i = 1; i &lt; onscreenHeight + onscreenWidth - 1; i++ ) {
             for ( j = Min( i, onscreenWidth - 1 ); j &gt;= Max( 0, i - onscreenHeight + 1 ); j-- ) {
                 get_palette_color_context( ColorMapY, ( i - j ), j, PaletteSizeY )
-                <b class="syntax-element">palette_color_idx_y</b>                                   S
+                <b class="syntax-element">palette_color_idx_y</b>                                          S()
                 ColorMapY[ i - j ][ j ] = ColorOrder[ palette_color_idx_y ]
             }
         }
@@ -5856,7 +5889,7 @@ Tx_Type_Inter_Inv_Set3[ 2 ]  = { IDTX, DCT_DCT }
     }
 
     if ( PaletteSizeUV ) {
-        <b class="syntax-element">color_index_map_uv</b>                                                   U(PaletteSizeUV)
+        <b class="syntax-element">color_index_map_uv</b>                                                   NS(PaletteSizeUV)
         ColorMapUV[0][0] = color_index_map_uv
         blockHeight = blockHeight &gt;&gt; subsampling_y
         blockWidth = blockWidth &gt;&gt; subsampling_x
@@ -5874,7 +5907,7 @@ Tx_Type_Inter_Inv_Set3[ 2 ]  = { IDTX, DCT_DCT }
         for ( i = 1; i &lt; onscreenHeight + onscreenWidth - 1; i++ ) {
             for ( j = Min( i, onscreenWidth - 1 ); j &gt;= Max( 0, i - onscreenHeight + 1 ); j-- ) {
                 get_palette_color_context( ColorMapUV, ( i - j ), j, PaletteSizeUV )
-                <b class="syntax-element">palette_color_idx_uv</b>                                  S
+                <b class="syntax-element">palette_color_idx_uv</b>                                         S()
                 ColorMapUV[ i - j ][ j ] = ColorOrder[ palette_color_idx_uv ]
             }
         }
@@ -6138,13 +6171,13 @@ check_golden(refFrame) {
     if (FrameRestorationType[ plane ] == RESTORE_NONE) {
         restoration_type = RESTORE_NONE
     } else if (FrameRestorationType[ plane ] == RESTORE_WIENER) {
-        <b class="syntax-element">use_wiener</b>                                                           S
+        <b class="syntax-element">use_wiener</b>                                                           S()
         restoration_type = use_wiener ? RESTORE_WIENER : RESTORE_NONE
     } else if (FrameRestorationType[ plane ] == RESTORE_SGRPROJ) {
-        <b class="syntax-element">use_sgrproj</b>                                                          S
+        <b class="syntax-element">use_sgrproj</b>                                                          S()
         restoration_type = use_sgrproj ? RESTORE_SGRPROJ : RESTORE_NONE
     } else {
-        <b class="syntax-element">restoration_type</b>                                                     S
+        <b class="syntax-element">restoration_type</b>                                                     S()
     }
     LrType[ TileNum ][ plane ][ unitRow ][ unitCol ] = restoration_type
     if (restoration_type == RESTORE_WIENER) {
@@ -6168,7 +6201,7 @@ check_golden(refFrame) {
             }
         }
     } else if (restoration_type == RESTORE_SGRPROJ) {
-        <b class="syntax-element">lr_sgr_set</b>                                                           U(SGRPROJ_PARAMS_BITS)
+        <b class="syntax-element">lr_sgr_set</b>                                                           NS(SGRPROJ_PARAMS_BITS)
         LrSgrSet[ TileNum ][ plane ][ unitRow ][ unitCol ] = lr_sgr_set
         for (i = 0; i &lt; 2; i++) {
             radius = Sgr_Params[ lr_sgr_set ][ i * 2 ]
@@ -6224,7 +6257,7 @@ decode_subexp_bool( numSyms, k ) {
         b2 = i ? k + i - 1 : k
         a = 1 &lt;&lt; b2
         if (numSyms &lt;= mk + 3 * a) {
-            <b class="syntax-element">subexp_unif_bools</b>                                                U(numSyms - mk)
+            <b class="syntax-element">subexp_unif_bools</b>                                                NS(numSyms - mk)
             return subexp_unif_bools + mk
         } else {
             <b class="syntax-element">subexp_more_bools</b>                                                L(1)
@@ -6249,6 +6282,8 @@ from the bitstream.</p>
 
 <p>This section specifies the meaning of the syntax elements read in the syntax
 structures.</p>
+
+<p>Important variables and function calls are also described.</p>
 
 <h3 id="obu-semantics">OBU Semantics</h3>
 
@@ -6403,6 +6438,8 @@ types in a way that allows older decoders to ignore them.</p>
 
 <p>It is a requirement of bitstream conformance that seq_profile is not equal to 3.</p>
 
+<p>Monochrome can only be signaled when seq_profile is equal to 0 or 2.</p>
+
 <p><strong>reserved_zero</strong> shall be equal to 0.</p>
 
 <p><strong>level[ i ]</strong> specifies the level that the coded video sequence conforms to when all layers up to and including i 
@@ -6455,8 +6492,8 @@ contains the value for force_integer_mv.</p>
 <p><strong>high_bitdepth</strong> and <strong>twelve_bit</strong> are syntax elements which, together with seq_profile,
 determine the bit depth.</p>
 
-<p><strong>monochrome</strong> equal to 1 indicates that the video does not contain U and V color planes.
-monochrome equal to 0 indicates that the video contains Y, U, and V color planes.</p>
+<p><strong>mono_chrome</strong> equal to 1 indicates that the video does not contain U and V color planes.
+mono_chrome equal to 0 indicates that the video contains Y, U, and V color planes.</p>
 
 <p><strong>color_description_present_flag</strong> equal to 1 specifies that color_primaries,
 transfer_characteristics, and matrix_coeffs are present.
@@ -6885,7 +6922,8 @@ timing information outside the bitstream.</p>
 
 <h3 id="temporal-delimiter-obu-semantics">Temporal Delimiter OBU Semantics</h3>
 
-<p><strong>SeenFrameHeader</strong> is a variable used to mark whether we have received the frame header for the current frame.</p>
+<p><strong>SeenFrameHeader</strong> is a variable used to mark whether the frame header for the current frame has been received.
+It should be initialized to zero.</p>
 
 <h3 id="padding-obu-semantics">Padding OBU Semantics</h3>
 
@@ -8132,7 +8170,7 @@ multiple of the maximum superblock size.</p>
 <p><strong>TileRows</strong> specifies the number of tiles down the frame.
 It is a requirement of bitstream conformance that TileRows is less than or equal to MAX_TILE_ROWS.</p>
 
-<p><strong>sizeSb</strong> is used to specify the width/height of each tile in units of 128x128 pixels.
+<p><strong>sizeSb</strong> is used to specify the width/height of each tile in units of superblocks.
 It is a requirement of bitstream conformance that sizeSb is less than or equal to MAX_TILE_WIDTH_SB.</p>
 
 <p>If uniform_tile_spacing_flag is equal to 0, it is a requirement of bitstream conformance that
@@ -8141,7 +8179,7 @@ startSb is equal to sbCols when the loop writing MiColStarts exits.</p>
 <p>If uniform_tile_spacing_flag is equal to 0, it is a requirement of bitstream conformance that
 startSb is equal to sbRows when the loop writing MiRowStarts exits.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> The requirements on startSb ensure that the sizes of each tile add up to the full size of the frame when measured in 128x128 units.</p>
+<p class="alert alert-info"><strong>Note:</strong> The requirements on startSb ensure that the sizes of each tile add up to the full size of the frame when measured in superblocks.</p>
 
 <p><strong>MiColStarts</strong> is an array specifying the start column (in units of 4x4 pixels)
 for each tile across the image.</p>
@@ -8149,15 +8187,13 @@ for each tile across the image.</p>
 <p><strong>MiRowStarts</strong> is an array specifying the start row (in units of 4x4 pixels)
 for each tile down the image.</p>
 
-<p><strong>maxTileHeightSb</strong> specifies the maximum height (in units of 128x128 pixels) that can be used for a tile (to avoid making tiles with too much area).</p>
+<p><strong>width_in_sbs_minus_1</strong> specifies the width of a tile minus 1 in units of superblocks.</p>
+
+<p><strong>height_in_sbs_minus_1</strong> specifies the height of a tile minus 1 in units of superblocks.</p>
+
+<p><strong>maxTileHeightSb</strong> specifies the maximum height (in units of superblocks) that can be used for a tile (to avoid making tiles with too much area).</p>
 
 <p><strong>maxTileHeightMi</strong> contains the maximum height (in units of 4x4 pixels) that can be used for a tile.</p>
-
-<p><strong>AllowDependentTileRow</strong> is an array that specifies which tile rows are allowed to use
-syntax dependencies between tiles.</p>
-
-<p class="alert alert-info"><strong>Note:</strong> The AllowDependentTileRow array ensures that the syntax decode can be split into
-independent units of a certain maximum size even when dependent_tiles is equal to 1.</p>
 
 <p><strong>dependent_tiles</strong> equal to 0 indicates that there are no syntax dependencies
 between tiles, dependent_tiles equal to 1 indicates that there can be
@@ -8165,6 +8201,12 @@ dependencies between tiles.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> When dependent_tiles is equal to 1, the context determination, motion
 vector prediction, and intra prediction are allowed to depend on the tile above.</p>
+
+<p><strong>AllowDependentTileRow</strong> is an array that specifies which tile rows are allowed to use
+syntax dependencies between tiles.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> The AllowDependentTileRow array ensures that the syntax decode can be split into
+independent units of a certain maximum size even when dependent_tiles is equal to 1.</p>
 
 <p><strong>loop_filter_across_tiles_v</strong> equal to 1 indicates that loop filtering is allowed
 across vertical tile edges. loop_filter_across_tiles_v equal to 0 indicates that loop
@@ -8222,6 +8264,8 @@ with WARPEDMODEL_PREC_BITS fractional bits, but the parameters are encoded with
 less precision in the bitstream.</p>
 
 <h4 id="decode-subexp-semantics">Decode Subexp Semantics</h4>
+
+<p><strong>subexp_final_bits</strong> provide the final bits that are read once the appropriate range has been determined.</p>
 
 <p><strong>subexp_more_bits</strong> equal to 0 specifies that the parameter is in the range mk
 to mk+a-1.  subexp_more_bits equal to 0 specifies that the parameter is greater
@@ -8382,10 +8426,10 @@ explicitly for each block.</p>
 <p><strong>skip_mode_present</strong> equal to 1 specifies that the syntax element skip_mode will be coded in the bitstream.
 skip_mode_present equal to 0 specifies that skip_mode will not be used for this frame.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> ForwardFrame and BackwardFrame are set to the closest forward and backward frames (as measured by frame_offset values).
+<p class="alert alert-info"><strong>Note:</strong> ForwardFrame and BackwardFrame are set to the closest forward and backward frames (as measured by values in the RefOrderHint array).
 If no backward frame is found, then the second closest forward frame is used.
-(Forward prediction is when we use a frame for reference that is considered to be output before the current frame,
-backward prediction is when we use a frame that has not yet been output.)</p>
+(Forward prediction is when a frame is used for reference that is considered to be output before the current frame,
+backward prediction is when a frame is used that has not yet been output.)</p>
 
 <h4 id="frame-reference-mode-semantics">Frame Reference Mode Semantics</h4>
 
@@ -8774,7 +8818,7 @@ are bit-identical with the original frames.</p>
 <h4 id="read-segment-id-semantics">Read Segment ID Semantics</h4>
 
 <p><strong>segment_id</strong> specifies which segment is associated with the current intra
-block being decoded.  It first read from the stream, and then postprocessed
+block being decoded.  It is first read from the stream, and then postprocessed
 based on the predicted segment id.</p>
 
 <p>It is a requirement of bitstream conformance that the postprocessed value
@@ -8783,9 +8827,9 @@ of segment_id (i.e. the value returned by neg_deinterleave) is in the range
 
 <h4 id="inter-segment-id-semantics">Inter Segment ID Semantics</h4>
 
-<p><strong>seg_id_predicted</strong> equal to 1 specifies that the segment_id are taken from
+<p><strong>seg_id_predicted</strong> equal to 1 specifies that the segment_id is taken from
 the segmentation map. seg_id_predicted equal to 0 specifies that the syntax
-element segment_id are parsed.</p>
+element segment_id is parsed.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> It is legal for seg_id_predicted to be equal to 0 even if the value
 coded for the segment_id is equal to predictedSegmentId.</p>
@@ -8892,7 +8936,7 @@ secondary filter.</p>
 
 <p><strong>lr_uv_shift</strong> is only present for 4:2:0 formats and specifies if the chroma size should be half the luma size.</p>
 
-<p><strong>LoopRestorationSize[plane]</strong> specifies for size of loop restoration units in units of samples in the current plane.</p>
+<p><strong>LoopRestorationSize[plane]</strong> specifies the size of loop restoration units in units of samples in the current plane.</p>
 
 <h4 id="tx-size-semantics">TX Size Semantics</h4>
 
@@ -10175,10 +10219,10 @@ those produced by the decoding process specified herein.</p>
 <ol>
   <li>
     <p>If loop_filter_level[ 0 ] is not equal to 0 or loop_filter_level[ 1 ] is not equal to 0, the loop
-filter process specified in <a href="#loop-filter-process">section 7.12</a> is invoked once the coded frame has been decoded.</p>
+filter process specified in <a href="#loop-filter-process">section 7.12</a> is invoked (this process modifies the contents of CurrFrame).</p>
   </li>
   <li>
-    <p>The CDEF process specified in <a href="#cdef-process">section 7.13</a> is invoked.</p>
+    <p>The CDEF process specified in <a href="#cdef-process">section 7.13</a> is invoked (this process takes CurrFrame and produces CdefFrame).</p>
   </li>
   <li>
     <p>The upscaling process specified in <a href="#upscaling-process">section 7.14</a> is invoked with CdefFrame as input and the output is assigned to UpscaledCdefFrame.</p>
@@ -10187,17 +10231,20 @@ filter process specified in <a href="#loop-filter-process">section 7.12</a> is i
     <p>The upscaling process specified in <a href="#upscaling-process">section 7.14</a> is invoked with CurrFrame as input and the output is assigned to UpscaledCurrFrame.</p>
   </li>
   <li>
-    <p>The loop restoration process specified in <a href="#loop-restoration-process">section 7.15</a> is invoked.</p>
+    <p>The loop restoration process specified in <a href="#loop-restoration-process">section 7.15</a> is invoked (this process takes UpscaledCurrFrame and UpscaledCdefFrame and produces LrFrame).</p>
   </li>
   <li>
     <p>The reference frame update process as specified in <a href="#reference-frame-update-process">section 7.17</a> is
-invoked.</p>
+invoked (this process saves LrFrame into the reference buffers).</p>
+  </li>
+  <li>
+    <p>If show_frame is equal to 1, the output process as specified in <a href="#output-process">section 7.16</a> is invoked (this will display a frame based on LrFrame).</p>
   </li>
 </ol>
 
-<p>If show_existing_frame is equal to 1 or show_frame is equal to 1, the output process as specified in <a href="#output-process">section 7.16</a> is invoked.</p>
+<p>Otherwise (show_existing_frame is equal to 1), the output process as specified in <a href="#output-process">section 7.16</a> is invoked (this will display a frame based on a previously decoded frame).</p>
 
-<p class="alert alert-info"><strong>Note:</strong> Although we specify that all samples in CurrFrame are upscaled, at most 2 lines above and below each stripe
+<p class="alert alert-info"><strong>Note:</strong> Although it is specified that all samples in CurrFrame are upscaled, at most 2 lines above and below each stripe
 (defined by StripeStartY and StripeEndY) will end up being read.
 Implementations may wish to avoid upscaling the unused lines.</p>
 
@@ -10598,7 +10645,7 @@ This process also sets up the variables PosY8 and PosX8 representing the project
 
 <ul>
   <li>
-    <p>a length two array mv specifying a motion vector,</p>
+    <p>a length 2 array mv specifying a motion vector,</p>
   </li>
   <li>
     <p>a variable ref specifying the reference frame associated with the motion vector,</p>
@@ -10625,19 +10672,19 @@ This process also sets up the variables PosY8 and PosX8 representing the project
 
 <p>This process starts with a motion vector mv from a previous frame (src).
 This motion vector gives the displacement expected when moving a certain number of frames (between src and ref).
-We wish to use the motion vector for predictions using a different reference frame (dst), so we need to scale the length of the motion vector.</p>
+In order to use the motion vector for predictions using a different reference frame (dst), the length of the motion vector must be scaled.</p>
 
-<p>The variable srcIdx (representing the reference frame where we obtained the motion vector) is set equal to ref_frame_idx[ src - LAST_FRAME ].</p>
+<p>The variable srcIdx (representing the reference frame containing the original motion vector) is set equal to ref_frame_idx[ src - LAST_FRAME ].</p>
 
-<p>The variable srcOrderHint (representing the expected output order of the reference frame where we obtained the motion vector) is set equal to OrderHints[ src ].</p>
+<p>The variable srcOrderHint (representing the expected output order of the reference frame containing the original motion vector) is set equal to OrderHints[ src ].</p>
 
 <p>The variable refOrderHint (representing the expected output order of the frame referenced by the motion vector) is set equal to SavedOrderHints[ srcIdx ][ ref ].</p>
 
 <p>The variable mvOffset (representing the number of frames covered by the motion vector) is set equal to Max( 1, sign * (srcOrderHint - refOrderHint) ).</p>
 
-<p>The variable dstOrderHint (representing the expected output order of the reference frame we wish to use) is set equal to OrderHints[ dst ].</p>
+<p>The variable dstOrderHint (representing the expected output order of the reference frame that is being targetted) is set equal to OrderHints[ dst ].</p>
 
-<p>The variable dstOffset (representing the number of frames that we wish the motion vector to cover) is set equal to dstSign * (dstOrderHint - OrderHint).</p>
+<p>The variable dstOffset (representing the number of frames that the motion vector should cover after it is scaled) is set equal to dstSign * (dstOrderHint - OrderHint).</p>
 
 <p>It is a requirement of bitstream conformance that mvOffset is in the range 0 to 63.
 It is a requirement of bitstream conformance that dstOffset is in the range -31 to 31.</p>
@@ -10672,7 +10719,7 @@ It is a requirement of bitstream conformance that dstOffset is in the range -31 
     <p>a variable offsetSign specifying the direction to offset the projection,</p>
   </li>
   <li>
-    <p>a length two array projMv specifying a projected motion vector.</p>
+    <p>a length 2 array projMv specifying a projected motion vector.</p>
   </li>
 </ul>
 
@@ -10730,6 +10777,9 @@ This function call invokes the Find MV Stack Process specified in <a href="#find
 <p>The process also prepares the value of the contexts used
 when decoding inter prediction syntax elements.</p>
 
+<p>The array RefStackMv will be constructed during this process.
+RefStackMv[ idx ][ list ][ comp ] represents component comp (0 for y or 1 for x) of a motion vector for a particular list (0 or 1) at position idx (0 to MAX_REF_MV_STACK_SIZE - 1) in the stack.  No initialization is needed because each entry is always written before it can be read.</p>
+
 <p>The variable bw4 specifying the width of the block in 4x4 pixels is set equal to Num_4x4_Blocks_Wide[ MiSize ].</p>
 
 <p>The variable bh4 specifying the height of the block in 4x4 pixels is set equal to Num_4x4_Blocks_High[ MiSize ].</p>
@@ -10741,7 +10791,7 @@ when decoding inter prediction syntax elements.</p>
     <p>The variable NumMvFound (representing the number of motion vector candidates in RefStackMv) is set equal to 0.</p>
   </li>
   <li>
-    <p>The variable NewMvFound (representing if we find a candidate that used NEWMV encoding) is set equal to 0.</p>
+    <p>The variable NewMvFound (representing a candidate is found that used NEWMV encoding) is set equal to 0.</p>
   </li>
   <li>
     <p>The setup zero mv process specified in <a href="#setup-zero-mv-process">section 7.8.1.1</a> is invoked with the input 0 and the output is assigned to ZeroMvs[ 0 ].</p>
@@ -11234,7 +11284,8 @@ the compound search stack process in <a href="#compound-search-stack-process">se
   </li>
 </ul>
 
-<p>This process adds motion vectors to the stack if they are not already present.</p>
+<p>This process searches the stack for an exact match with a candidate motion vector.
+If present, the weight is increased, otherwise the process adds a motion vector to the stack.</p>
 
 <p>The variable candMode is set equal to YModes[ mvRow ][ mvCol ].</p>
 
@@ -11297,7 +11348,8 @@ the compound search stack process in <a href="#compound-search-stack-process">se
   </li>
 </ul>
 
-<p>This process adds motion vectors to the stack if they are not already present.</p>
+<p>This process searches the stack for an exact match with a candidate pair of motion vectors.
+If present, the weight is increased, otherwise the process adds the motion vectors to the stack.</p>
 
 <p>The array candMvs (containing two motion vectors) is set equal to Mvs[ mvRow ][ mvCol ].</p>
 
@@ -11406,7 +11458,7 @@ and all three fractional bits when force_integer_mv is equal to 1.</p>
     newEnd = start
     for ( idx = start + 1; idx &lt; end; idx++ ) {
         if ( WeightStack[ idx - 1 ] &lt; WeightStack[ idx ] ) {
-            swap(idx - 1, idx)
+            swap_stack(idx - 1, idx)
             newEnd = idx
         }
     }
@@ -11414,12 +11466,21 @@ and all three fractional bits when force_integer_mv is equal to 1.</p>
 }
 </code></pre>
 
-<p>When the function swap is invoked, the entries at locations idx and idx - 1 should be swapped in each of the following arrays:</p>
+<p>When the function swap_stack is invoked, the entries at locations idx and idx - 1 should be swapped in WeightStack and RefStackMv as follows:</p>
 
-<ul>
-  <li>WeightStack</li>
-  <li>RefStackMv</li>
-</ul>
+<pre><code class="language-c">swap_stack( i, j ) {
+  temp = WeightStack[ i ]
+  WeightStack[ i ] = WeightStack[ j ]
+  WeightStack[ j ] = temp
+  for ( list = 0; list &lt; 2; list++ ) {
+    for ( comp = 0; comp &lt; 2; comp++ ) {
+      temp = RefStackMv[ i ][ list ][ comp ]
+      RefStackMv[ i ][ list ][ comp ] = RefStackMv[ j ][ list ][ comp ]
+      RefStackMv[ j ][ list ][ comp ] = temp
+    }
+  }
+}
+</code></pre>
 
 <h5 id="extra-search-process">Extra Search Process</h5>
 
@@ -11694,16 +11755,16 @@ suitable for use by overlapped motion compensation, or 0 otherwise.</p>
 
 <ol>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to 0..(w4 - 1) (this adds candidates above the current block).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to 0..(w4 - 1) (this attempts to add candidates above the current block).</p>
   </li>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaCol equal to -1, and deltaRow equal to 0..(h4 - 1) (this adds candidates to the left of the current block).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaCol equal to -1, and deltaRow equal to 0..(h4 - 1) (this attempts to add candidates to the left of the current block).</p>
   </li>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to -1 (this adds a candidate to the top left).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to -1 (this attempts to add a candidate to the top left).</p>
   </li>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to w4 (this adds a candidate to the top right).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to w4 (this attempts to add a candidate to the top right).</p>
   </li>
   <li>
     <p>If NumSamples is equal to 0 and NumSamplesScanned is greater than 0, NumSamples is set equal to 1.</p>
@@ -12632,8 +12693,7 @@ avg = Clip1( avg )
   </li>
 </ul>
 
-<p class="alert alert-info"><strong>Note:</strong> We want to divide by w+h without using a division.
-0xab is round(512/3) and 0xcd is round(1024,5).</p>
+<p class="alert alert-info"><strong>Note:</strong> The values for multiplier are chosen to approximate the effect of dividing by w+h.</p>
 
 <ul>
   <li>
@@ -13175,7 +13235,7 @@ adjusted to compensate for any difference in the size of the reference frame
 compared to the current frame.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> When intra block copy is being used, refIdx will be equal to -1
-to signal that we need to predict from the frame currently being decoded.
+to signal prediction from the frame currently being decoded.
 The arrays RefFrameWidth and RefFrameHeight include values at index -1 giving the
 dimensions of the current frame.</p>
 
@@ -13503,7 +13563,7 @@ The filter at index 5 has a four tap version of the EIGHTAP_SMOOTH filter.</p>
     <p>a variable plane,</p>
   </li>
   <li>
-    <p>a variable refList specifying that we should predict from
+    <p>a variable refList specifying that the process should predict from
 RefFrame[ refList ],</p>
   </li>
   <li>
@@ -13772,7 +13832,7 @@ delta = Round2Signed( delta0, WARP_PARAM_REDUCE_BITS ) &lt;&lt; WARP_PARAM_REDUC
 
 <p>The outputs for this process are variables divShift and divFactor that can be used to perform an approximate division by d via multiplying by divFactor and shifting right by divShift.</p>
 
-<p>The variable n (representing the location of the most signficant bit in Abs(d) ) is set equal to floor( log2( Abs(d) ) ).</p>
+<p>The variable n (representing the location of the most signficant bit in Abs(d) ) is set equal to FloorLog2( Abs(d) ).</p>
 
 <p>The variable e is set equal to Abs( d ) - ( 1 &lt;&lt; n ).</p>
 
@@ -15099,8 +15159,8 @@ Cos128_Lookup[ 256 - angle2 ].</p>
 
 <p>The function sin128( angle ) is defined to be cos128( angle - 64 ).</p>
 
-<p class="alert alert-info"><strong>Note:</strong> The cos128 function implements the expression round( 4096 * cos( angle * pi / 128 ) ).
-The sin128 function implements the expression round( 4096 * sin( angle * pi / 128 ) ).</p>
+<p class="alert alert-info"><strong>Note:</strong> The cos128 function implements the expression 4096 * cos( angle * pi / 128 ) rounded to the nearest integer.
+The sin128 function implements the expression 4096 * sin( angle * pi / 128 ) rounded to the nearest integer.</p>
 
 <p>When the angle is equal to 32 + 64 * k for integer k the butterfly rotation can
 be equivalently performed with two fewer multiplications (because the
@@ -16048,12 +16108,12 @@ of the current frame referenced via intra prediction are not yet filtered.</p>
 
 <ul>
   <li>
-    <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
+    <p>a variable plane specifying whether the process is filtering Y, U, or V samples,</p>
   </li>
   <li>
     <p>a variable pass specifying the direction of the edges. pass equal to 0
-means we are filtering vertical block boundaries, and pass equal to 1
-means we are filtering horizontal block boundaries,</p>
+means the process is filtering vertical block boundaries, and pass equal to 1
+means the process is filtering horizontal block boundaries,</p>
   </li>
   <li>
     <p>variables row and col specifying the location of the edge in units
@@ -16274,7 +16334,7 @@ lvl, limit, blimit, and thresh.</p>
     <p>variables subX and subY describing the subsampling of the current plane,</p>
   </li>
   <li>
-    <p>a variable plane specifying whether we are filtering Y, U, or V samples.</p>
+    <p>a variable plane specifying whether the process is filtering Y, U, or V samples.</p>
   </li>
 </ul>
 
@@ -16307,11 +16367,11 @@ equal to Min( TX_8X8, baseSize ).</p>
     <p>the variables row and col specifying the luma location in units of 4x4 blocks,</p>
   </li>
   <li>
-    <p>the variable plane specifying whether we are filtering Y, U or V samples,</p>
+    <p>the variable plane specifying whether the process is filtering Y, U or V samples,</p>
   </li>
   <li>
-    <p>the variable pass specifying the direction of the edge being filtered. pass equal to 0 means we are
-  filtering vertical block boundaries, and pass equal to 1 means we are filtering horizontal block
+    <p>the variable pass specifying the direction of the edge being filtered. pass equal to 0 means the process is
+  filtering vertical block boundaries, and pass equal to 1 means the process is filtering horizontal block
   boundaries.</p>
   </li>
 </ul>
@@ -16413,11 +16473,11 @@ Clip3( 1, 9 - loop_filter_sharpness, lvl &gt;&gt; shift ).</p>
     <p>The variable deltaLF, specifying the loop filter delta value,</p>
   </li>
   <li>
-    <p>The variable plane, specifying whether we are filtering Y, U or V samples,</p>
+    <p>The variable plane, specifying whether the process is filtering Y, U or V samples,</p>
   </li>
   <li>
-    <p>The variable pass, specifying the direction of the edge being filtered. pass equal to 0 means we are
-filtering vertical block boundaries, and pass equal to 1 means we are filtering horizontal block
+    <p>The variable pass, specifying the direction of the edge being filtered. pass equal to 0 means the process is
+filtering vertical block boundaries, and pass equal to 1 means the process is filtering horizontal block
 boundaries.</p>
   </li>
 </ul>
@@ -16909,7 +16969,7 @@ CdefFrame will be overwritten later in this process.</p>
     <p>The variable dir is set equal to ( priStr == 0 ) ? 0 : yDir.</p>
   </li>
   <li>
-    <p>The variable varStr is set equal to ( var &gt;&gt; 6 ) ? Min( floor( log2( var &gt;&gt; 6 ) ), 12) : 0.</p>
+    <p>The variable varStr is set equal to ( var &gt;&gt; 6 ) ? Min( FloorLog2( var &gt;&gt; 6 ), 12) : 0.</p>
   </li>
   <li>
     <p>The variable priStr is set equal to ( var ? ( priStr * ( 4 + varStr ) + 8 ) &gt;&gt; 4 : 0 ).</p>
@@ -17124,7 +17184,7 @@ Cdef_Sec_Taps[2][2] = {
 <pre><code class="language-c">constrain(diff, threshold, damping) {
     if ( !threshold )
       return 0
-    dampingAdj = Max(0, damping - floor( log2( threshold ) ) )
+    dampingAdj = Max(0, damping - FloorLog2( threshold ) )
     sign = (diff &lt; 0) ? -1 : 1
     return sign * Clip3(0, Abs(diff), threshold - (Abs(diff) &gt;&gt; dampingAdj) )
 }
@@ -17277,7 +17337,7 @@ Cdef_440Directions[8] = { 1, 2, 2, 2, 3, 4, 6, 0 }
 <p>Output from this process is the array LrFrame of loop restored samples.</p>
 
 <p class="alert alert-info"><strong>Note:</strong>
-Although in this process we loop over 4x4 blocks,
+Although this process loops over 4x4 blocks,
 loop restoration is designed to work in stripes 64 luma pixels high without needing additional line buffers.
 Samples within the current stripe are fetched from UpscaledCdefFrame. 
 Samples outside the current stripe are fetched from UpscaledCurrFrame (these samples will be deblocked, but will not have CDEF filtering applied).</p>
@@ -17305,7 +17365,7 @@ Samples outside the current stripe are fetched from UpscaledCurrFrame (these sam
 
 <ul>
   <li>
-    <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
+    <p>a variable plane specifying whether the process is filtering Y, U, or V samples,</p>
   </li>
   <li>
     <p>variables row and col specifying the location of the block in units
@@ -17428,7 +17488,7 @@ plane as follows:</p>
 <p>(Variables x and y represent the position of the block in samples relative to the top-left corner of the current plane.
 Variables w and h represent the size of the block in samples.)</p>
 
-<p class="alert alert-info"><strong>Note:</strong> Although we describe the filter as operating on small blocks, the output will be the same
+<p class="alert alert-info"><strong>Note:</strong> Although the filter is described as operating on small blocks, the output will be the same
 if larger blocks are used - provided all contained samples belong to the same loop restoration unit.</p>
 
 <p>The variable rType (specifying the loop restoration type) is set equal to LrType[ TileNum ][ plane ][ unitRow ][ unitCol ].</p>
@@ -17453,7 +17513,7 @@ if larger blocks are used - provided all contained samples belong to the same lo
 
 <ul>
   <li>
-    <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
+    <p>a variable plane specifying whether the process is filtering Y, U, or V samples,</p>
   </li>
   <li>
     <p>variables unitRow and unitCol specifying the offset of the loop restoration unit with the current tile,</p>
@@ -17518,7 +17578,7 @@ for ( i = 0; i &lt; h; i++ ) {
 
 <ul>
   <li>
-    <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
+    <p>a variable plane specifying whether the process is filtering Y, U, or V samples,</p>
   </li>
   <li>
     <p>variables x and y specifying the position of the block in samples relative to the top-left corner of the current plane,</p>
@@ -17530,7 +17590,7 @@ for ( i = 0; i &lt; h; i++ ) {
     <p>a variable set specifying the strength of the filtering,</p>
   </li>
   <li>
-    <p>a variable pass (equal to 0 or 1), specifying if we are generating the first or second filtered output.</p>
+    <p>a variable pass (equal to 0 or 1), specifying if the process is generating the first or second filtered output.</p>
   </li>
 </ul>
 
@@ -17628,7 +17688,7 @@ and the output assigned to variable c.</p>
 
 <ul>
   <li>
-    <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
+    <p>a variable plane specifying whether the process is filtering Y, U, or V samples,</p>
   </li>
   <li>
     <p>variables unitRow and unitCol specifying the offset of the loop restoration unit with the current tile,</p>
@@ -17722,7 +17782,7 @@ In other words, luma uses a 7-tap filter, while chroma uses a 5-tap filter.</p>
 
 <ul>
   <li>
-    <p>a variable plane specifying whether we are filtering Y, U, or V samples,</p>
+    <p>a variable plane specifying whether the process is filtering Y, U, or V samples,</p>
   </li>
   <li>
     <p>variables x and y specifying the location in the current plane in units of samples.</p>
@@ -17757,7 +17817,7 @@ In other words, requests for the third line (above or below) are given a copy of
 
 <h3 id="output-process">Output Process</h3>
 
-<p>This process is invoked to optionally display a frame.</p>
+<p>This process is invoked to display a frame.</p>
 
 <p>First the arrays OutY, OutU, and OutV are prepared and then film grain noise is added if required.</p>
 
@@ -17802,7 +17862,7 @@ with x = 0..((w + subX) &gt;&gt; subX) - 1 and y = 0..((h + subY) &gt;&gt; subY)
   </li>
 </ul>
 
-<p>Otherwise, if show_frame is equal to 1, then the decoder should copy the
+<p>Otherwise (show_existing_frame is equal to 0), then the decoder should copy the
 current frame as follows:</p>
 
 <ul>
@@ -17844,7 +17904,11 @@ with x = 0..((w + subX) &gt;&gt; subX) - 1 and y = 0..((h + subY) &gt;&gt; subY)
 the film grain synthesis process specified in <a href="#film-grain-synthesis-process">section 7.16.1</a> is invoked with inputs of w, h, subX, and subY.
 (This process modifies the output arrays OutY, OutU, OutV).</p>
 
-<p>Finally, the output of the decoding process is defined to be the arrays OutY, OutU, OutV where the bit depth for each sample is BitDepth.</p>
+<p>Finally, the frame to be displayed is defined to be the arrays OutY, OutU, OutV where the bit depth for each sample is BitDepth.</p>
+
+<p>This frame to be displayed is the overall output of the decoding process and further processing (such as color conversion) is outside the scope of this specification.</p>
+
+<p>For example, a real implementation might use these arrays to display the frame to the user, or a test system might save the arrays so the output can be verified.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> If NumPlanes is equal to 1, then the U and V planes should be ignored.</p>
 
@@ -18808,7 +18872,7 @@ subtraction out of this loop.</p>
 
 <ol>
   <li>
-    <p>The variable bits is set to 15 – floor( log2( BoolRange ) ).
+    <p>The variable bits is set to 15 – FloorLog2( BoolRange ).
 This represents the number of new bits to be read from the bitstream.</p>
   </li>
   <li>
@@ -18831,7 +18895,7 @@ effect.</p>
 
 <p>The cumulative distribution is updated as follows:</p>
 
-<pre><code class="language-c">rate = 3 + ( cdf[ N ] &gt; 15 ) + ( cdf[ N ] &gt; 31 ) + Min( floor( log2( N ) ), 2 )
+<pre><code class="language-c">rate = 3 + ( cdf[ N ] &gt; 15 ) + ( cdf[ N ] &gt; 31 ) + Min( FloorLog2( N ), 2 )
 tmp = 0
 for (i = 0; i &lt; N - 1; i++) {
   tmp = ( i == symbol ) ? ( 1 &lt;&lt; 15 ) : tmp
@@ -31578,7 +31642,7 @@ resolution and performance characteristics.</p>
   </ul>
 
   <p class="alert alert-info"><strong>Note:</strong> Main profile consists of YUV 4:2:0 or monochrome sequences with bit depth equal to 8 or 10.
-High profile consists of YUV 4:4:4 sequences with bit depth equal to 8 or 10.
+High profile consists of YUV 4:4:4 sequences with bit depth equal to 8 or 10 (monochrome is not allowed in high profile).
 Professional profile consists of YUV 4:2:2 sequences with bit depth equal to 8 or 10 or 12,
 4:2:0 sequences with bit depth equal to 12,
 and 4:4:4 sequences with bit depth equal to 12.</p>
