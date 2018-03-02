@@ -20,6 +20,7 @@ The specification has been updated to include the following list of adopted expe
 | cb4x4                         |
 | cdef                          |
 | cdef_singlepass               |
+| cdf_update_mode               |
 | cfl                           |
 | chroma_sub8x8                 |
 | CICP                          |
