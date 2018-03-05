@@ -22,6 +22,11 @@
   <meta name="msapplication-TileColor" content="#ffffff">
   <meta name="msapplication-TileImage" content="assets/images/icons/ms-icon-144x144.png">
   <meta name="theme-color" content="#ffffff">
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+  <!-- Include all compiled plugins (below), or include individual files as needed -->
+  <script src="assets/js/bootstrap.min.js"></script>
 </head>
 
 <body>
@@ -33,7 +38,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-01 08:34:06 -0800</em></p>
+<p><em>Last modified: 2018-03-05 02:28:43 -0800</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -55,6 +60,24 @@ not rely on its current contents.</p>
 <a href="http://aomedia.org/">Alliance for Open Media</a> AV1 video codec.</p>
 
 <p><a class="btn btn-xs btn-primary" role="button" data-toggle="collapse" href="#contents" aria-expanded="false" aria-controls="contents"><b>Contents</b></a></p>
+
+<script>
+$(document).ready(function() {
+    $("#markdown-toc > li").each(function() {
+        var content = $(this).children(":first").html();
+        if (content.indexOf("Annex") == 0) {
+            var annexID = content.substring(6, 7)
+            var items = $(this).find("li").add(this);
+            
+            items.attr("data-annexid", annexID);
+            items.addClass("annex");
+        }
+        if (content.indexOf("Bibliography") == 0) {
+            $(this).find("li").add(this).addClass("bibliography");
+        }
+    });
+});
+</script>
 
 <div id="contents" class="collapse">
 
@@ -1092,7 +1115,7 @@ relate to the semantics of a particular syntax element are defined in
     </tr>
     <tr>
       <td><code>TX_SIZE_CONTEXTS</code></td>
-      <td style="text-align: center">2</td>
+      <td style="text-align: center">3</td>
       <td>Number of contexts for transform size</td>
     </tr>
     <tr>
@@ -2598,6 +2621,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     }
     <b class="syntax-element">use_128x128_superblock</b>                                                   f(1)
     <b class="syntax-element">enable_dual_filter</b>                                                       f(1)
+    <b class="syntax-element">enable_jnt_comp</b>                                                          f(1)
     <b class="syntax-element">seq_choose_screen_content_tools</b>                                          f(1)
     if ( seq_choose_screen_content_tools ) {
         seq_force_screen_content_tools = SELECT_SCREEN_CONTENT_TOOLS
@@ -2845,9 +2869,8 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
                     frame_type == KEY_FRAME)
     <b class="syntax-element">show_frame</b>                                                               f(1)
     <b class="syntax-element">error_resilient_mode</b>                                                     f(1)
-    if ( FrameIsIntra ) {
-        <b class="syntax-element">disable_intra_edge_filter</b>                                            f(1)
-    }
+    <b class="syntax-element">disable_intra_edge_filter</b>                                                f(1)
+    <b class="syntax-element">disable_cdf_update</b>                                                       f(1)
     if ( seq_force_screen_content_tools == SELECT_SCREEN_CONTENT_TOOLS ) {
         <b class="syntax-element">allow_screen_content_tools</b>                                           f(1)
     } else {
@@ -2918,6 +2941,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
                 <b class="syntax-element">allow_high_precision_mv</b>                                      f(1)
             }
             read_interpolation_filter( )
+            <b class="syntax-element">is_motion_mode_switchable</b>                                        f(1)
             if ( error_resilient_mode ) {
                 can_use_previous = 0
             } else {
@@ -2955,7 +2979,6 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         load_cdfs( ref_frame_idx[ 0 ] )
     }
     tile_info( )
-    loop_filter_params( )
     quantization_params( )
     segmentation_params( )
     delta_q_params( )
@@ -2985,6 +3008,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
             }
         }
     }
+    loop_filter_params( )
     cdef_params( )
     lr_params( )
     read_tx_mode( )
@@ -3027,7 +3051,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         RenderWidth = render_width_minus_1 + 1
         RenderHeight = render_height_minus_1 + 1
     } else {
-        RenderWidth = FrameWidth
+        RenderWidth = UpscaledWidth
         RenderHeight = FrameHeight
     }
 }
@@ -3041,8 +3065,8 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         if ( found_ref == 1 ) {
             FrameWidth = RefFrameWidth[ ref_frame_idx[ i ] ]
             FrameHeight = RefFrameHeight[ ref_frame_idx[ i ] ]
-            RenderWidth = FrameWidth
-            RenderHeight = FrameHeight
+            RenderWidth = RefRenderWidth[ ref_frame_idx[ i ] ]
+            RenderHeight = RefRenderHeight[ ref_frame_idx[ i ] ]
             break
         }
     }
@@ -3095,7 +3119,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <h4 id="loop-filter-params-syntax">Loop Filter Params Syntax</h4>
 
 <pre class="syntax"><code>loop_filter_params( ) {
-    if ( allow_intrabc ) {
+    if ( AllLossless || allow_intrabc ) {
         loop_filter_level[ 0 ] = 0
         loop_filter_level[ 1 ] = 0
         return
@@ -3323,7 +3347,7 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
             for (i = 0; i &lt; TileRows; i++) {
                 if (MiRowStarts[i+1] - startMi &gt; maxTileHeightMi) {
                     AllowDependentTileRow[i] = 0
-                    startMi = MiRowStarts[i+1]
+                    startMi = MiRowStarts[i]
                 } else {
                     AllowDependentTileRow[i] = 1
                 }
@@ -3395,7 +3419,12 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
 <h4 id="cdef-params-syntax">CDEF Params Syntax</h4>
 
 <pre class="syntax"><code>cdef_params( ) {
-    if ( allow_intrabc || AllLossless ) {
+    if ( AllLossless || allow_intrabc ) {
+        cdef_bits = 0
+        cdef_y_pri_strength[0] = 0
+        cdef_y_sec_strength[0] = 0
+        cdef_uv_pri_strength[0] = 0
+        cdef_uv_sec_strength[0] = 0
         return
     }
     <b class="syntax-element">cdef_damping_minus_3</b>                                                     f(2)
@@ -3419,7 +3448,10 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
 <h4 id="loop-restoration-params-syntax">Loop Restoration Params Syntax</h4>
 
 <pre class="syntax"><code>lr_params( ) {
-    if ( allow_intrabc ) {
+    if ( AllLossless || allow_intrabc ) {
+        FrameRestorationType[0] = RESTORE_NONE
+        FrameRestorationType[1] = RESTORE_NONE
+        FrameRestorationType[2] = RESTORE_NONE
         return
     }
     usesLr = 0
@@ -3506,24 +3538,25 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
             skipModeAllowed = 0
         } else if ( backwardIdx &gt;= 0 ) {
             skipModeAllowed = 1
-            ForwardFrame = LAST_FRAME + Min(forwardIdx, backwardIdx)
-            BackwardFrame = LAST_FRAME + Max(forwardIdx, backwardIdx)
+            SkipModeFrame[ 0 ] = LAST_FRAME + Min(forwardIdx, backwardIdx)
+            SkipModeFrame[ 1 ] = LAST_FRAME + Max(forwardIdx, backwardIdx)
         } else {
+            secondForwardIdx = -1
             for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {
                 refHint = RefOrderHint[ ref_frame_idx[ i ] ]
                 if ( refHint &lt; forwardHint ) {
-                    if ( backwardIdx &lt; 0 || refHint &gt; backwardHint ) {
-                        backwardIdx = i
-                        backwardHint = refHint
+                    if ( secondForwardIdx &lt; 0 || refHint &gt; secondForwardHint ) {
+                        secondForwardIdx = i
+                        secondForwardHint = refHint
                     }
                 }
             }
-            if ( backwardIdx &lt; 0 ) {
+            if ( secondForwardIdx &lt; 0 ) {
                 skipModeAllowed = 0
             } else {
                 skipModeAllowed = 1
-                ForwardFrame = LAST_FRAME + Min(forwardIdx, backwardIdx)
-                BackwardFrame = LAST_FRAME + Max(forwardIdx, backwardIdx)
+                SkipModeFrame[ 0 ] = LAST_FRAME + Min(forwardIdx, secondForwardIdx)
+                SkipModeFrame[ 1 ] = LAST_FRAME + Max(forwardIdx, secondForwardIdx)
             }
         }
     }
@@ -3631,8 +3664,8 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
         }
     }
     precDiff = WARPEDMODEL_PREC_BITS - precBits
-    round = (i % 3) == 2 ? (1 &lt;&lt; WARPEDMODEL_PREC_BITS) : 0
-    sub = (i % 3) == 2 ? (1 &lt;&lt; precDiff) : 0
+    round = (idx % 3) == 2 ? (1 &lt;&lt; WARPEDMODEL_PREC_BITS) : 0
+    sub = (idx % 3) == 2 ? (1 &lt;&lt; precBits) : 0
     mx = (1 &lt;&lt; absBits)
     r = (gm_params[ref][idx] &gt;&gt; precDiff) - sub
     gm_params[ref][idx] = (decode_signed_subexp_with_ref( -mx, mx + 1, r ) &lt;&lt; precDiff) + round
@@ -3722,7 +3755,10 @@ However, these fractional bits will be discarded during the Setup Zero MV proces
         return
     }
     <b class="syntax-element">grain_seed</b>                                                               f(16)
-    <b class="syntax-element">update_grain</b>                                                             f(1)
+    if ( frame_type == INTER_FRAME )
+        <b class="syntax-element">update_grain</b>                                                         f(1)
+    else
+        update_grain = 1
     if ( !update_grain ) {
         return
     }
@@ -3982,6 +4018,10 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
         AvailLChroma = 0
     }
     mode_info( )
+    palette_tokens( )
+    read_inter_tx_size( )
+    filter_intra_mode_info( )
+    
     if ( skip )
         reset_block_context( bw4, bh4 )
     for ( y = 0; y &lt; bh4; y++ ) {
@@ -4080,7 +4120,6 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
     }
     if ( use_intrabc ) {
         is_inter = 1
-        read_inter_tx_size( )
         YMode = DC_PRED
         UVMode = DC_PRED
         PaletteSizeY = 0
@@ -4091,7 +4130,6 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
         assign_mv( 0 )
     } else {
         is_inter = 0
-        read_tx_size( 1 )
         <b class="syntax-element">intra_frame_y_mode</b>                                                   S()
         YMode = intra_frame_y_mode
         intra_angle_info_y( )
@@ -4112,7 +4150,6 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
             palette_mode_info( )
         }
         use_filter_intra = 0
-        filter_intra_mode_info( )
     }
 }
 </code></pre>
@@ -4203,7 +4240,7 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
 <h4 id="skip-syntax">Skip Syntax</h4>
 
 <pre class="syntax"><code>read_skip() {
-    if ( seg_feature_active( SEG_LVL_SKIP ) ) {
+    if ( SegIdPreSkip &amp;&amp; seg_feature_active( SEG_LVL_SKIP ) ) {
         skip = 1
     } else {
         <b class="syntax-element">skip</b>                                                                 S()
@@ -4416,7 +4453,6 @@ can be encoded for each block size:</p>
     read_delta_lf( )
     ReadDeltas = 0
     read_is_inter( )
-    read_inter_tx_size( )
     if ( is_inter )
         inter_block_mode_info( )
     else
@@ -4524,7 +4560,6 @@ of the segmentation map covered by the current block.</p>
          allow_screen_content_tools )
         palette_mode_info( )
     use_filter_intra = 0
-    filter_intra_mode_info( )
 }
 </code></pre>
 
@@ -4643,8 +4678,8 @@ of the segmentation map covered by the current block.</p>
 
 <pre class="syntax"><code>read_ref_frames( ) {
     if ( skip_mode ) {
-        RefFrame[ 0 ] = ForwardFrame
-        RefFrame[ 1 ] = BackwardFrame
+        RefFrame[ 0 ] = SkipModeFrame[ 0 ]
+        RefFrame[ 1 ] = SkipModeFrame[ 1 ]
     } else if ( seg_feature_active( SEG_LVL_REF_FRAME ) ) {
         RefFrame[ 0 ] = FeatureData[ segment_id ][ SEG_LVL_REF_FRAME ]
         RefFrame[ 1 ] = NONE
@@ -4781,6 +4816,10 @@ of the segmentation map covered by the current block.</p>
         motion_mode = SIMPLE
         return
     }
+    if ( !is_motion_mode_switchable ) {
+        motion_mode = SIMPLE
+        return
+    }
     if ( Min( Block_Width[ MiSize ],
               Block_Height[ MiSize ] ) &lt; 8 ) {
         motion_mode = SIMPLE
@@ -4822,7 +4861,7 @@ of the segmentation map covered by the current block.</p>
             if ( n &gt; 0 ) {
                 <b class="syntax-element">wedge_interintra</b>                                             S()
                 if (wedge_interintra) {
-                    <b class="syntax-element">wedge_index</b>                                              L(n)
+                    <b class="syntax-element">wedge_index</b>                                              S()
                     wedge_sign = 0
                 }
             } else {
@@ -4851,9 +4890,13 @@ of the segmentation map covered by the current block.</p>
             comp_group_idx = 0
         }
         if ( comp_group_idx == 0 ) {
-            <b class="syntax-element">compound_idx</b>                                                     S()
-            compound_type = compound_idx ? COMPOUND_DISTANCE :
-                                           COMPOUND_AVERAGE
+            if ( enable_jnt_comp ) {
+                <b class="syntax-element">compound_idx</b>                                                 S()
+                compound_type = compound_idx ? COMPOUND_DISTANCE :
+                                               COMPOUND_AVERAGE
+            } else {
+                compound_type = COMPOUND_AVERAGE
+            }
             return
         }
     }
@@ -4866,7 +4909,7 @@ of the segmentation map covered by the current block.</p>
             <b class="syntax-element">compound_type</b>                                                    S()
         }
         if ( compound_type == COMPOUND_WEDGE ) {
-            <b class="syntax-element">wedge_index</b>                                                      L(n)
+            <b class="syntax-element">wedge_index</b>                                                      S()
             <b class="syntax-element">wedge_sign</b>                                                       L(1)
         } else if ( compound_type == COMPOUND_SEG ) {
             <b class="syntax-element">mask_type</b>                                                        L(1)
@@ -4971,8 +5014,6 @@ of the segmentation map covered by the current block.</p>
 <h4 id="residual-syntax">Residual Syntax</h4>
 
 <pre class="syntax"><code>residual( ) {
-    palette_tokens( )
-
     sbMask = use_128x128_superblock ? 31 : 15
     
     widthChunks = Max( 1, Block_Width[ MiSize ] &gt;&gt; 6 )
@@ -5343,27 +5384,23 @@ for the specified plane.
             Quant[ scan [ c ] ] = level
         }
         
+        coeffMin = - ( 1 &lt;&lt; ( 7 + BitDepth ) )
+        coeffMax = ( 1 &lt;&lt; ( 7 + BitDepth ) ) - 1
+        
         for ( c = 0; c &lt; eob; c++ ) {
             pos = scan[ c ]
             if ( Quant[ pos ] != 0 ) {
                 culLevel += Quant[ pos ]
                 if ( c == 0 ) {
                     <b class="syntax-element">dc_sign</b>                                                  S()
-                    signs[ c ] = dc_sign
+                    sign = dc_sign
                 } else {
                     <b class="syntax-element">sign_bit</b>                                                 L(1)
-                    signs[ c ] = sign_bit
+                    sign = sign_bit
                 }
             } else {
-                signs[ c ] = 0
+                sign = 0
             }
-        }
-        
-        coeffMin = - ( 1 &lt;&lt; ( 7 + BitDepth ) )
-        coeffMax = ( 1 &lt;&lt; ( 7 + BitDepth ) ) - 1
-        
-        for ( c = 0; c &lt; eob; c++ ) {
-            pos = scan[ c ]
             if ( Quant[ pos ] &gt;
                 ( NUM_BASE_LEVELS + COEFF_BASE_RANGE ) ) {
                 length = 0
@@ -5378,7 +5415,7 @@ for the specified plane.
                 }
                Quant[ pos ] = x + COEFF_BASE_RANGE + NUM_BASE_LEVELS
             }
-            if ( signs[ c ] )
+            if ( sign )
                 Quant[ pos ] = - Quant[ scan[ c ] ]
             Quant[ pos ] = Clip3( coeffMin, coeffMax, Quant[ scan[ c ] ] )
         }
@@ -6469,15 +6506,25 @@ but allow decoders to spot when frames have been missed and take an appropriate 
 128x128 pixels. When equal to 0, it indicates that superblocks are 64x64
 pixels.</p>
 
-<p><strong>seq_choose_screen_content_tools</strong> equal to 1 indicates that the allow_screen_content_tools syntax element
-will be present in the frame headers of inter and intra-only frames.</p>
+<p><strong>enable_dual_filter</strong> equal to 1 indicates that the inter prediction filter
+type may be specified independently in the horizontal and vertical directions.
+If the flag is equal to 0, only one filter type may be specified, which is
+then used in both directions.</p>
+
+<p><strong>enable_jnt_comp</strong> equal to 1 indicates that the distance weights process
+may be used for inter prediction.</p>
+
+<p><strong>seq_choose_screen_content_tools</strong> equal to 1 indicates that the seq_force_screen_content_tools syntax element
+will be present.  seq_choose_screen_content_tools equal to 0 indicates that seq_force_screen_content_tools
+should be set equal to SELECT_SCREEN_CONTENT_TOOLS.</p>
 
 <p><strong>seq_force_screen_content_tools</strong> equal to SELECT_SCREEN_CONTENT_TOOLS indicates that the allow_screen_content_tools
 syntax element will be present in the frame headers of inter and intra-only frames.  Otherwise,
 seq_force_screen_content_tools contains the value for allow_screen_content_tools.</p>
 
-<p><strong>seq_choose_integer_mv</strong> equal to 1 indicates that the force_integer_mv syntax element
-will be present in the frame headers of inter and intra-only frames.</p>
+<p><strong>seq_choose_integer_mv</strong> equal to 1 indicates that the seq_force_integer_mv syntax element
+will be present.  seq_choose_integer_mv equal to 0 indicates that seq_force_integer_mv should be set
+equal to SELECT_INTEGER_MV.</p>
 
 <p><strong>seq_force_integer_mv</strong> equal to SELECT_INTEGER_MV indicates that the force_integer_mv syntax element
 will be present in the frame headers of inter and intra-only frames.  Otherwise, seq_force_integer_mv
@@ -7383,6 +7430,9 @@ independently of previous frames.</p>
 <p><strong>disable_intra_edge_filter</strong> specifies whether the intra edge filtering process
 should be disabled.</p>
 
+<p><strong>disable_cdf_update</strong> specifies whether the CDF update in the symbol decoding process should be
+disabled.</p>
+
 <p><strong>current_frame_id</strong> specifies the frame number for the current frame.
 Frame numbers are additional information
 that do not affect the decoding process, but provide decoders with a way of detecting
@@ -7448,6 +7498,9 @@ ref_frame_idx was stored.</p>
 <p><strong>allow_high_precision_mv</strong> equal to 0 specifies that motion vectors are
 specified to quarter pel precision; allow_high_precision_mv equal to 1
 specifies that motion vectors are specified to eighth pel precision.</p>
+
+<p><strong>is_motion_mode_switchable</strong> equal to 0 specifies that only the SIMPLE 
+motion mode will be used.</p>
 
 <p><strong>can_use_previous</strong> equal to 1 specifies that information (motion vectors and global motion settings)
 from a previous frame can be used when decoding the current frame.
@@ -7773,6 +7826,9 @@ Default_Palette_Size_8_Uv_Color_Cdf</p>
       </li>
       <li>
         <p>InterIntraModeCdf is set to a copy of Default_Inter_Intra_Mode_Cdf</p>
+      </li>
+      <li>
+        <p>WedgeIndexCdf is set to a copy of Default_Wedge_Index_Cdf</p>
       </li>
       <li>
         <p>CflAlphaCdf is set to a copy of Default_Cfl_Alpha_Cdf</p>
@@ -8421,13 +8477,14 @@ explicitly for each block.</p>
 
 <h4 id="skip-mode-params-semantics">Skip Mode Params Semantics</h4>
 
-<p><strong>ForwardFrame</strong> and <strong>BackwardFrame</strong> specify the frames to use for compound prediction when skip_mode is equal to 1.</p>
+<p><strong>SkipModeFrame[ list ]</strong> specifies the frames to use for compound prediction when skip_mode is equal to 1.</p>
 
 <p><strong>skip_mode_present</strong> equal to 1 specifies that the syntax element skip_mode will be coded in the bitstream.
 skip_mode_present equal to 0 specifies that skip_mode will not be used for this frame.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> ForwardFrame and BackwardFrame are set to the closest forward and backward frames (as measured by values in the RefOrderHint array).
-If no backward frame is found, then the second closest forward frame is used.
+<p class="alert alert-info"><strong>Note:</strong> Skip mode tries to use the closest forward and backward references (as measured by values in the RefOrderHint array).
+If no backward reference is found, then the second closest forward reference is used.
+If no forward reference is found, then skip mode is disabled.
 (Forward prediction is when a frame is used for reference that is considered to be output before the current frame,
 backward prediction is when a frame is used that has not yet been output.)</p>
 
@@ -10603,9 +10660,9 @@ src equal to LAST2_FRAME, dir equal to 0, offsetSign equal to 1, and refStamp al
 
 <p>The variable h8 (representing the height of the motion field in units of 8x8 pixels) is set equal to MiRows &gt;&gt; 1.</p>
 
-<p>The variable sign is set equal to ( dir == 0 &amp;&amp; offsetSign == 0 ) ? 1 : -1.</p>
+<p>The variable sign is set equal to ( dir == 1 &amp;&amp; offsetSign == 0 ) ? -1 : 1.</p>
 
-<p>The variable dstSign is set equal to ( dir == 1 &amp;&amp; offsetSign == 0 ) ? -1 : 1.</p>
+<p>The variable dstSign is set equal to ( dir == 0 &amp;&amp; offsetSign == 0 ) ? 1 : -1.</p>
 
 <p>If RefMiRows[ srcIdx ] is not equal to MiRows, RefMiCols[ srcIdx ] is not equal to MiCols, or RefFrameIsIntra[ srcIdx ] is equal to 1, the process exits
 at this point, with the output set equal to 0.</p>
@@ -10618,13 +10675,17 @@ at this point, with the output set equal to 0.</p>
         col = 2 * x8 + 1
         srcRef = SavedRefFrames[ srcIdx ][ row ][ col ][ dir ]
         if ( srcRef &gt; INTRA_FRAME ) {
-            mv = SavedMvs[ srcIdx ][ row ][ col ][ dir ]
-            projMv = get_mv_projection( mv, srcRef, src, src, sign, dstSign )
-            posValid = get_block_position( y8, x8, offsetSign, projMv )
+            posValid = Abs( SavedOrderHints[ srcIdx ][ srcRef ] - OrderHints[ src ] ) &lt; MAX_FRAME_DISTANCE &amp;&amp;
+                       Abs( SavedOrderHints[ srcIdx ][ srcRef ] - OrderHint ) &lt; MAX_FRAME_DISTANCE
             if ( posValid ) {
-                for ( dst = LAST_FRAME; dst &lt;= ALTREF_FRAME; dst++ ) {
-                    projMv = get_mv_projection( mv, srcRef, src, dst, sign, -dstSign )
-                    MotionFieldMvs[ dst ][ PosY8 ][ PosX8 ][ refStamp ] = projMv
+                mv = SavedMvs[ srcIdx ][ row ][ col ][ dir ]
+                projMv = get_mv_projection( mv, srcRef, src, src, sign, dstSign )
+                posValid = get_block_position( y8, x8, offsetSign, projMv )
+                if ( posValid ) {
+                    for ( dst = LAST_FRAME; dst &lt;= ALTREF_FRAME; dst++ ) {
+                        projMv = get_mv_projection( mv, srcRef, src, dst, sign, -sign )
+                        MotionFieldMvs[ dst ][ PosY8 ][ PosX8 ][ refStamp ] = projMv
+                    }
                 }
             }
         }
@@ -10680,14 +10741,12 @@ In order to use the motion vector for predictions using a different reference fr
 
 <p>The variable refOrderHint (representing the expected output order of the frame referenced by the motion vector) is set equal to SavedOrderHints[ srcIdx ][ ref ].</p>
 
-<p>The variable mvOffset (representing the number of frames covered by the motion vector) is set equal to Max( 1, sign * (srcOrderHint - refOrderHint) ).</p>
+<p>The variable mvOffset (representing the number of frames covered by the motion vector) is set equal to Clip3( 1, MAX_FRAME_DISTANCE, sign * (srcOrderHint - refOrderHint) ).</p>
 
 <p>The variable dstOrderHint (representing the expected output order of the reference frame that is being targetted) is set equal to OrderHints[ dst ].</p>
 
-<p>The variable dstOffset (representing the number of frames that the motion vector should cover after it is scaled) is set equal to dstSign * (dstOrderHint - OrderHint).</p>
-
-<p>It is a requirement of bitstream conformance that mvOffset is in the range 0 to 63.
-It is a requirement of bitstream conformance that dstOffset is in the range -31 to 31.</p>
+<p>The variable dstOffset (representing the number of frames that the motion vector should cover after it is scaled) is set equal to
+Clip3( -MAX_FRAME_DISTANCE, MAX_FRAME_DISTANCE, dstSign * (dstOrderHint - OrderHint) ).</p>
 
 <p>The projected motion vector is specified as follows:</p>
 
@@ -11520,6 +11579,11 @@ for ( pass = 0; pass &lt; 2; pass++ ) {
     if ( !is_inside( mvRow, mvCol ) )
       break
     add_extra_mv_candidate( mvRow, mvCol, isCompound )
+    if ( pass == 0 ) {
+      idx += Num_4x4_Blocks_Wide[ MiSizes[ mvRow ][ mvCol ] ]
+    } else {
+      idx += Num_4x4_Blocks_High[ MiSizes[ mvRow ][ mvCol ] ]
+    }
   }
 } 
 </code></pre>
@@ -11528,23 +11592,20 @@ for ( pass = 0; pass &lt; 2; pass++ ) {
 
 <p>The function call to add_extra_mv_candidate invokes the add extra mv candidate process specified in <a href="#add-extra-mv-candidate-process">section 7.8.1.13</a> with mvRow, mvCol, isCompound as inputs.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> The reference code shows how idx can be incremented by larger amounts to
-avoid retesting the same candidate block multiple times (which will have no effect except for the first time the block is tested).</p>
-
-<p>If isCompound is equal to 1, the candidates in the RefIdMvs and RefDiffMvs arrays are added to the stack as follows:</p>
+<p>If isCompound is equal to 1, the candidates in the RefIdMvs and RefDiffMvs arrays are added to the stack as follows (using the temporary array combinedMvs):</p>
 
 <pre><code class="language-c">for ( list = 0; list &lt; 2; list++ ) {
   compCount = 0
   for ( idx = 0; idx &lt; RefIdCount[ list ]; idx++ ) {
-    combinedMvs[ list ][ compCount ] = RefIdMvs[ list ][ idx ]
+    combinedMvs[ compCount ][ list ] = RefIdMvs[ list ][ idx ]
     compCount++
   }
   for ( idx = 0; idx &lt; RefDiffCount[ list ]; idx++ ) {
-    combinedMvs[ list ][ compCount ] = RefDiffMvs[ list ][ idx ]
+    combinedMvs[ compCount ][ list ] = RefDiffMvs[ list ][ idx ]
     compCount++
   }
   while ( compCount &lt; 3 ) {
-    combinedMvs[ list ][ compCount ] = ZeroMvs[ list ]
+    combinedMvs[ compCount ][ list ] = ZeroMvs[ list ]
     compCount++
   }
 }
@@ -13065,7 +13126,7 @@ the following ordered steps:</p>
 
 * If BitDepth is equal to 12, InterRound0 is set equal to InterRound0 + 2.
 
-* If BitDepth is equal to 12, InterRound1 is set equal to InterRound1 - 2.
+* If BitDepth is equal to 12 and isCompound is equal to 0, InterRound1 is set equal to InterRound1 - 2.
 
 **Note:** The rounding is chosen to ensure that the output of the horizontal filter always fits within 16 bits.
 </code></pre>
@@ -15572,13 +15633,8 @@ s4 = SINPI_1_9 * T[ 2 ]
 s5 = SINPI_2_9 * T[ 3 ]
 s6 = SINPI_4_9 * T[ 3 ]
 s7 = T[ 0 ] - T[ 2 ]
-if ( BitDepth == 8 )
-   s7 = Clip3( - ( 1 &lt;&lt; 15 ), ( 1 &lt;&lt; 15 ) - 1, s7 )
 
 s7 = s7 + T[ 3 ]
-     
-if ( clamp )
-   s7 = Clip3( - ( 1 &lt;&lt; 15 ), ( 1 &lt;&lt; 15 ) - 1, s7 )
      
 x0 = s0 + s3 + s5
 x1 = s1 - s4 - s6
@@ -17892,7 +17948,7 @@ with x = 0..((w + subX) &gt;&gt; subX) - 1 and y = 0..((h + subY) &gt;&gt; subY)
   <li>
     <p>The array OutV is (w + subX) &gt;&gt; subX samples across by (h + subY) &gt;&gt; subY
 samples down and the sample at location x samples across and y samples
-down is given by OutV[ y ][ x ] = LrFrame[ 2 ][ x ][ y ]
+down is given by OutV[ y ][ x ] = LrFrame[ 2 ][ y ][ x ]
 with x = 0..((w + subX) &gt;&gt; subX) - 1 and y = 0..((h + subY) &gt;&gt; subY) - 1.</p>
   </li>
   <li>
@@ -18348,6 +18404,12 @@ if (refresh_frame_flags &gt;&gt; i) &amp; 1 is equal to 1):</p>
     <p>RefFrameHeight[ i ] is set equal to FrameHeight.</p>
   </li>
   <li>
+    <p>RefRenderWidth[ i ] is set equal to RenderWidth.</p>
+  </li>
+  <li>
+    <p>RefRenderHeight[ i ] is set equal to RenderHeight.</p>
+  </li>
+  <li>
     <p>RefMiCols[ i ] is set equal to MiCols.</p>
   </li>
   <li>
@@ -18727,6 +18789,9 @@ prefixed with “Tile”.  This copying produces the following arrays:</p>
     <p>TileInterIntraModeCdf</p>
   </li>
   <li>
+    <p>TileWedgeIndexCdf</p>
+  </li>
+  <li>
     <p>TileCflAlphaCdf</p>
   </li>
   <li>
@@ -18893,7 +18958,7 @@ newData ^ ( ( ( BoolValue + 1 ) &lt;&lt; bits ) - 1 ).</p>
 <p class="alert alert-info"><strong>Note:</strong> bits may be equal to 0, in which case these ordered steps have no
 effect.</p>
 
-<p>The cumulative distribution is updated as follows:</p>
+<p>If disable_cdf_update is equal to 0, the cumulative distribution is updated as follows:</p>
 
 <pre><code class="language-c">rate = 3 + ( cdf[ N ] &gt; 15 ) + ( cdf[ N ] &gt; 31 ) + Min( FloorLog2( N ), 2 )
 tmp = 0
@@ -19058,20 +19123,27 @@ where ctx is computed by:</p>
 <pre><code class="language-c">    maxTxWidth = Tx_Width[ maxRectTxSize ]
     maxTxHeight = Tx_Height[ maxRectTxSize ]
     
-    aboveHasCoeffs = AvailU &amp;&amp; !Skips[ MiRow - 1 ][ MiCol ]
-    leftHasCoeffs = AvailL &amp;&amp; !Skips[ MiRow ][ MiCol - 1 ]
+    if ( AvailU &amp;&amp; IsInters[ MiCol ][ MiRow - 1 ] ) {
+        aboveW = Block_Size_Wide[ MiSizes[ MiCol ][ MiRow - 1 ] ]
+    } else if ( AvailU ) {
+        aboveW = get_above_tx_width( MiRow, MiCol )
+    } else {
+        aboveW = 0
+    }
     
-    if ( !aboveHasCoeffs &amp;&amp; !leftHasCoeffs )
-        ctx = 1
-    else if ( !aboveHasCoeffs )
-        ctx = ( 2 * Tx_Height[ TxSizes[ MiRow ][ MiCol - 1 ] ] ) &gt; maxTxHeight
-    else if ( !leftHasCoeffs )
-        ctx = ( 2 * Tx_Width[ TxSizes[ MiRow - 1 ][ MiCol ] ] ) &gt; maxTxWidth
-    else
-        ctx = ( 2 * ( Tx_Width[ TxSizes[ MiRow - 1 ][ MiCol ] ] +
-                      Tx_Height[ TxSizes[ MiRow ][ MiCol - 1 ] ] ) ) &gt; 
-              ( maxTxWidth + maxTxHeight )
+    if ( AvailL &amp;&amp; IsInters[ MiCol - 1 ][ MiRow ] ) {
+        leftH = Block_Size_High[ MiSizes[ MiCol - 1 ][ MiRow ] ]
+    } else if ( AvailL ) {
+        leftH = get_left_tx_height( MiRow, MiCol )
+    } else {
+        leftH = 0
+    }
+    
+    ctx = ( aboveW &gt;= maxTxWidth ) + ( leftH &gt;= maxTxHeight )
 </code></pre>
+
+<p>where get_above_tx_width and get_left_tx_height are functions defined as specified in the CDF selection
+process for txfm_split.</p>
 
 <p>The cdf to return is given by:</p>
 
@@ -19092,35 +19164,41 @@ where ctx is computed by:</p>
 
 <p><strong>txfm_split</strong>: the cdf is given by TileTxfmSplitCdf[ ctx ], where ctx is computed by:</p>
 
-<pre><code class="language-c">if ( !AvailU ) {
-    aboveW = 4
-} else {
-    if ( Skips[ row - 1][ col ] )
-        aboveW = Block_Width[ MiSizes[ row - 1 ][ col ] ]
-    else
-        aboveW = Tx_Width[ InterTxSizes[ row - 1 ][ col ] ]
-}
-if ( !AvailL ) {
-    leftH = 4
-} else {
-    if ( Skips[ row - 1][ col ] )
-        leftH = Block_Height[ MiSizes[ row  ][ col - 1 ] ]
-    else
-        leftH = Tx_Height[ InterTxSizes[ row  ][ col - 1] ]
-}
-txW = Tx_Width[txSz]
-txH = Tx_Height[txSz]
-above = aboveW &lt; txW
-left = leftH &lt; txH
+<pre><code class="language-c">above = get_above_tx_width( row, col ) &lt; Tx_Width[ txSz ]
+left = get_left_tx_height( row, col ) &lt; Tx_Height[ txSz ]
 ctx = TXFM_PARTITION_CONTEXTS - 1
 size = Max( Block_Width[ MiSize ], Block_Height[ MiSize ] )
 maxTxSz = find_tx_size( size, size )
 if (maxTxSz &gt;= TX_8X8) {
-    ctx = (txSz != maxTxSz &amp;&amp; maxTxSz &gt; TX_8X8) +
+    txSzSqrUp = Tx_Size_Sqr_Up[ txSz ]
+    ctx = (txSzSqrUp != maxTxSz &amp;&amp; maxTxSz &gt; TX_8X8) +
                (TX_SIZES - 1 - maxTxSz) * 2
 }
 if (ctx != TXFM_PARTITION_CONTEXTS - 1) {
     ctx = ctx * 3 + above + left
+}
+</code></pre>
+
+<p>where get_above_tx_width and get_left_tx_height are functions defined as follows:</p>
+
+<pre><code class="language-c">get_above_tx_width( row, col ) {
+    if ( !AvailU ) {
+        return 64
+    } else if ( Skips[ row - 1 ][ col ] &amp;&amp; IsInters[ row - 1 ][ col ] ) {
+        return Block_Width[ MiSizes[ row - 1 ][ col ] ]
+    } else {
+        return Tx_Width[ InterTxSizes[ row - 1 ][ col ] ]
+    }
+}
+
+get_left_tx_height( row, col ) {
+    if ( !AvailL ) {
+        return 64
+    } else if ( Skips[ row ][ col - 1 ] &amp;&amp; IsInters[ row ][ col - 1 ] ) {
+        return Block_Height[ MiSizes[ row ][ col - 1 ] ]
+    } else {
+        return Tx_Height[ InterTxSizes[ row ][ col - 1 ] ]
+    }
 }
 </code></pre>
 
@@ -20109,6 +20187,8 @@ if ( AvailL ) {
 
 <pre><code class="language-c">ctx = Size_Group[ MiSize ]
 </code></pre>
+
+<p><strong>wedge_index</strong>: The cdf is given by TileWedgeIndexCdf.</p>
 
 <p><strong>wedge_interintra</strong>: The cdf is given by TileWedgeInterIntraCdf[ MiSize ].</p>
 
@@ -21814,196 +21894,196 @@ type with the horizontal and vertical operations transposed.</p>
 </code></pre>
 
 <p>The array Gaussian_Sequence contains random samples from a Gaussian distribution
-with zero mean and standard deviation of about 512 clipped to the range of [-2048, 2047].</p>
+with zero mean and standard deviation of about 512 clipped to the range of [-2048, 2047] and rounded to the nearest multiple of 4.</p>
 
 <pre><code class="language-c">Gaussian_Sequence[ 2048 ] = {
-  711,   -320,  81,    420,   447,   1637,  -197,  410,   128,   952,   -937,
-  -250,  94,    320,   32,    1021,  -437,  214,   452,   -306,  515,   262,
-  -81,   169,   371,   748,   65,    326,   250,   -398,  1012,  -513,  -316,
-  -803,  -1051, 885,   -373,  -163,  900,   85,    433,   -725,  -61,   -322,
-  179,   96,    130,   -628,  432,   1103,  345,   -143,  -346,  373,   159,
-  458,   -511,  -722,  -604,  911,   -588,  924,   -323,  -442,  19,    -32,
-  211,   437,   417,   305,   767,   246,   806,   492,   52,    -488,  -606,
-  655,   -78,   119,   129,   -711,  721,   191,   307,   548,   100,   -469,
-  -229,  583,   -66,   12,    149,   -119,  619,   -488,  -739,  -425,  -786,
-  -95,   -597,  -90,   -8,    -49,   568,   -954,  252,   -177,  605,   -117,
-  780,   552,   -211,  288,   375,   -371,  -705,  -130,  307,   45,    21,
-  -507,  -551,  169,   375,   321,   45,    -332,  634,   348,   -598,  26,
-  369,   451,   -739,  -814,  -410,  -222,  286,   746,   51,    1308,  -196,
-  -605,  -468,  -31,   691,   277,   92,    -34,   -770,  -938,  451,   -218,
-  -728,  1164,  -709,  -1613, -156,  800,   89,    367,   -153,  -409,  -147,
-  -116,  152,   -575,  317,   715,   -510,  -794,  -590,  140,   -477,  -625,
-  -146,  550,   443,   397,   -1320, 340,   -172,  -173,  -6,    269,   -85,
-  161,   420,   -393,  351,   43,    152,   -757,  -60,   -480,  598,   208,
-  -154,  129,   -555,  305,   -45,   398,   89,    222,   -237,  -375,  1076,
-  -556,  -1171, -376,  495,   -537,  287,   879,   -365,  -815,  579,   -138,
-  164,   -188,  811,   309,   287,   -300,  -241,  -189,  -1026, -1603, -1364,
-  151,   -370,  -344,  -974,  -277,  982,   296,   -428,  -638,  262,   -3,
-  -1445, -31,   533,   882,   -410,  189,   -321,  -390,  -814,  -597,  340,
-  957,   123,   29,    531,   -689,  407,   -483,  -371,  783,   68,    593,
-  540,   -472,  311,   -31,   595,   566,   -243,  524,   -212,  -617,  287,
-  -63,   -461,  -593,  -434,  1218,  -310,  994,   691,   228,   -641,  -501,
-  41,    74,    205,   -657,  -67,   -324,  -4,    -946,  850,   -1065, 370,
-  135,   -853,  -259,  -82,   23,    -491,  521,   537,   -149,  -359,  446,
-  447,   468,   -1017, -322,  -195,  250,   152,   -370,  198,   541,   293,
-  -721,  -140,  -585,  -335,  -4,    414,   -793,  -563,  -420,  367,   536,
-  -464,  491,   802,   -227,  575,   -379,  36,    668,   -444,  126,   146,
-  348,   171,   -522,  -915,  -52,   70,    104,   -332,  605,   470,   -764,
-  232,   316,   72,    400,   1697,  600,   529,   -5,    100,   119,   -491,
-  -414,  1119,  -221,  658,   329,   -280,  -210,  329,   492,   397,   233,
-  -49,   -590,  38,    365,   669,   1199,  -35,   44,    357,   304,   -404,
-  -3,    -102,  111,   -204,  111,   -736,  1148,  -619,  -314,  148,   579,
-  34,    -566,  450,   -526,  208,   -794,  -30,   -327,  -180,  164,   170,
-  181,   349,   64,    -101,  -1142, 154,   33,    1127,  -104,  333,   390,
-  941,   474,   -84,   105,   1207,  478,   575,   -414,  1554,  -298,  1077,
-  947,   -458,  312,   -258,  -701,  -27,   934,   329,   1047,  -345,  -870,
-  353,   506,   -507,  140,   160,   -243,  -717,  -299,  564,   -291,  -70,
-  -446,  12,    -335,  173,   -365,  -895,  273,   354,   572,   401,   -90,
-  -333,  513,   -418,  -225,  150,   16,    832,   -856,  19,    -200,  -818,
-  423,   545,   -320,  246,   -159,  1095,  -24,   474,   500,   442,   -751,
-  250,   31,    390,   1117,  -308,  560,   -190,  -228,  -1230, -79,   121,
-  806,   -657,  694,   -999,  -17,   -191,  475,   483,   -1369, -76,   293,
-  56,    -161,  -793,  630,   381,   176,   374,   368,   374,   265,   146,
-  -363,  170,   8,     358,   883,   -458,  -30,   -299,  285,   -439,  -361,
-  -255,  -71,   -141,  -319,  -178,  42,    -269,  -512,  42,    272,   268,
-  12,    -174,  -780,  -143,  201,   108,   578,   -905,  78,    -183,  -522,
-  345,   -435,  -291,  399,   888,   422,   10,    -221,  -683,  570,   -3,
-  264,   163,   146,   -148,  708,   140,   269,   334,   -1045, -820,  942,
-  -350,  289,   -381,  1262,  -152,  1054,  336,   246,   -107,  157,   23,
-  561,   -389,  492,   55,    -318,  339,   561,   787,   -911,  309,   118,
-  75,    80,    -10,   -198,  -7,    -15,   -411,  341,   386,   -120,  287,
-  -33,   -22,   -753,  465,   271,   245,   517,   -414,  -526,  9,     146,
-  535,   -377,  319,   281,   13,    126,   258,   112,   18,    -809,  545,
-  -217,  546,   500,   -161,  139,   -741,  112,   -144,  -565,  -266,  246,
-  1308,  300,   -357,  1172,  311,   -290,  136,   855,   414,   258,   165,
-  138,   -56,   8,     -231,  790,   -363,  338,   618,   -366,  -86,   158,
-  632,   552,   -568,  -170,  -284,  -22,   342,   -87,   669,   -230,  387,
-  -1240, 222,   435,   -247,  -965,  -172,  -419,  428,   -735,  465,   32,
-  -508,  16,    -428,  -161,  1091,  260,   -416,  -580,  -283,  -431,  -183,
-  -952,  -853,  166,   1148,  590,   -362,  -217,  -476,  -400,  341,   -413,
-  -543,  46,    247,   -184,  -94,   -475,  -503,  174,   -225,  85,    -459,
-  -124,  269,   436,   445,   -958,  546,   59,    167,   226,   13,    -757,
-  -158,  -289,  175,   109,   456,   -34,   -39,   45,    677,   87,    792,
-  -89,   -401,  1132,  -319,  45,    143,   -344,  -1164, 539,   -72,   -399,
-  301,   255,   -587,  -112,  -476,  350,   204,   650,   232,   -240,  524,
-  250,   -242,  -229,  -449,  -460,  895,   -754,  -167,  286,   -904,  216,
-  572,   -180,  1082,  -311,  202,   442,   674,   86,    -841,  713,   -923,
-  1640,  633,   -624,  195,   603,   33,    -760,  66,    133,   -967,  -6,
-  -597,  317,   -311,  577,   -410,  -657,  323,   -373,  23,    -711,  1230,
-  -740,  406,   594,   -41,   -493,  -1113, -491,  488,   699,   -419,  -462,
-  -203,  -133,  -346,  -407,  399,   -127,  225,   -29,   193,   -351,  650,
-  -276,  352,   -577,  1060,  90,    -475,  -469,  26,    761,   401,   -447,
-  -154,  1043,  377,   -21,   546,   -199,  290,   388,   -544,  1060,  -12,
-  555,   -484,  12,    -185,  225,   -1053, 492,   672,   491,   -650,  -83,
-  -8,    310,   -352,  477,   404,   406,   -485,  75,    733,   268,   121,
-  14,    -331,  28,    234,   -282,  -150,  -558,  709,   190,   414,   66,
-  -11,   -49,   -113,  130,   -196,  551,   677,   532,   -122,  57,    -165,
-  167,   74,    -257,  812,   -1073, -767,  -616,  282,   219,   326,   -351,
-  147,   762,   -301,  41,    1015,  29,    -383,  -21,   -1384, 110,   -785,
-  103,   -52,   -151,  -584,  -850,  -328,  -571,  449,   230,   -208,  253,
-  409,   73,    -262,  -141,  179,   -135,  1248,  143,   -570,  -169,  377,
-  -66,   119,   335,   530,   582,   -493,  235,   391,   -1227, -1067, 780,
-  -160,  409,   52,    270,   1210,  69,    58,    1390,  733,   -240,  119,
-  -111,  -265,  91,    -256,  -84,   -563,  521,   -6,    28,    239,   -720,
-  -855,  -407,  -661,  -682,  -814,  442,   -405,  319,   877,   -140,  -120,
-  -115,  -302,  -134,  222,   -448,  -405,  -185,  -20,   193,   97,    -266,
-  440,   850,   -429,  -645,  -388,  -462,  -589,  659,   -421,  -96,   57,
-  212,   407,   -259,  -451,  276,   387,   455,   -42,   -624,  333,   -690,
-  -102,  818,   368,   -194,  -214,  -35,   236,   -589,  270,   21,    -197,
-  507,   -706,  124,   -32,   -226,  8,     301,   79,    9,     -177,  606,
-  197,   -269,  -1075, -162,  1052,  499,   -51,   1312,  -1074, 52,    -141,
-  351,   -261,  -898,  -513,  -253,  45,    844,   534,   199,   -176,  -490,
-  -305,  894,   -229,  41,    328,   -73,   -57,   -4,    517,   -522,  126,
-  -50,   -63,   478,   -787,  -377,  192,   470,   -449,  396,   -129,  233,
-  411,   118,   257,   174,   508,   -542,  440,   -446,  24,    407,   570,
-  -81,   -41,   14,    -696,  273,   -584,  -398,  -186,  -96,   -860,  -69,
-  223,   -905,  -309,  70,    91,    433,   -1017, -228,  60,    -655,  -388,
-  -357,  -500,  -1595, 486,   824,   967,   -52,   -46,   265,   -540,  -230,
-  -621,  334,   -420,  -756,  848,   -191,  -1000, -780,  146,   -666,  270,
-  -549,  600,   -202,  40,    834,   -586,  94,    104,   367,   112,   591,
-  -204,  128,   259,   418,   456,   -257,  726,   405,   827,   -77,   89,
-  833,   -372,  421,   176,   -138,  86,    -414,  302,   -457,  -1222, 431,
-  -271,  117,   196,   -487,  -1082, -762,  -823,  -703,  288,   -290,  321,
-  34,    -85,   563,   -327,  -7,    -1304, 892,   505,   258,   -154,  -669,
-  108,   -543,  352,   273,   334,   404,   -464,  -529,  335,   -271,  -34,
-  -736,  165,   -636,  -642,  -7,    -521,  -921,  -1262, -324,  533,   233,
-  603,   89,    -352,  219,   379,   -182,  -180,  -43,   -60,   1208,  247,
-  -215,  -484,  417,   384,   -90,   757,   -137,  224,   296,   475,   -480,
-  903,   667,   -1184, -69,   -299,  502,   990,   -56,   243,   580,   -16,
-  -248,  346,   -148,  723,   -423,  150,   198,   -80,   -136,  681,   -157,
-  199,   198,   -37,   -214,  -356,  65,    657,   99,    -1086, 329,   733,
-  200,   1099,  1514,  -315,  812,   284,   -579,  -465,  871,   -296,  983,
-  797,   -36,   284,   157,   144,   940,   333,   -298,  582,   -484,  -114,
-  -75,   263,   -895,  -38,   -858,  -196,  -681,  -383,  -261,  -8,    -85,
-  453,   558,   -198,  454,   558,   -131,  -342,  -769,  864,   -382,  504,
-  938,   603,   -437,  -123,  -741,  141,   595,   113,   -523,  -2,    32,
-  -224,  -481,  -19,   -20,   -43,   244,   408,   946,   -1092, 27,    664,
-  34,    328,   -768,  841,   308,   -3,    -747,  631,   -431,  -104,  551,
-  -219,  372,   618,   855,   104,   -548,  54,    -251,  -529,  306,   -444,
-  -927,  -300,  -25,   51,    256,   112,   -248,  -318,  68,    154,   179,
-  -6,    -79,   417,   -64,   -233,  -438,  -22,   114,   -243,  -284,  -748,
-  5,     794,   -345,  -373,  -317,  -173,  73,    -273,  -396,  -168,  632,
-  30,    328,   -753,  205,   -69,   223,   -546,  -797,  -334,  -242,  362,
-  376,   -131,  -15,   -989,  -77,   -578,  -443,  -848,  -244,  18,    141,
-  -378,  699,   -907,  -198,  103,   1029,  575,   25,    -440,  662,   -631,
-  917,   164,   378,   -21,   -973,  68,    354,   -788,  213,   -592,  495,
-  349,   608,   180,   312,   315,   848,   -78,   -24,   -311,  95,    -141,
-  -795,  561,   -383,  1456,  -136,  -228,  -578,  150,   -840,  -149,  -286,
-  25,    738,   608,   762,   221,   -586,  -44,   102,   -47,   280,   -152,
-  -164,  -147,  360,   1001,  348,   391,   233,   -605,  283,   -52,   -139,
-  -640,  -594,  816,   -401,  835,   -81,   -152,  223,   -178,  -46,   -166,
-  -16,   266,   434,   127,   99,    -468,  472,   -6,    412,   9,     100,
-  489,   -852,  -1052, -277,  1017,  353,   -259,  -537,  568,   45,    -152,
-  -188,  713,   860,   -60,   -767,  -41,   -490,  689,   -933,  689,   -67,
-  -751,  -276,  -411,  842,   -472,  -556,  178,   -517,  228,   -474,  348,
-  74,    982,   299,   -590,  805,   518,   303,   -548,  -261,  743,   1179,
-  480,   286,   280,   474,   -53,   478,   -161,  339,   -44,   374,   17,
-  -800,  -122,  287,   -825,  -272,  196,   -19,   -348,  -49,   -499,  273,
-  -224,  -11,   -846,  485,   1,     86,    -1027, 203,   -605,  -1159, -42,
-  171,   520,   -75,   84,    -759,  -519,  -473,  -650,  348,   -228,  -68,
-  592,   330,   -168,  -606,  318,   146,   -255,  -688,  -500,  -540,  823,
-  -250,  -703,  632,   177,   -315,  -212,  97,    -160,  107,   -640,  449,
-  -72,   -875,  511,   174,   207,   901,   678,   -889,  -124,  -295,  -1132,
-  -911,  -251,  -370,  537,   1298,  -165,  326,   518,   -157,  333,   354,
-  -523,  -122,  -318,  22,    -200,  -402,  135,   316,   11,    317,   -570,
-  -288,  535,   575,   -416,  189,   -127,  -218,  466,   414,   328,   257,
-  -665,  -1015, -275,  1230,  -493,  -1791, -883,  362,   78,    300,   -31,
-  -885,  -149,  410,   -727,  -387,  -890,  -304,  -44,   -441,  699,   -110,
-  251,   960,   686,   367,   60,    -508,  331,   382,   138,   -151,  -745,
-  32,    618,   -131,  462,   -244,  383,   996,   -493,  -150,  -594,  500,
-  -363,  102,   662,   137,   -613,  512,   402,   967,   936,   371,   666,
-  343,   -171,  56,    -224,  -719,  731,   -874,  47,    -254,  639,   324,
-  -176,  191,   -376,  -295,  678,   703,   113,   -386,  -461,  285,   -147,
-  -990,  -701,  293,   -675,  -576,  298,   -838,  713,   -489,  -386,  617,
-  818,   548,   -281,  59,    201,   253,   657,   -537,  -554,  -224,  -489,
-  -854,  -56,   -261,  660,   312,   282,   -778,  -73,   680,   13,    -37,
-  -202,  999,   -498,  215,   -194,  -334,  -201,  626,   -823,  -339,  639,
-  -355,  655,   -980,  -614,  781,   -319,  -439,  -25,   -7,    -383,  522,
-  228,   153,   766,   913,   -130,  717,   538,   -489,  353,   411,   239,
-  509,   -420,  -850,  883,   461,   928,   368,   -702,  -1114, -35,   112,
-  -153,  642,   55,    -494,  -621,  -774,  -148,  818,   -107,  -454,  -207,
-  88,    -569,  385,   793,   215,   549,   -320,  936,   -312,  -690,  973,
-  -562,  -411,  675,   250,   153,   90,    -372,  547,   -1029, 503,   -60,
-  263,   -322,  401,   621,   388,   511,   296,   173,   -78,   -416,  98,
-  -69,   -368,  801,   -160,  871,   248,   44,    617,   1098,  175,   312,
-  -750,  -149,  866,   -151,  406,   -428,  221,   -214,  -287,  -822,  262,
-  -783,  682,   -179,  752,   445,   -197,  -181,  -825,  -1293, 213,   -142,
-  211,   -340,  -606,  892,   -567,  -235,  781,   -703,  -276,  739,   565,
-  -262,  433,   -616,  -530,  427,   -532,  931,   -49,   -81,   -1357, -402,
-  530,   303,   59,    876,   -377,  -998,  339,   -680,  -49,   -157,  -213,
-  -850,  507,   -290,  196,   622,   -523,  268,   370,   -132,  -749,  91,
-  -558,  5,     -240,  -55,   -8,    -447,  -291,  552,   -238,  283,   -93,
-  224,   873,   263,   -416,  229,   -229,  202,   -113,  839,   396,   -143,
-  -184,  564,   186,   240,   -96,   -791,  225,   -68,   532,   9,     -441,
-  670,   156,   703,   -322,  -1190, -362,  -1010, -633,  -265,  -484,  20,
-  -369,  -325,  -379,  -286,  -67,   -122,  449,   -845,  81,    436,   116,
-  -521,  -59,   -1379, 400,   852,   -471,  -880,  638,   -875,  155,   -375,
-  -183,  1032,  63,    -266,  -272,  298,   -186,  504,   273,   235,   116,
-  364,   671,   -619,  -174,  -740,  -535,  394,   124,   -877,  -288,  -146,
-  37,    641,   -183,  498,   142,   -109,  -92,   540,   -587,  -170,  -469,
-  -1347, 852,   -313,  176,   366,   220,   -403,  -384,  135,   -321,  706,
-  254,   575,   511,   -6,    -363,  -497,  -611,  -457,  475,   245,   374,
-  1811,  123
+    56,    568,   -180,  172,   124,   -84,   172,   -64,   -900,  24,   820,
+  224,   1248,  996,   272,   -8,    -916,  -388,  -732,  -104,  -188, 800,
+  112,   -652,  -320,  -376,  140,   -252,  492,   -168,  44,    -788, 588,
+  -584,  500,   -228,  12,    680,   272,   -476,  972,   -100,  652,  368,
+  432,   -196,  -720,  -192,  1000,  -332,  652,   -136,  -552,  -604, -4,
+  192,   -220,  -136,  1000,  -52,   372,   -96,   -624,  124,   -24,  396,
+  540,   -12,   -104,  640,   464,   244,   -208,  -84,   368,   -528, -740,
+  248,   -968,  -848,  608,   376,   -60,   -292,  -40,   -156,  252,  -292,
+  248,   224,   -280,  400,   -244,  244,   -60,   76,    -80,   212,  532,
+  340,   128,   -36,   824,   -352,  -60,   -264,  -96,   -612,  416,  -704,
+  220,   -204,  640,   -160,  1220,  -408,  900,   336,   20,    -336, -96,
+  -792,  304,   48,    -28,   -1232, -1172, -448,  104,   -292,  -520, 244,
+  60,    -948,  0,     -708,  268,   108,   356,   -548,  488,   -344, -136,
+  488,   -196,  -224,  656,   -236,  -1128, 60,    4,     140,   276,  -676,
+  -376,  168,   -108,  464,   8,     564,   64,    240,   308,   -300, -400,
+  -456,  -136,  56,    120,   -408,  -116,  436,   504,   -232,  328,  844,
+  -164,  -84,   784,   -168,  232,   -224,  348,   -376,  128,   568,  96,
+  -1244, -288,  276,   848,   832,   -360,  656,   464,   -384,  -332, -356,
+  728,   -388,  160,   -192,  468,   296,   224,   140,   -776,  -100, 280,
+  4,     196,   44,    -36,   -648,  932,   16,    1428,  28,    528,  808,
+  772,   20,    268,   88,    -332,  -284,  124,   -384,  -448,  208,  -228,
+  -1044, -328,  660,   380,   -148,  -300,  588,   240,   540,   28,   136,
+  -88,   -436,  256,   296,   -1000, 1400,  0,     -48,   1056,  -136, 264,
+  -528,  -1108, 632,   -484,  -592,  -344,  796,   124,   -668,  -768, 388,
+  1296,  -232,  -188,  -200,  -288,  -4,    308,   100,   -168,  256,  -500,
+  204,   -508,  648,   -136,  372,   -272,  -120,  -1004, -552,  -548, -384,
+  548,   -296,  428,   -108,  -8,    -912,  -324,  -224,  -88,   -112, -220,
+  -100,  996,   -796,  548,   360,   -216,  180,   428,   -200,  -212, 148,
+  96,    148,   284,   216,   -412,  -320,  120,   -300,  -384,  -604, -572,
+  -332,  -8,    -180,  -176,  696,   116,   -88,   628,   76,    44,   -516,
+  240,   -208,  -40,   100,   -592,  344,   -308,  -452,  -228,  20,   916,
+  -1752, -136,  -340,  -804,  140,   40,    512,   340,   248,   184,  -492,
+  896,   -156,  932,   -628,  328,   -688,  -448,  -616,  -752,  -100, 560,
+  -1020, 180,   -800,  -64,   76,    576,   1068,  396,   660,   552,  -108,
+  -28,   320,   -628,  312,   -92,   -92,   -472,  268,   16,    560,  516,
+  -672,  -52,   492,   -100,  260,   384,   284,   292,   304,   -148, 88,
+  -152,  1012,  1064,  -228,  164,   -376,  -684,  592,   -392,  156,  196,
+  -524,  -64,   -884,  160,   -176,  636,   648,   404,   -396,  -436, 864,
+  424,   -728,  988,   -604,  904,   -592,  296,   -224,  536,   -176, -920,
+  436,   -48,   1176,  -884,  416,   -776,  -824,  -884,  524,   -548, -564,
+  -68,   -164,  -96,   692,   364,   -692,  -1012, -68,   260,   -480, 876,
+  -1116, 452,   -332,  -352,  892,   -1088, 1220,  -676,  12,    -292, 244,
+  496,   372,   -32,   280,   200,   112,   -440,  -96,   24,    -644, -184,
+  56,    -432,  224,   -980,  272,   -260,  144,   -436,  420,   356,  364,
+  -528,  76,    172,   -744,  -368,  404,   -752,  -416,  684,   -688, 72,
+  540,   416,   92,    444,   480,   -72,   -1416, 164,   -1172, -68,  24,
+  424,   264,   1040,  128,   -912,  -524,  -356,  64,    876,   -12,  4,
+  -88,   532,   272,   -524,  320,   276,   -508,  940,   24,    -400, -120,
+  756,   60,    236,   -412,  100,   376,   -484,  400,   -100,  -740, -108,
+  -260,  328,   -268,  224,   -200,  -416,  184,   -604,  -564,  -20,  296,
+  60,    892,   -888,  60,    164,   68,    -760,  216,   -296,  904,  -336,
+  -28,   404,   -356,  -568,  -208,  -1480, -512,  296,   328,   -360, -164,
+  -1560, -776,  1156,  -428,  164,   -504,  -112,  120,   -216,  -148, -264,
+  308,   32,    64,    -72,   72,    116,   176,   -64,   -272,  460,  -536,
+  -784,  -280,  348,   108,   -752,  -132,  524,   -540,  -776,  116,  -296,
+  -1196, -288,  -560,  1040,  -472,  116,   -848,  -1116, 116,   636,  696,
+  284,   -176,  1016,  204,   -864,  -648,  -248,  356,   972,   -584, -204,
+  264,   880,   528,   -24,   -184,  116,   448,   -144,  828,   524,  212,
+  -212,  52,    12,    200,   268,   -488,  -404,  -880,  824,   -672, -40,
+  908,   -248,  500,   716,   -576,  492,   -576,  16,    720,   -108, 384,
+  124,   344,   280,   576,   -500,  252,   104,   -308,  196,   -188, -8,
+  1268,  296,   1032,  -1196, 436,   316,   372,   -432,  -200,  -660, 704,
+  -224,  596,   -132,  268,   32,    -452,  884,   104,   -1008, 424,  -1348,
+  -280,  4,     -1168, 368,   476,   696,   300,   -8,    24,    180,  -592,
+  -196,  388,   304,   500,   724,   -160,  244,   -84,   272,   -256, -420,
+  320,   208,   -144,  -156,  156,   364,   452,   28,    540,   316,  220,
+  -644,  -248,  464,   72,    360,   32,    -388,  496,   -680,  -48,  208,
+  -116,  -408,  60,    -604,  -392,  548,   -840,  784,   -460,  656,  -544,
+  -388,  -264,  908,   -800,  -628,  -612,  -568,  572,   -220,  164,  288,
+  -16,   -308,  308,   -112,  -636,  -760,  280,   -668,  432,   364,  240,
+  -196,  604,   340,   384,   196,   592,   -44,   -500,  432,   -580, -132,
+  636,   -76,   392,   4,     -412,  540,   508,   328,   -356,  -36,  16,
+  -220,  -64,   -248,  -60,   24,    -192,  368,   1040,  92,    -24,  -1044,
+  -32,   40,    104,   148,   192,   -136,  -520,  56,    -816,  -224, 732,
+  392,   356,   212,   -80,   -424,  -1008, -324,  588,   -1496, 576,  460,
+  -816,  -848,  56,    -580,  -92,   -1372, -112,  -496,  200,   364,  52,
+  -140,  48,    -48,   -60,   84,    72,    40,    132,   -356,  -268, -104,
+  -284,  -404,  732,   -520,  164,   -304,  -540,  120,   328,   -76,  -460,
+  756,   388,   588,   236,   -436,  -72,   -176,  -404,  -316,  -148, 716,
+  -604,  404,   -72,   -88,   -888,  -68,   944,   88,    -220,  -344, 960,
+  472,   460,   -232,  704,   120,   832,   -228,  692,   -508,  132,  -476,
+  844,   -748,  -364,  -44,   1116,  -1104, -1056, 76,    428,   552,  -692,
+  60,    356,   96,    -384,  -188,  -612,  -576,  736,   508,   892,  352,
+  -1132, 504,   -24,   -352,  324,   332,   -600,  -312,  292,   508,  -144,
+  -8,    484,   48,    284,   -260,  -240,  256,   -100,  -292,  -204, -44,
+  472,   -204,  908,   -188,  -1000, -256,  92,    1164,  -392,  564,  356,
+  652,   -28,   -884,  256,   484,   -192,  760,   -176,  376,   -524, -452,
+  -436,  860,   -736,  212,   124,   504,   -476,  468,   76,    -472, 552,
+  -692,  -944,  -620,  740,   -240,  400,   132,   20,    192,   -196, 264,
+  -668,  -1012, -60,   296,   -316,  -828,  76,    -156,  284,   -768, -448,
+  -832,  148,   248,   652,   616,   1236,  288,   -328,  -400,  -124, 588,
+  220,   520,   -696,  1032,  768,   -740,  -92,   -272,  296,   448,  -464,
+  412,   -200,  392,   440,   -200,  264,   -152,  -260,  320,   1032, 216,
+  320,   -8,    -64,   156,   -1016, 1084,  1172,  536,   484,   -432, 132,
+  372,   -52,   -256,  84,    116,   -352,  48,    116,   304,   -384, 412,
+  924,   -300,  528,   628,   180,   648,   44,    -980,  -220,  1320, 48,
+  332,   748,   524,   -268,  -720,  540,   -276,  564,   -344,  -208, -196,
+  436,   896,   88,    -392,  132,   80,    -964,  -288,  568,   56,   -48,
+  -456,  888,   8,     552,   -156,  -292,  948,   288,   128,   -716, -292,
+  1192,  -152,  876,   352,   -600,  -260,  -812,  -468,  -28,   -120, -32,
+  -44,   1284,  496,   192,   464,   312,   -76,   -516,  -380,  -456, -1012,
+  -48,   308,   -156,  36,    492,   -156,  -808,  188,   1652,  68,   -120,
+  -116,  316,   160,   -140,  352,   808,   -416,  592,   316,   -480, 56,
+  528,   -204,  -568,  372,   -232,  752,   -344,  744,   -4,    324,  -416,
+  -600,  768,   268,   -248,  -88,   -132,  -420,  -432,  80,    -288, 404,
+  -316,  -1216, -588,  520,   -108,  92,    -320,  368,   -480,  -216, -92,
+  1688,  -300,  180,   1020,  -176,  820,   -68,   -228,  -260,  436,  -904,
+  20,    40,    -508,  440,   -736,  312,   332,   204,   760,   -372, 728,
+  96,    -20,   -632,  -520,  -560,  336,   1076,  -64,   -532,  776,  584,
+  192,   396,   -728,  -520,  276,   -188,  80,    -52,   -612,  -252, -48,
+  648,   212,   -688,  228,   -52,   -260,  428,   -412,  -272,  -404, 180,
+  816,   -796,  48,    152,   484,   -88,   -216,  988,   696,   188,  -528,
+  648,   -116,  -180,  316,   476,   12,    -564,  96,    476,   -252, -364,
+  -376,  -392,  556,   -256,  -576,  260,   -352,  120,   -16,   -136, -260,
+  -492,  72,    556,   660,   580,   616,   772,   436,   424,   -32,  -324,
+  -1268, 416,   -324,  -80,   920,   160,   228,   724,   32,    -516, 64,
+  384,   68,    -128,  136,   240,   248,   -204,  -68,   252,   -932, -120,
+  -480,  -628,  -84,   192,   852,   -404,  -288,  -132,  204,   100,  168,
+  -68,   -196,  -868,  460,   1080,  380,   -80,   244,   0,     484,  -888,
+  64,    184,   352,   600,   460,   164,   604,   -196,  320,   -64,  588,
+  -184,  228,   12,    372,   48,    -848,  -344,  224,   208,   -200, 484,
+  128,   -20,   272,   -468,  -840,  384,   256,   -720,  -520,  -464, -580,
+  112,   -120,  644,   -356,  -208,  -608,  -528,  704,   560,   -424, 392,
+  828,   40,    84,    200,   -152,  0,     -144,  584,   280,   -120, 80,
+  -556,  -972,  -196,  -472,  724,   80,    168,   -32,   88,    160,  -688,
+  0,     160,   356,   372,   -776,  740,   -128,  676,   -248,  -480, 4,
+  -364,  96,    544,   232,   -1032, 956,   236,   356,   20,    -40,  300,
+  24,    -676,  -596,  132,   1120,  -104,  532,   -1096, 568,   648,  444,
+  508,   380,   188,   -376,  -604,  1488,  424,   24,    756,   -220, -192,
+  716,   120,   920,   688,   168,   44,    -460,  568,   284,   1144, 1160,
+  600,   424,   888,   656,   -356,  -320,  220,   316,   -176,  -724, -188,
+  -816,  -628,  -348,  -228,  -380,  1012,  -452,  -660,  736,   928,  404,
+  -696,  -72,   -268,  -892,  128,   184,   -344,  -780,  360,   336,  400,
+  344,   428,   548,   -112,  136,   -228,  -216,  -820,  -516,  340,  92,
+  -136,  116,   -300,  376,   -244,  100,   -316,  -520,  -284,  -12,  824,
+  164,   -548,  -180,  -128,  116,   -924,  -828,  268,   -368,  -580, 620,
+  192,   160,   0,     -1676, 1068,  424,   -56,   -360,  468,   -156, 720,
+  288,   -528,  556,   -364,  548,   -148,  504,   316,   152,   -648, -620,
+  -684,  -24,   -376,  -384,  -108,  -920,  -1032, 768,   180,   -264, -508,
+  -1268, -260,  -60,   300,   -240,  988,   724,   -376,  -576,  -212, -736,
+  556,   192,   1092,  -620,  -880,  376,   -56,   -4,    -216,  -32,  836,
+  268,   396,   1332,  864,   -600,  100,   56,    -412,  -92,   356,  180,
+  884,   -468,  -436,  292,   -388,  -804,  -704,  -840,  368,   -348, 140,
+  -724,  1536,  940,   372,   112,   -372,  436,   -480,  1136,  296,  -32,
+  -228,  132,   -48,   -220,  868,   -1016, -60,   -1044, -464,  328,  916,
+  244,   12,    -736,  -296,  360,   468,   -376,  -108,  -92,   788,  368,
+  -56,   544,   400,   -672,  -420,  728,   16,    320,   44,    -284, -380,
+  -796,  488,   132,   204,   -596,  -372,  88,    -152,  -908,  -636, -572,
+  -624,  -116,  -692,  -200,  -56,   276,   -88,   484,   -324,  948,  864,
+  1000,  -456,  -184,  -276,  292,   -296,  156,   676,   320,   160,  908,
+  -84,   -1236, -288,  -116,  260,   -372,  -644,  732,   -756,  -96,  84,
+  344,   -520,  348,   -688,  240,   -84,   216,   -1044, -136,  -676, -396,
+  -1500, 960,   -40,   176,   168,   1516,  420,   -504,  -344,  -364, -360,
+  1216,  -940,  -380,  -212,  252,   -660,  -708,  484,   -444,  -152, 928,
+  -120,  1112,  476,   -260,  560,   -148,  -344,  108,   -196,  228,  -288,
+  504,   560,   -328,  -88,   288,   -1008, 460,   -228,  468,   -836, -196,
+  76,    388,   232,   412,   -1168, -716,  -644,  756,   -172,  -356, -504,
+  116,   432,   528,   48,    476,   -168,  -608,  448,   160,   -532, -272,
+  28,    -676,  -12,   828,   980,   456,   520,   104,   -104,  256,  -344,
+  -4,    -28,   -368,  -52,   -524,  -572,  -556,  -200,  768,   1124, -208,
+  -512,  176,   232,   248,   -148,  -888,  604,   -600,  -304,  804,  -156,
+  -212,  488,   -192,  -804,  -256,  368,   -360,  -916,  -328,  228,  -240,
+  -448,  -472,  856,   -556,  -364,  572,   -12,   -156,  -368,  -340, 432,
+  252,   -752,  -152,  288,   268,   -580,  -848,  -592,  108,   -76,  244,
+  312,   -716,  592,   -80,   436,   360,   4,     -248,  160,   516,  584,
+  732,   44,    -468,  -280,  -292,  -156,  -588,  28,    308,   912,  24,
+  124,   156,   180,   -252,  944,   -924,  -772,  -520,  -428,  -624, 300,
+  -212,  -1144, 32,    -724,  800,   -1128, -212,  -1288, -848,  180,  -416,
+  440,   192,   -576,  -792,  -76,   -1080, 80,    -532,  -352,  -132, 380,
+  -820,  148,   1112,  128,   164,   456,   700,   -924,  144,   -668, -384,
+  648,   -832,  508,   552,   -52,   -100,  -656,  208,   -568,  748,  -88,
+  680,   232,   300,   192,   -408,  -1012, -152,  -252,  -268,  272,  -876,
+  -664,  -648,  -332,  -136,  16,    12,    1152,  -28,   332,   -536, 320,
+  -672,  -460,  -316,  532,   -260,  228,   -40,   1052,  -816,  180,  88,
+  -496,  -556,  -672,  -368,  428,   92,    356,   404,   -408,  252,  196,
+  -176,  -556,  792,   268,   32,    372,   40,    96,    -332,  328,  120,
+  372,   -900,  -40,   472,   -264,  -592,  952,   128,   656,   112,  664,
+  -232,  420,   4,     -344,  -464,  556,   244,   -416,  -32,   252,  0,
+  -412,  188,   -696,  508,   -476,  324,   -1096, 656,   -312,  560,  264,
+  -136,  304,   160,   -64,   -580,  248,   336,   -720,  560,   -348, -288,
+  -276,  -196,  -500,  852,   -544,  -236,  -1128, -992,  -776,  116,  56,
+  52,    860,   884,   212,   -12,   168,   1020,  512,   -552,  924,  -148,
+  716,   188,   164,   -340,  -520,  -184,  880,   -152,  -680,  -208, -1156,
+  -300,  -528,  -472,  364,   100,   -744,  -1056, -32,   540,   280,  144,
+  -676,  -32,   -232,  -280,  -224,  96,    568,   -76,   172,   148,  148,
+  104,   32,    -296,  -32,   788,   -80,   32,    -16,   280,   288,  944,
+  428,   -484
 }
 </code></pre>
 
@@ -22212,27 +22292,31 @@ with zero mean and standard deviation of about 512 clipped to the range of [-204
 }
 </code></pre>
 
-<pre><code class="language-c">Default_Tx_64x64_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 2 ] = {
-  { 5782, 11475, 32768, 0 },
-  { 16803, 22759, 32768, 0 }
-}
-</code></pre>
-
-<pre><code class="language-c">Default_Tx_32x32_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 2 ] = {
-  { 12986, 15180, 32768, 0 },
-  { 24302, 25602, 32768, 0 }
+<pre><code class="language-c">Default_Tx_8x8_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 1 ] = {
+  { 19968, 32768, 0 },
+  { 19968, 32768, 0 },
+  { 24320, 32768, 0 }
 }
 </code></pre>
 
 <pre><code class="language-c">Default_Tx_16x16_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 2 ] = {
   { 12272, 30172, 32768, 0 },
+  { 12272, 30172, 32768, 0 },
   { 18677, 30848, 32768, 0 }
 }
 </code></pre>
 
-<pre><code class="language-c">Default_Tx_8x8_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 1 ] = {
-  { 19968, 32768, 0 },
-  { 24320, 32768, 0 }
+<pre><code class="language-c">Default_Tx_32x32_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 2 ] = {
+  { 12986, 15180, 32768, 0 },
+  { 12986, 15180, 32768, 0 },
+  { 24302, 25602, 32768, 0 }
+}
+</code></pre>
+
+<pre><code class="language-c">Default_Tx_64x64_Cdf[ TX_SIZE_CONTEXTS ][ MAX_TX_DEPTH + 2 ] = {
+  { 5782, 11475, 32768, 0 },
+  { 5782, 11475, 32768, 0 },
+  { 16803, 22759, 32768, 0 }
 }
 </code></pre>
 
@@ -22957,6 +23041,34 @@ Default_Palette_Size_8_Uv_Color_Cdf[ PALETTE_COLOR_CONTEXTS ][ 9 ] = {
   { 3072, 7016, 18987, 32768, 0 },
   { 4864, 8461, 17481, 32768, 0 },
   { 6528, 8681, 19031, 32768, 0 }
+}
+</code></pre>
+
+<pre><code class="language-c">Default_Wedge_Index_Cdf[ BLOCK_SIZES_ALL ][ 16+1 ] = {
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 1774, 4089, 6638, 8345, 9971, 11534, 14522, 17604, 19347, 20943, 22583, 24124, 26402, 28419, 30844, 32768, 0 },
+  { 700, 3119, 5981, 6655, 7235, 7425, 7892, 14701, 16022, 17010, 18095, 19071, 22367, 25729, 29458, 32768, 0 },
+  { 2432, 3782, 5015, 7434, 8519, 8941, 9893, 14677, 17691, 20555, 23331, 26186, 28214, 29573, 31297, 32768, 0 },
+  { 1360, 3473, 6001, 7459, 9262, 10863, 14014, 16851, 18510, 20086, 21800, 23406, 25670, 27887, 30449, 32768, 0 },
+  { 1024, 3423, 6449, 7409, 8281, 8544, 9160, 14154, 15720, 16878, 18297, 19379, 22278, 25678, 29261, 32768, 0 },
+  { 2119, 3907, 5840, 7908, 9492, 10033, 11292, 14209, 16886,  19484, 22099, 24499, 26535, 28536, 31027, 32768, 0 },
+  { 1427, 3732, 6257, 7811, 9493, 11450, 15253, 18736, 20135, 21395, 22949, 24272, 26148, 28096, 30633, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 274, 1379, 2780, 3024, 3133, 3200, 3327, 21242, 22126, 22814, 23759, 24661, 26435, 28307, 30535, 32768, 0 },
+  { 1210, 1526, 1852, 3140, 3335, 3456, 3606, 21336, 23001, 24949, 26857, 28843, 29924, 30832, 31925, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
+  { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 }
 }
 </code></pre>
 
@@ -31746,6 +31858,10 @@ This can be useful for encoder implementations that want to leave a fixed amount
         <td> </td>
       </tr>
       <tr>
+        <td>cdf_update_mode</td>
+        <td> </td>
+      </tr>
+      <tr>
         <td>cfl</td>
         <td> </td>
       </tr>
@@ -32220,10 +32336,5 @@ sRGB.</p>
       </div>
     </div>
   </div>
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
-  <!-- Include all compiled plugins (below), or include individual files as needed -->
-  <script src="assets/js/bootstrap.min.js"></script>
 </body>
 </html>

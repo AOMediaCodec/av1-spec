@@ -205,6 +205,23 @@ div.annex
   h4
     color: #5bc0de
 
+#markdown-toc
+  list-style: none
+  counter-reset: toc-item-main
+  ul
+    list-style: none
+    counter-reset: toc-item-main toc-item-annex
+    li.annex:before
+      content: attr(data-annexid) "." counters(toc-item-annex, ".") ". "
+      counter-increment: toc-item-annex
+  li:before
+    content: counters(toc-item-main, ".") ". "
+    counter-increment: toc-item-main
+  li.annex:before
+    content: attr(data-annexid) ". "
+  li.bibliography:before
+    content: none
+
 // Bootstrap overrides
 
 code, kbd, pre, samp
