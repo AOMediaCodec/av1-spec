@@ -38,7 +38,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-05 03:57:04 -0800</em></p>
+<p><em>Last modified: 2018-03-05 07:07:17 -0800</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -356,6 +356,11 @@ $(document).ready(function() {
       </li>
       <li><a href="#prediction-processes" id="markdown-toc-prediction-processes">Prediction Processes</a>        <ul>
           <li><a href="#intra-prediction-process" id="markdown-toc-intra-prediction-process">Intra Prediction Process</a>            <ul>
+              <li><a href="#basic-intra-prediction-process" id="markdown-toc-basic-intra-prediction-process">Basic Intra Prediction Process</a></li>
+              <li><a href="#recursive-intra-prediction-process" id="markdown-toc-recursive-intra-prediction-process">Recursive Intra Prediction Process</a></li>
+              <li><a href="#directional-intra-prediction-process" id="markdown-toc-directional-intra-prediction-process">Directional Intra Prediction Process</a></li>
+              <li><a href="#dc-intra-prediction-process" id="markdown-toc-dc-intra-prediction-process">DC Intra Prediction Process</a></li>
+              <li><a href="#smooth-intra-prediction-process" id="markdown-toc-smooth-intra-prediction-process">Smooth Intra Prediction Process</a></li>
               <li><a href="#filter-corner-process" id="markdown-toc-filter-corner-process">Filter Corner Process</a></li>
               <li><a href="#intra-filter-type-process" id="markdown-toc-intra-filter-type-process">Intra Filter Type Process</a></li>
               <li><a href="#intra-edge-filter-strength-selection-process" id="markdown-toc-intra-edge-filter-strength-selection-process">Intra Edge Filter Strength Selection Process</a></li>
@@ -2820,8 +2825,8 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         for ( i = 0; i &lt; temporal_group_size; i++ ) {
             <b class="syntax-element">temporal_group_temporal_id[ i ]</b>                                  f(3)
             <b class="syntax-element">temporal_group_switching_up_point_flag[ i ]</b>                      f(1)
-            <b class="syntax-element">temporal_group_ref_cnt[ i ]</b>                                      f(2)
-            <b class="syntax-element">temporal_group_reserved_2bits[ i ]</b>                               f(2)
+            <b class="syntax-element">temporal_group_ref_cnt[ i ]</b>                                      f(3)
+            <b class="syntax-element">temporal_group_reserved_bit[ i ]</b>                                 f(1)
             for ( j = 0; j &lt; temporal_group_ref_cnt[ i ]; j++ ) {
                 <b class="syntax-element">temporal_group_ref_pic_diff[ i ][ j ]</b>                        f(8)
             }
@@ -7344,10 +7349,17 @@ structure in the scalability structure data must be for the highest frame rate l
 
 <p><strong>temporal_group_temporal_id[ i ]</strong> specifies the temporal_id value for the i-th picture in the temporal group.</p>
 
+<p><strong>temporal_group_switching_up_point_flag[ i ]</strong> is set to 1 if subsequent (in decoding order) pictures with
+a temporal_id higher than temporal_group_temporal_id[ i ] do not depend on any picture preceding the
+current picture (in coding order) with temporal_id higher than temporal_group_temporal_id[ i ].</p>
+
+<p class="alert alert-info"><strong>Note:</strong> This condition ensures that switching up to a higher frame rate is possible at the current
+picture.</p>
+
 <p><strong>temporal_group_ref_cnt[ i ]</strong> indicates the number of reference pictures used by the i-th picture in the 
 temporal group.</p>
 
-<p><strong>temporal_group_reserved_2bits[ i ]</strong> must be set to 0 and be ignored by decoders.</p>
+<p><strong>temporal_group_reserved_bit[ i ]</strong> must be set to 0 and be ignored by decoders.</p>
 
 <p><strong>temporal_group_ref_pic_diff[ i ][ j ]</strong> indicates, for the i-th picture in the temporal group, the temporal 
 distance between the i-th picture and the j-th reference picture used by the i-th picture.  The temporal 
@@ -11945,12 +11957,11 @@ is smaller than the block size, this process can be invoked multiple times
 within a single block for the same plane, and the invocations are in raster
 order within the block.</p>
 
+<p>This process is triggered by a call to predict_intra.</p>
+
 <p>The inputs to this process are:</p>
 
 <ul>
-  <li>
-    <p>the already reconstructed samples in the current frame CurrFrame,</p>
-  </li>
   <li>
     <p>a variable plane specifying which plane is being predicted,</p>
   </li>
@@ -11978,12 +11989,14 @@ left of the transform block below this transform block,</p>
     <p>a variable mode specifying the type of intra prediction to apply,</p>
   </li>
   <li>
-    <p>variable log2W specifying the base 2 logarithm of the width of the region to be predicted,</p>
+    <p>a variable log2W specifying the base 2 logarithm of the width of the region to be predicted,</p>
   </li>
   <li>
-    <p>variable log2H specifying the base 2 logarithm of the height of the region to be predicted.</p>
+    <p>a variable log2H specifying the base 2 logarithm of the height of the region to be predicted.</p>
   </li>
 </ul>
+
+<p>The process makes use of the already reconstructed samples in the current frame CurrFrame to form a prediction for the current block.</p>
 
 <p>The outputs of this process are intra predicted samples in the current frame
 CurrFrame.</p>
@@ -11991,10 +12004,6 @@ CurrFrame.</p>
 <p>The variable w is set equal to 1 &lt;&lt; log2W.</p>
 
 <p>The variable h is set equal to 1 &lt;&lt; log2H.</p>
-
-<p>The variable w4 is set equal to w &gt;&gt; 2.</p>
-
-<p>The variable h2 is set equal to h &gt;&gt; 1.</p>
 
 <p>The variable maxX is set equal to ( MiCols * MI_SIZE ) - 1.</p>
 
@@ -12087,284 +12096,52 @@ CurrFrame [ plane ][ y ][ x - 1 ].</p>
 
 <ul>
   <li>
-    <p>If plane is equal to 0 and use_filter_intra is true, the following steps apply for i2 = 0..h2-1, for j4 = 0..w4-1:</p>
-
-    <ul>
-      <li>
-        <p>The array p is derived as follows for i = 0..6:</p>
-
-        <ul>
-          <li>
-            <p>If i is less than 5, p[ i ] is derived as follows:</p>
-
-            <ul>
-              <li>
-                <p>If i2 is equal to 0, p[ i ] is set equal to AboveRow[ ( j4 &lt;&lt; 2 ) + i - 1 ].</p>
-              </li>
-              <li>
-                <p>Otherwise (i2 is not equal to 0), p[ i ] is set equal to pred[ ( i2 &lt;&lt; 1 ) - 1 ][ ( j4 &lt;&lt; 2 ) + i - 1 ].</p>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <p>Otherwise (i is greater than or equal to 5), p[ i ] is derived as follows:</p>
-
-            <ul>
-              <li>
-                <p>If j4 is equal to 0, p[ i ] is set equal to LeftCol[ ( i2 &lt;&lt; 1 ) + i - 5 ].</p>
-              </li>
-              <li>
-                <p>Otherwise (j4 is not equal to 0), p[ i ] is set equal to pred[ ( i2 &lt;&lt; 1 ) + i - 5 ][ ( j4 &lt;&lt; 2 ) - 1 ].</p>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <p>The following steps apply for i1 = 0..1, j1 = 0..3:</p>
-
-        <ul>
-          <li>
-            <p>The variable pr is set equal to 0.</p>
-          </li>
-          <li>
-            <p>The variable pr is incremented by Intra_Filter_Taps[ filter_intra_mode ][ ( i1 &lt;&lt; 2 ) + j1 ][ i ] * p[ i ] for i = 0..6.</p>
-          </li>
-          <li>
-            <p>pred[ ( i2 &lt;&lt; 1 ) + i1 ][ ( j4 &lt;&lt; 2 ) + j1 ] is set equal to Clip1( Round2Signed( pr, INTRA_FILTER_SCALE_BITS ) ).</p>
-          </li>
-        </ul>
-      </li>
-    </ul>
+    <p>If plane is equal to 0 and use_filter_intra is true, the recursive intra prediction process specified in <a href="#recursive-intra-prediction-process">section 7.9.1.2</a> is invoked with w and h as inputs, and the output is assigned to pred.</p>
   </li>
   <li>
-    <p>Otherwise, if is_directional_mode( mode ) is true, the following steps apply:</p>
-
-    <ol>
-      <li>
-        <p>The variable angleDelta is derived as follows:</p>
-
-        <ul>
-          <li>
-            <p>If plane is equal to 0, angleDelta is set equal to AngleDeltaY.</p>
-          </li>
-          <li>
-            <p>Otherwise (plane is not equal to 0), angleDelta is set equal to AngleDeltaUV.</p>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <p>The variable pAngle is set equal to ( Mode_To_Angle[ mode ] + angleDelta * ANGLE_STEP ).</p>
-      </li>
-      <li>
-        <p>The variables upsampleAbove and upsampleLeft are set equal to 0.</p>
-      </li>
-      <li>
-        <p>If disable_intra_edge_filter is equal to 0, the following applies:</p>
-
-        <ul>
-          <li>
-            <p>If pAngle is not equal to 90 and pAngle is not equal to 180, the following applies:</p>
-
-            <ul>
-              <li>
-                <p>If (pAngle &gt; 90) and (pAngle &lt; 180) and (w + h) &gt;= 24), the
-filter corner process specified in <a href="#filter-corner-process">section 7.9.1.1</a> is invoked and the output assigned to both LeftCol[ -1 ] and AboveRow[ -1 ].</p>
-              </li>
-              <li>
-                <p>The intra filter type process specified in <a href="#intra-filter-type-process">section 7.9.1.2</a> is invoked with the input variable plane and the output assigned to
-filterType.</p>
-              </li>
-              <li>
-                <p>If haveAbove is equal to 1, the following steps apply:</p>
-
-                <ul>
-                  <li>
-                    <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.9.1.3</a> is invoked
-with w, h, filterType, and pAngle - 90 as inputs, and the output assigned to the variable strength.</p>
-                  </li>
-                  <li>
-                    <p>The variable numPx is set equal to Min( w, ( maxX - x + 1 ) ) + ( pAngle &lt; 90 ? h : 0 ) + 1.</p>
-                  </li>
-                  <li>
-                    <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.9.1.6</a> is invoked with the parameters
-numPx, strength, and 0 as inputs.</p>
-                  </li>
-                </ul>
-              </li>
-              <li>
-                <p>If haveLeft is equal to 1, the following steps apply:</p>
-
-                <ul>
-                  <li>
-                    <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.9.1.3</a> is invoked
-with w, h, filterType, and pAngle - 180 as inputs, and the output assigned to the variable strength.</p>
-                  </li>
-                  <li>
-                    <p>The variable numPx is set equal to Min( h, ( maxY - y + 1 ) ) + ( pAngle &gt; 180 ? w : 0 ) + 1.</p>
-                  </li>
-                  <li>
-                    <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.9.1.6</a> is invoked with the parameters
-numPx, strength, and 1 as inputs.</p>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.9.1.4</a> is invoked with w, h, filterType, and pAngle - 90 as inputs,
-and the output assigned to the variable upsampleAbove.</p>
-          </li>
-          <li>
-            <p>The variable numPx is set equal to ( w + (pAngle &lt; 90 ? h : 0) ).</p>
-          </li>
-          <li>
-            <p>If upsampleAbove is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.9.1.5</a> is invoked with the parameters numPx and 0 as inputs.</p>
-          </li>
-          <li>
-            <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.9.1.4</a> is invoked with w, h, filterType, and pAngle - 180 as inputs,
-and the output assigned to the variable upsampleLeft.</p>
-          </li>
-          <li>
-            <p>The variable numPx is set equal to ( h + (pAngle &lt; 180 ? w : 0) ).</p>
-          </li>
-          <li>
-            <p>If upsampleLeft is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.9.1.5</a> is invoked with the parameters numPx and 1 as inputs.</p>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <p>The variable dx is derived as follows:</p>
-
-        <ul>
-          <li>
-            <p>If pAngle is greater than 0 and less than 90, dx is set equal to Dr_Intra_Derivative[ pAngle ].</p>
-          </li>
-          <li>
-            <p>Otherwise, if pAngle is greater than 90 and less than 180, dx is set equal to Dr_Intra_Derivative[ 180 - pAngle ].</p>
-          </li>
-          <li>
-            <p>Otherwise, dx is undefined.</p>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <p>The variable dy is derived as follows:</p>
-
-        <ul>
-          <li>
-            <p>If pAngle is greater than 90 and less than 180, dy is set equal to Dr_Intra_Derivative[ pAngle - 90 ].</p>
-          </li>
-          <li>
-            <p>Otherwise, if pAngle is greater than 180 and less than 270, dy is set equal to Dr_Intra_Derivative[ 270 - pAngle ].</p>
-          </li>
-          <li>
-            <p>Otherwise, dy is undefined.</p>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <p>If pAngle is greater than 0 and less than 90, the following steps apply for i = 0..h-1, for j = 0..w-1:</p>
-
-        <ul>
-          <li>
-            <p>The variable idx is set equal to ( i + 1 ) * dx.</p>
-          </li>
-          <li>
-            <p>The variable base is set equal to (idx &gt;&gt; ( 6 - upsampleAbove ) ) + (j &lt;&lt; upsampleAbove).</p>
-          </li>
-          <li>
-            <p>The variable shift is set equal to ( (idx &lt;&lt; upsampleAbove) &gt;&gt; 1 ) &amp; 0x1F.</p>
-          </li>
-          <li>
-            <p>The variable maxBaseX is set equal to (w + h - 1) &lt;&lt; upsampleAbove.</p>
-          </li>
-          <li>
-            <p>If base is less than maxBaseX, pred[ i ][ j ] is set equal to Clip1( Round2( AboveRow[ base ] * ( 32 - shift ) + AboveRow[ base + 1 ] * shift, 5 ) ).</p>
-          </li>
-          <li>
-            <p>Otherwise (base is greater than or equal to maxBaseX), pred[ i ][ j ] is set equal to AboveRow[ maxBaseX ].</p>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <p>Otherwise, if pAngle is greater than 90 and pAngle is less than 180, the following steps apply for i = 0..h-1, for j = 0..w-1:</p>
-
-        <ul>
-          <li>
-            <p>The variable idx is set equal to ( j &lt;&lt; 6 ) - ( i + 1 ) * dx.</p>
-          </li>
-          <li>
-            <p>The variable base is set equal to idx &gt;&gt; ( 6 - upsampleAbove ).</p>
-          </li>
-          <li>
-            <p>If base is greater than or equal to -(1 &lt;&lt; upsampleAbove), the following steps apply:</p>
-
-            <ul>
-              <li>
-                <p>The variable shift is set equal to ( ( idx &lt;&lt; upsampleAbove ) &gt;&gt; 1 ) &amp; 0x1F.</p>
-              </li>
-              <li>
-                <p>pred[ i ][ j ] is set equal to Clip1( Round2( AboveRow[ base ] * ( 32 - shift ) + AboveRow[ base + 1 ] * shift, 5 ) ).</p>
-              </li>
-            </ul>
-          </li>
-          <li>
-            <p>Otherwise (base is less than -(1 &lt;&lt; upsampleAbove), the following steps apply:</p>
-
-            <ul>
-              <li>
-                <p>The variable idx is set equal to ( i &lt;&lt; 6 ) - ( j + 1 ) * dy.</p>
-              </li>
-              <li>
-                <p>The variable base is set equal to idx &gt;&gt; ( 6 - upsampleLeft ).</p>
-              </li>
-              <li>
-                <p>The variable shift is set equal to ( ( idx &lt;&lt; upsampleLeft ) &gt;&gt; 1 ) &amp; 0x1F.</p>
-              </li>
-              <li>
-                <p>pred[ i ][ j ] is set equal to Clip1( Round2( LeftCol[ base ] * ( 32 - shift ) + LeftCol[ base + 1 ] * shift, 5 ) ).</p>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <p>Otherwise, if pAngle is greater than 180 and pAngle is less than 270, the following steps apply for i = 0..h-1, for j = 0..w-1:</p>
-
-        <ul>
-          <li>
-            <p>The variable idx is set equal to ( j + 1 ) * dy.</p>
-          </li>
-          <li>
-            <p>The variable base is set equal to ( idx &gt;&gt; ( 6 - upsampleLeft ) ) + ( i &lt;&lt; upsampleLeft ).</p>
-          </li>
-          <li>
-            <p>The variable shift is set equal to ( ( idx &lt;&lt; upsampleLeft ) &gt;&gt; 1 ) &amp; 0x1F.</p>
-          </li>
-          <li>
-            <p>The variable maxBaseY is set equal to ( w + h - 1 ) &lt;&lt; upsampleLeft.</p>
-          </li>
-          <li>
-            <p>If base is less than maxBaseY, pred[ i ][ j ] is set equal to Clip1( Round2( LeftCol[ base ] * ( 32 - shift ) + LeftCol[ base + 1 ] * shift, 5 ) ).</p>
-          </li>
-          <li>
-            <p>Otherwise (base is greater than or equal to maxBaseY), pred[ i ][ j ] is set equal to LeftCol[ maxBaseY ].</p>
-          </li>
-        </ul>
-      </li>
-      <li>
-        <p>Otherwise, if pAngle is equal to 90, pred[ i ][ j ] is set equal to AboveRow[ j ] with j = 0..w-1 and i = 0..h-1 (each row of the block is filled with
-a copy of AboveRow).</p>
-      </li>
-      <li>
-        <p>Otherwise, if pAngle is equal to 180, pred[ i ][ j ] is set equal to LeftCol[ i ] with j = 0..w-1 and i = 0..h-1 (each column of the block is filled with
-a copy of LeftCol).</p>
-      </li>
-    </ol>
+    <p>Otherwise, if is_directional_mode( mode ) is true, the directional intra prediction process specified in <a href="#directional-intra-prediction-process">section 7.9.1.3</a> is invoked with plane, x, y, haveLeft, haveAbove, mode, w, h, maxX, maxY as inputs and the output is assigned to pred.</p>
   </li>
   <li>
-    <p>Otherwise if mode is equal to V_PRED, pred[ i ][ j ] is set equal to AboveRow[ j ]
+    <p>Otherwise if mode is equal to SMOOTH_PRED or SMOOTH_V_PRED or SMOOTH_H_PRED, the smooth intra prediction process specified in <a href="#smooth-intra-prediction-process">section 7.9.1.5</a> is invoked with mode, log2W, log2H, w, and h as inputs, and the output is assigned to pred.</p>
+  </li>
+  <li>
+    <p>Otherwise if mode is equal to DC_PRED, the DC intra prediction process specified in <a href="#dc-intra-prediction-process">section 7.9.1.4</a> is invoked with haveLeft, haveAbove, log2W, log2H, w, and h as inputs and the output is assigned to pred.</p>
+  </li>
+  <li>
+    <p>Otherwise, the basic intra prediction process specified in <a href="#basic-intra-prediction-process">section 7.9.1.1</a> is invoked with mode, w, and h as inputs, and the output is assigned to pred.</p>
+  </li>
+</ul>
+
+<p>The current frame is updated as follows:</p>
+
+<ul>
+  <li>CurrFrame[ plane ][ y + i ][ x + j ] is set equal to pred[ i ][ j ]
+for i = 0..h-1 and j = 0..w-1.</li>
+</ul>
+
+<h5 id="basic-intra-prediction-process">Basic Intra Prediction Process</h5>
+
+<p>The inputs to this process are:</p>
+
+<ul>
+  <li>
+    <p>a variable mode specifying the type of intra prediction to apply,</p>
+  </li>
+  <li>
+    <p>a variable w specifying the width of the region to be predicted,</p>
+  </li>
+  <li>
+    <p>a variable h specifying the height of the region to be predicted.</p>
+  </li>
+</ul>
+
+<p>The output of this process is a 2D array named pred containing the intra predicted samples.</p>
+
+<p>The process uses simple filters to generate filtered samples from the samples in LeftCol and AboveRow as follows:</p>
+
+<ul>
+  <li>
+    <p>If mode is equal to V_PRED, pred[ i ][ j ] is set equal to AboveRow[ j ]
 with j = 0..w-1 and i = 0..h-1 (each row of the block is filled with
 a copy of AboveRow).</p>
   </li>
@@ -12511,7 +12288,7 @@ for j = 2..w-1</p>
     </ol>
   </li>
   <li>
-    <p>Otherwise if mode is equal to TM_PRED, the following ordered steps apply
+    <p>Otherwise (mode is equal to TM_PRED), the following ordered steps apply
 for i = 0..h-1, for j = 0..w-1:</p>
 
     <ol>
@@ -12540,8 +12317,481 @@ LeftCol[ i ].</p>
       </li>
     </ol>
   </li>
+</ul>
+
+<p>The output of the process is the array pred.</p>
+
+<h5 id="recursive-intra-prediction-process">Recursive Intra Prediction Process</h5>
+
+<p>The inputs to this process are:</p>
+
+<ul>
   <li>
-    <p>Otherwise if mode is equal to SMOOTH_PRED, the following ordered steps
+    <p>a variable w specifying the width of the region to be predicted,</p>
+  </li>
+  <li>
+    <p>a variable h specifying the height of the region to be predicted.</p>
+  </li>
+</ul>
+
+<p>The output of this process is a 2D array named pred containing the intra predicted samples.</p>
+
+<p>For each block of 4x2 samples, this process first prepares an array p of 7 neighboring samples, and then produces
+the output block by filtering this array.</p>
+
+<p>The variable w4 is set equal to w &gt;&gt; 2.</p>
+
+<p>The variable h2 is set equal to h &gt;&gt; 1.</p>
+
+<p>The following steps apply for i2 = 0..h2-1, for j4 = 0..w4-1:</p>
+
+<ul>
+  <li>
+    <p>The array p is derived as follows for i = 0..6:</p>
+
+    <ul>
+      <li>
+        <p>If i is less than 5, p[ i ] is derived as follows:</p>
+
+        <ul>
+          <li>
+            <p>If i2 is equal to 0, p[ i ] is set equal to AboveRow[ ( j4 &lt;&lt; 2 ) + i - 1 ].</p>
+          </li>
+          <li>
+            <p>Otherwise (i2 is not equal to 0), p[ i ] is set equal to pred[ ( i2 &lt;&lt; 1 ) - 1 ][ ( j4 &lt;&lt; 2 ) + i - 1 ].</p>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <p>Otherwise (i is greater than or equal to 5), p[ i ] is derived as follows:</p>
+
+        <ul>
+          <li>
+            <p>If j4 is equal to 0, p[ i ] is set equal to LeftCol[ ( i2 &lt;&lt; 1 ) + i - 5 ].</p>
+          </li>
+          <li>
+            <p>Otherwise (j4 is not equal to 0), p[ i ] is set equal to pred[ ( i2 &lt;&lt; 1 ) + i - 5 ][ ( j4 &lt;&lt; 2 ) - 1 ].</p>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>The following steps apply for i1 = 0..1, j1 = 0..3:</p>
+
+    <ul>
+      <li>
+        <p>The variable pr is set equal to 0.</p>
+      </li>
+      <li>
+        <p>The variable pr is incremented by Intra_Filter_Taps[ filter_intra_mode ][ ( i1 &lt;&lt; 2 ) + j1 ][ i ] * p[ i ] for i = 0..6.</p>
+      </li>
+      <li>
+        <p>pred[ ( i2 &lt;&lt; 1 ) + i1 ][ ( j4 &lt;&lt; 2 ) + j1 ] is set equal to Clip1( Round2Signed( pr, INTRA_FILTER_SCALE_BITS ) ).</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>The output of the process is the array pred.</p>
+
+<h5 id="directional-intra-prediction-process">Directional Intra Prediction Process</h5>
+
+<p>The inputs to this process are:</p>
+
+<ul>
+  <li>
+    <p>a variable plane specifying which plane is being predicted,</p>
+  </li>
+  <li>
+    <p>variables x and y specifying the location of the top left sample in the
+CurrFrame[ plane ] array of the current transform block,</p>
+  </li>
+  <li>
+    <p>a variable haveLeft that is equal to 1 if there are valid samples to the
+left of this transform block,</p>
+  </li>
+  <li>
+    <p>a variable haveAbove that is equal to 1 if there are valid samples above
+this transform block,</p>
+  </li>
+  <li>
+    <p>a variable mode specifying the type of intra prediction to apply,</p>
+  </li>
+  <li>
+    <p>a variable w specifying the width of the region to be predicted,</p>
+  </li>
+  <li>
+    <p>a variable h specifying the height of the region to be predicted,</p>
+  </li>
+  <li>
+    <p>a variable maxX specifying the largest valid x coordinate for the current plane,</p>
+  </li>
+  <li>
+    <p>a variable maxY specifying the largest valid y coordinate for the current plane.</p>
+  </li>
+</ul>
+
+<p>The output of this process is a 2D array named pred containing the intra predicted samples.</p>
+
+<p>The process uses a directional filter to generate filtered samples from the samples in LeftCol and AboveRow.</p>
+
+<p>The following ordered steps apply:</p>
+
+<ol>
+  <li>
+    <p>The variable angleDelta is derived as follows:</p>
+
+    <ul>
+      <li>
+        <p>If plane is equal to 0, angleDelta is set equal to AngleDeltaY.</p>
+      </li>
+      <li>
+        <p>Otherwise (plane is not equal to 0), angleDelta is set equal to AngleDeltaUV.</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>The variable pAngle is set equal to ( Mode_To_Angle[ mode ] + angleDelta * ANGLE_STEP ).</p>
+  </li>
+  <li>
+    <p>The variables upsampleAbove and upsampleLeft are set equal to 0.</p>
+  </li>
+  <li>
+    <p>If disable_intra_edge_filter is equal to 0, the following applies:</p>
+
+    <ul>
+      <li>
+        <p>If pAngle is not equal to 90 and pAngle is not equal to 180, the following applies:</p>
+
+        <ul>
+          <li>
+            <p>If (pAngle &gt; 90) and (pAngle &lt; 180) and (w + h) &gt;= 24), the
+filter corner process specified in <a href="#filter-corner-process">section 7.9.1.6</a> is invoked and the output assigned to both LeftCol[ -1 ] and AboveRow[ -1 ].</p>
+          </li>
+          <li>
+            <p>The intra filter type process specified in <a href="#intra-filter-type-process">section 7.9.1.7</a> is invoked with the input variable plane and the output assigned to
+filterType.</p>
+          </li>
+          <li>
+            <p>If haveAbove is equal to 1, the following steps apply:</p>
+
+            <ul>
+              <li>
+                <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.9.1.8</a> is invoked
+with w, h, filterType, and pAngle - 90 as inputs, and the output assigned to the variable strength.</p>
+              </li>
+              <li>
+                <p>The variable numPx is set equal to Min( w, ( maxX - x + 1 ) ) + ( pAngle &lt; 90 ? h : 0 ) + 1.</p>
+              </li>
+              <li>
+                <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.9.1.11</a> is invoked with the parameters
+numPx, strength, and 0 as inputs.</p>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <p>If haveLeft is equal to 1, the following steps apply:</p>
+
+            <ul>
+              <li>
+                <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.9.1.8</a> is invoked
+with w, h, filterType, and pAngle - 180 as inputs, and the output assigned to the variable strength.</p>
+              </li>
+              <li>
+                <p>The variable numPx is set equal to Min( h, ( maxY - y + 1 ) ) + ( pAngle &gt; 180 ? w : 0 ) + 1.</p>
+              </li>
+              <li>
+                <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.9.1.11</a> is invoked with the parameters
+numPx, strength, and 1 as inputs.</p>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.9.1.9</a> is invoked with w, h, filterType, and pAngle - 90 as inputs,
+and the output assigned to the variable upsampleAbove.</p>
+      </li>
+      <li>
+        <p>The variable numPx is set equal to ( w + (pAngle &lt; 90 ? h : 0) ).</p>
+      </li>
+      <li>
+        <p>If upsampleAbove is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.9.1.10</a> is invoked with the parameters numPx and 0 as inputs.</p>
+      </li>
+      <li>
+        <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.9.1.9</a> is invoked with w, h, filterType, and pAngle - 180 as inputs,
+and the output assigned to the variable upsampleLeft.</p>
+      </li>
+      <li>
+        <p>The variable numPx is set equal to ( h + (pAngle &lt; 180 ? w : 0) ).</p>
+      </li>
+      <li>
+        <p>If upsampleLeft is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.9.1.10</a> is invoked with the parameters numPx and 1 as inputs.</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>The variable dx is derived as follows:</p>
+
+    <ul>
+      <li>
+        <p>If pAngle is greater than 0 and less than 90, dx is set equal to Dr_Intra_Derivative[ pAngle ].</p>
+      </li>
+      <li>
+        <p>Otherwise, if pAngle is greater than 90 and less than 180, dx is set equal to Dr_Intra_Derivative[ 180 - pAngle ].</p>
+      </li>
+      <li>
+        <p>Otherwise, dx is undefined.</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>The variable dy is derived as follows:</p>
+
+    <ul>
+      <li>
+        <p>If pAngle is greater than 90 and less than 180, dy is set equal to Dr_Intra_Derivative[ pAngle - 90 ].</p>
+      </li>
+      <li>
+        <p>Otherwise, if pAngle is greater than 180 and less than 270, dy is set equal to Dr_Intra_Derivative[ 270 - pAngle ].</p>
+      </li>
+      <li>
+        <p>Otherwise, dy is undefined.</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>If pAngle is greater than 0 and less than 90, the following steps apply for i = 0..h-1, for j = 0..w-1:</p>
+
+    <ul>
+      <li>
+        <p>The variable idx is set equal to ( i + 1 ) * dx.</p>
+      </li>
+      <li>
+        <p>The variable base is set equal to (idx &gt;&gt; ( 6 - upsampleAbove ) ) + (j &lt;&lt; upsampleAbove).</p>
+      </li>
+      <li>
+        <p>The variable shift is set equal to ( (idx &lt;&lt; upsampleAbove) &gt;&gt; 1 ) &amp; 0x1F.</p>
+      </li>
+      <li>
+        <p>The variable maxBaseX is set equal to (w + h - 1) &lt;&lt; upsampleAbove.</p>
+      </li>
+      <li>
+        <p>If base is less than maxBaseX, pred[ i ][ j ] is set equal to Clip1( Round2( AboveRow[ base ] * ( 32 - shift ) + AboveRow[ base + 1 ] * shift, 5 ) ).</p>
+      </li>
+      <li>
+        <p>Otherwise (base is greater than or equal to maxBaseX), pred[ i ][ j ] is set equal to AboveRow[ maxBaseX ].</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Otherwise, if pAngle is greater than 90 and pAngle is less than 180, the following steps apply for i = 0..h-1, for j = 0..w-1:</p>
+
+    <ul>
+      <li>
+        <p>The variable idx is set equal to ( j &lt;&lt; 6 ) - ( i + 1 ) * dx.</p>
+      </li>
+      <li>
+        <p>The variable base is set equal to idx &gt;&gt; ( 6 - upsampleAbove ).</p>
+      </li>
+      <li>
+        <p>If base is greater than or equal to -(1 &lt;&lt; upsampleAbove), the following steps apply:</p>
+
+        <ul>
+          <li>
+            <p>The variable shift is set equal to ( ( idx &lt;&lt; upsampleAbove ) &gt;&gt; 1 ) &amp; 0x1F.</p>
+          </li>
+          <li>
+            <p>pred[ i ][ j ] is set equal to Clip1( Round2( AboveRow[ base ] * ( 32 - shift ) + AboveRow[ base + 1 ] * shift, 5 ) ).</p>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <p>Otherwise (base is less than -(1 &lt;&lt; upsampleAbove), the following steps apply:</p>
+
+        <ul>
+          <li>
+            <p>The variable idx is set equal to ( i &lt;&lt; 6 ) - ( j + 1 ) * dy.</p>
+          </li>
+          <li>
+            <p>The variable base is set equal to idx &gt;&gt; ( 6 - upsampleLeft ).</p>
+          </li>
+          <li>
+            <p>The variable shift is set equal to ( ( idx &lt;&lt; upsampleLeft ) &gt;&gt; 1 ) &amp; 0x1F.</p>
+          </li>
+          <li>
+            <p>pred[ i ][ j ] is set equal to Clip1( Round2( LeftCol[ base ] * ( 32 - shift ) + LeftCol[ base + 1 ] * shift, 5 ) ).</p>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Otherwise, if pAngle is greater than 180 and pAngle is less than 270, the following steps apply for i = 0..h-1, for j = 0..w-1:</p>
+
+    <ul>
+      <li>
+        <p>The variable idx is set equal to ( j + 1 ) * dy.</p>
+      </li>
+      <li>
+        <p>The variable base is set equal to ( idx &gt;&gt; ( 6 - upsampleLeft ) ) + ( i &lt;&lt; upsampleLeft ).</p>
+      </li>
+      <li>
+        <p>The variable shift is set equal to ( ( idx &lt;&lt; upsampleLeft ) &gt;&gt; 1 ) &amp; 0x1F.</p>
+      </li>
+      <li>
+        <p>The variable maxBaseY is set equal to ( w + h - 1 ) &lt;&lt; upsampleLeft.</p>
+      </li>
+      <li>
+        <p>If base is less than maxBaseY, pred[ i ][ j ] is set equal to Clip1( Round2( LeftCol[ base ] * ( 32 - shift ) + LeftCol[ base + 1 ] * shift, 5 ) ).</p>
+      </li>
+      <li>
+        <p>Otherwise (base is greater than or equal to maxBaseY), pred[ i ][ j ] is set equal to LeftCol[ maxBaseY ].</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Otherwise, if pAngle is equal to 90, pred[ i ][ j ] is set equal to AboveRow[ j ] with j = 0..w-1 and i = 0..h-1 (each row of the block is filled with
+a copy of AboveRow).</p>
+  </li>
+  <li>
+    <p>Otherwise, if pAngle is equal to 180, pred[ i ][ j ] is set equal to LeftCol[ i ] with j = 0..w-1 and i = 0..h-1 (each column of the block is filled with
+a copy of LeftCol).</p>
+  </li>
+</ol>
+
+<p>The output of the process is the array pred.</p>
+
+<h5 id="dc-intra-prediction-process">DC Intra Prediction Process</h5>
+
+<p>The inputs to this process are:</p>
+
+<ul>
+  <li>
+    <p>a variable haveLeft that is equal to 1 if there are valid samples to the
+left of this transform block,</p>
+  </li>
+  <li>
+    <p>a variable haveAbove that is equal to 1 if there are valid samples above
+this transform block,</p>
+  </li>
+  <li>
+    <p>a variable log2W specifying the base 2 logarithm of the width of the region to be predicted,</p>
+  </li>
+  <li>
+    <p>a variable log2H specifying the base 2 logarithm of the height of the region to be predicted,</p>
+  </li>
+  <li>
+    <p>a variable w specifying the width of the region to be predicted,</p>
+  </li>
+  <li>
+    <p>a variable h specifying the height of the region to be predicted.</p>
+  </li>
+</ul>
+
+<p>The output of this process is a 2D array named pred containing the intra predicted samples.</p>
+
+<p>The process averages the available edge samples in LeftCol and AboveRow to generate the prediction as follows:</p>
+
+<ul>
+  <li>
+    <p>If haveLeft is equal to 1 and
+haveAbove is equal to 1, pred[ i ][ j ] is set equal to avg with
+i = 0..h-1 and j = 0..w-1. The variable avg (the average of the
+samples in union of AboveRow and LeftCol) is specified as follows:</p>
+
+    <pre><code class="language-c">sum = 0
+for ( k = 0; k &lt; h; k++ )
+    sum += LeftCol[ k ]
+for ( k = 0; k &lt; w; k++ )
+    sum += AboveRow[ k ]
+    
+sum += ( w + h ) &gt;&gt; 1
+interim = sum &gt;&gt; Min( log2W, log2H )
+shift2 = ( BitDepth == 8 ) ? 16 : 17
+    
+if ( Abs( log2W - log2H ) == 1 ) {
+    multiplier = ( BitDepth == 8 ) ? 0x5556 : 0xAAAB
+    avg = ( interim * multiplier ) &gt;&gt; shift2
+} else if ( Abs( log2W - log2H ) == 2 ) {
+    multiplier = ( BitDepth == 8 ) ? 0x3334 : 0x6667
+    avg = ( interim * multiplier ) &gt;&gt; shift2
+} else {
+    avg = sum / ( w + h )
+}
+    
+avg = Clip1( avg )
+</code></pre>
+  </li>
+</ul>
+
+<p class="alert alert-info"><strong>Note:</strong> The values for multiplier are chosen to approximate the effect of dividing by w+h.</p>
+
+<ul>
+  <li>
+    <p>Otherwise if haveLeft is equal to 1 and
+haveAbove is equal to 0, pred[ i ][ j ] is set equal to leftAvg with
+i = 0..h-1 and j = 0..w-1. The variable leftAvg is specified as
+follows:</p>
+
+    <pre><code class="language-c">sum = 0
+for ( k = 0; k &lt; h; k++ ) {
+    sum += LeftCol[ k ]
+}
+leftAvg = Clip1( ( sum + ( h &gt;&gt; 1 ) ) &gt;&gt; log2H )
+</code></pre>
+  </li>
+  <li>
+    <p>Otherwise if haveLeft is equal to 0 and
+haveAbove is equal to 1, pred[ i ][ j ] is set equal to aboveAvg with
+i = 0..h-1 and j = 0..w-1. The variable aboveAvg is specified
+as follows:</p>
+
+    <pre><code class="language-c">sum = 0
+for ( k = 0; k &lt; w; k++ ) {
+    sum += AboveRow[ k ]
+}
+aboveAvg = Clip1( ( sum + ( w &gt;&gt; 1 ) ) &gt;&gt; log2W )
+</code></pre>
+  </li>
+  <li>
+    <p>Otherwise (haveLeft is equal to 0 and haveAbove is equal to 0), pred[ i ][ j ] is set equal
+to 1 &lt;&lt; ( BitDepth - 1 ) with i = 0..h-1 and j = 0..w-1.</p>
+  </li>
+</ul>
+
+<p>The output of the process is the array pred.</p>
+
+<h5 id="smooth-intra-prediction-process">Smooth Intra Prediction Process</h5>
+
+<p>The inputs to this process are:</p>
+
+<ul>
+  <li>
+    <p>a variable mode specifying the type of intra prediction to apply,</p>
+  </li>
+  <li>
+    <p>a variable log2W specifying the base 2 logarithm of the width of the region to be predicted,</p>
+  </li>
+  <li>
+    <p>a variable log2H specifying the base 2 logarithm of the height of the region to be predicted,</p>
+  </li>
+  <li>
+    <p>a variable w specifying the width of the region to be predicted,</p>
+  </li>
+  <li>
+    <p>a variable h specifying the height of the region to be predicted.</p>
+  </li>
+</ul>
+
+<p>The output of this process is a 2D array named pred containing the intra predicted samples.</p>
+
+<p>The process uses linear interpolation to generate filtered samples from the samples in LeftCol and AboveRow as follows:</p>
+
+<ul>
+  <li>
+    <p>If mode is equal to SMOOTH_PRED, the following ordered steps
 apply for i = 0..h-1, for j = 0..w-1:</p>
 
     <ol>
@@ -12733,78 +12983,9 @@ following table:</p>
       </li>
     </ol>
   </li>
-  <li>
-    <p>Otherwise if mode is equal to DC_PRED and haveLeft is equal to 1 and
-haveAbove is equal to 1, pred[ i ][ j ] is set equal to avg with
-i = 0..h-1 and j = 0..w-1. The variable avg (the average of the
-samples in union of AboveRow and LeftCol) is specified as follows:</p>
-
-    <pre><code class="language-c">sum = 0
-for ( k = 0; k &lt; h; k++ )
-    sum += LeftCol[ k ]
-for ( k = 0; k &lt; w; k++ )
-    sum += AboveRow[ k ]
-    
-sum += ( w + h ) &gt;&gt; 1
-interim = sum &gt;&gt; Min( log2W, log2H )
-shift2 = ( BitDepth == 8 ) ? 16 : 17
-    
-if ( Abs( log2W - log2H ) == 1 ) {
-    multiplier = ( BitDepth == 8 ) ? 0x5556 : 0xAAAB
-    avg = ( interim * multiplier ) &gt;&gt; shift2
-} else if ( Abs( log2W - log2H ) == 2 ) {
-    multiplier = ( BitDepth == 8 ) ? 0x3334 : 0x6667
-    avg = ( interim * multiplier ) &gt;&gt; shift2
-} else {
-    avg = sum / ( w + h )
-}
-    
-avg = Clip1( avg )
-</code></pre>
-  </li>
 </ul>
 
-<p class="alert alert-info"><strong>Note:</strong> The values for multiplier are chosen to approximate the effect of dividing by w+h.</p>
-
-<ul>
-  <li>
-    <p>Otherwise if mode is equal to DC_PRED and haveLeft is equal to 1 and
-haveAbove is equal to 0, pred[ i ][ j ] is set equal to leftAvg with
-i = 0..h-1 and j = 0..w-1. The variable leftAvg is specified as
-follows:</p>
-
-    <pre><code class="language-c">sum = 0
-for ( k = 0; k &lt; h; k++ ) {
-    sum += LeftCol[ k ]
-}
-leftAvg = Clip1( ( sum + ( h &gt;&gt; 1 ) ) &gt;&gt; log2H )
-</code></pre>
-  </li>
-  <li>
-    <p>Otherwise if mode is equal to DC_PRED and haveLeft is equal to 0 and
-haveAbove is equal to 1, pred[ i ][ j ] is set equal to aboveAvg with
-i = 0..h-1 and j = 0..w-1. The variable aboveAvg is specified
-as follows:</p>
-
-    <pre><code class="language-c">sum = 0
-for ( k = 0; k &lt; w; k++ ) {
-    sum += AboveRow[ k ]
-}
-aboveAvg = Clip1( ( sum + ( w &gt;&gt; 1 ) ) &gt;&gt; log2W )
-</code></pre>
-  </li>
-  <li>
-    <p>Otherwise (mode is DC_PRED), pred[ i ][ j ] is set equal
-to 1 &lt;&lt; ( BitDepth - 1 ) with i = 0..h-1 and j = 0..w-1.</p>
-  </li>
-</ul>
-
-<p>The current frame is updated as follows:</p>
-
-<ul>
-  <li>CurrFrame[ plane ][ y + i ][ x + j ] is set equal to pred[ i ][ j ]
-for i = 0..h-1 and j = 0..w-1.</li>
-</ul>
+<p>The output of the process is the array pred.</p>
 
 <h5 id="filter-corner-process">Filter Corner Process</h5>
 
