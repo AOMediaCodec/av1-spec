@@ -38,7 +38,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-05 02:28:43 -0800</em></p>
+<p><em>Last modified: 2018-03-05 03:57:04 -0800</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -151,6 +151,7 @@ $(document).ready(function() {
           <li><a href="#tx-mode-syntax" id="markdown-toc-tx-mode-syntax">TX Mode Syntax</a></li>
           <li><a href="#skip-mode-params-syntax" id="markdown-toc-skip-mode-params-syntax">Skip Mode Params Syntax</a></li>
           <li><a href="#frame-reference-mode-syntax" id="markdown-toc-frame-reference-mode-syntax">Frame Reference Mode Syntax</a></li>
+          <li><a href="#compound-tools-syntax" id="markdown-toc-compound-tools-syntax">Compound Tools Syntax</a></li>
           <li><a href="#global-motion-params-syntax" id="markdown-toc-global-motion-params-syntax">Global Motion Params Syntax</a></li>
           <li><a href="#global-param-syntax" id="markdown-toc-global-param-syntax">Global Param Syntax</a></li>
           <li><a href="#decode-signed-subexp-with-ref-syntax" id="markdown-toc-decode-signed-subexp-with-ref-syntax">Decode Signed Subexp With Ref Syntax</a></li>
@@ -269,6 +270,7 @@ $(document).ready(function() {
           <li><a href="#tx-mode-semantics" id="markdown-toc-tx-mode-semantics">TX Mode Semantics</a></li>
           <li><a href="#skip-mode-params-semantics" id="markdown-toc-skip-mode-params-semantics">Skip Mode Params Semantics</a></li>
           <li><a href="#frame-reference-mode-semantics" id="markdown-toc-frame-reference-mode-semantics">Frame Reference Mode Semantics</a></li>
+          <li><a href="#compound-tools-semantics" id="markdown-toc-compound-tools-semantics">Compound Tools Semantics</a></li>
         </ul>
       </li>
       <li><a href="#tile-group-obu-semantics" id="markdown-toc-tile-group-obu-semantics">Tile Group OBU Semantics</a>        <ul>
@@ -2876,9 +2878,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     } else {
         allow_screen_content_tools = seq_force_screen_content_tools
     }
-    allow_intrabc = 0
     if ( allow_screen_content_tools ) {
-        <b class="syntax-element">allow_intrabc</b>                                                        f(1)
         if ( seq_force_integer_mv == SELECT_INTEGER_MV ) {
             <b class="syntax-element">force_integer_mv</b>                                                 f(1)
         } else {
@@ -2893,15 +2893,22 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     <b class="syntax-element">frame_size_override_flag</b>                                                 f(1)
     allow_high_precision_mv = 0
     can_use_previous = 0
+    allow_intrabc = 0
     if ( frame_type == KEY_FRAME ) {
         frame_size( )
         render_size( )
         refresh_frame_flags = 0xFF
+        if ( allow_screen_content_tools &amp;&amp; UpscaledWidth == FrameWidth ) {
+            <b class="syntax-element">allow_intrabc</b>                                                    f(1)
+        }
     } else {
         if ( frame_type == INTRA_ONLY_FRAME ) {
             <b class="syntax-element">refresh_frame_flags</b>                                              f(8)
             frame_size( )
             render_size( )
+            if ( allow_screen_content_tools &amp;&amp; UpscaledWidth == FrameWidth ) {
+                <b class="syntax-element">allow_intrabc</b>                                                f(1)
+            }
         } else {
             if ( frame_type == SWITCH_FRAME ) {
                 refresh_frame_flags = 0xFF
@@ -3014,6 +3021,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     read_tx_mode( )
     frame_reference_mode( )
     skip_mode_params( )
+    compound_tools( )
     <b class="syntax-element">reduced_tx_set</b>                                                           f(1)
     global_motion_params( )
     if ( show_frame ) {
@@ -3383,12 +3391,6 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
 <h4 id="quantizer-index-delta-parameters-syntax">Quantizer Index Delta Parameters Syntax</h4>
 
 <pre class="syntax"><code>delta_q_params( ) {
-    segmentQuantizerActive = 0
-    for ( i = 0; i &lt; MAX_SEGMENTS; i++ ) {
-        if ( seg_feature_active_idx( i, SEG_LVL_ALT_Q ) ) {
-            segmentQuantizerActive = 1
-        }
-    }
     delta_q_res = 0
     delta_q_present = 0
     if ( segmentQuantizerActive == 0 &amp;&amp; base_q_idx &gt; 0 ) {
@@ -3590,6 +3592,12 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
     } else {
         reference_select = 0
     }
+}
+</code></pre>
+
+<h4 id="compound-tools-syntax">Compound Tools Syntax</h4>
+
+<pre class="syntax"><code>compound_tools( ) {
     if ( FrameIsIntra ) {
         allow_interintra_compound = 0
     } else {
@@ -8494,6 +8502,8 @@ backward prediction is when a frame is used that has not yet been output.)</p>
 contains the syntax element comp_mode that indicates whether to use single or
 compound reference prediction. Reference_select equal to 0 specifies that all
 inter blocks will use single prediction.</p>
+
+<h4 id="compound-tools-semantics">Compound Tools Semantics</h4>
 
 <p><strong>allow_interintra_compound</strong> equal to 1 specifies that the mode info for inter
 blocks may contain the syntax element interintra. allow_interintra_compound
