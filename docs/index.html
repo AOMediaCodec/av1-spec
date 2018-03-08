@@ -38,7 +38,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-06 13:29:53 -0800</em></p>
+<p><em>Last modified: 2018-03-08 08:33:22 -0800</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -136,6 +136,7 @@ $(document).ready(function() {
       </li>
       <li><a href="#frame-header-obu-syntax" id="markdown-toc-frame-header-obu-syntax">Frame Header OBU Syntax</a>        <ul>
           <li><a href="#uncompressed-header-syntax" id="markdown-toc-uncompressed-header-syntax">Uncompressed Header Syntax</a></li>
+          <li><a href="#reference-frame-marking-function" id="markdown-toc-reference-frame-marking-function">Reference Frame Marking Function</a></li>
           <li><a href="#frame-size-syntax" id="markdown-toc-frame-size-syntax">Frame Size Syntax</a></li>
           <li><a href="#render-size-syntax" id="markdown-toc-render-size-syntax">Render Size Syntax</a></li>
           <li><a href="#frame-size-with-refs-syntax" id="markdown-toc-frame-size-with-refs-syntax">Frame Size with Refs Syntax</a></li>
@@ -253,6 +254,7 @@ $(document).ready(function() {
       </li>
       <li><a href="#frame-header-obu-semantics" id="markdown-toc-frame-header-obu-semantics">Frame Header OBU Semantics</a>        <ul>
           <li><a href="#uncompressed-header-semantics" id="markdown-toc-uncompressed-header-semantics">Uncompressed Header Semantics</a></li>
+          <li><a href="#reference-frame-marking-semantics" id="markdown-toc-reference-frame-marking-semantics">Reference Frame Marking Semantics</a></li>
           <li><a href="#frame-size-semantics" id="markdown-toc-frame-size-semantics">Frame Size Semantics</a></li>
           <li><a href="#render-size-semantics" id="markdown-toc-render-size-semantics">Render Size Semantics</a></li>
           <li><a href="#frame-size-with-refs-semantics" id="markdown-toc-frame-size-with-refs-semantics">Frame Size with Refs Semantics</a></li>
@@ -960,18 +962,8 @@ relate to the semantics of a particular syntax element are defined in
       <td>Base 2 logarithm of smallest size of a mode info block</td>
     </tr>
     <tr>
-      <td><code>MAX_TILE_WIDTH_SB</code></td>
-      <td style="text-align: center">4096 / <code>MAX_SB_SIZE</code></td>
-      <td>Maximum width of a tile in units of 128x128 pixels</td>
-    </tr>
-    <tr>
       <td><code>MAX_TILE_AREA</code></td>
       <td style="text-align: center">4096 * 2304</td>
-      <td>Maximum area of a tile in units of luma samples</td>
-    </tr>
-    <tr>
-      <td><code>MAX_TILE_AREA_SB</code></td>
-      <td style="text-align: center"><code>MAX_TILE_AREA</code> / ( <code>MAX_SB_SIZE</code> * <code>MAX_SB_SIZE</code> )</td>
       <td>Maximum area of a tile in units of luma samples</td>
     </tr>
     <tr>
@@ -1326,7 +1318,7 @@ relate to the semantics of a particular syntax element are defined in
     </tr>
     <tr>
       <td><code>MV_CLASSES</code></td>
-      <td style="text-align: center">11</td>
+      <td style="text-align: center">12</td>
       <td>Number of values for <code>mv_class</code></td>
     </tr>
     <tr>
@@ -1336,7 +1328,7 @@ relate to the semantics of a particular syntax element are defined in
     </tr>
     <tr>
       <td><code>MV_OFFSET_BITS</code></td>
-      <td style="text-align: center">10</td>
+      <td style="text-align: center">11</td>
       <td>Maximum number of bits for decoding motion vectors</td>
     </tr>
     <tr>
@@ -2438,15 +2430,15 @@ is byte aligned.</p>
 
 <h4 id="sun">su(n)</h4>
 
-<p>Signed integer converted from an n+1 bits unsigned integer in the bitstream.
-(The unsigned integer corresponds to the bottom n+1 bits of the signed integer.)
+<p>Signed integer converted from an n bits unsigned integer in the bitstream.
+(The unsigned integer corresponds to the bottom n bits of the signed integer.)
 The parsing process for this descriptor is specified below:</p>
 
 <pre class="syntax"><code>su(n) {
-    <b class="syntax-element">value</b>                                                                    f(n+1)
-    signBit = 1 &lt;&lt; n
-    if (value &amp; signBit)
-        value = value - 2 * signBit
+    <b class="syntax-element">value</b>                                                                    f(n)
+    signMask = 1 &lt;&lt; (n - 1)
+    if (value &amp; signMask)
+        value = value - 2 * signMask
     return value
 }
 </code></pre>
@@ -2878,6 +2870,10 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     <b class="syntax-element">frame_type</b>                                                               f(2)
     FrameIsIntra = (frame_type == INTRA_ONLY_FRAME || 
                     frame_type == KEY_FRAME)
+    if ( frame_type == KEY_FRAME ) {
+        for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
+            RefValid[ i ] = 0
+    }
     <b class="syntax-element">show_frame</b>                                                               f(1)
     <b class="syntax-element">error_resilient_mode</b>                                                     f(1)
     <b class="syntax-element">disable_intra_edge_filter</b>                                                f(1)
@@ -2897,9 +2893,18 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         force_integer_mv = 0
     }
     if ( frame_id_numbers_present_flag ) {
+        PrevFrameID = current_frame_id
         <b class="syntax-element">current_frame_id</b>                                                     f(idLen)
+        mark_ref_frames( )
     }
     <b class="syntax-element">frame_size_override_flag</b>                                                 f(1)
+    if (show_frame == 0) {
+        <b class="syntax-element">frame_offset_update</b>                                                  f(5)
+        OrderHint = CurrentVideoFrame + frame_offset_update
+    } else {
+        OrderHint = CurrentVideoFrame
+        CurrentVideoFrame += 1
+    }
     allow_high_precision_mv = 0
     can_use_previous = 0
     allow_intrabc = 0
@@ -2941,7 +2946,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
                     n = delta_frame_id_length_minus2 + 2
                     <b class="syntax-element">delta_frame_id_minus1</b>                                    f(n)
                     DeltaFrameId = delta_frame_id_minus1 + 1
-                    RefFrameId = ((current_frame_id -
+                    RefFrameId = ((current_frame_id + (1 &lt;&lt; idLen) -
                                   DeltaFrameId ) % (1 &lt;&lt; idLen))
                 }
             }
@@ -2964,13 +2969,6 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
                 <b class="syntax-element">can_use_previous</b>                                             f(1)
             }
         }
-    }
-    if (show_frame == 0) {
-        <b class="syntax-element">frame_offset_update</b>                                                  f(5)
-        OrderHint = CurrentVideoFrame + frame_offset_update
-    } else {
-        OrderHint = CurrentVideoFrame
-        CurrentVideoFrame += 1
     }
     if ( !FrameIsIntra ) {
         for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {
@@ -3035,6 +3033,26 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     global_motion_params( )
     if ( show_frame ) {
         film_grain_params( )
+    }
+}
+</code></pre>
+
+<h4 id="reference-frame-marking-function">Reference Frame Marking Function</h4>
+
+<pre class="syntax"><code>mark_ref_frames( ) {
+    diffLen = delta_frame_id_length_minus2 + 2
+    for ( i = 0; i &lt; NUM_REF_FRAMES; i++ ) {
+        if ( current_frame_id &gt; ( 1 &lt;&lt; diffLen ) ) {
+            if ( RefFrameId[ i ] &gt; current_frame_id ||
+                 RefFrameId[ i ] &lt; ( current_frame_id - ( 1 &lt;&lt; diffLen ) )
+                RefValid[ i ] = 0
+        } else {
+            if ( RefFrameId[ i ] &gt; current_frame_id ||
+                 RefFrameId[ i ] &lt; ( ( 1 &lt;&lt; idLen ) +
+                                     current_frame_id -
+                                     ( 1 &lt;&lt; diffLen ) ) )
+                RefValid[ i ] = 0
+        }
     }
 }
 </code></pre>
@@ -3157,12 +3175,12 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
             for ( i = 0; i &lt; TOTAL_REFS_PER_FRAME; i++ ) {
                 <b class="syntax-element">update_ref_delta</b>                                             f(1)
                 if ( update_ref_delta == 1 )
-                    <b class="syntax-element">loop_filter_ref_deltas[ i ]</b>                              su(6)
+                    <b class="syntax-element">loop_filter_ref_deltas[ i ]</b>                              su(1+6)
             }
             for ( i = 0; i &lt; 2; i++ ) {
                 <b class="syntax-element">update_mode_delta</b>                                            f(1)
                 if ( update_mode_delta == 1 )
-                    <b class="syntax-element">loop_filter_mode_deltas[ i ]</b>                             su(6)
+                    <b class="syntax-element">loop_filter_mode_deltas[ i ]</b>                             su(1+6)
             }
         }
     }
@@ -3211,7 +3229,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <pre class="syntax"><code>read_delta_q( ) {
     <b class="syntax-element">delta_coded</b>                                                              f(1)
     if ( delta_coded ) {
-        <b class="syntax-element">delta_q</b>                                                              su(6)
+        <b class="syntax-element">delta_q</b>                                                              su(1+6)
     } else {
         delta_q = 0
     }
@@ -3248,10 +3266,10 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
                         bitsToRead = Segmentation_Feature_Bits[ j ]
                         limit = Segmentation_Feature_Max[ j ]
                         if ( Segmentation_Feature_Signed[ j ] == 1 ) {
-                            feature_value                                      su(bitsToRead)
+                            <b class="syntax-element">feature_value</b>                                    su(1+bitsToRead)
                             clippedValue = Clip3( -limit, limit, feature_value)
                         } else {
-                            feature_value                                      f(bitsToRead)
+                            <b class="syntax-element">feature_value</b>                                    f(bitsToRead)
                             clippedValue = Clip3( 0, limit, feature_value)
                         }
                     }
@@ -3279,11 +3297,14 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
     sbCols = use_128x128_superblock ? ( ( MiCols + 31 ) &gt;&gt; 5 ) : ( ( MiCols + 15 ) &gt;&gt; 4 )
     sbRows = use_128x128_superblock ? ( ( MiRows + 31 ) &gt;&gt; 5 ) : ( ( MiRows + 15 ) &gt;&gt; 4 )
     sbShift = use_128x128_superblock ? 5 : 4
-    minLog2TileCols = tile_log2(MAX_TILE_WIDTH_SB, sbCols)
+    sbSize = sbShift + 2
+    maxTileWidthSb = MAX_TILE_WIDTH &gt;&gt; sbSize
+    maxTileAreaSb = MAX_TILE_AREA &gt;&gt; ( 2 * sbSize )
+    minLog2TileCols = tile_log2(maxTileWidthSb, sbCols)
     maxLog2TileCols = tile_log2(1, Min(sbCols, MAX_TILE_COLS))
     maxLog2TileRows = tile_log2(1, Min(sbRows, MAX_TILE_ROWS))
     minLog2Tiles = Max(minLog2TileCols, 
-                       tile_log2(MAX_TILE_AREA_SB, sbRows * sbCols))
+                       tile_log2(maxTileAreaSb, sbRows * sbCols))
                        
     <b class="syntax-element">uniform_tile_spacing_flag</b>                                                f(1)
     if ( uniform_tile_spacing_flag ) {
@@ -3295,9 +3316,9 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
             else
                 break
         }
-        sizeSb = (sbCols + (1 &lt;&lt; TileColsLog2) - 1) &gt;&gt; TileColsLog2
+        tileWidthSb = (sbCols + (1 &lt;&lt; TileColsLog2) - 1) &gt;&gt; TileColsLog2
         i = 0
-        for (startSb = 0; startSb &lt; sbCols; startSb += sizeSb) {
+        for (startSb = 0; startSb &lt; sbCols; startSb += tileWidthSb) {
           MiColStarts[ i ] = startSb &lt;&lt; sbShift
           i += 1
         }
@@ -3314,9 +3335,9 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
             else
                 break
         }
-        sizeSb = (sbCols + (1 &lt;&lt; TileRowsLog2) - 1) &gt;&gt; TileRowsLog2
+        tileHeightSb = (sbRows + (1 &lt;&lt; TileRowsLog2) - 1) &gt;&gt; TileRowsLog2
         i = 0
-        for (startSb = 0; startSb &lt; sbRows; startSb += sizeSb) {
+        for (startSb = 0; startSb &lt; sbRows; startSb += tileHeightSb) {
           MiRowStarts[ i ] = startSb &lt;&lt; sbShift
           i += 1
         }
@@ -3327,7 +3348,7 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
         startSb = 0
         for ( i = 0; startSb &lt; sbCols &amp;&amp; i &lt; MAX_TILE_COLS; i++ ) {
             MiColStarts[ i ] = startSb &lt;&lt; sbShift
-            maxWidth = Min(sbCols - startSb, MAX_TILE_WIDTH_SB)
+            maxWidth = Min(sbCols - startSb, maxTileWidthSb)
             <b class="syntax-element">width_in_sbs_minus_1</b>                                             ns(maxWidth)
             sizeSb = width_in_sbs_minus_1 + 1
             widestTileSb = Max( sizeSb, widestTileSb )
@@ -4037,7 +4058,6 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
     mode_info( )
     palette_tokens( )
     read_inter_tx_size( )
-    filter_intra_mode_info( )
     
     if ( skip )
         reset_block_context( bw4, bh4 )
@@ -4166,7 +4186,7 @@ Sgrproj_Xqd_Mid[2] = { -32,  31 }
              allow_screen_content_tools ) {
             palette_mode_info( )
         }
-        use_filter_intra = 0
+        filter_intra_mode_info( )
     }
 }
 </code></pre>
@@ -4576,7 +4596,7 @@ of the segmentation map covered by the current block.</p>
          Block_Height[ MiSize ] &lt;= 64 &amp;&amp;
          allow_screen_content_tools )
         palette_mode_info( )
-    use_filter_intra = 0
+    filter_intra_mode_info( )
 }
 </code></pre>
 
@@ -4585,7 +4605,6 @@ of the segmentation map covered by the current block.</p>
 <pre class="syntax"><code>inter_block_mode_info( ) {
     PaletteSizeY = 0
     PaletteSizeUV = 0
-    use_filter_intra = 0
     read_ref_frames( )
     isCompound = RefFrame[ 1 ] &gt; INTRA_FRAME
     find_mv_stack( isCompound )
@@ -4681,8 +4700,9 @@ of the segmentation map covered by the current block.</p>
 <h4 id="filter-intra-mode-info-syntax">Filter Intra Mode Info Syntax</h4>
 
 <pre class="syntax"><code>filter_intra_mode_info( ) {
+    use_filter_intra = 0
     if ( YMode == DC_PRED &amp;&amp; PaletteSizeY == 0 &amp;&amp;
-         Max( Tx_Width[ TxSize ], Tx_Height[ TxSize ] ) &lt;= 32 ) {
+         Max( Block_Width[ MiSize ], Block_Height[ MiSize ] ) &lt;= 32 ) {
         <b class="syntax-element">use_filter_intra</b>                                                     S()
         if ( use_filter_intra ) {
             <b class="syntax-element">filter_intra_mode</b>                                                S()
@@ -6531,20 +6551,20 @@ then used in both directions.</p>
 <p><strong>enable_jnt_comp</strong> equal to 1 indicates that the distance weights process
 may be used for inter prediction.</p>
 
-<p><strong>seq_choose_screen_content_tools</strong> equal to 1 indicates that the seq_force_screen_content_tools syntax element
-will be present.  seq_choose_screen_content_tools equal to 0 indicates that seq_force_screen_content_tools
+<p><strong>seq_choose_screen_content_tools</strong> equal to 0 indicates that the seq_force_screen_content_tools syntax element
+will be present.  seq_choose_screen_content_tools equal to 1 indicates that seq_force_screen_content_tools
 should be set equal to SELECT_SCREEN_CONTENT_TOOLS.</p>
 
 <p><strong>seq_force_screen_content_tools</strong> equal to SELECT_SCREEN_CONTENT_TOOLS indicates that the allow_screen_content_tools
-syntax element will be present in the frame headers of inter and intra-only frames.  Otherwise,
+syntax element will be present in the frame header.  Otherwise,
 seq_force_screen_content_tools contains the value for allow_screen_content_tools.</p>
 
-<p><strong>seq_choose_integer_mv</strong> equal to 1 indicates that the seq_force_integer_mv syntax element
-will be present.  seq_choose_integer_mv equal to 0 indicates that seq_force_integer_mv should be set
+<p><strong>seq_choose_integer_mv</strong> equal to 0 indicates that the seq_force_integer_mv syntax element
+will be present.  seq_choose_integer_mv equal to 1 indicates that seq_force_integer_mv should be set
 equal to SELECT_INTEGER_MV.</p>
 
 <p><strong>seq_force_integer_mv</strong> equal to SELECT_INTEGER_MV indicates that the force_integer_mv syntax element
-will be present in the frame headers of inter and intra-only frames.  Otherwise, seq_force_integer_mv
+will be present in the frame header (providing allow_screen_content_tools is equal to 1).  Otherwise, seq_force_integer_mv
 contains the value for force_integer_mv.</p>
 
 <p><strong>timing_info_present_flag</strong> specifies whether timing info is present in the bitstream.</p>
@@ -7405,7 +7425,7 @@ available if show_existing_frame is 1.</p>
 <p><strong>display_frame_id</strong> provides the frame number for the frame to display.
 It is a requirement of bitstream conformance that whenever display_frame_id is read, the value matches
 the value of current_frame_id at the time that the frame indexed by
-frame_to_show_map_idx was stored.</p>
+frame_to_show_map_idx was stored, and that RefValid[ frame_to_show_map_idx ] is equal to 1.</p>
 
 <p><strong>frame_type</strong> specifies the type of the frame:</p>
 
@@ -7458,9 +7478,31 @@ should be disabled.</p>
 disabled.</p>
 
 <p><strong>current_frame_id</strong> specifies the frame number for the current frame.
-Frame numbers are additional information
-that do not affect the decoding process, but provide decoders with a way of detecting
-missing reference frames so that appropriate action can be taken.</p>
+Frame numbers are additional information that do not affect the decoding process, but provide decoders
+with a way of detecting missing reference frames so that appropriate action can be taken.</p>
+
+<p>If frame_type is not equal to KEY_FRAME for the current frame, it is a requirement of bitstream conformance
+that all of the following conditions are true:</p>
+
+<ul>
+  <li>
+    <p>current_frame_id is not equal to PrevFrameID,</p>
+  </li>
+  <li>
+    <p>DiffFrameID is less than 1 &lt;&lt; ( idLen - 1 )</p>
+  </li>
+</ul>
+
+<p>where DiffFrameID is specified as follows:</p>
+
+<ul>
+  <li>
+    <p>If current_frame_id is greater than PrevFrameID, DiffFrameID is equal to current_frame_id - PrevFrameID.</p>
+  </li>
+  <li>
+    <p>Otherwise, DiffFrameID is equal to ( 1 &lt;&lt; idLen ) + current_frame_id - PrevFrameID.</p>
+  </li>
+</ul>
 
 <p><strong>frame_size_override_flag</strong> equal to 1 specifies that the frame size will be contained in the bitstream.
 frame_size_override_flag equal to 0 specifies that the frame size is equal to the size in the sequence header.</p>
@@ -7496,9 +7538,9 @@ When this function is called, the set frame refs
 process specified in <a href="#set-frame-refs-process">section 7.6</a> is invoked.</p>
 
 <p><strong>ref_frame_idx</strong> specifies which reference frames are used by inter frames. It
-is a requirement of bitstream conformance that the selected reference frames
-match the current frame in bit depth, profile, chroma subsampling, and color
-space.</p>
+is a requirement of bitstream conformance that RefValid[ ref_frame_idx ] is equal
+to 1, and that the selected reference frames match the current frame in bit depth,
+profile, chroma subsampling, and color space.</p>
 
 <p><strong>RefFrameSignBias</strong> specifies the intended direction of the motion vector
 in time for each reference frame. A sign bias equal to 0 indicates that the
@@ -7971,6 +8013,16 @@ SavedSegmentIds[ prevFrame ][ row ][ col ] for row = 0..MiRows-1, for col = 0..M
   </li>
 </ol>
 
+<h4 id="reference-frame-marking-semantics">Reference Frame Marking Semantics</h4>
+
+<p><strong>RefValid</strong> is an array which is indexed by a reference picture slot number. A value of 1 in the array signifies
+that the corresponding reference picture slot is valid for use as a reference picture, while a value of 0 signifies
+that the corresponding reference picture slot is not valid for use as a reference picture.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> All entries in RefValid are reset to zero whenever frame_type is decoded and is equal to KEY_FRAME. As a bitstream
+will not necessarily start with a frame with frame_type equal to KEY_FRAME, RefValid should be initialised with all entries
+equal to zero before decoding begins.</p>
+
 <h4 id="frame-size-semantics">Frame Size Semantics</h4>
 
 <p><strong>frame_width_minus_1</strong> plus one is the width of the frame in pixels.</p>
@@ -8250,8 +8302,11 @@ multiple of the maximum superblock size.</p>
 <p><strong>TileRows</strong> specifies the number of tiles down the frame.
 It is a requirement of bitstream conformance that TileRows is less than or equal to MAX_TILE_ROWS.</p>
 
-<p><strong>sizeSb</strong> is used to specify the width/height of each tile in units of superblocks.
-It is a requirement of bitstream conformance that sizeSb is less than or equal to MAX_TILE_WIDTH_SB.</p>
+<p><strong>tileWidthSb</strong> is used to specify the width of each tile in units of superblocks.
+It is a requirement of bitstream conformance that tileWidthSb is less than maxTileWidthSb.</p>
+
+<p><strong>tileHeightSb</strong> is used to specify the height of each tile in units of superblocks.
+It is a requirement of bitstream conformance that tileWidthSb * tileHeightSb is less than maxTileAreaSb.</p>
 
 <p>If uniform_tile_spacing_flag is equal to 0, it is a requirement of bitstream conformance that
 startSb is equal to sbCols when the loop writing MiColStarts exits.</p>
@@ -10437,9 +10492,6 @@ usedFrame[ gold_frame_idx ] = 1
 <p>The variable lastOrderHint (representing the expected output order for LAST_FRAME) is set equal to RefOrderHint[ last_frame_idx ].</p>
 
 <p>It is a requirement of bitstream conformance that lastOrderHint is strictly less than OrderHint.</p>
-
-<p class="alert alert-info"><strong>Note:</strong> TODO: OrderHint has not been defined at this point in the decoding process so this process is ill-defined.
-See issue 1484.</p>
 
 <p>The variable goldOrderHint (representing the expected output order for GOLDEN_FRAME) is set equal to RefOrderHint[ gold_frame_idx ].</p>
 
@@ -13311,20 +13363,29 @@ the following ordered steps:</p>
     </ul>
   </li>
   <li>
-    <p>The rounding variables InterRound0 and InterRound1 are derived as follows:</p>
+    <p>The rounding variables InterRound0, InterRound1, and InterPostRound are derived as follows:</p>
+
+    <ul>
+      <li>
+        <p>InterRound0 (representing the amount to round by after horizontal filtering) is set equal to 3.</p>
+      </li>
+      <li>
+        <p>InterRound1 (representing the amount to round by after vertical filtering) is set equal to ( isCompound ? 7 : 11).</p>
+      </li>
+      <li>
+        <p>If BitDepth is equal to 12, InterRound0 is set equal to InterRound0 + 2.</p>
+      </li>
+      <li>
+        <p>If BitDepth is equal to 12 and isCompound is equal to 0, InterRound1 is set equal to InterRound1 - 2.</p>
+      </li>
+      <li>
+        <p>InterPostRound (representing the amount to round by at the end of the prediction process) is set equal to 2 * FILTER_BITS - ( InterRound0 + InterRound1 ).</p>
+      </li>
+    </ul>
   </li>
 </ol>
 
-<pre class="alert alert-info"><code>* InterRound0 (representing the amount to round by after horizontal filtering) is set equal to 3.
-
-* InterRound1 (representing the amount to round by after vertical filtering) is set equal to ( isCompound ? 7 : 11).
-
-* If BitDepth is equal to 12, InterRound0 is set equal to InterRound0 + 2.
-
-* If BitDepth is equal to 12 and isCompound is equal to 0, InterRound1 is set equal to InterRound1 - 2.
-
-**Note:** The rounding is chosen to ensure that the output of the horizontal filter always fits within 16 bits.
-</code></pre>
+<p class="alert alert-info"><strong>Note:</strong> The rounding is chosen to ensure that the output of the horizontal filter always fits within 16 bits.</p>
 
 <ol>
   <li>
@@ -13446,12 +13507,12 @@ follows:</p>
   </li>
   <li>
     <p>Otherwise if compound_type is equal to COMPOUND_AVERAGE, CurrFrame[ plane ][ y + i ][ x + j ] is set equal to
-   Clip1( Round2( preds[ 0 ][ i ][ j ] + preds[ 1 ][ i ][ j ], 5 ) )
+   Clip1( Round2( preds[ 0 ][ i ][ j ] + preds[ 1 ][ i ][ j ], 1 + InterPostRound ) )
    for i = 0..h-1 and j = 0..w-1.</p>
   </li>
   <li>
     <p>Otherwise if compound_type is equal to COMPOUND_DISTANCE, CurrFrame[ plane ][ y + i ][ x + j ] is set equal to
-   Clip1( Round2( FwdWeight * preds[ 0 ][ i ][ j ] + BckWeight * preds[ 1 ][ i ][ j ], 8 ) )
+   Clip1( Round2( FwdWeight * preds[ 0 ][ i ][ j ] + BckWeight * preds[ 1 ][ i ][ j ], 4 + InterPostRound ) )
    for i = 0..h-1 and j = 0..w-1.</p>
   </li>
   <li>
@@ -14624,7 +14685,7 @@ Wedge_Codebook[3][16][3] = {
 <pre><code class="language-c">for (i = 0; i &lt; h; i++) {
     for (j = 0; j &lt; w; j++) {
         diff = Abs(preds[ 0 ][ i ][ j ] - preds[ 1 ][ i ][ j ])
-        diff = Round2(diff, (BitDepth - 8) + 9)
+        diff = Round2(diff, (BitDepth - 8) + InterPostRound)
         m = Clip3(0, 64, 38 + diff / 16)
         if (mask_type)
             Mask[ i ][ j ] = 64 - m
@@ -14728,24 +14789,24 @@ and subY is set equal to subsampling_y.</p>
 <pre><code class="language-c">for (y = 0; y &lt; h; y++) {
     for (x = 0; x &lt; w; x++) {
         if (!subX &amp;&amp; !subY) {
-            m = Mask[ y ][ x ] &lt;&lt; 2
+            m = Mask[ y ][ x ]
         } else if (subX &amp;&amp; !subY) {
-            m = ( Mask[ y ][ 2*x ] + Mask[ y ][ 2*x+1 ] ) &lt;&lt; 1
+            m = Round2( Mask[ y ][ 2*x ] + Mask[ y ][ 2*x+1 ], 1 )
         } else if (!subX &amp;&amp; subY) {
-            m = ( Mask[ 2*y ][ x ] + Mask[ 2*y+1 ][ x ] ) &lt;&lt; 1
+            m = Round2( Mask[ 2*y ][ x ] + Mask[ 2*y+1 ][ x ], 1 )
         } else {
-            m = Mask[ 2*y ][ 2*x ] + Mask[ 2*y ][ 2*x+1 ] +
-                Mask[ 2*y+1 ][ 2*x ] + Mask[ 2*y+1 ][ 2*x+1 ]
+            m = Round2( Mask[ 2*y ][ 2*x ] + Mask[ 2*y ][ 2*x+1 ] +
+                Mask[ 2*y+1 ][ 2*x ] + Mask[ 2*y+1 ][ 2*x+1 ], 2 )
         }
         if (interintra) {
             m = Round2( m, 2 )
             pred0 = Clip1( preds[ 0 ][ y ][ x ] )
             pred1 = CurrFrame[plane][x+dstX][y+dstY]
-            CurrFrame[plane][x+dstX][y+dstY] = Round2( m * pred1 + (64 - m) * pred0, 6 )
+            CurrFrame[plane][x+dstX][y+dstY] = Round2( m * pred1 + (64 - m) * pred0, InterPostRound )
         } else {
             pred0 = preds[ 0 ][ y ][ x ]
             pred1 = preds[ 1 ][ y ][ x ]
-            CurrFrame[plane][x+dstX][y+dstY] = Clip1( Round2( m * pred0 + (256 - m) * pred1, 12 ) )
+            CurrFrame[plane][x+dstX][y+dstY] = Clip1( Round2( m * pred0 + (64 - m) * pred1, 6 + InterPostRound ) )
         }
     }
 }
@@ -15325,17 +15386,10 @@ processes detailed in <a href="#reconstruction-and-dequantization">section 7.10<
 
 <h5 id="butterfly-functions">Butterfly Functions</h5>
 
-<p>This section defines the butterfly functions B, H, SB, SH used by the 1D
-transform processes.</p>
+<p>This section defines the butterfly functions B and H used by the 1D transform
+processes.</p>
 
-<p>The inverse transform process works by writing values into an array T. It is a
-requirement of bitstream conformance that the values saved into the array T
-are representable by a signed integer using 8 + BitDepth bits of precision.</p>
-
-<p class="alert alert-info"><strong>Note:</strong> The inverse asymmetric discrete sine transforms also make use of an
-intermediate array named S. The values in this array require higher precision
-to avoid overflow. Using signed integers with 24 + BitDepth bits of precision
-is enough to avoid overflow.</p>
+<p>The inverse transform process works by writing values into an array T.</p>
 
 <p>The function brev(numBits, x) returns the bit-reversal of numBits of x and is
 specified as follows:</p>
@@ -15350,7 +15404,7 @@ specified as follows:</p>
 }
 </code></pre>
 
-<p>The function B( a, b, angle, 0 ) performs a butterfly rotation specified by
+<p>The function B( a, b, angle, 0, r ) performs a butterfly rotation specified by
 the following ordered steps:</p>
 
 <ol>
@@ -15371,8 +15425,7 @@ cos128( angle ).</p>
 </ol>
 
 <p>It is a requirement of bitstream conformance that the values saved into the
-array T by this function are representable by a signed integer using 8 +
-BitDepth bits of precision.</p>
+array T by this function are representable by a signed integer using r bits of precision.</p>
 
 <p>The function cos128( angle ) is specified for integer values of the input angle
 by the following ordered steps:</p>
@@ -15446,23 +15499,22 @@ T[ b ] : T[ a ] + T[ b ].</p>
   </li>
 </ol>
 
-<p>It is a requirement of bitstream conformance that the angle is equal to 16 +
-32 * k for integer k, the variables v and w are representable by a signed
-integer using 8 + BitDepth bits of precision.</p>
+<p>It is a requirement of bitstream conformance that the values saved into the
+array T by this function are representable by a signed integer using r bits of precision.</p>
 
-<p>The function B( a ,b, angle, 1 ) performs a butterfly rotation and flip
+<p>The function B( a ,b, angle, 1, r ) performs a butterfly rotation and flip
 specified by the following ordered steps:</p>
 
 <ol>
   <li>
-    <p>The function B( a, b, angle, 0 ) is invoked.</p>
+    <p>The function B( a, b, angle, 0, r ) is invoked.</p>
   </li>
   <li>
     <p>The contents of T[ a ] and T[ b ] are exchanged.</p>
   </li>
 </ol>
 
-<p>The function H( a, b, 0 ) performs a Hadamard rotation specified by the
+<p>The function H( a, b, 0, r ) performs a Hadamard rotation specified by the
 following ordered steps:</p>
 
 <ol>
@@ -15473,22 +15525,18 @@ following ordered steps:</p>
     <p>The variable y is set equal to T[ b ].</p>
   </li>
   <li>
-    <p>T[ a ] is set equal to x + y.</p>
+    <p>T[ a ] is set equal to Clip3( - ( 1 &lt;&lt; ( r - 1 ) ), ( 1 &lt;&lt; ( r - 1 ) ) - 1, x + y ).</p>
   </li>
   <li>
-    <p>T[ b ] is set equal to x - y.</p>
+    <p>T[ b ] is set equal to Clip3( - ( 1 &lt;&lt; ( r - 1 ) ), ( 1 &lt;&lt; ( r - 1 ) ) - 1, x - y ).</p>
   </li>
 </ol>
 
-<p>It is a requirement of bitstream conformance that the values saved into the
-array T by this function are representable by a signed integer using 8 +
-BitDepth bits of precision.</p>
-
-<p>The function H( a, b, 1 ) performs a Hadamard rotation with flipped indices
+<p>The function H( a, b, 1, r ) performs a Hadamard rotation with flipped indices
 and is specified as follows:</p>
 
 <ol>
-  <li>The function H( b, a, 0 ) is invoked.</li>
+  <li>The function H( b, a, 0, r ) is invoked.</li>
 </ol>
 
 <h5 id="intermediate-clamping-process">Intermediate Clamping Process</h5>
@@ -15506,7 +15554,8 @@ and is specified as follows:</p>
   </li>
 </ul>
 
-<p>T[ i ] is set equal to Clip3( - ( 1 &lt;&lt; ( r - 1 ) ), ( 1 &lt;&lt; ( r - 1 ) ) - 1, T[ i ] ) for i = 0..((1 &lt;&lt; n) - 1).</p>
+<p>T[ i ] is set equal to Clip3( - ( 1 &lt;&lt; ( r - 1 ) ), ( 1 &lt;&lt; ( r - 1 ) ) - 1, T[ i ] )
+for i = 0..((1 &lt;&lt; n) - 1).</p>
 
 <h5 id="inverse-dct-array-permutation-process">Inverse DCT Array Permutation Process</h5>
 
@@ -15532,7 +15581,7 @@ permuted array T which is of length 2<sup>n</sup> for 2 ≤ n ≤ 6.</p>
     <p>a variable n that specifies the base 2 logarithm of the length of the input array,</p>
   </li>
   <li>
-    <p>a variable clamp that specifies whether intermediate values should be clamped.</p>
+    <p>a variable r that specifies the intermediate clamping range.</p>
   </li>
 </ul>
 
@@ -15540,151 +15589,118 @@ permuted array T which is of length 2<sup>n</sup> for 2 ≤ n ≤ 6.</p>
 
 <ol>
   <li>
-    <p>If n is equal to 6, invoke B( 32 + i, 63 - i, 63 - 4 * brev( 4, i ), 0 ) for i = 0..15.</p>
+    <p>Invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the input variables
+n and r.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
-input variable n and the input variable r equal to 16.</p>
+    <p>Invoke the inverse DCT permutation process as specified in <a href="#inverse-dct-array-permutation-process">section 7.11.1.3</a> with the input variable n.</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 5, invoke B( 16 + i, 31 - i, 6 + ( brev( 3, 7 - i ) &lt;&lt; 3 ), 0 )
+    <p>If n is equal to 6, invoke B( 32 + i, 63 - i, 63 - 4 * brev( 4, i ), 0, r ) for i = 0..15.</p>
+  </li>
+  <li>
+    <p>If n is greater than or equal to 5, invoke B( 16 + i, 31 - i, 6 + ( brev( 3, 7 - i ) &lt;&lt; 3 ), 0, r )
 for i = 0..7.</p>
   </li>
   <li>
-    <p>If n is equal to 6, invoke H( 32 + i * 2, 33 + i * 2, i &amp; 1 ) for i = 0..15.</p>
+    <p>If n is equal to 6, invoke H( 32 + i * 2, 33 + i * 2, i &amp; 1, r ) for i = 0..15.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
-input variable n and the input variable r equal to 16.</p>
+    <p>If n is greater than or equal to 4, invoke B( 8 + i, 15 - i, 12 + ( brev( 2, 3 - i ) &lt;&lt; 4 ),
+0, r ) for i = 0..3.</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 4, invoke B( 8 + i, 15 - i, 12 + ( brev( 2, 3 - i ) &lt;&lt; 4 ) ),
-0) for i = 0..3.</p>
+    <p>If n is greater than or equal to 5, invoke H( 16 + 2 * i, 17 + 2 * i, i &amp; 1, r ) for i = 0..7.</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 5, invoke H( 16 + 2 * i, 17 + 2 * i, i &amp; 1 ) for i = 0..7.</p>
+    <p>If n is equal to 6, invoke B( 62 - i * 4 - j, 33 + i * 4 + j, 60 - 16 * brev( 2, i ) + 64 * j, 1, r )
+for i = 0..3, for j = 0..1.</p>
   </li>
   <li>
-    <p>If n is equal to 6, invoke B(62 - i * 4 - j, 33 + i * 4 + j, 60 - 16 * brev( 2, i ) + 64 * j, 1) for i = 0..3,
-for j = 0..1.</p>
+    <p>If n is greater than or equal to 3, invoke B( 4 + i, 7 - i, 56 - 32 * i, 0, r )
+for i = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
-input variable n and the input variable r equal to 16.</p>
-  </li>
-  <li>
-    <p>If n is greater than or equal to 3, invoke B( 4 + i, 7 - i, 56 - 32 * i, 0 )
-     for i = 0..1.</p>
-  </li>
-  <li>
-    <p>If n is greater than or equal to 4, invoke H( 8 + 2 * i, 9 + 2 * i, i &amp; 1 ) for i = 0..3.</p>
+    <p>If n is greater than or equal to 4, invoke H( 8 + 2 * i, 9 + 2 * i, i &amp; 1, r ) for i = 0..3.</p>
   </li>
   <li>
     <p>If n is greater than or equal to 5, invoke B( 30 - 4 * i - j, 17 + 4 * i + j, 24 + (j &lt;&lt; 6) + ( ( 1 - i ) &lt;&lt; 5 ),
-1 ) for i = 0..1, for j=0..1.</p>
+1, r ) for i = 0..1, for j=0..1.</p>
   </li>
   <li>
-    <p>If n is equal to 6, invoke H( 32 + i * 4 + j, 35 + i * 4 - j, i &amp; 1 ) for i = 0..7, for j = 0..1.</p>
+    <p>If n is equal to 6, invoke H( 32 + i * 4 + j, 35 + i * 4 - j, i &amp; 1, r ) for i = 0..7, for j = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
-     input variable n and the input variable r equal to 16.</p>
+    <p>Invoke B( 2 * i, 2 * i + 1, 32 + 16 * i, 1 - i, r ) for i = 0..1.</p>
   </li>
   <li>
-    <p>Invoke B( 2 * i, 2 * i + 1, 32 + 16 * i, 1 - i ) for i = 0..1.</p>
+    <p>If n is greater than or equal to 3, invoke H( 4 + 2 * i, 5 + 2 * i, i, r ) for i = 0..1.</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 3, invoke H( 4 + 2 * i, 5 + 2 * i, i ) for i = 0..1.</p>
-  </li>
-  <li>
-    <p>If n is greater than or equal to 4, invoke B( 14 - i, 9 + i, 48 + 64 * i, 1 ) for
+    <p>If n is greater than or equal to 4, invoke B( 14 - i, 9 + i, 48 + 64 * i, 1, r ) for
      i = 0..1.</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 5, invoke H( 16 + 4 * i + j, 19 + 4 * i - j, i &amp; 1 ) for i = 0..3, for j = 0..1.</p>
+    <p>If n is greater than or equal to 5, invoke H( 16 + 4 * i + j, 19 + 4 * i - j, i &amp; 1, r ) for i = 0..3, for j = 0..1.</p>
   </li>
   <li>
-    <p>If n is equal to 6, invoke B( 61 - i * 8 - j, 34 + i * 8 + j, 56 - i * 32 + ( j &gt;&gt; 1 ) * 64, 1 ) for i = 0..1, for
-j = 0..3.</p>
+    <p>If n is equal to 6, invoke B( 61 - i * 8 - j, 34 + i * 8 + j, 56 - i * 32 + ( j &gt;&gt; 1 ) * 64, 1, r )
+for i = 0..1, for j = 0..3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
-     input variable n and the input variable r equal to 16.</p>
+    <p>Invoke H( i, 3 - i, 0, r ) for i = 0..1.</p>
   </li>
   <li>
-    <p>Invoke H( i, 3 - i, 0 ) for i = 0..1.</p>
+    <p>If n is greater than or equal to 3, invoke B( 6, 5, 32, 1, r ).</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 3, invoke B( 6, 5, 32, 1 ).</p>
-  </li>
-  <li>
-    <p>If n is greater than or equal to 4, invoke H( 8 + 4 * i + j, 11 + 4 * i - j, i ) for i = 0..1,
+    <p>If n is greater than or equal to 4, invoke H( 8 + 4 * i + j, 11 + 4 * i - j, i, r ) for i = 0..1,
 for j = 0..1.</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 5, invoke B( 29 - i, 18 + i, 48 + ( i &gt;&gt; 1 ) * 64, 1 ) for i = 0..3.</p>
+    <p>If n is greater than or equal to 5, invoke B( 29 - i, 18 + i, 48 + ( i &gt;&gt; 1 ) * 64, 1, r ) for i = 0..3.</p>
   </li>
   <li>
-    <p>If n is equal to 6, invoke H( 32 + 8 * i + j, 39 + 8 * i - j, i &amp; 1) for i = 0..3, for j = 0..3.</p>
+    <p>If n is equal to 6, invoke H( 32 + 8 * i + j, 39 + 8 * i - j, i &amp; 1, r ) for i = 0..3, for j = 0..3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
-     input variable n and the input variable r equal to 16.</p>
+    <p>If n is greater than or equal to 3, invoke H( i, 7 - i, 0, r ) for i = 0..3.</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 3, invoke H( i, 7 - i, 0 ) for i = 0..3.</p>
+    <p>If n is greater than or equal to 4, invoke B( 13 - i, 10 + i, 32, 1, r ) for i = 0..1.</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 4, invoke B( 13 - i, 10 + i, 32, 1 ) for i = 0..1.</p>
+    <p>If n is greater than or equal to 5, invoke H( 16 + i * 8 + j, 23 + i * 8 - j, i, r ) for i = 0..1, for j = 0..3.</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 5, invoke H( 16 + i * 8 + j, 23 + i * 8 - j, i ) for i = 0..1, for j = 0..3.</p>
+    <p>If n is equal to 6, invoke B( 59 - i, 36 + i, i &lt; 4 ? 48 : 112, 1, r ) for i = 0..7.</p>
   </li>
   <li>
-    <p>If n is equal to 6, invoke B( 59 - i, 36 + i, i &lt; 4 ? 48 : 112, 1 ) for i = 0..7.</p>
+    <p>If n is greater than or equal to 4, invoke H( i, 15 - i, 0, r ) for i = 0..7.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
-     input variable n and the input variable r equal to 16.</p>
-  </li>
-  <li>
-    <p>If n is greater than or equal to 4, invoke H( i, 15 - i, 0 ) for i = 0..7.</p>
-  </li>
-  <li>
-    <p>If n is greater than or equal to 5, invoke B( 27 - i, 20 + i, 32, 1 ) for i = 0..3.</p>
+    <p>If n is greater than or equal to 5, invoke B( 27 - i, 20 + i, 32, 1, r ) for i = 0..3.</p>
   </li>
   <li>
     <p>If n is equal to 6, the following steps apply for i = 0..7:</p>
 
     <ul>
       <li>
-        <p>Invoke H( 32 + i, 47 - i, 0 ).</p>
+        <p>Invoke H( 32 + i, 47 - i, 0, r ).</p>
       </li>
       <li>
-        <p>Invoke H( 48 + i, 63 - i, 1 ).</p>
+        <p>Invoke H( 48 + i, 63 - i, 1, r ).</p>
       </li>
     </ul>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
-     input variable n and the input variable r equal to 16.</p>
+    <p>If n is greater than or equal to 5, invoke H( i, 31 - i, 0, r ) for i = 0..15.</p>
   </li>
   <li>
-    <p>If n is greater than or equal to 5, invoke H( i, 31 - i, 0 ) for i = 0..15.</p>
+    <p>If n is equal to 6, invoke B( 55 - i, 40 + i, 32, 1, r ) for i = 0..7.</p>
   </li>
   <li>
-    <p>If n is equal to 6, invoke B( 55 - i, 40 + i, 32, 1 ) for i = 0..7.</p>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
-     input variable n and the input variable r equal to 16.</p>
-  </li>
-  <li>
-    <p>If n is equal to 6, invoke H( i, 63 - i, 0 ) for i = 0..31.</p>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the
-     input variable n and the input variable r equal to 16.</p>
+    <p>If n is equal to 6, invoke H( i, 63 - i, 0, r ) for i = 0..31.</p>
   </li>
 </ol>
 
@@ -15808,80 +15824,84 @@ of the length of the input array.</p>
 
 <p>This process performs an in-place inverse ADST process on the array T of size 4.</p>
 
-<p>The input to this process is a variable clamp that specifies whether intermediate values should be clamped.</p>
+<p>The input to this process is a variable r, specifying the intermediate clamping range.</p>
 
-<p>The following ordered steps apply:</p>
+<p>The following applies:</p>
 
-<ol>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 2 and the input variable r equal to 16.</p>
-  </li>
-  <li>
-    <p>The following applies:</p>
+<pre><code class="language-c">s[ 0 ] = SINPI_1_9 * T[ 0 ]
+s[ 1 ] = SINPI_2_9 * T[ 0 ]
+s[ 2 ] = SINPI_3_9 * T[ 1 ]
+s[ 3 ] = SINPI_4_9 * T[ 2 ]
+s[ 4 ] = SINPI_1_9 * T[ 2 ]
+s[ 5 ] = SINPI_2_9 * T[ 3 ]
+s[ 6 ] = SINPI_4_9 * T[ 3 ]
+a7 = T[ 0 ] - T[ 2 ]
+b7 = a7 + T[ 3 ]
 
-    <pre><code class="language-c">s0 = SINPI_1_9 * T[ 0 ]
-s1 = SINPI_2_9 * T[ 0 ]
-s2 = SINPI_3_9 * T[ 1 ]
-s3 = SINPI_4_9 * T[ 2 ]
-s4 = SINPI_1_9 * T[ 2 ]
-s5 = SINPI_2_9 * T[ 3 ]
-s6 = SINPI_4_9 * T[ 3 ]
-s7 = T[ 0 ] - T[ 2 ]
+s[ 0 ] = s[ 0 ] + s[ 3 ]
+s[ 1 ] = s[ 1 ] - s[ 4 ]
+s[ 3 ] = s[ 2 ]
+s[ 2 ] = SINPI_3_9 * b7
 
-s7 = s7 + T[ 3 ]
-     
-x0 = s0 + s3 + s5
-x1 = s1 - s4 - s6
-x2 = SINPI_3_9 * s7
-x3 = s2
-    
-T[ 0 ] = Round2( x0 + x3, 12 )
-T[ 1 ] = Round2( x1 + x3, 12 )
-T[ 2 ] = Round2( x2, 12 )
-T[ 3 ] = Round2( x0 + x1 - x3, 12 )
+s[ 0 ] = s[ 0 ] + s[ 5 ]
+s[ 1 ] = s[ 1 ] - s[ 6 ]
+
+x[ 0 ] = s[ 0 ] + s[ 3 ]
+x[ 1 ] = s[ 1 ] + s[ 3 ]
+x[ 2 ] = s[ 2 ]
+x[ 3 ] = s[ 0 ] + s[ 1 ]
+
+x[ 3 ] = x[ 3 ] - s[ 3 ]
+
+T[ 0 ] = Round2( x[ 0 ], 12 )
+T[ 1 ] = Round2( x[ 1 ], 12 )
+T[ 2 ] = Round2( x[ 2 ], 12 )
+T[ 3 ] = Round2( x[ 3 ], 12 )
 </code></pre>
 
-    <p>where the constants used are defined as follows:</p>
+<p>where the constants used are defined as follows:</p>
 
-    <table class="table table-sm table-bordered">
-      <thead>
-        <tr>
-          <th style="text-align: center">Symbol</th>
-          <th style="text-align: center">Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="text-align: center">SINPI_1_9</td>
-          <td style="text-align: center">1321</td>
-        </tr>
-        <tr>
-          <td style="text-align: center">SINPI_2_9</td>
-          <td style="text-align: center">2482</td>
-        </tr>
-        <tr>
-          <td style="text-align: center">SINPI_3_9</td>
-          <td style="text-align: center">3344</td>
-        </tr>
-        <tr>
-          <td style="text-align: center">SINPI_4_9</td>
-          <td style="text-align: center">3803</td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-  with the input variable n equal to 2 and the input variable r equal to 16.</p>
-  </li>
-</ol>
+<table class="table table-sm table-bordered">
+  <thead>
+    <tr>
+      <th style="text-align: center">Symbol</th>
+      <th style="text-align: center">Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">SINPI_1_9</td>
+      <td style="text-align: center">1321</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">SINPI_2_9</td>
+      <td style="text-align: center">2482</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">SINPI_3_9</td>
+      <td style="text-align: center">3344</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">SINPI_4_9</td>
+      <td style="text-align: center">3803</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>It is a requirement of bitstream conformance that all values stored in the s and x arrays by this process
+are representable by a signed integer using r + 12 bits of precision.</p>
+
+<p>It is a requirement of bitstream conformance that values stored in the variable a7 by this process
+are representable by a signed integer using r + 1 bits of precision.</p>
+
+<p>It is a requirement of bitstream conformance that values stored in the variable b7 by this process
+are representable by a signed integer using r bits of precision.</p>
 
 <h5 id="inverse-adst8-process">Inverse ADST8 Process</h5>
 
 <p>This process performs an in-place inverse ADST process on the array T of size 8.</p>
 
-<p>The input to this process is a variable clamp that specifies whether intermediate values should be clamped.</p>
+<p>The input to this process is a variable r, specifying the intermediate clamping range.</p>
 
 <p>The following ordered steps apply:</p>
 
@@ -15891,51 +15911,23 @@ T[ 3 ] = Round2( x0 + x1 - x3, 12 )
 input variable n set to 3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 3 and the input variable r equal to 16.</p>
+    <p>Invoke B( 2 * i, 2 * i + 1, 60 - 16 * i, 1, r ) for i = 0..3.</p>
   </li>
   <li>
-    <p>Invoke B( 2 * i, 2 * i + 1, 60 - 16 * i, 1 ) for i = 0..3.</p>
+    <p>Invoke H( i, 4 + i, 0, r ) for i = 0..3.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 3 and the input variable r equal to 16.</p>
+    <p>Invoke B( 4 + 3 * i, 5 + i, 48 - 32 * i, 1, r ) for i = 0..1.</p>
   </li>
   <li>
-    <p>Invoke H( i, 4 + i, 0 ) for i = 0..3.</p>
+    <p>Invoke H( 4 * j + i, 2 + 4 * j + i, 0, r ) for i = 0..1, for j = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 3 and the input variable r equal to 16.</p>
-  </li>
-  <li>
-    <p>Invoke B( 4 + 3 * i, 5 + i, 48 - 32 * i, 1 ) for i = 0..1.</p>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 3 and the input variable r equal to 16.</p>
-  </li>
-  <li>
-    <p>Invoke H( 4 * j + i, 2 + 4 * j + i, 0 ) for i = 0..1, for j = 0..1.</p>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 3 and the input variable r equal to 16.</p>
-  </li>
-  <li>
-    <p>Invoke B( 2 + 4 * i, 3 + 4 * i, 32, 1 ) for i = 0..1.</p>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 3 and the input variable r equal to 16.</p>
+    <p>Invoke B( 2 + 4 * i, 3 + 4 * i, 32, 1, r ) for i = 0..1.</p>
   </li>
   <li>
     <p>Invoke the ADST output array permutation process specified in <a href="#inverse-adst-output-array-permutation-process">section 7.11.1.6</a> with the 
 input variable n set to 3.</p>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 3 and the input variable r equal to 16.</p>
   </li>
 </ol>
 
@@ -15943,7 +15935,7 @@ with the input variable n equal to 3 and the input variable r equal to 16.</p>
 
 <p>This process performs an in-place inverse ADST process on the array T of size 16.</p>
 
-<p>The input to this process is a variable clamp that specifies whether intermediate values should be clamped.</p>
+<p>The input to this process is a variable r, specifying the intermediate clamping range.</p>
 
 <p>The following ordered steps apply:</p>
 
@@ -15953,67 +15945,31 @@ with the input variable n equal to 3 and the input variable r equal to 16.</p>
 input variable n set to 4.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 4 and the input variable r equal to 16.</p>
+    <p>Invoke B( 2 * i, 2 * i + 1, 62 - 8 * i, 1, r ) for i = 0..7.</p>
   </li>
   <li>
-    <p>Invoke B( 2 * i, 2 * i + 1, 62 - 8 * i, 1 ) for i = 0..7.</p>
+    <p>Invoke H( i, 8 + i, 0, r ) for i = 0..7.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 4 and the input variable r equal to 16.</p>
-  </li>
-  <li>
-    <p>Invoke H( i, 8 + i, 0 ) for i = 0..7.</p>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 4 and the input variable r equal to 16.</p>
-  </li>
-  <li>
-    <p>Invoke B( 8 + 2 * i, 9 + 2 * i, 56 - 32 * i, 1 ) and B( 13 + 2 * i, 12 + 2 * i, 8 + 32 * i, 1 )
+    <p>Invoke B( 8 + 2 * i, 9 + 2 * i, 56 - 32 * i, 1, r ) and B( 13 + 2 * i, 12 + 2 * i, 8 + 32 * i, 1, r )
 for i = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 4 and the input variable r equal to 16.</p>
+    <p>Invoke H( 8 * j + i, 4 + 8 * j + i, 0, r ) for i = 0..3, for j = 0..1.</p>
   </li>
   <li>
-    <p>Invoke H( 8 * j + i, 4 + 8 * j + i, 0 ) for i = 0..3, for j = 0..1.</p>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 4 and the input variable r equal to 16.</p>
-  </li>
-  <li>
-    <p>Invoke B( 4 + 8 * j + 3 * i, 5 + 8 * j + i, 48 - 32 * i, 1 ) and B( 12 + 3 * i, 13 + i, 48 - 32 * i, 1 )
+    <p>Invoke B( 4 + 8 * j + 3 * i, 5 + 8 * j + i, 48 - 32 * i, 1, r ) and B( 12 + 3 * i, 13 + i, 48 - 32 * i, 1, r )
 for i = 0..1, for j = 0..1.</p>
   </li>
   <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 4 and the input variable r equal to 16.</p>
+    <p>Invoke H( 4 * j + i, 2 + 4 * j + i, 0, r ) for i = 0..1, for j = 0..3.</p>
   </li>
   <li>
-    <p>Invoke H( 4 * j + i, 2 + 4 * j + i, 0 ) for i = 0..1, for j = 0..3.</p>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 4 and the input variable r equal to 16.</p>
-  </li>
-  <li>
-    <p>Invoke B( 2 + 4 * i, 3 + 4 * i, 32, 1 ) for i = 0..3.</p>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 4 and the input variable r equal to 16.</p>
+    <p>Invoke B( 2 + 4 * i, 3 + 4 * i, 32, 1, r ) for i = 0..3.</p>
   </li>
   <li>
     <p>Invoke the ADST output array permutation process specified in <a href="#inverse-adst-output-array-permutation-process">section 7.11.1.6</a> with the 
 input variable n set to 4.</p>
-  </li>
-  <li>
-    <p>If clamp is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to 4 and the input variable r equal to 16.</p>
   </li>
 </ol>
 
@@ -16029,24 +15985,27 @@ with the input variable n equal to 4 and the input variable r equal to 16.</p>
     <p>a variable n that specifies the base 2 logarithm of the length of the input array.</p>
   </li>
   <li>
-    <p>a variable clamp that specifies whether intermediate values should be clamped.</p>
+    <p>a variable r that specifies the intermediate clamping range.</p>
   </li>
 </ul>
+
+<p>First, the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> is invoked, with the input
+variables n and r.</p>
 
 <p>The following steps apply:</p>
 
 <ul>
   <li>
     <p>If n is equal to 2, invoke the inverse ADST4 process in <a href="#inverse-adst4-process">section 7.11.1.7</a>, with the input
-variable clamp.</p>
+variable r.</p>
   </li>
   <li>
     <p>Otherwise, if n is equal to 3, invoke the inverse ADST8 process in <a href="#inverse-adst8-process">section 7.11.1.8</a>, with the
-input variable clamp.</p>
+input variable r.</p>
   </li>
   <li>
     <p>Otherwise (n is equal to 4), invoke the inverse ADST16 process in <a href="#inverse-adst16-process">section 7.11.1.9</a>, with the
-input variable clamp.</p>
+input variable r.</p>
   </li>
 </ul>
 
@@ -16177,14 +16136,13 @@ of the length of the input array.</p>
 
 <p>Set the variable whMax equal to Max(w, h).</p>
 
-<p>Set the variable clampCol equal to BitDepth == 8 || BitDepth == 10.</p>
-
-<p>Set the variable clampRow equal to BitDepth == 8 || ( BitDepth == 10 &amp;&amp; ( txSz == TX_4X4 ||
-txSz == TX_4X8 || txSz == TX_8X4 ) ).</p>
+<p>Set the variable rowShift equal to Transform_Row_Shift[ txSz ].</p>
 
 <p>Set the variable colShift equal to 4.</p>
 
-<p>Set the variable rowShift equal to Transform_Row_Shift[ txSz ].</p>
+<p>Set the variable rowClampRange equal to BitDepth + 8.</p>
+
+<p>Set the variable colClampRange equal to Max( BitDepth + 6, 16 ).</p>
 
 <p>The row transforms with i = 0..(h-1) are applied as follows:</p>
 
@@ -16212,42 +16170,21 @@ j = 0..(w-1).</p>
   </li>
   <li>
     <p>Otherwise, if txType is equal to one of DCT_DCT, ADST_DCT, FLIPADST_DCT or H_DCT,
-apply an inverse DCT as follows:</p>
-
-    <ol>
-      <li>
-        <p>If clampRow is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to log2W and the input variable r equal to 16.</p>
-      </li>
-      <li>
-        <p>Invoke the inverse DCT permutation process as specified in <a href="#inverse-dct-array-permutation-process">section 7.11.1.3</a> with the input
-variable n equal to log2W.</p>
-      </li>
-      <li>
-        <p>Invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.11.1.4</a> with the
-input variable n equal to log2W, and the input variable clamp equal to clampRow.</p>
-      </li>
-    </ol>
+invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.11.1.4</a> with the
+input variable n equal to log2W and the input variable r equal to rowClampRange.</p>
   </li>
   <li>
-    <p>Otherwise if txType is equal to one of DCT_ADST, ADST_ADST, DCT_FLIPADST, FLIPADST_FLIPADST, 
+    <p>Otherwise, if txType is equal to one of DCT_ADST, ADST_ADST, DCT_FLIPADST, FLIPADST_FLIPADST, 
 ADST_FLIPADST, FLIPADST_ADST, H_ADST, or H_FLIPADST, invoke the inverse ADST process as 
-specified in <a href="#inverse-adst-process">section 7.11.1.10</a> with input variable n equal to log2W, and the input variable clamp set
-equal to clampRow.</p>
+specified in <a href="#inverse-adst-process">section 7.11.1.10</a> with input variable n equal to log2W and the input variable
+r equal to rowClampRange.</p>
   </li>
   <li>
     <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.11.1.17</a> with the
 input variable n equal to log2W.</p>
   </li>
   <li>
-    <p>Set T[ j ] equal to Round2( T[ j ], rowShift ) for j = 0..(w-1).</p>
-  </li>
-  <li>
-    <p>Invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the input variable n equal to log2W
-and the input variable r equal to Max( BitDepth + 6, 16 ).</p>
-  </li>
-  <li>
-    <p>Residual[ i ][ j ] is set equal to T[ j ] for j = 0..(w-1).</p>
+    <p>Set Residual[ i ][ j ] equal to Round2( T[ j ], rowShift ) for j = 0..(w-1).</p>
   </li>
 </ul>
 
@@ -16263,42 +16200,23 @@ and the input variable r equal to Max( BitDepth + 6, 16 ).</p>
   </li>
   <li>
     <p>Otherwise, if txType is equal to one of DCT_DCT, DCT_ADST, DCT_FLIPADST or
-V_DCT, apply an inverse DCT as follows:</p>
-
-    <ol>
-      <li>
-        <p>If clampCol is equal to 1, invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a>
-with the input variable n equal to log2H and the input variable r equal to 16.</p>
-      </li>
-      <li>
-        <p>Invoke the inverse DCT permutation process as specified in
-<a href="#inverse-dct-array-permutation-process">section 7.11.1.3</a> with the input variable n equal to log2H.</p>
-      </li>
-      <li>
-        <p>Invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.11.1.4</a>
-with the input variable n equal to log2H, and the input variable clamp equal to clampCol.</p>
-      </li>
-    </ol>
+V_DCT, invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.11.1.4</a>
+with the input variable n equal to log2H and the input variable r equal to
+colClampRange.</p>
   </li>
   <li>
     <p>Otherwise, if txType is equal to one of ADST_DCT, ADST_ADST, FLIPADST_DCT, 
 FLIPADST_FLIPADST, ADST_FLIPADST, FLIPADST_ADST, V_ADST, or V_FLIPADST,
 invoke the inverse ADST process as specified in <a href="#inverse-adst-process">section 7.11.1.10</a> with input variable n equal to
-log2H, and the input variable clamp equal to clampCol.</p>
+log2H and the input variable r equal to
+colClampRange.</p>
   </li>
   <li>
     <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.11.1.17</a> with the
 input variable n equal to log2H.</p>
   </li>
   <li>
-    <p>T[ i ] is set equal to Round2( T[ i ], colShift ) for i = 0..(h-1).</p>
-  </li>
-  <li>
-    <p>Invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the input variable n
-equal to log2H and the input variable r equal to BitDepth + 1.</p>
-  </li>
-  <li>
-    <p>Residual[ i ][ j ] is set equal to  T[ i ] for i = 0..(h-1).</p>
+    <p>Residual[ i ][ j ] is set equal to Round2( T[ i ], colShift ) for i = 0..(h-1).</p>
   </li>
 </ul>
 
@@ -17597,14 +17515,28 @@ Samples outside the current stripe are fetched from UpscaledCurrFrame (these sam
 
 <p>If allow_intrabc is equal to 1, then the process returns immediately after performing this copy.</p>
 
-<p>Otherwise, loop restoration is applied for each 4x4 block of each plane as follows:</p>
+<p>Otherwise, loop restoration is applied for each each tile as follows:</p>
 
-<pre><code class="language-c">for ( row = 0; row &lt; MiRows; row++ ) {
-    for ( col = 0; col * MI_SIZE &lt; UpscaledWidth; col++ ) {
-        for ( plane = 0; plane &lt; NumPlanes; plane++ ) {
-            loop_restore_block( plane, row, col)
-        }
+<pre><code class="language-c">for ( TileNum = 0; TileNum &lt; NumTiles; TileNum++ ) {
+  TileRow = TileNum / TileCols
+  TileCol = TileNum % TileCols
+  MiRowStart = MiRowStarts[ TileRow ]
+  MiRowEnd = MiRowStarts[ TileRow + 1 ]
+  MiColStart = MiColStarts[ TileCol ]
+  MiColEnd = MiColStarts[ TileCol + 1 ]
+  tileLeft = upscale_mi_to_pos(MiColStart, 0)
+  tileRight = upscale_mi_to_pos(MiColEnd, 0)
+  tileTop = MiRowStart * MI_SIZE
+  tileBottom = MiRowEnd * MI_SIZE
+  for ( y = tileTop; y &lt; tileBottom; y += MI_SIZE ) {
+    for ( x = tileLeft; x &lt; tileRight; x += MI_SIZE ) {
+      for ( plane = 0; plane &lt; NumPlanes; plane++ ) {
+        row = y &gt;&gt; MI_SIZE_LOG2
+        col = x &gt;&gt; MI_SIZE_LOG2
+        loop_restore_block( plane, row, col)
+      }
     }
+  }
 }
 </code></pre>
 
@@ -17625,8 +17557,6 @@ of 4x4 blocks in the upscaled luma plane.</p>
 </ul>
 
 <p>The output of this process are samples in LrFrame[ plane ].</p>
-
-<p>The variables TileNum, MiColStart, MiRowStart, MiColEnd, MiRowEnd are set equal to the values they had when the syntax element MiSizes[ row ][ col ] was written.</p>
 
 <p>The variable lumaY is set equal to row * MI_SIZE.</p>
 
@@ -17666,7 +17596,7 @@ plane as follows:</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The number of restoration units in a tile can be different for chroma and luma.</p>
 
-<p>The variable unitRow (specifying the vertical index of the current loop restoration unit) is set equal to Min( unitRows - 1, ( (row - MiRowStart) * MI_SIZE &gt;&gt; subY ) / unitSize).</p>
+<p>The variable unitRow (specifying the vertical index of the current loop restoration unit) is set equal to Min( unitRows - 1, ( ( (row - MiRowStart) * MI_SIZE + 8) &gt;&gt; subY ) / unitSize).</p>
 
 <p>The variable unitCol (specifying the horizontal index of the current loop restoration unit) is set equal to Min( unitCols - 1, (col * MI_SIZE - tileLeft) / unitSize).</p>
 
@@ -18593,6 +18523,9 @@ if (refresh_frame_flags &gt;&gt; i) &amp; 1 is equal to 1):</p>
 
 <ul>
   <li>
+    <p>RefValid[ i ] is set equal to 1.</p>
+  </li>
+  <li>
     <p>RefFrameWidth[ i ] is set equal to UpscaledWidth.</p>
   </li>
   <li>
@@ -19434,7 +19367,7 @@ else
     ctx = 0
 </code></pre>
 
-<p><strong>use_filter_intra</strong>: the cdf is given by TileFilterIntraCdf[ TxSize ].</p>
+<p><strong>use_filter_intra</strong>: the cdf is given by TileFilterIntraCdf[ MiSize ].</p>
 
 <p><strong>filter_intra_mode</strong>: the cdf is given by TileFilterIntraModeCdf.</p>
 
@@ -22530,11 +22463,12 @@ with zero mean and standard deviation of about 512 clipped to the range of [-204
 <pre><code class="language-c">Default_Filter_Intra_Mode_Cdf[ 6 ] = { 14259, 17304, 20463, 29377, 32768, 0 }
 </code></pre>
 
-<pre><code class="language-c">Default_Filter_Intra_Cdf[ TX_SIZES_ALL ][ 3 ] = {
-  { 10985, 32768, 0 }, { 10985, 32768, 0 }, { 16645, 32768, 0 }, { 27378, 32768, 0 }, { 30378, 32768, 0 },
-  { 10985, 32768, 0 }, { 10985, 32768, 0 }, { 15723, 32768, 0 }, { 12373, 32768, 0 }, { 27199, 32768, 0 },
-  { 24217, 32768, 0 }, { 27378, 32768, 0 }, { 27378, 32768, 0 }, { 16767, 32768, 0 }, { 16767, 32768, 0 },
-  { 27767, 32768, 0 }, { 27767, 32768, 0 }, { 27378, 32768, 0 }, { 27378, 32768, 0 }
+<pre><code class="language-c">Default_Filter_Intra_Cdf[ BLOCK_SIZES ][ 3 ] = {
+  { 10985, 32768, 0 }, { 10985, 32768, 0 }, { 10985, 32768, 0 }, { 10985, 32768, 0 }, { 15723, 32768, 0 },
+  { 15723, 32768, 0 }, { 16645, 32768, 0 }, { 16645, 32768, 0 }, { 16645, 32768, 0 }, { 27378, 32768, 0 },
+  { 30378, 32768, 0 }, { 30378, 32768, 0 }, { 30378, 32768, 0 }, { 30378, 32768, 0 }, { 30378, 32768, 0 },
+  { 30378, 32768, 0 }, { 10985, 32768, 0 }, { 10985, 32768, 0 }, { 15723, 32768, 0 }, { 15723, 32768, 0 },
+  { 30378, 32768, 0 }, { 30378, 32768, 0 }, { 30378, 32768, 0 }, { 30378, 32768, 0 }
 }
 </code></pre>
 
@@ -22577,6 +22511,7 @@ Default_Segment_Id_Predicted_Cdf[ SEGMENT_ID_PREDICTED_CONTEXTS ][ 3 ] = {
   { 224*128, 32768, 0 },
   { 234*128, 32768, 0 },
   { 234*128, 32768, 0 },
+  { 240*128, 32768, 0 },
   { 240*128, 32768, 0 }
 }
 </code></pre>
@@ -22760,11 +22695,11 @@ Default_Segment_Id_Predicted_Cdf[ SEGMENT_ID_PREDICTED_CONTEXTS ][ 3 ] = {
 
 <pre><code class="language-c">Default_Mv_Class_Cdf[ 2 ][ MV_CLASSES + 1 ] = {
   { 28672, 30976, 31858, 32320,
-    32551, 32656, 32740, 32757,
-    32762, 32767, 32768, 0 },
+    32551, 32656, 32740, 32752,
+    32757, 32762, 32767, 32768, 0 },
   { 28672, 30976, 31858, 32320,
-    32551, 32656, 32740, 32757,
-    32762, 32767, 32768, 0 },
+    32551, 32656, 32740, 32752,
+    32757, 32762, 32767, 32768, 0 }
 }
 </code></pre>
 
@@ -23239,7 +23174,7 @@ Default_Palette_Size_8_Uv_Color_Cdf[ PALETTE_COLOR_CONTEXTS ][ 9 ] = {
 }
 </code></pre>
 
-<pre><code class="language-c">Default_Wedge_Index_Cdf[ BLOCK_SIZES_ALL ][ 16+1 ] = {
+<pre><code class="language-c">Default_Wedge_Index_Cdf[ BLOCK_SIZES ][ 16+1 ] = {
   { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
   { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
   { 2048, 4096, 6144, 8192, 10240, 12288, 14336, 16384, 18432, 20480, 22528, 24576, 26624, 28672, 30720, 32768, 0 },
