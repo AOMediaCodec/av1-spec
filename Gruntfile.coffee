@@ -3,16 +3,28 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
     clean: [ 'docs' ]
-    replace: boldSyntaxElements:
-      options: patterns: [ {
-        match: /@@[a-zA-Z_0-9]*(\[[^\]]*\])*/g
-        replacement: (match) ->
-          '<b class="syntax-element">' + match.substring(2) + '</b>'
-      } ]
-      files: [ {
-        src:  '_site/index.html'
-        dest: 'docs/index.html'
-      } ]
+    replace:
+      boldSyntaxElements:
+        options: patterns: [ {
+          match: /@@[a-zA-Z_0-9]*(\[[^\]]*\])*/g
+          replacement: (match) ->
+            '<b class="syntax-element">' + match.substring(2) + '</b>'
+        } ]
+        files: [ {
+          src:  '_site/index.html'
+          dest: 'docs/index.html'
+        } ]
+      preserveIndents:
+        options:
+          patterns: [ {
+            match: /^\|([ ]){2,}/gm
+            replacement: (match) ->
+              '| ' + '&nbsp;'.repeat(match.substring(1).length - 1)
+          } ]
+        files: [ {
+          src:  '98.testing.md'
+          dest: '_tmp/98.testing.md'
+        } ]
     copy:
       docs:
         files: [ {
@@ -48,7 +60,7 @@ module.exports = (grunt) ->
   # Register the default tasks.
   grunt.registerTask 'default', [
     'clean'
-    'replace'
+    'replace:boldSyntaxElements'
     'copy'
   ]
   return
