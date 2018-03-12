@@ -3,7 +3,7 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
     clean: [ 'docs' ]
-    replace: dist:
+    replace: boldSyntaxElements:
       options: patterns: [ {
         match: /@@[a-zA-Z_0-9]*(\[[^\]]*\])*/g
         replacement: (match) ->
