@@ -2,7 +2,7 @@ module.exports = (grunt) ->
   # Initial grunt configurations
   grunt.initConfig
     pkg: grunt.file.readJSON('package.json')
-    clean: [ 'docs' ]
+    clean: [ 'docs', '_site', '_tmp' ]
     replace:
       boldSyntaxElements:
         options: patterns: [ {
