@@ -52,6 +52,7 @@ The specification has been updated to include the following list of adopted expe
 | ext_warped_motion             |
 | fast_sgr                      |
 | film_grain_noise              |
+| film_grain_noise_showex       |
 | filter_7bit                   |
 | filter_intra                  |
 | frame_refs_signaling          |
