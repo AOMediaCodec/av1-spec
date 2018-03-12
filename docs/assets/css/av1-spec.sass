@@ -43,29 +43,6 @@ table
       color: #000
       font-weight: normal
 
-table.syntax // Experimental
-  font-family: $monofont
-  font-size: 1em
-  margin-bottom: 1em
-  td, th
-    border: 1px solid #ccc
-    padding-left: .5em
-    padding-right: .5em
-  td code
-    color: #333
-    background-color: #fff
-    font-size: 1em
-    padding: 0
-  td:first-child
-    text-align: center
-  td:nth-child(2)
-    white-space: pre
-    width: 100%
-  th
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
-    color: #fff
-    background-color: #333
-
 b.syntax-element // Temporary: adjust syntax element columnar spacing
   padding-right: 1em
 
@@ -75,6 +52,30 @@ figure
     font-style: italic
     margin: 1em auto
 
+// Start Experimental
+table.syntax
+  width: 100%
+  font-size: 1em
+  margin-bottom: 1em
+  td, th
+    font-family: $monofont
+    border: 1px solid #ccc
+    padding-left: .5em
+    padding-right: .5em
+    line-height: 1.3
+  td code
+    color: #333
+    background-color: #fff
+    font-size: 1em
+    padding: 0
+  td:first-child
+    white-space: pre
+    //width: 100%
+  td:nth-child(2)
+    width: 20%
+  th
+    display: none
+// End Experimental
 
 // Rules that vary with viewport size
 //
