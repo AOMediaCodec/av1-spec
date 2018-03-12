@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>AV1 Bitstream &amp; Decoding Process Specification</title>
-  <link rel="stylesheet" href="/av1-spec/assets/css/av1-spec.css">
-  <link rel="stylesheet" href="/av1-spec/assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/av1-spec.css">
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
   <link rel="apple-touch-icon" sizes="57x57" href="assets/images/icons/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="assets/images/icons/apple-icon-60x60.png">
   <link rel="apple-touch-icon" sizes="72x72" href="assets/images/icons/apple-icon-72x72.png">
@@ -38,7 +38,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-12 07:10:48 -0700</em></p>
+<p><em>Last modified: 2018-03-12 12:30:01 -0700</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -2865,7 +2865,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
             <b class="syntax-element">display_frame_id</b>                                                 f(idLen)
         }
         CurrentVideoFrame += 1
-        film_grain_params( )
+        load_grain_params( frame_to_show_map_idx )
         return
     }
     <b class="syntax-element">frame_type</b>                                                               f(2)
@@ -3033,6 +3033,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     <b class="syntax-element">reduced_tx_set</b>                                                           f(1)
     global_motion_params( )
     if ( show_frame ) {
+        showable_frame = 0
+    } else {
+        <b class="syntax-element">showable_frame</b>                                                       f(1)
+    }
+    if ( show_frame || showable_frame) {
         film_grain_params( )
     }
 }
@@ -3791,6 +3796,7 @@ However, these fractional bits will be discarded during the Setup Zero MV proces
     }
     <b class="syntax-element">apply_grain</b>                                                              f(1)
     if ( !apply_grain ) {
+        reset_grain_params()
         return
     }
     <b class="syntax-element">grain_seed</b>                                                               f(16)
@@ -3799,6 +3805,10 @@ However, these fractional bits will be discarded during the Setup Zero MV proces
     else
         update_grain = 1
     if ( !update_grain ) {
+        <b class="syntax-element">film_grain_params_ref_idx</b>                                            f(3)
+        tempGrainSeed = grain_seed
+        load_grain_params( film_grain_params_ref_idx )
+        grain_seed = tempGrainSeed
         return
     }
     <b class="syntax-element">num_y_points</b>                                                             f(4)
@@ -7617,6 +7627,16 @@ encoding.</p>
 <p><strong>reduced_tx_set</strong> equal to 1 specifies that the frame is restricted to a
 reduced subset of the full set of transform types.</p>
 
+<p><strong>showable_frame</strong> equal to 1 specifies that the frame may be displayed using the show_existing_frame mechanism.
+showable_frame equal to 0 specifies that this frame may not be displayed using the show_existing_frame mechanism.</p>
+
+<p>It is a requirement of bitstream conformance that when show_existing_frame is used to show a previous frame,
+that the value of showable_frame for the previous frame was equal to 1.</p>
+
+<p>It is a requirement of bitstream conformance that a particular showable frame is displayed via the show_existing_frame mechanism at most once.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> This requirement also forbids storing a frame into multiple reference buffers and then using show_existing_frame for each buffer.</p>
+
 <p><strong>setup_past_independence</strong> is a function call that indicates that this frame
 can be decoded without dependence on previous coded frames. When this function
 is invoked the following takes place:</p>
@@ -8437,17 +8457,24 @@ the range 0 to n-1.</p>
 <p><strong>apply_grain</strong> equal to 1 specifies that film grain should be added to this frame.
 apply_grain equal to 0 specifies that film grain should not be added.</p>
 
+<p><strong>reset_grain_params()</strong> is a function call that indicates that all the syntax elements normally read in film_grain_params should be set equal to 0.</p>
+
 <p><strong>grain_seed</strong> specifies the starting value for the pseudo-random numbers used during film grain synthesis.</p>
 
 <p><strong>update_grain</strong> equal to 1 means that a new set of parameters should be sent.
 update_grain equal to 0 means that the previous set of parameters should be used.</p>
 
-<p>It is a requirement of bitstream conformance that if update_grain is set to 0, then
-there must have been a previous frame in decoding order for which update_grain was
-set to 1 (this ensures that the parameters are always defined before being used).</p>
+<p><strong>film_grain_params_ref_idx</strong> indicates which reference frame contains the film grain parameters to be used for this frame.</p>
 
-<p>It is a requirement of bitstream conformance that if update_grain is coded in the bitstream and FrameIsIntra is equal to 1,
-then update_grain is equal to 1 (this ensures that intra frames are independently decodable).</p>
+<p><strong>load_grain_params(idx)</strong> is a function call that indicates that all the syntax elements normally
+read in film_grain_params should be set equal to the values stored in an area of memory indexed by idx.</p>
+
+<p>It is a requirement of bitstream conformance that load_grain_params(idx) is invoked, then
+there must have been a previous frame in decoding order for which save_grain_params(idx) was
+invoked (this ensures that the parameters are always defined before being used).</p>
+
+<p><strong>tempGrainSeed</strong> is a temporary variable that is used to avoid losing the value of grain_seed when load_grain_params is called.
+When update_grain is equal to 0, a previous set of parameters should be used for everything except grain_seed.</p>
 
 <p><strong>num_y_points</strong> specifies the number of points for the piece-wise linear
 scaling function of the luma component.</p>
@@ -18627,6 +18654,9 @@ for col = 0..MiCols-1.</p>
   <li>
     <p>The function save_cdfs( i ) is invoked (see below).</p>
   </li>
+  <li>
+    <p>If film_grain_params_present is equal to 1, the function save_grain_params( i ) is invoked (see below).</p>
+  </li>
 </ul>
 
 <p>For each value of i from 0 to NUM_REF_FRAMES - 1, the following applies
@@ -18643,6 +18673,9 @@ When this function is invoked the following takes place:</p>
 <ul>
   <li>A copy of each CDF array mentioned in the semantics for setup_past_independence is saved in an area of memory indexed by ctx.</li>
 </ul>
+
+<p>save_grain_params( i ) is a function call that indicates that all the syntax elements that can be
+read in film_grain_params should be saved into an area of memory indexed by i.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> Although this process stores all the motion vectors, only the values where row and col are both odd will be used again.</p>
 
@@ -32136,6 +32169,10 @@ This can be useful for encoder implementations that want to leave a fixed amount
       </tr>
       <tr>
         <td>film_grain_noise</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>film_grain_noise_showex</td>
         <td> </td>
       </tr>
       <tr>
