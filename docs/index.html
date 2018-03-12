@@ -38,7 +38,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-08 08:33:22 -0800</em></p>
+<p><em>Last modified: 2018-03-12 06:51:52 -0700</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -532,7 +532,7 @@ one dimension.</p>
   </dd>
   <dt>Base layer</dt>
   <dd>
-    <p>The layer with enhancement_id and temporal_id values equal to 0.</p>
+    <p>The layer with spatial_id and temporal_id values equal to 0.</p>
   </dd>
   <dt>Bitstream</dt>
   <dd>
@@ -623,7 +623,7 @@ that conforms to the description provided in this document.</p>
   </dd>
   <dt>Enhancement layer</dt>
   <dd>
-    <p>A layer with either enhancement_id greater than 0 or temporal_id greater than 0.</p>
+    <p>A layer with either spatial_id greater than 0 or temporal_id greater than 0.</p>
   </dd>
   <dt>Flag</dt>
   <dd>
@@ -700,7 +700,7 @@ intra prediction.</p>
   </dd>
   <dt>Layer</dt>
   <dd>
-    <p>A set of tile group OBUs with identical enhancement_id and identical temporal_id values.</p>
+    <p>A set of tile group OBUs with identical spatial_id and identical temporal_id values.</p>
   </dd>
   <dt>Level</dt>
   <dd>
@@ -2582,7 +2582,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 
 <pre class="syntax"><code>obu_extension_header() {
     <b class="syntax-element">temporal_id</b>                                                              f(3)
-    <b class="syntax-element">enhancement_id</b>                                                           f(2)
+    <b class="syntax-element">spatial_id</b>                                                               f(2)
     <b class="syntax-element">extension_header_reserved_3bits</b>                                          f(3)
 }    
 </code></pre>
@@ -2608,8 +2608,8 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <pre class="syntax"><code>sequence_header_obu( ) {
     <b class="syntax-element">seq_profile</b>                                                              f(2)
     <b class="syntax-element">level[ 0 ]</b>                                                               f(4)
-    <b class="syntax-element">max_enhancement_layers_cnt</b>                                               f(2)
-    for ( i = 1; i &lt;= max_enhancement_layers_cnt; i++ )
+    <b class="syntax-element">max_spatial_layers_cnt</b>                                               f(2)
+    for ( i = 1; i &lt;= max_spatial_layers_cnt; i++ )
         <b class="syntax-element">level[ i ]</b>                                                           f(4)
     <b class="syntax-element">frame_width_bits_minus_1</b>                                                 f(4)
     <b class="syntax-element">frame_height_bits_minus_1</b>                                                f(4)
@@ -2619,8 +2619,8 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     <b class="syntax-element">max_frame_height_minus_1</b>                                                 f(n)
     <b class="syntax-element">frame_id_numbers_present_flag</b>                                            f(1)
     if ( frame_id_numbers_present_flag ) {    
-        <b class="syntax-element">delta_frame_id_length_minus2</b>                                         f(4)
-        <b class="syntax-element">frame_id_length_minus1</b>                                               f(3)
+        <b class="syntax-element">delta_frame_id_length_minus2</b>                                         f(3)
+        <b class="syntax-element">additional_frame_id_length_minus1</b>                                    f(3)
     }
     <b class="syntax-element">use_128x128_superblock</b>                                                   f(1)
     <b class="syntax-element">enable_dual_filter</b>                                                       f(1)
@@ -2801,28 +2801,28 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <h4 id="scalability-structure-syntax">Scalability structure syntax</h4>
 
 <pre class="syntax"><code>scalability_structure( sz ) {
-    <b class="syntax-element">enhancement_layers_cnt</b>                                                   f(2)
-    <b class="syntax-element">enhancement_layer_dimensions_present_flag</b>                                f(1)
-    <b class="syntax-element">enhancement_layer_description_present_flag</b>                               f(1)
+    <b class="syntax-element">spatial_layers_cnt</b>                                                       f(2)
+    <b class="syntax-element">spatial_layer_dimensions_present_flag</b>                                    f(1)
+    <b class="syntax-element">spatial_layer_description_present_flag</b>                                   f(1)
     <b class="syntax-element">temporal_group_description_present_flag</b>                                  f(1)
     <b class="syntax-element">scalability_structure_reserved_3bits</b>                                     f(3)
-    if ( enhancement_layer_dimensions_present_flag ) {
-        for ( i = 0; i &lt;= enhancement_layers_cnt ; i++ ) {
-            <b class="syntax-element">enhancement_layer_max_width[ i ]</b>                                 f(16)
-            <b class="syntax-element">enhancement_layer_max_height[ i ]</b>                                f(16)
+    if ( spatial_layer_dimensions_present_flag ) {
+        for ( i = 0; i &lt;= spatial_layers_cnt ; i++ ) {
+            <b class="syntax-element">spatial_layer_max_width[ i ]</b>                                     f(16)
+            <b class="syntax-element">spatial_layer_max_height[ i ]</b>                                    f(16)
         }
     }
-    if ( enhancement_layer_description_present_flag ) {
-        for ( i = 0; i &lt;= enhancement_layers_cnt; i++ )
-            <b class="syntax-element">enhancement_layer_ref_id[ i ]</b>                                    f(8)
+    if ( spatial_layer_description_present_flag ) {
+        for ( i = 0; i &lt;= spatial_layers_cnt; i++ )
+            <b class="syntax-element">spatial_layer_ref_id[ i ]</b>                                        f(8)
     }
     if (temporal_group_description_present_flag) {
         <b class="syntax-element">temporal_group_size</b>                                                  f(8)
         for ( i = 0; i &lt; temporal_group_size; i++ ) {
             <b class="syntax-element">temporal_group_temporal_id[ i ]</b>                                  f(3)
-            <b class="syntax-element">temporal_group_switching_up_point_flag[ i ]</b>                      f(1)
+            <b class="syntax-element">temporal_group_temporal_switching_up_point_flag[ i ]</b>             f(1)
+            <b class="syntax-element">temporal_group_spatial_switching_up_point_flag[ i ]</b>              f(1)
             <b class="syntax-element">temporal_group_ref_cnt[ i ]</b>                                      f(3)
-            <b class="syntax-element">temporal_group_reserved_bit[ i ]</b>                                 f(1)
             for ( j = 0; j &lt; temporal_group_ref_cnt[ i ]; j++ ) {
                 <b class="syntax-element">temporal_group_ref_pic_diff[ i ][ j ]</b>                        f(8)
             }
@@ -2855,7 +2855,8 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <h4 id="uncompressed-header-syntax">Uncompressed Header Syntax</h4>
 
 <pre class="syntax"><code>uncompressed_header( ) {
-    idLen = frame_id_length_minus1 + delta_frame_id_length_minus2 + 3
+    idLen = ( additional_frame_id_length_minus1 + 
+              delta_frame_id_length_minus2 + 3 )
     <b class="syntax-element">show_existing_frame</b>                                                      f(1)
     if ( show_existing_frame == 1 ) {
         <b class="syntax-element">frame_to_show_map_idx</b>                                                f(3)
@@ -3863,9 +3864,17 @@ However, these fractional bits will be discarded during the Setup Zero MV proces
 <pre class="syntax"><code>tile_group_obu( sz ) {
     NumTiles = TileCols * TileRows
     startBitPos = get_position( )
-    tileBits = TileColsLog2 + TileRowsLog2
-    <b class="syntax-element">tg_start</b>                                                                 f(tileBits)
-    <b class="syntax-element">tg_end</b>                                                                   f(tileBits)
+    tile_start_and_end_present_flag = 0
+    if ( NumTiles &gt; 1 )
+        <b class="syntax-element">tile_start_and_end_present_flag</b>                                      f(1)
+    if ( NumTiles == 1 || !tile_start_and_end_present_flag ) {
+        tg_start = 0
+        tg_end = NumTiles - 1
+    } else {
+        tileBits = TileColsLog2 + TileRowsLog2
+        <b class="syntax-element">tg_start</b>                                                             f(tileBits)
+        <b class="syntax-element">tg_end</b>                                                               f(tileBits)
+    }
     trailing_bits( )
     endBitPos = get_position( )
     headerBytes = (endBitPos - startBitPos) / 8
@@ -6443,14 +6452,18 @@ possible by preventing emulation of MPEG2 transport stream ids.</p>
 
 <p><strong>temporal_id</strong> specifies the temporal level of the data contained in the OBU.</p>
 
-<p><strong>enhancement_id</strong> specifies the enhancement level of the data contained in the OBU.</p>
+<p><strong>spatial_id</strong> specifies the spatial level of the data contained in the OBU.</p>
 
-<p>Tile group OBU data associated with enhancement_id and temporal_id equal to 0 are referred to as the 
-base layer, whereas tile group OBU data that are associated with enhancement_id greater than 0 or 
+<p class="alert alert-info"><strong>Note:</strong> The term “spatial” refers to the fact that
+the enhancement here occurs in the spatial dimension: either as an increase in spatial resolution, or an
+increase in spatial fidelity (increased SNR).</p>
+
+<p>Tile group OBU data associated with spatial_id and temporal_id equal to 0 are referred to as the 
+base layer, whereas tile group OBU data that are associated with spatial_id greater than 0 or 
 temporal_id greater than 0 are referred to as enhancement layer(s).</p>
 
-<p>Coded video data of a temporal level with temporal_id T and enhancement level with enhancement_id S 
-are only allowed to reference previously coded video data of temporal_id T’ and enhancement_id S’, 
+<p>Coded video data of a temporal level with temporal_id T and spatial level with spatial_id S 
+are only allowed to reference previously coded video data of temporal_id T’ and spatial_id S’, 
 where T’ &lt;= T and S’ &lt;= S.</p>
 
 <p><strong>extension_header_reserved_3bits</strong> must be set to 0. The value is ignored by a decoder.</p>
@@ -6519,7 +6532,7 @@ types in a way that allows older decoders to ignore them.</p>
 <p><strong>level[ i ]</strong> specifies the level that the coded video sequence conforms to when all layers up to and including i 
 are included in the decoding process.</p>
 
-<p><strong>max_enhancement_layers_cnt</strong> indicates the maximum number of enhancement layers that may be present in
+<p><strong>max_spatial_layers_cnt</strong> indicates the maximum number of spatial layers that may be present in
 the sequence.</p>
 
 <p><strong>frame_width_bits_minus_1</strong> specifies the number of bits minus 1 used for transmitting the frame width syntax elements.</p>
@@ -6532,10 +6545,10 @@ the sequence.</p>
 
 <p><strong>frame_id_numbers_present_flag</strong> specifies whether frame id numbers are present in the bitstream.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> Frame id numbers are not needed by the decoding process,
+<p class="alert alert-info"><strong>Note:</strong> The frame id numbers (represented in display_frame_id, current_frame_id, and RefFrameId) are not needed by the decoding process,
 but allow decoders to spot when frames have been missed and take an appropriate action.</p>
 
-<p><strong>frame_id_length_minus1</strong> is used to calculate the number of bits used to encode the frame_id syntax element.</p>
+<p><strong>additional_frame_id_length_minus1</strong> is used to calculate the number of bits used to encode the frame_id syntax element.</p>
 
 <p><strong>delta_frame_id_length_minus2</strong> specifies the number of bits minus 2 used to encode delta_frame_id syntax elements.</p>
 
@@ -7166,9 +7179,9 @@ of the bitstream:</p>
 described in scalability_structure() below.</p>
 
 <p>All predefined modes follow a dyadic, hierarchical picture prediction structure.  They support 2 or 3 
-temporal layers, in combinations with zero or one enhancement layer.  The enhancement layer may have
+temporal layers, in combinations with zero or one spatial layer.  The spatial layer may have
 twice or one and a half times the resolution of the base layer in each dimension, depending on the mode.<br />
-There is also support for an enhancement layer that uses no inter-layer prediction (i.e., the enhancement 
+There is also support for an spatial layer that uses no inter-layer prediction (i.e., the spatial 
 layer does not use its corresponding base layer as a reference).<br />
 The following table lists the predefined scalability structures.</p>
 
@@ -7327,31 +7340,31 @@ video bitstream without have to decode individual frames.  Scalability structure
 immediately after the sequence header so that these entities are informed of the scalability 
 structure of the video sequence as early as possible.</p>
 
-<p><strong>enhancement_layers_cnt</strong> indicates the number of enhancement layers present in the video sequence.</p>
+<p><strong>spatial_layers_cnt</strong> indicates the number of spatial layers present in the video sequence.</p>
 
-<p>It is a requirement of bitstream conformance that enhancement_layers_cnt is equal to the value of max_enhancement_layers_cnt
+<p>It is a requirement of bitstream conformance that spatial_layers_cnt is equal to the value of max_spatial_layers_cnt
 in the sequence header.</p>
 
-<p><strong>enhancement_layer_description_present_flag</strong> indicates when set to 1 that the 
-enhancement_layer_ref_id is present for each of the enhancement_layers_cnt layers, or that it is 
+<p><strong>spatial_layer_description_present_flag</strong> indicates when set to 1 that the 
+spatial_layer_ref_id is present for each of the spatial_layers_cnt layers, or that it is 
 not present when set to 0.</p>
 
-<p><strong>enhancement_layer_dimensions_present_flag</strong> indicates when set to 1 that the 
-enhancement_layer_max_width and enhancement_layer_max_height parameters are present for each of 
-the enhancement_layers_cnt layers, or that it they are not present when set to 0.</p>
+<p><strong>spatial_layer_dimensions_present_flag</strong> indicates when set to 1 that the 
+spatial_layer_max_width and spatial_layer_max_height parameters are present for each of 
+the spatial_layers_cnt layers, or that it they are not present when set to 0.</p>
 
 <p><strong>temporal_group_description_present_flag</strong> indicates when set to 1 that the temporal dependency 
 information is present, or that it is not when set to 0.</p>
 
 <p><strong>scalability_structure_reserved_3bits</strong> must be set to zero and be ignored by decoders.</p>
 
-<p><strong>enhancement_layer_max_width[ i ]</strong> specifies the maximum frame width for the frames with 
-enhancement_id equal to i. This number must not be larger than max_frame_width_minus_1 + 1.</p>
+<p><strong>spatial_layer_max_width[ i ]</strong> specifies the maximum frame width for the frames with 
+spatial_id equal to i. This number must not be larger than max_frame_width_minus_1 + 1.</p>
 
-<p><strong>enhancement_layer_max_ height[ i ]</strong> specifies the maximum frame height for the frames with 
-enhancement_id equal to i.  This number must not be larger than max_frame_height_minus_1 + 1.</p>
+<p><strong>spatial_layer_max_ height[ i ]</strong> specifies the maximum frame height for the frames with 
+spatial_id equal to i.  This number must not be larger than max_frame_height_minus_1 + 1.</p>
 
-<p><strong>enhancement_layer_ref_id[ i ]</strong> specifies the enhancement_id value of the frame within the current 
+<p><strong>spatial_layer_ref_id[ i ]</strong> specifies the spatial_id value of the frame within the current 
 temporal unit that the frame of layer i uses for reference. If no frame within the current temporal unit is 
 used for reference the value must be equal to 255.</p>
 
@@ -7359,7 +7372,8 @@ used for reference the value must be equal to 255.</p>
 temporal_group_size is greater than 0, then the scalability structure data allows the inter-picture 
 temporal dependency structure of the video sequence to be specified.  If the temporal_group_size is 
 greater than 0, then for temporal_group_size pictures in the temporal group, each picture’s temporal 
-layer id (temporal_id), switch up point (temporal_group_switching_up_point_flag), and the reference 
+layer id (temporal_id), switch up points (temporal_group_temporal_switching_up_point_flag and
+temporal_group_spatial_switching_up_point_flag), and the reference 
 picture indices (temporal_group_ref_pic_diff) are specified.</p>
 
 <p>The first picture specified in a temporal group must have temporal_id equal to 0.</p>
@@ -7373,24 +7387,26 @@ structure in the scalability structure data must be for the highest frame rate l
 
 <p><strong>temporal_group_temporal_id[ i ]</strong> specifies the temporal_id value for the i-th picture in the temporal group.</p>
 
-<p><strong>temporal_group_switching_up_point_flag[ i ]</strong> is set to 1 if subsequent (in decoding order) pictures with
+<p><strong>temporal_group_temporal_switching_up_point_flag[ i ]</strong> is set to 1 if subsequent (in decoding order) pictures with
 a temporal_id higher than temporal_group_temporal_id[ i ] do not depend on any picture preceding the
 current picture (in coding order) with temporal_id higher than temporal_group_temporal_id[ i ].</p>
 
 <p class="alert alert-info"><strong>Note:</strong> This condition ensures that switching up to a higher frame rate is possible at the current
 picture.</p>
 
+<p><strong>temporal_group_spatial_switching_up_point_flag[ i ]</strong>] is set to 1 if spatial layers of the
+current picture in the temporal group (i.e., pictures with a spatial_id higher than zero) do not depend on
+any picture preceding the current picture in the temporal group.</p>
+
 <p><strong>temporal_group_ref_cnt[ i ]</strong> indicates the number of reference pictures used by the i-th picture in the 
 temporal group.</p>
 
-<p><strong>temporal_group_reserved_bit[ i ]</strong> must be set to 0 and be ignored by decoders.</p>
-
 <p><strong>temporal_group_ref_pic_diff[ i ][ j ]</strong> indicates, for the i-th picture in the temporal group, the temporal 
 distance between the i-th picture and the j-th reference picture used by the i-th picture.  The temporal 
-distance is measured in frames, counting only frames of identical enhancement_id values.</p>
+distance is measured in frames, counting only frames of identical spatial_id values.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The scalability structure description does not allow different temporal prediction 
-structures across non-temporal layers (i.e., layers with different enhancement_id values).  It also 
+structures across non-temporal layers (i.e., layers with different spatial_id values).  It also 
 only allows for a single reference picture for inter-layer prediction.</p>
 
 <h3 id="frame-header-obu-semantics">Frame Header OBU Semantics</h3>
@@ -7422,10 +7438,13 @@ indicates that further processing is required.</p>
 <p><strong>frame_to_show_map_idx</strong> specifies the frame to be displayed. It is only
 available if show_existing_frame is 1.</p>
 
-<p><strong>display_frame_id</strong> provides the frame number for the frame to display.
+<p><strong>display_frame_id</strong> provides the frame id number for the frame to display.
 It is a requirement of bitstream conformance that whenever display_frame_id is read, the value matches
 the value of current_frame_id at the time that the frame indexed by
 frame_to_show_map_idx was stored, and that RefValid[ frame_to_show_map_idx ] is equal to 1.</p>
+
+<p>It is a requirement of bitstream conformance that the number of bits needed to read display_frame_id
+does not exceed 16.  This is equivalent to the constraint that idLen &lt;= 16.</p>
 
 <p><strong>frame_type</strong> specifies the type of the frame:</p>
 
@@ -7477,8 +7496,8 @@ should be disabled.</p>
 <p><strong>disable_cdf_update</strong> specifies whether the CDF update in the symbol decoding process should be
 disabled.</p>
 
-<p><strong>current_frame_id</strong> specifies the frame number for the current frame.
-Frame numbers are additional information that do not affect the decoding process, but provide decoders
+<p><strong>current_frame_id</strong> specifies the frame id number for the current frame.
+Frame id numbers are additional information that do not affect the decoding process, but provide decoders
 with a way of detecting missing reference frames so that appropriate action can be taken.</p>
 
 <p>If frame_type is not equal to KEY_FRAME for the current frame, it is a requirement of bitstream conformance
@@ -8590,6 +8609,9 @@ frame.</p>
 
 <p><strong>NumTiles</strong> specifies the total number of tiles in the frame.</p>
 
+<p><strong>tile_start_and_end_present_flag</strong> specifies whether tg_start and tg_end are present in the bitstream. If
+tg_start and tg_end are not present in the bitstream, this tile group covers the entire frame.</p>
+
 <p><strong>tg_start</strong> specifies the zero-based index of the first tile in the current
 tile group.</p>
 
@@ -8603,7 +8625,7 @@ tile group.</p>
 greater than or equal to tg_start.</p>
 
 <p>It is a requirement of bitstream conformance that the value of tg_end for
-the last tile group in each frame is equal to TileNum - 1.</p>
+the last tile group in each frame is equal to NumTiles - 1.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> These requirements ensure that conceptually all tile groups are present and
 received in order for the purposes of specifying the decode process.</p>
@@ -10424,12 +10446,13 @@ obu_extension_flag (i.e., either both include or both not include the optional O
 <p>The value of temporal_id must be the same in all OBU extension headers that are contained in the same 
 temporal unit.</p>
 
-<p>If a video sequence contains at least one enhancement layer (OBUs with ehancement_id greater than 0) 
-then all frame headers and tile group OBUs associated with base (enhancement_id equals 0) and 
-enhancement layer (enhancement_id greater than 0) data must include the OBU extension header.</p>
+<p>If a video sequence contains at least one enhancement layer (OBUs with spatial_id greater than 0
+or temporal_id greater than 0) 
+then all frame headers and tile group OBUs associated with base (spatial_id equals 0 and temporal_id equals 0) and 
+enhancement layer (spatial_id greater than 0 or temporal_id greater than 0) data must include the OBU extension header.</p>
 
-<p>OBUs with enhancement level IDs (enhancement_id) greater than 0 must appear within a temporal unit in 
-increasing order of the enhancement level ID values.</p>
+<p>OBUs with spatial level IDs (spatial_id) greater than 0 must appear within a temporal unit in 
+increasing order of the spatial level ID values.</p>
 
 <p>Temporal units containing key frames must contain a sequence header before the frame header.  If 
 multiple sequence headers are contained in a temporal unit containing a key frame then they must all 
@@ -17544,7 +17567,7 @@ Samples outside the current stripe are fetched from UpscaledCurrFrame (these sam
 
 <h4 id="loop-restore-block-process">Loop Restore Block Process</h4>
 
-<p>The inputs to this block are:</p>
+<p>The inputs to this process are:</p>
 
 <ul>
   <li>
@@ -32461,6 +32484,132 @@ and management – Part 2-1: Colour management – Default RGB colour space –
 sRGB.</p>
   </li>
 </ol>
+
+<hr />
+
+<p class="alert alert-danger" style="margin-top: 120px;"><strong>This area is for format testing, and not part of the AV1 bitstream document.</strong></p>
+
+<p><strong>Small table example</strong></p>
+
+<table class="syntax">
+  <tbody>
+    <tr>
+      <td>obu_header() {</td>
+      <td><strong>Type</strong></td>
+    </tr>
+    <tr>
+      <td><b class="syntax-element">obu_forbidden_bit</b></td>
+      <td>f(1)</td>
+    </tr>
+    <tr>
+      <td><b class="syntax-element">obu_type</b></td>
+      <td>f(4)</td>
+    </tr>
+    <tr>
+      <td><b class="syntax-element">obu_reserved_2bits</b></td>
+      <td>f(2)</td>
+    </tr>
+    <tr>
+      <td><b class="syntax-element">obu_extension_flag</b></td>
+      <td>f(1)</td>
+    </tr>
+    <tr>
+      <td>if ( obu_extension_flag == 1 )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>obu_extension_header()</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Long lines example</strong></p>
+
+<table class="syntax">
+  <tbody>
+    <tr>
+      <td>read_delta_qindex( ) {</td>
+      <td><strong>Type</strong></td>
+    </tr>
+    <tr>
+      <td>sbSize = use_128x128_superblock ? BLOCK_128X128 : BLOCK_64X64</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>if ( MiSize == sbSize &amp;&amp; skip )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>return</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>if ( ReadDeltas ) {</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><b class="syntax-element">delta_q_abs</b></td>
+      <td>S()</td>
+    </tr>
+    <tr>
+      <td>if ( delta_q_abs == DELTA_Q_SMALL ) {</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><b class="syntax-element">delta_q_rem_bits</b></td>
+      <td>L(3)</td>
+    </tr>
+    <tr>
+      <td>delta_q_rem_bits++</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><b class="syntax-element">delta_q_abs_bits</b></td>
+      <td>L(delta_q_rem_bits)</td>
+    </tr>
+    <tr>
+      <td>delta_q_abs = delta_q_abs_bits + (1 « delta_q_rem_bits) + 1</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>if (delta_q_abs) {</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><b class="syntax-element">delta_q_sign_bit</b></td>
+      <td>L(1)</td>
+    </tr>
+    <tr>
+      <td>reducedDeltaQIndex = delta_q_sign_bit ? -delta_q_abs : delta_q_abs</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>CurrentQIndex = Clip3(1, 255, CurrentQIndex + (reducedDeltaQIndex « delta_q_res))</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
 
 
       </div>
