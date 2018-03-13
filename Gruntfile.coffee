@@ -53,13 +53,22 @@ module.exports = (grunt) ->
         dest: '_site'
       serve: options:
         serve: false
-    connect: server: options:
-      hostname: '127.0.0.1'
-      port: 4000
-      base: '.'
-      keepalive: true
-      open: 'http://127.0.0.1:4000/docs/'
-      livereload: false # https://github.com/gruntjs/grunt-contrib-connect#livereload
+    connect:
+      local:
+        options:
+          hostname: '127.0.0.1'
+          port: 4000
+          base: '.'
+          keepalive: true
+          open: 'http://127.0.0.1:4000/docs/'
+          livereload: false
+      remote:
+        options:
+          hostname: '*'
+          port: 4000
+          base: '.'
+          keepalive: true
+          livereload: false
   # Load the NPM tasks.
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-connect'
