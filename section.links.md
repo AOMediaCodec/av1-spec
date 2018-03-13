@@ -22,7 +22,7 @@
 [section 6.7.1]: #uncompressed-header-semantics
 [section 9]: #additional-tables
 [section 7.8.3.1]: #add-sample-process
-[section 4.9.4]: #sun
+[section 4.9.5]: #sun
 [section 6.9.15]: #tx-size-semantics
 [section 7.8.1]: #find-mv-stack-process
 [section 5.6.5]: #scalability-structure-syntax
@@ -47,6 +47,7 @@
 [section 5.7.23]: #global-motion-params-syntax
 [section 5.9.30]: #mv-syntax
 [section 5.9.38]: #compute-transform-type-function
+[section 7.17]: #motion-field-motion-vector-storage-process
 [section D]: #bibliography
 [section 6.9.2]: #clear-block-decoded-flags-semantics
 [section 1]: #scope
@@ -87,7 +88,7 @@
 [section 9.4]: #quantizer-matrix-tables
 [section 7.3]: #frame-order-constraints
 [section 6.9.25]: #read-inter-intra-semantics
-[section 4.9.6]: #ln
+[section 4.9.7]: #ln
 [section 6.9.17]: #var-tx-size-semantics
 [section 5.6.4]: #metadata-scalability-syntax
 [section 7.8.1.9]: #compound-search-stack-process
@@ -101,7 +102,7 @@
 [section 7.9.2.4]: #setup-shear-process
 [section 5.7.6]: #superres-params-syntax
 [section 4]: #conventions
-[section 7.17]: #reference-frame-update-process
+[section 7.18]: #reference-frame-update-process
 [section 6.9.21]: #inter-block-mode-info-semantics
 [section 5.7.13]: #tile-info-syntax
 [section 5.9.55]: #read-cdef-syntax
@@ -195,6 +196,7 @@
 [section 6.1.1]: #obu-header-semantics
 [section 7.8.1.5]: #temporal-scan-process
 [section 5.3.1]: #color-config-syntax
+[section 4.9.4]: #leb128
 [section 7.8.1.4]: #scan-point-process
 [section 5.9.10]: #skip-syntax
 [section 7.16.1]: #film-grain-synthesis-process
@@ -204,7 +206,7 @@
 [section 5.9.6]: #intra-frame-mode-info-syntax
 [section 8.3.1]: #cdf-selection-process
 [section 7.11.1.9]: #inverse-adst16-process
-[section 4.9.7]: #s
+[section 4.9.8]: #s
 [section 8.3]: #parsing-process-for-cdf-encoded-syntax-elements
 [section 5.6.3]: #metadata-high-dynamic-range-mastering-display-color-volume-syntax
 [section 5.9.27]: #read-inter-intra-syntax
@@ -234,7 +236,7 @@
 [section 7.11.1.17]: #inverse-identity-transform-process
 [section 5.7.9]: #loop-filter-params-syntax
 [section 7.9.1.3]: #directional-intra-prediction-process
-[section 4.9.8]: #nsn-1
+[section 4.9.9]: #nsn-1
 [section 5.9.32]: #residual-syntax
 [section 4.7]: #method-of-describing-bitstream-syntax
 [section 5.9.12]: #loop-filter-delta-syntax
@@ -284,6 +286,7 @@
 [section 7.8.1.6]: #temporal-sample-process
 [section 5.7.20]: #skip-mode-params-syntax
 [section 5.9.33]: #transform-block-syntax
+[section 7.19]: #reference-frame-loading-process
 [section 7.9.2.10]: #segment-mask-process
 [section 7.12.5]: #sample-filtering-process
 [section 6.9.18]: #transform-type-semantics
@@ -300,7 +303,7 @@
 [section 6.9.9]: #skip-mode-semantics
 [section 6.7.16]: #global-motion-params-semantics
 [section 7.4]: #ordering-of-obus
-[section 4.9.5]: #nsn
+[section 4.9.6]: #nsn
 [section 7.12.3]: #adaptive-filter-strength-process
 [section 5.9.21]: #intra-block-mode-info-syntax
 [section 5.6.1]: #metadata-private-data-syntax

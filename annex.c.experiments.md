@@ -59,6 +59,7 @@ The specification has been updated to include the following list of adopted expe
 | frame_marker                  |
 | frame_sign_bias               |
 | frame_size                    |
+| fwd_kf                        |
 | global_motion                 |
 | gm_ref_mv                     |
 | HLS R18                       |
@@ -135,8 +136,6 @@ The specification has not yet been updated with the following experiments:
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
 | ext_tile                      | Waiting for definition of auxiliary stream
-| fwd_kf                        |
-| obu_move_length               | No code at present
 {:.table .table-sm .table-bordered }
 
 
