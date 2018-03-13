@@ -16,17 +16,10 @@ This annex defines a simple method of packing OBUs into a bitstream format.
 ~~~~~
 bitstream( sz ) {
     while ( sz > 0 ) {
-        ObuSize = 0
-        for (i = 0; i < 8; i++) {
-            uleb128_byte                                                       f(8)
-            ObuSize |= ( (uleb128_byte & 0x7f) << (i*7) )
-            sz -= 1
-            if ( !(uleb128_byte & 0x80) ) {
-                break
-            }
-        }
-        open_bitstream_unit( ObuSize )
-        sz -= ObuSize
+        @@obu_size                                                             leb128()
+        sz -= Leb128Bytes
+        open_bitstream_unit( obu_size )
+        sz -= obu_size
     }
 }
 ~~~~~
@@ -39,14 +32,11 @@ bitstream( sz ) {
 **sz** specifies the number of bytes in the entire bitstream and is provided by
 external means.
 
-**uleb128_byte** is used to compute ObuSize by sending 7 bits at a time, with the most significant bit used to indicate that there are more bytes to be read.
+**obu_size** specifies the size in bytes of the next OBU.
 
-It is a requirement of bitstream conformance that the most significant bit of uleb128_byte is equal to 0 when i is equal to 7.
-(This ensures that the ObuSize never uses more than 8 bytes.)
-
-**Note:** There are multiple ways of encoding the same size depending on how many leading zero bits are encoded.
-There is no requirement that the ObuSize is sent using the most compressed representation.
-This can be useful for encoder implementations that want to leave a fixed amount of space to be filled in later for this size.
+**Note:** It is legal for the OBU to set obu_has_payload_length_field equal to 1 to indicate
+that the obu_payload_size syntax element is present.  In this case, the decoding process
+assumes that obu_size and obu_payload_size are set consistently.
+If obu_size and obu_payload_size are both present, but inconsistent, then the packed file
+is deemed invalid.
 {:.alert .alert-info }
-
-**ObuSize** specifies the size in bytes of the next OBU.

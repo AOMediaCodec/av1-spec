@@ -88,6 +88,7 @@ The specification has been updated to include the following list of adopted expe
 | new_tokenset                  |
 | no_frame_context_signalling   |
 | obu_frame                     |
+| obu_size_after_header         |
 | obu_sizing                    |
 | one_sided_compound            |
 | opt_ref_mv                    |
