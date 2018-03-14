@@ -54,15 +54,22 @@ module.exports = (grunt) ->
       serve: options:
         serve: false
     connect:
+      remote:
+        options:
+          hostname: '*'
+          port: 4000
+          base: '.'
+          keepalive: true
+          livereload: false
       local:
         options:
-          hostname: '127.0.0.1'
+          hostname: '*'
           port: 4000
           base: '.'
           keepalive: true
           open: 'http://127.0.0.1:4000/docs/'
           livereload: false
-      remote:
+      nospawn:
         options:
           hostname: '*'
           port: 4000
