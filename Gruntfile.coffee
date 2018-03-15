@@ -57,7 +57,7 @@ module.exports = (grunt) ->
       remote:
         options:
           hostname: '*'
-          port: 4000
+          port: process.env.AV1_SPEC_PORT ? 4000
           base: '.'
           keepalive: true
           livereload: false
