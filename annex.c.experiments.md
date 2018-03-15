@@ -48,6 +48,7 @@ The specification has been updated to include the following list of adopted expe
 | ext_qm                        |
 | ext_refs                      | 
 | ext_skip                      |
+| ext_tile                      |
 | ext_tx                        |
 | ext_warped_motion             |
 | fast_sgr                      |
@@ -135,7 +136,8 @@ The specification has not yet been updated with the following experiments:
 
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
-| ext_tile                      | Waiting for definition of auxiliary stream
+| explicit_order_hints          | Code still under development
+| trailing_bits                 | Code not yet merged
 {:.table .table-sm .table-bordered }
 
 
