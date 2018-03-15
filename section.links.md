@@ -61,7 +61,8 @@
 [section 5.9.4]: #decode-block-syntax
 [section 6.3]: #sequence-header-obu-semantics
 [section 7.15.1]: #loop-restore-block-process
-[section 7.9.2.7]: #overlapped-motion-compensation-process
+[section 7.9.4]: #predict-chroma-from-luma-process
+[section 7.9.2.8]: #overlapped-motion-compensation-process
 [section 5.7.8]: #interpolation-filter-syntax
 [section 5.9.25]: #assign-mv-syntax
 [section 6.3.2]: #timing-info-semantics
@@ -99,7 +100,7 @@
 [section 4.4]: #bitwise-operators
 [section 6.7.23]: #frame-reference-mode-semantics
 [section 5.9.23]: #filter-intra-mode-info-syntax
-[section 7.9.2.4]: #setup-shear-process
+[section 7.9.2.5]: #setup-shear-process
 [section 5.7.6]: #superres-params-syntax
 [section 4]: #conventions
 [section 7.18]: #reference-frame-update-process
@@ -133,7 +134,7 @@
 [section 6.9.16]: #inter-tx-size-semantics
 [section 5.5]: #padding-obu-syntax
 [section 5.9.24]: #ref-frames-syntax
-[section 7.9.2.9]: #wedge-mask-process
+[section 7.9.2.10]: #wedge-mask-process
 [section 5.9.17]: #inter-frame-mode-info-syntax
 [section 5.7.5]: #frame-size-with-refs-syntax
 [section 6.9.33]: #read-cfl-alphas-semantics
@@ -143,7 +144,7 @@
 [section 8.2.4]: #parsing-process-for-read_literal
 [section 5.9.13]: #segmentation-feature-active-function
 [section 7.11.1.13]: #inverse-identity-transform-16-process
-[section 7.9.2.1]: #motion-vector-scaling-process
+[section 7.9.2.2]: #motion-vector-scaling-process
 [section 6.7.2]: #reference-frame-marking-semantics
 [section 6.7.9]: #loop-filter-semantics
 [section 7.15.3]: #box-filter-process
@@ -161,7 +162,7 @@
 [section B.1]: #overview-1
 [section C.1]: #overview-2
 [section 5.9.41]: #intra-angle-info-chroma-syntax
-[section 7.9.2.8]: #overlap-blending-process
+[section 7.9.2.9]: #overlap-blending-process
 [section 7.8.1.12]: #extra-search-process
 [section 7.9.1.2]: #recursive-intra-prediction-process
 [section 5.9.15]: #inter-tx-size-syntax
@@ -175,7 +176,7 @@
 [section 7.11.1.11]: #inverse-identity-transform-4-process
 [section 7.11.1.12]: #inverse-identity-transform-8-process
 [section 7.15.4]: #wiener-filter-process
-[section 7.9.4]: #predict-chroma-from-luma-process
+[section 7.9.2.1]: #rounding-variables-derivation-process
 [section 7.8.1.11]: #sorting-process
 [section 7.9.2]: #inter-prediction-process
 [section 7.9.3]: #palette-prediction-process
@@ -230,7 +231,7 @@
 [section 7.8.3]: #find-warp-samples-process
 [section A.1.1]: #profiles
 [section 7.11.1.7]: #inverse-adst8-process
-[section 7.9.2.2]: #block-inter-prediction-process
+[section 7.9.2.3]: #block-inter-prediction-process
 [section 6.7.15]: #loop-filter-delta-parameters-semantics
 [section 6.9.20]: #intra-block-mode-info-semantics
 [section 7.11.1.16]: #inverse-identity-transform-process
@@ -242,12 +243,12 @@
 [section 5.9.12]: #loop-filter-delta-syntax
 [section 6.7.24]: #compound-tools-semantics
 [section 6.9.36]: #palette-color-context-semantics
-[section 7.9.2.3]: #block-warp-process
+[section 7.9.2.4]: #block-warp-process
 [section 6.9.23]: #ref-frames-semantics
 [section 7.8.1.10]: #lower-precision-process
-[section 7.9.2.11]: #inter-intra-mask-process
+[section 7.9.2.12]: #inter-intra-mask-process
 [section 6.9.19]: #is-inter-semantics
-[section 7.9.2.5]: #resolve-divisor-process
+[section 7.9.2.6]: #resolve-divisor-process
 [section 6.6.2]: #metadata-high-dynamic-range-content-light-level-semantics
 [section 5.9.16]: #var-tx-size-syntax
 [section 4.5]: #assignment
@@ -257,7 +258,7 @@
 [section 6.9.3]: #decode-partition-semantics
 [section A.1.2]: #levels
 [section 5.9.18]: #inter-segment-id-syntax
-[section 7.9.2.13]: #distance-weights-process
+[section 7.9.2.14]: #distance-weights-process
 [section C.2]: #included-experiments
 [section 5.9.1]: #decode-tile-syntax
 [section 8.2.2]: #boolean-decoding-process
@@ -286,7 +287,7 @@
 [section 5.7.20]: #skip-mode-params-syntax
 [section 5.9.33]: #transform-block-syntax
 [section 7.19]: #reference-frame-loading-process
-[section 7.9.2.10]: #segment-mask-process
+[section 7.9.2.11]: #segment-mask-process
 [section 7.12.5]: #sample-filtering-process
 [section 6.9.18]: #transform-type-semantics
 [section 7.11.1]: #1d-transforms
@@ -333,9 +334,9 @@
 [section 5.9.7]: #intra-segment-id-syntax
 [section 4.8]: #functions
 [section 7.12.1]: #edge-loop-filter-process
-[section 7.9.2.6]: #warp-estimation-process
+[section 7.9.2.7]: #warp-estimation-process
 [section 5.8]: #frame-obu-syntax
-[section 7.9.2.12]: #mask-blend-process
+[section 7.9.2.13]: #mask-blend-process
 [section 7.8.1.13]: #add-extra-mv-candidate-process
 [section 7.5]: #cdf-update-process
 [section 7.10.1]: #dequantization-functions
