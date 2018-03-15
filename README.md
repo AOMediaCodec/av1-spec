@@ -6,22 +6,21 @@ The specification document is built from plaintext section and subsection
 [Markdown] files (more specifically, [kramdown] files) using the [Jekyll] static
 site generator tool.
 
+The document build process employs a common [NodeJS]-based web development
+toolchain, requiring Node, [npm] (the Node package manager), and [GruntJS], a Node-based task runner.
 
-## Building Locally
-
-Contributors will want to preview their edits locally before submitting patches
-for review. Doing so requires a sane Ruby and rubygems environment. We use
-[rbenv] and [bundler] to "groom" the project environment and avoid conflicts.
-
-**Note** that all commands are to be run as an ordinary, unprivileged user.
+**Note:** As a general rule, the packages described below should be installed
+in user space, not at the system level -- in other words, **do not** install
+them as root or via `sudo`. An exception is Ruby development headers, which are
+usually needed to build Ruby and certain Ruby gems.
+{:.alert .alert-info }
 
 
 ### Ruby and rbenv
 
 This project currently depends on Ruby v2.4.1. Because your distro may lack this
 version -- or installing it may conflict with your system's installed version --
-first **[install rbenv]**, then install Ruby v2.4.1 within it (again, in
-userland).
+first **[install rbenv]**, then install Ruby v2.4.1 within it.
 
 ~~~~~ bash
 # list all available versions:
@@ -44,7 +43,7 @@ particular Ruby version. The rbenv project site maintains a
 
 ### Bundler
 
-Gem dependencies are managed by [bundler].
+Gem dependencies are managed with **[bundler]**.
 
 ~~~~~ bash
 $ gem install bundler
@@ -84,33 +83,15 @@ bundle install
 ~~~~~
 
 Bundler will set dependencies and install needed gems as listed in
-`Gemfile.lock`.
-
-**Note** that you may need Ruby development headers installed on your system
-for some gems to compile successfully.
+[`Gemfile.lock`].
 
 
-### Build and Preview Locally with Jekyll
+### NodeJS, npm and GruntJS
 
-~~~~~ bash
-bundle exec jekyll serve
-~~~~~
+Follow **[these instructions]** for installing NodeJS and npm.
 
-This will build the document and launch a local webserver at
-`http://127.0.0.1:4000/av1-spec/` (by default). Jekyll will also watch the
-the filesystem for changes and rebuild the document as needed. Reload your
-browser tab to view any changes you've made.
-
-
-### Notes on NPM and Grunt
-
-_These steps are not critically necessary for working on the document. Rather,
-they apply cosmetic changes to the HTML output on a postproc basis._
-
-The specification document requires a bit of arbitrary text manipulation that
-can't be done with Jekyll alone. To automate these needs we turn to [GruntJS], a
-Node-based task runner. The following assumes you have already installed
-[NodeJS] and [npm], the Node package manager.
+Next -- from the project directory -- update npm, install the grunt package,
+and install the project's Node dependencies:
 
 ~~~~~ bash
 ## Update npm globally
@@ -127,15 +108,39 @@ cd av1-spec
 npm install
 ~~~~~
 
-To transform the Jekyll-generated HTML file (`_site/index.html`), run `grunt` in
-the project directory. This will apply the text transformations described in
-Grunt's `replace` task (see `Gruntfile`) and will write the output to
-`docs/index.html`.
 
-Currently this method is used to "bold" the names of syntax elements within
-syntax tables. For example, the tokenized string `@@syntax_element` will be
-replaced with `<b>syntax_element</b>`. This reduces the clutter of HTML elements
-within the source text files.
+### Grunt Tasks
+
+Building the document is done via Grunt tasks, configured in the CoffeeScript
+file [`Gruntfile.coffee`].
+
+There are tasks to
+
+  * clean output directories,
+  * perform some automated text transformations on the content files,
+  * build the document with Jekyll,
+  * and copy output files to the correct directories for serving and viewing.
+
+These tasks are invoked in turn by the Grunt default task:
+
+~~~~~
+$ grunt
+~~~~~
+
+There is also a task that starts a local web server, and launches the document
+in your web browser:
+
+~~~~~
+$ grunt connect:local
+~~~~~
+
+The document will be viewable at <http://127.0.0.1:4000/docs/>
+
+If you'd rather not launch a browser window, use:
+
+~~~~~
+$ grunt connect:nospawn
+~~~~~
 
 
 [draft]: https://aomediacodec.github.io/av1-spec/
@@ -148,3 +153,6 @@ within the source text files.
 [GruntJS]: https://gruntjs.com/
 [NodeJS]: https://nodejs.org/
 [npm]: https://www.npmjs.org/
+[`Gemfile.lock`]: https://github.com/AOMediaCodec/av1-spec/blob/master/Gemfile.lock
+[these instructions]: https://www.taniarascia.com/how-to-install-and-use-node-js-and-npm-mac-and-windows/
+[`Gruntfile.coffee`]: https://github.com/AOMediaCodec/av1-spec/blob/master/Gruntfile.coffee

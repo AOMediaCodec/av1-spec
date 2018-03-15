@@ -22,13 +22,14 @@ module.exports = (grunt) ->
               '| ' + '&nbsp;'.repeat(match.substring(1).length - 1)
           } ]
         files: [ {
-          src:  '98.testing.md'
-          dest: '_tmp/98.testing.md'
+          src:  '_site/98.testing.md'
+          dest: '_site/'
         } ]
     copy:
       docs:
         files: [ {
           expand: true
+          cwd: '_site'
           src: 'assets/**'
           dest: 'docs/'
         } ]
@@ -48,18 +49,44 @@ module.exports = (grunt) ->
       options:
         bundleExec: true
         skip_initial_build: false
-        verbose: true
+        verbose: false
+        dest: '_site'
       serve: options:
-        serve: true
-        dest: '.jekyll'
+        serve: false
+    connect:
+      remote:
+        options:
+          hostname: '*'
+          port: 4000
+          base: '.'
+          keepalive: true
+          livereload: false
+      local:
+        options:
+          hostname: '*'
+          port: 4000
+          base: '.'
+          keepalive: true
+          open: 'http://127.0.0.1:4000/docs/'
+          livereload: false
+      nospawn:
+        options:
+          hostname: '*'
+          port: 4000
+          base: '.'
+          keepalive: true
+          livereload: false
   # Load the NPM tasks.
+  grunt.loadNpmTasks 'grunt-contrib-clean'
+  grunt.loadNpmTasks 'grunt-contrib-connect'
+  grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-jekyll'
   grunt.loadNpmTasks 'grunt-replace'
-  grunt.loadNpmTasks 'grunt-contrib-clean'
-  grunt.loadNpmTasks 'grunt-contrib-copy'
   # Register the default tasks.
   grunt.registerTask 'default', [
     'clean'
+    #'replace:preserveIndents'
+    'jekyll'
     'replace:boldSyntaxElements'
     'copy'
   ]
