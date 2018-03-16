@@ -1,5 +1,5 @@
 ---
-layout: web
+layout: pdf
 title: AV1 Bitstream &amp; Decoding Process Specification
 version_date: Released 2017-xx-xx
 ---

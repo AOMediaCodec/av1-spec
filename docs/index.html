@@ -38,7 +38,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-16 11:43:01 -0700</em></p>
+<p><em>Last modified: 2018-03-16 11:59:07 -0700</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -102,6 +102,7 @@ $(document).ready(function() {
           <li><a href="#fn" id="markdown-toc-fn">f(n)</a></li>
           <li><a href="#uvlc" id="markdown-toc-uvlc">uvlc()</a></li>
           <li><a href="#len" id="markdown-toc-len">le(n)</a></li>
+          <li><a href="#leb128" id="markdown-toc-leb128">leb128()</a></li>
           <li><a href="#sun" id="markdown-toc-sun">su(n)</a></li>
           <li><a href="#nsn" id="markdown-toc-nsn">ns(n)</a></li>
           <li><a href="#ln" id="markdown-toc-ln">L(n)</a></li>
@@ -167,6 +168,7 @@ $(document).ready(function() {
           <li><a href="#film-grain-params-syntax" id="markdown-toc-film-grain-params-syntax">Film Grain Params Syntax</a></li>
         </ul>
       </li>
+      <li><a href="#frame-obu-syntax" id="markdown-toc-frame-obu-syntax">Frame OBU Syntax</a></li>
       <li><a href="#tile-group-obu-syntax" id="markdown-toc-tile-group-obu-syntax">Tile Group OBU Syntax</a>        <ul>
           <li><a href="#decode-tile-syntax" id="markdown-toc-decode-tile-syntax">Decode Tile Syntax</a></li>
           <li><a href="#clear-block-decoded-flags-function" id="markdown-toc-clear-block-decoded-flags-function">Clear Block Decoded Flags Function</a></li>
@@ -279,6 +281,7 @@ $(document).ready(function() {
           <li><a href="#compound-tools-semantics" id="markdown-toc-compound-tools-semantics">Compound Tools Semantics</a></li>
         </ul>
       </li>
+      <li><a href="#frame-obu-semantics" id="markdown-toc-frame-obu-semantics">Frame OBU Semantics</a></li>
       <li><a href="#tile-group-obu-semantics" id="markdown-toc-tile-group-obu-semantics">Tile Group OBU Semantics</a>        <ul>
           <li><a href="#decode-tile-semantics" id="markdown-toc-decode-tile-semantics">Decode Tile Semantics</a></li>
           <li><a href="#clear-block-decoded-flags-semantics" id="markdown-toc-clear-block-decoded-flags-semantics">Clear Block Decoded Flags Semantics</a></li>
@@ -323,7 +326,8 @@ $(document).ready(function() {
     </ul>
   </li>
   <li><a href="#decoding-process" id="markdown-toc-decoding-process">Decoding Process</a>    <ul>
-      <li><a href="#general" id="markdown-toc-general">General</a></li>
+      <li><a href="#general-decoding-process" id="markdown-toc-general-decoding-process">General Decoding Process</a></li>
+      <li><a href="#large-scale-tile-decoding-process" id="markdown-toc-large-scale-tile-decoding-process">Large Scale Tile Decoding Process</a></li>
       <li><a href="#decode-frame-process" id="markdown-toc-decode-frame-process">Decode Frame Process</a></li>
       <li><a href="#frame-order-constraints" id="markdown-toc-frame-order-constraints">Frame Order Constraints</a></li>
       <li><a href="#ordering-of-obus" id="markdown-toc-ordering-of-obus">Ordering of OBUs</a></li>
@@ -376,6 +380,7 @@ $(document).ready(function() {
             </ul>
           </li>
           <li><a href="#inter-prediction-process" id="markdown-toc-inter-prediction-process">Inter Prediction Process</a>            <ul>
+              <li><a href="#rounding-variables-derivation-process" id="markdown-toc-rounding-variables-derivation-process">Rounding Variables Derivation Process</a></li>
               <li><a href="#motion-vector-scaling-process" id="markdown-toc-motion-vector-scaling-process">Motion Vector Scaling Process</a></li>
               <li><a href="#block-inter-prediction-process" id="markdown-toc-block-inter-prediction-process">Block Inter Prediction Process</a></li>
               <li><a href="#block-warp-process" id="markdown-toc-block-warp-process">Block Warp Process</a></li>
@@ -403,7 +408,6 @@ $(document).ready(function() {
       <li><a href="#inverse-transform-process" id="markdown-toc-inverse-transform-process">Inverse Transform Process</a>        <ul>
           <li><a href="#1d-transforms" id="markdown-toc-1d-transforms">1D Transforms</a>            <ul>
               <li><a href="#butterfly-functions" id="markdown-toc-butterfly-functions">Butterfly Functions</a></li>
-              <li><a href="#intermediate-clamping-process" id="markdown-toc-intermediate-clamping-process">Intermediate Clamping Process</a></li>
               <li><a href="#inverse-dct-array-permutation-process" id="markdown-toc-inverse-dct-array-permutation-process">Inverse DCT Array Permutation Process</a></li>
               <li><a href="#inverse-dct-process" id="markdown-toc-inverse-dct-process">Inverse DCT Process</a></li>
               <li><a href="#inverse-adst-input-array-permutation-process" id="markdown-toc-inverse-adst-input-array-permutation-process">Inverse ADST Input Array Permutation Process</a></li>
@@ -463,7 +467,9 @@ $(document).ready(function() {
           </li>
         </ul>
       </li>
+      <li><a href="#motion-field-motion-vector-storage-process" id="markdown-toc-motion-field-motion-vector-storage-process">Motion Field Motion Vector Storage Process</a></li>
       <li><a href="#reference-frame-update-process" id="markdown-toc-reference-frame-update-process">Reference Frame Update Process</a></li>
+      <li><a href="#reference-frame-loading-process" id="markdown-toc-reference-frame-loading-process">Reference Frame Loading Process</a></li>
     </ul>
   </li>
   <li><a href="#parsing-process" id="markdown-toc-parsing-process">Parsing Process</a>    <ul>
@@ -813,7 +819,8 @@ frames, from 0 to 1023 (inclusive) for 10-bit frames, and from 0 to 4095
   <dt>Segmentation map</dt>
   <dd>
     <p>A 3-bit number containing the segment affiliation for each 4x4 block in the
-image. The segmentation map persists across frames.  (TODO change with segment_pred_last experiment)</p>
+image. A segmentation map is stored for each reference buffer to allow new
+frames to use a previously coded map.</p>
   </dd>
   <dt>Sequence</dt>
   <dd>
@@ -829,7 +836,8 @@ forming the block quadtree.</p>
   </dd>
   <dt>Switch Frame</dt>
   <dd>
-    <p>An inter frame that can be used as a point to switch scalability layers.  Switch frames overwrite all the frame buffers without forcing the use of intra coding.</p>
+    <p>An inter frame that can be used as a point to switch between sequences.  Switch frames overwrite all the frame buffers without forcing the use of intra coding.  The intention is to allow a streaming use case where videos can be encoded in small chunks (say of 1 second duration), each starting with a switch frame.  If the available bandwidth drops, the server can start sending chunks from a lower bitrate encoding instead.
+The decoded pictures after a switch may be slightly incorrect, but this approach allows a switch without the cost of a full key frame.</p>
   </dd>
   <dt>Syntax element</dt>
   <dd>
@@ -1837,11 +1845,6 @@ relate to the semantics of a particular syntax element are defined in
       <td>Number of Wiener filter coefficients to read</td>
     </tr>
     <tr>
-      <td><code>EXTRAPREC_BITS</code></td>
-      <td style="text-align: center">2</td>
-      <td>Extra precision used in Wiener filtering</td>
-    </tr>
-    <tr>
       <td><code>SGRPROJ_PARAMS_BITS</code></td>
       <td style="text-align: center">4</td>
       <td>Number of bits needed to specify self guided filter set</td>
@@ -2048,7 +2051,7 @@ relate to the semantics of a particular syntax element are defined in
     </tr>
     <tr>
       <td><code>REFMVS_LIMIT</code></td>
-      <td style="text-align: center">1 &lt;&lt; 12</td>
+      <td style="text-align: center">( 1 &lt;&lt; 12 ) - 1</td>
       <td>Largest reference MV component that can be saved</td>
     </tr>
     <tr>
@@ -2065,6 +2068,11 @@ relate to the semantics of a particular syntax element are defined in
       <td><code>COEFF_CDF_Q_CTXS</code></td>
       <td style="text-align: center">4</td>
       <td>Number of selectable context types for the coeff( ) syntax structure</td>
+    </tr>
+    <tr>
+      <td><code>PRIMARY_REF_NONE</code></td>
+      <td style="text-align: center">7</td>
+      <td>Value of <code>primary_ref_frame</code> indicating that there is no primary reference frame</td>
     </tr>
   </tbody>
 </table>
@@ -2405,6 +2413,9 @@ The parsing process for this descriptor is specified below:</p>
             break
         leadingZeros++
     }
+    if ( leadingZeros &gt;= 32 ) {
+        return ( 1 &lt;&lt; 32 ) - 1
+    }
     <b class="syntax-element">value</b>                                                                    f(leadingZeros)
     return value + ( 1 &lt;&lt; leadingZeros ) - 1
 }
@@ -2427,6 +2438,44 @@ The parsing process for this descriptor is specified below:</p>
 
 <p class="alert alert-info"><strong>Note:</strong> This syntax element will only be present when the bitstream position
 is byte aligned.</p>
+
+<h4 id="leb128">leb128()</h4>
+
+<p>Unsigned integer represented by a variable number of little-endian bytes.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> This syntax element will only be present when the bitstream position
+is byte aligned.</p>
+
+<p>In this encoding, the most significant bit of each byte is equal to 1 to signal
+that more bytes should be read, or equal to 0 to signal the end of the encoding.</p>
+
+<p>A variable Leb128Bytes is set equal to the number of bytes read during this process.</p>
+
+<p>The parsing process for this descriptor is specified below:</p>
+
+<pre class="syntax"><code>leb128() {
+    value = 0
+    for (i = 0; i &lt; 8; i++) {
+        <b class="syntax-element">leb128_byte</b>                                                          f(8)
+        value |= ( (leb128_byte &amp; 0x7f) &lt;&lt; (i*7) )
+        Leb128Bytes += 1
+        if ( !(leb128_byte &amp; 0x80) ) {
+            break
+        }
+    }
+    return value
+}
+</code></pre>
+
+<p><strong>leb128_byte</strong> contains 8 bits read from the bitstream.  The bottom 7 bits are used to compute the variable value.
+The most significant bit is used to indicate that there are more bytes to be read.</p>
+
+<p>It is a requirement of bitstream conformance that the most significant bit of leb128_byte is equal to 0 if i is equal to 7.
+(This ensures that this syntax descriptor never uses more than 8 bytes.)</p>
+
+<p class="alert alert-info"><strong>Note:</strong> There are multiple ways of encoding the same value depending on how many leading zero bits are encoded.
+There is no requirement that this syntax descriptor uses the most compressed representation.
+This can be useful for encoder implementations by allowing a fixed amount of space to be filled in later when the value becomes known.</p>
 
 <h4 id="sun">su(n)</h4>
 
@@ -2546,7 +2595,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 
 <pre class="syntax"><code>open_bitstream_unit( sz ) {
     obu_header()
-    sz -= 1 + obu_extension_flag
+    if ( obu_has_payload_length_field ) {
+        <b class="syntax-element">obu_payload_size</b>                                                     leb128()
+    } else {
+        obu_payload_size = sz - 1 - obu_extension_flag
+    }
     if ( obu_type == OBU_SEQUENCE_HEADER )
         sequence_header_obu()
     else if ( obu_type == OBU_TD )
@@ -2554,13 +2607,15 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     else if ( obu_type == OBU_FRAME_HEADER )
         frame_header_obu( )
     else if ( obu_type == OBU_TILE_GROUP )
-        tile_group_obu( sz )
+        tile_group_obu( obu_payload_size )
     else if ( obu_type == OBU_METADATA )
-        metadata_obu( sz )
+        metadata_obu( obu_payload_size )
+    else if ( obu_type == OBU_FRAME )
+        frame_obu( obu_payload_size )
     else if ( obu_type == OBU_PADDING )
         padding_obu()
     else
-        reserved_obu( sz )
+        reserved_obu( obu_payload_size )
     trailing_bits()
 }
 </code></pre>
@@ -2570,8 +2625,9 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <pre class="syntax"><code>obu_header() {
     <b class="syntax-element">obu_forbidden_bit</b>                                                        f(1)
     <b class="syntax-element">obu_type</b>                                                                 f(4)
-    <b class="syntax-element">obu_reserved_2bits</b>                                                       f(2)
     <b class="syntax-element">obu_extension_flag</b>                                                       f(1)
+    <b class="syntax-element">obu_has_payload_length_field</b>                                             f(1)
+    <b class="syntax-element">obu_reserved_1bit</b>                                                        f(1)
     if ( obu_extension_flag == 1 )
         obu_extension_header()
 }    
@@ -2619,12 +2675,17 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     <b class="syntax-element">max_frame_height_minus_1</b>                                                 f(n)
     <b class="syntax-element">frame_id_numbers_present_flag</b>                                            f(1)
     if ( frame_id_numbers_present_flag ) {    
-        <b class="syntax-element">delta_frame_id_length_minus2</b>                                         f(3)
+        <b class="syntax-element">delta_frame_id_length_minus2</b>                                         f(4)
         <b class="syntax-element">additional_frame_id_length_minus1</b>                                    f(3)
     }
     <b class="syntax-element">use_128x128_superblock</b>                                                   f(1)
     <b class="syntax-element">enable_dual_filter</b>                                                       f(1)
-    <b class="syntax-element">enable_jnt_comp</b>                                                          f(1)
+    <b class="syntax-element">enable_order_hint</b>                                                        f(1)
+    if ( enable_order_hint ) {
+        <b class="syntax-element">enable_jnt_comp</b>                                                      f(1)
+    } else {
+        enable_jnt_comp = 0
+    }
     <b class="syntax-element">seq_choose_screen_content_tools</b>                                          f(1)
     if ( seq_choose_screen_content_tools ) {
         seq_force_screen_content_tools = SELECT_SCREEN_CONTENT_TOOLS
@@ -2861,8 +2922,12 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     if ( show_existing_frame == 1 ) {
         <b class="syntax-element">frame_to_show_map_idx</b>                                                f(3)
         refresh_frame_flags = 0
-        if (frame_id_numbers_present_flag) {
+        if ( frame_id_numbers_present_flag ) {
             <b class="syntax-element">display_frame_id</b>                                                 f(idLen)
+        }
+        frame_type = RefType[ frame_to_show_map_idx ]
+        if ( frame_type == KEY_FRAME ) {
+            refresh_frame_flags = (1 &lt;&lt; NUM_REF_FRAMES) - 1
         }
         CurrentVideoFrame += 1
         load_grain_params( frame_to_show_map_idx )
@@ -2877,7 +2942,8 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     }
     <b class="syntax-element">show_frame</b>                                                               f(1)
     <b class="syntax-element">error_resilient_mode</b>                                                     f(1)
-    <b class="syntax-element">disable_intra_edge_filter</b>                                                f(1)
+    <b class="syntax-element">enable_intra_edge_filter</b>                                                 f(1)
+    <b class="syntax-element">allow_filter_intra</b>                                                       f(1)
     <b class="syntax-element">disable_cdf_update</b>                                                       f(1)
     if ( seq_force_screen_content_tools == SELECT_SCREEN_CONTENT_TOOLS ) {
         <b class="syntax-element">allow_screen_content_tools</b>                                           f(1)
@@ -2910,9 +2976,12 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     can_use_previous = 0
     allow_intrabc = 0
     if ( frame_type == KEY_FRAME ) {
+        if ( show_frame )
+            refresh_frame_flags = 0xFF
+        else
+            <b class="syntax-element">refresh_frame_flags</b>                                              f(8)
         frame_size( )
         render_size( )
-        refresh_frame_flags = 0xFF
         if ( allow_screen_content_tools &amp;&amp; UpscaledWidth == FrameWidth ) {
             <b class="syntax-element">allow_intrabc</b>                                                    f(1)
         }
@@ -2943,11 +3012,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
             for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {
                 if ( !frame_refs_short_signaling )
                   <b class="syntax-element">ref_frame_idx[ i ]</b>                                         f(3)
-                if (frame_id_numbers_present_flag) {
+                if ( frame_id_numbers_present_flag ) {
                     n = delta_frame_id_length_minus2 + 2
                     <b class="syntax-element">delta_frame_id_minus1</b>                                    f(n)
                     DeltaFrameId = delta_frame_id_minus1 + 1
-                    RefFrameId = ((current_frame_id + (1 &lt;&lt; idLen) -
+                    RefFrameId[ i ] = ((current_frame_id + (1 &lt;&lt; idLen) -
                                   DeltaFrameId ) % (1 &lt;&lt; idLen))
                 }
             }
@@ -2964,7 +3033,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
             }
             read_interpolation_filter( )
             <b class="syntax-element">is_motion_mode_switchable</b>                                        f(1)
-            if ( error_resilient_mode ) {
+            if ( error_resilient_mode || !enable_order_hint ) {
                 can_use_previous = 0
             } else {
                 <b class="syntax-element">can_use_previous</b>                                             f(1)
@@ -2976,7 +3045,9 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
             refFrame = LAST_FRAME + i
             hint = RefOrderHint[ ref_frame_idx[ i ] ]
             OrderHints[ refFrame ] = hint
-            if (frame_type == SWITCH_FRAME ) {
+            if ( frame_type == SWITCH_FRAME ||
+                 !enable_order_hint ||
+                 error_resilient_mode ) {
                 RefFrameSignBias[ refFrame ] = 0
             } else {
                 RefFrameSignBias[ refFrame ] = hint &gt; OrderHint
@@ -2988,20 +3059,30 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     } else {
         <b class="syntax-element">disable_frame_end_update_cdf</b>                                         f(1)
     }
+    
+    if ( FrameIsIntra || error_resilient_mode ) {
+        primary_ref_frame = PRIMARY_REF_NONE
+    } else {
+        <b class="syntax-element">primary_ref_frame</b>                                                    f(3)
+    }
     if ( FrameIsIntra || error_resilient_mode ) {
         setup_past_independence ( )
+        init_non_coeff_cdfs( )
+    } else if ( primary_ref_frame == PRIMARY_REF_NONE ) {
+        init_non_coeff_cdfs( )
+        load_previous( )
     } else {
-        load_cdfs( ref_frame_idx[ 0 ] )
+        load_cdfs( ref_frame_idx[ primary_ref_frame ] )
+        load_previous( )
     }
     tile_info( )
     quantization_params( )
     segmentation_params( )
     delta_q_params( )
     delta_lf_params( )
-    if ( FrameIsIntra || error_resilient_mode ) {
+    if ( FrameIsIntra || error_resilient_mode ||
+         primary_ref_frame == PRIMARY_REF_NONE ) {
         init_coeff_cdfs( )
-    } else {
-        load_previous( )
     }
     AllLossless = 1
     for ( segmentId = 0; segmentId &lt; MAX_SEGMENTS; segmentId++ ) {
@@ -3104,6 +3185,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     for ( i = 0; i &lt; REFS_PER_FRAME; i++ ) {
         <b class="syntax-element">found_ref</b>                                                            f(1)
         if ( found_ref == 1 ) {
+            UpscaledWidth = RefUpscaledWidth[ ref_frame_idx[ i ] ]
             FrameWidth = RefFrameWidth[ ref_frame_idx[ i ] ]
             FrameHeight = RefFrameHeight[ ref_frame_idx[ i ] ]
             RenderWidth = RefRenderWidth[ ref_frame_idx[ i ] ]
@@ -3408,8 +3490,10 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
         <b class="syntax-element">loop_filter_across_tiles_h</b>                                           f(1)
     else
         loop_filter_across_tiles_h = 0
-    <b class="syntax-element">tile_size_bytes_minus_1</b>                                                  f(2)
-    TileSizeBytes = tile_size_bytes_minus_1 + 1
+    if ( TileColsLog2 &gt; 0 || TileRowsLog2 &gt; 0 ) {
+        <b class="syntax-element">tile_size_bytes_minus_1</b>                                              f(2)
+        TileSizeBytes = tile_size_bytes_minus_1 + 1
+    }
 }
 </code></pre>
 
@@ -3553,7 +3637,7 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
 <h4 id="skip-mode-params-syntax">Skip Mode Params Syntax</h4>
 
 <pre class="syntax"><code>skip_mode_params( ) {
-    if ( FrameIsIntra || !reference_select ) {
+    if ( FrameIsIntra || !reference_select || error_resilient_mode || !enable_order_hint ) {
         skipModeAllowed = 0
     } else {
         forwardIdx = -1
@@ -3866,6 +3950,18 @@ However, these fractional bits will be discarded during the Setup Zero MV proces
     }
     <b class="syntax-element">overlap_flag</b>                                                             f(1)
     <b class="syntax-element">clip_to_restricted_range</b>                                                 f(1)
+}
+</code></pre>
+
+<h3 id="frame-obu-syntax">Frame OBU Syntax</h3>
+
+<pre class="syntax"><code>frame_obu( sz ) {
+    startBitPos = get_position( )
+    frame_header_obu( )
+    endBitPos = get_position( )
+    headerBytes = (endBitPos - startBitPos) / 8
+    sz -= headerBytes
+    tile_group_obu( sz )
 }
 </code></pre>
 
@@ -4720,7 +4816,8 @@ of the segmentation map covered by the current block.</p>
 
 <pre class="syntax"><code>filter_intra_mode_info( ) {
     use_filter_intra = 0
-    if ( YMode == DC_PRED &amp;&amp; PaletteSizeY == 0 &amp;&amp;
+    if ( allow_filter_intra &amp;&amp;
+         YMode == DC_PRED &amp;&amp; PaletteSizeY == 0 &amp;&amp;
          Max( Block_Width[ MiSize ], Block_Height[ MiSize ] ) &lt;= 32 ) {
         <b class="syntax-element">use_filter_intra</b>                                                     S()
         if ( use_filter_intra ) {
@@ -4946,7 +5043,7 @@ of the segmentation map covered by the current block.</p>
             comp_group_idx = 0
         }
         if ( comp_group_idx == 0 ) {
-            if ( enable_jnt_comp ) {
+            if ( enable_jnt_comp &amp;&amp; !error_resilient_mode ) {
                 <b class="syntax-element">compound_idx</b>                                                 S()
                 compound_type = compound_idx ? COMPOUND_DISTANCE :
                                                COMPOUND_AVERAGE
@@ -5440,9 +5537,6 @@ for the specified plane.
             Quant[ scan [ c ] ] = level
         }
         
-        coeffMin = - ( 1 &lt;&lt; ( 7 + BitDepth ) )
-        coeffMax = ( 1 &lt;&lt; ( 7 + BitDepth ) ) - 1
-        
         for ( c = 0; c &lt; eob; c++ ) {
             pos = scan[ c ]
             if ( Quant[ pos ] != 0 ) {
@@ -5472,8 +5566,7 @@ for the specified plane.
                Quant[ pos ] = x + COEFF_BASE_RANGE + NUM_BASE_LEVELS
             }
             if ( sign )
-                Quant[ pos ] = - Quant[ scan[ c ] ]
-            Quant[ pos ] = Clip3( coeffMin, coeffMax, Quant[ scan[ c ] ] )
+                Quant[ pos ] = - Quant[ pos ]
         }
         
         culLevel = Min( 63, culLevel )
@@ -5633,7 +5726,7 @@ get_scan( plane, txSz ) {
     }
     
     if ( PlaneTxType == IDTX ) {
-        return get_mrow_scan( txSz )
+        return get_default_scan( txSz )
     }
     
     preferRow = ( PlaneTxType == V_DCT ||
@@ -6170,7 +6263,7 @@ check_golden(refFrame) {
 <h4 id="read-cdef-syntax">Read CDEF Syntax</h4>
 
 <pre class="syntax"><code>read_cdef( ) {
-    if ( allow_intrabc || AllLossless) {
+    if ( allow_intrabc || AllLossless || skip || cdef_bits == 0 ) {
         return
     }
     cdefSize4 = Num_4x4_Blocks_Wide[ BLOCK_64X64 ]
@@ -6178,7 +6271,7 @@ check_golden(refFrame) {
     r = MiRow &amp; cdefMask4
     c = MiCol &amp; cdefMask4
     if ( cdef_idx[ r ][ c ] == -1 ) {
-        <b class="syntax-element">cdef_idx[ r ][ c ]</b>                                               L(cdef_bits)
+        <b class="syntax-element">cdef_idx[ r ][ c ]</b>                                                   L(cdef_bits)
         w4 = Num_4x4_Blocks_Wide[ MiSize ]
         h4 = Num_4x4_Blocks_High[ MiSize ]
         for (i = r; i &lt; r + h4 ; i += cdefSize4) {
@@ -6326,7 +6419,7 @@ Sgrproj_Xqd_Min[2] = { -96, -32 }
 Sgrproj_Xqd_Max[2] = {  31,  95 }
 </code></pre>
 
-<p>Sgr_Params is a constant lookup table defined in <a href="#box-filter-process">section 7.15.3</a> and decode_signed_subexp_with_ref_bool
+<p>Sgr_Params is a constant lookup table defined in <a href="#box-filter-process">section 7.16.3</a> and decode_signed_subexp_with_ref_bool
 is a function specified as follows:</p>
 
 <pre class="syntax"><code class="language-c">decode_signed_subexp_with_ref_bool( low, high, k, r ) {
@@ -6385,8 +6478,15 @@ structures.</p>
 <p>Each OBU is given to the decoding process in turn as a bitstream along
 with a variable sz that gives the total number of bytes in the OBU.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> Encoders should always set sz equal to the actual size of the OBU.
-Decoders should ignore any extra bytes if sz is greater than the actual size of the OBU.
+<p>If the syntax element obu_has_payload_length_field (in the OBU header) is equal to 1,
+then the variable sz will be unused and does not have to be provided.</p>
+
+<p><strong>obu_payload_size</strong> contains the size in bytes of the OBU payload.
+(The payload is defined to be all bytes in the OBU that follow the obu_payload_size syntax element.
+In other words obu_payload_size is equal to the number of bytes in the OBU not including the bytes within obu_header or the obu_payload_size syntax element.)</p>
+
+<p class="alert alert-info"><strong>Note:</strong> Encoders should always set obu_payload_size equal to the actual size of the OBU.
+Decoders should ignore any extra bytes if obu_payload_size is greater than the actual size of the OBU.
 (For example, this may be needed if a future version of AV1 defines some additional
 fields at the end of the frame header, that are not strictly required for decoding,
 but if interpreted can improve the decoding).</p>
@@ -6442,7 +6542,11 @@ possible by preventing emulation of MPEG2 transport stream ids.</p>
       <td>OBU_METADATA</td>
     </tr>
     <tr>
-      <td>6-14</td>
+      <td>6</td>
+      <td>OBU_FRAME</td>
+    </tr>
+    <tr>
+      <td>7-14</td>
       <td>Reserved</td>
     </tr>
     <tr>
@@ -6454,9 +6558,13 @@ possible by preventing emulation of MPEG2 transport stream ids.</p>
 
 <p>Reserved units are for future use and shall be ignored by AV1 decoder.</p>
 
-<p><strong>obu_reserved_2bits</strong> must be set to 0. The value is ignored by a decoder.</p>
-
 <p><strong>obu_extension_flag</strong> indicates if the optional obu_extension_header is present.</p>
+
+<p><strong>obu_has_payload_length_field</strong> equal to 1 indicates that the obu_payload_size syntax element
+will be present.  obu_has_payload_length_field equal to 0 indicates that the obu_payload_size
+syntax element will not be present.</p>
+
+<p><strong>obu_reserved_1bit</strong> must be set to 0. The value is ignored by a decoder.</p>
 
 <h4 id="obu-extension-header-semantics">OBU Extension Header Semantics</h4>
 
@@ -6555,7 +6663,7 @@ the sequence.</p>
 
 <p><strong>frame_id_numbers_present_flag</strong> specifies whether frame id numbers are present in the bitstream.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> The frame id numbers (represented in display_frame_id, current_frame_id, and RefFrameId) are not needed by the decoding process,
+<p class="alert alert-info"><strong>Note:</strong> The frame id numbers (represented in display_frame_id, current_frame_id, and RefFrameId[ i ]) are not needed by the decoding process,
 but allow decoders to spot when frames have been missed and take an appropriate action.</p>
 
 <p><strong>additional_frame_id_length_minus1</strong> is used to calculate the number of bits used to encode the frame_id syntax element.</p>
@@ -7437,7 +7545,7 @@ However, all copies must contain identical contents.</p>
 (This is needed because the CDFs are updated based on the largest tile decoded.)</p>
 
 <p><strong>decode_frame</strong> is a function call that indicates that the decode frame process
-specified in <a href="#decode-frame-process">section 7.2</a> should be invoked.</p>
+specified in <a href="#decode-frame-process">section 7.3</a> should be invoked.</p>
 
 <h4 id="uncompressed-header-semantics">Uncompressed Header Semantics</h4>
 
@@ -7487,7 +7595,7 @@ does not exceed 16.  This is equivalent to the constraint that idLen &lt;= 16.</
 
 <p>It is possible for bitstreams to start with a non key frame and still be
 decodable. In this case there are a number of additional constraints on the
-bitstream that are detailed in <a href="#frame-order-constraints">section 7.3</a>.</p>
+bitstream that are detailed in <a href="#frame-order-constraints">section 7.4</a>.</p>
 
 <p><strong>show_frame</strong> equal to 1 specifies that this frame should be immediately output once decoded.
 show_frame equal to 0 specifies that this frame should not be immediately output.
@@ -7500,8 +7608,8 @@ is disabled.</p>
 <p class="alert alert-info"><strong>Note:</strong> Error resilient mode allows the syntax of a frame to be decoded
 independently of previous frames.</p>
 
-<p><strong>disable_intra_edge_filter</strong> specifies whether the intra edge filtering process
-should be disabled.</p>
+<p><strong>enable_intra_edge_filter</strong> specifies whether the intra edge filtering process
+should be enabled.</p>
 
 <p><strong>disable_cdf_update</strong> specifies whether the CDF update in the symbol decoding process should be
 disabled.</p>
@@ -7552,7 +7660,7 @@ force_integer_mv equal to 0 specifies that motion vectors can contain fractional
 <p><strong>refresh_frame_flags</strong> contains a bitmask that specifies which reference frame
 slots will be updated with the current frame after it is decoded.</p>
 
-<p>See <a href="#reference-frame-update-process">section 7.17</a> for details of the frame update process.</p>
+<p>See <a href="#reference-frame-update-process">section 7.19</a> for details of the frame update process.</p>
 
 <p><strong>frame_refs_short_signaling</strong> equal to 1 indicates that only two reference frames are explicitly signaled.
 frame_refs_short_signaling equal to 0 indicates that all reference frames are explicitly signaled.</p>
@@ -7564,7 +7672,7 @@ frame_refs_short_signaling equal to 0 indicates that all reference frames are ex
 <p><strong>set_frame_refs</strong> is a function call that indicates the conceptual point where
 the ref_frame_idx values are computed (in the case when frame_refs_short_signaling is equal to 1, these syntax elements are computed instead of being explicitly signaled).
 When this function is called, the set frame refs
-process specified in <a href="#set-frame-refs-process">section 7.6</a> is invoked.</p>
+process specified in <a href="#set-frame-refs-process">section 7.7</a> is invoked.</p>
 
 <p><strong>ref_frame_idx</strong> specifies which reference frames are used by inter frames. It
 is a requirement of bitstream conformance that RefValid[ ref_frame_idx ] is equal
@@ -7585,8 +7693,8 @@ order of pictures.</p>
 
 <p><strong>DeltaFrameId</strong> specifies the distance to the frame id for the reference frame.</p>
 
-<p><strong>RefFrameId</strong> specifies the frame id for the reference frame.
-It is a requirement of bitstream conformance that whenever RefFrameId is calculated, the value matches
+<p><strong>RefFrameId[ i ]</strong> specifies the frame id for each reference frame.
+It is a requirement of bitstream conformance that whenever RefFrameId[ i ] is calculated, the value matches
 the value of current_frame_id at the time that the frame indexed by
 ref_frame_idx was stored.</p>
 
@@ -7606,6 +7714,8 @@ disable_frame_end_update_cdf equal to 0 indicates that the end of frame CDF upda
 
 <p class="alert alert-info"><strong>Note:</strong> It can be useful to disable the CDF update because it means the next frame can start to be decoded
 as soon as the frame headers of the current frame have been processed.</p>
+
+<p><strong>primary_ref_frame</strong> specifies which slot the CDF values should be loaded from at the start of the frame.</p>
 
 <p><strong>frame_offset_update</strong> provides a hint to the motion vector prediction as to how many frames later this frame is expected to be shown.</p>
 
@@ -7680,274 +7790,275 @@ col = 0..MiCols-1.</p>
   <li>
     <p>loop_filter_mode_deltas[ i ] is set equal to 0 for i = 0..1.</p>
   </li>
-  <li>
-    <p>The cumulative distribution function arrays are reset to default values as follows:</p>
+</ul>
 
-    <ul>
-      <li>
-        <p>YModeCdf is set to a copy of Default_Y_Mode_Cdf</p>
-      </li>
-      <li>
-        <p>UVModeCflNotAllowedCdf is set to a copy of Default_Uv_Mode_Cfl_Not_Allowed_Cdf</p>
-      </li>
-      <li>
-        <p>UVModeCflAllowedCdf is set to a copy of Default_Uv_Mode_Cfl_Allowed_Cdf</p>
-      </li>
-      <li>
-        <p>AngleDeltaCdf is set to a copy of Default_Angle_Delta_Cdf</p>
-      </li>
-      <li>
-        <p>IntrabcCdf is set to a copy of Default_Intrabc_Cdf</p>
-      </li>
-      <li>
-        <p>PartitionW8Cdf is set to a copy of Default_Partition_W8_Cdf</p>
-      </li>
-      <li>
-        <p>PartitionW16Cdf is set to a copy of Default_Partition_W16_Cdf</p>
-      </li>
-      <li>
-        <p>PartitionW32Cdf is set to a copy of Default_Partition_W32_Cdf</p>
-      </li>
-      <li>
-        <p>PartitionW64Cdf is set to a copy of Default_Partition_W64_Cdf</p>
-      </li>
-      <li>
-        <p>PartitionW128Cdf is set to a copy of Default_Partition_W128_Cdf</p>
-      </li>
-      <li>
-        <p>SegmentIdCdf is set to a copy of Default_Segment_Id_Cdf</p>
-      </li>
-      <li>
-        <p>SegmentIdPredictedCdf is set to a copy of Default_Segment_Id_Predicted_Cdf</p>
-      </li>
-      <li>
-        <p>Tx8x8Cdf is set to a copy of Default_Tx_8x8_Cdf</p>
-      </li>
-      <li>
-        <p>Tx16x16Cdf is set to a copy of Default_Tx_16x16_Cdf</p>
-      </li>
-      <li>
-        <p>Tx32x32Cdf is set to a copy of Default_Tx_32x32_Cdf</p>
-      </li>
-      <li>
-        <p>Tx64x64Cdf is set to a copy of Default_Tx_64x64_Cdf</p>
-      </li>
-      <li>
-        <p>TxfmSplitCdf is set to a copy of Default_Txfm_Split_Cdf</p>
-      </li>
-      <li>
-        <p>FilterIntraModeCdf is set to a copy of Default_Filter_Intra_Mode_Cdf</p>
-      </li>
-      <li>
-        <p>FilterIntraCdf is set to a copy of Default_Filter_Intra_Cdf</p>
-      </li>
-      <li>
-        <p>InterpFilterCdf is set to a copy of Default_Interp_Filter_Cdf</p>
-      </li>
-      <li>
-        <p>MotionModeCdf is set to a copy of Default_Motion_Mode_Cdf</p>
-      </li>
-      <li>
-        <p>NewMvCdf is set to a copy of Default_New_Mv_Cdf</p>
-      </li>
-      <li>
-        <p>ZeroMvCdf is set to a copy of Default_Zero_Mv_Cdf</p>
-      </li>
-      <li>
-        <p>RefMvCdf is set to a copy of Default_Ref_Mv_Cdf</p>
-      </li>
-      <li>
-        <p>CompoundModeCdf is set to a copy of Default_Compound_Mode_Cdf</p>
-      </li>
-      <li>
-        <p>DrlModeCdf is set to a copy of Default_Drl_Mode_Cdf</p>
-      </li>
-      <li>
-        <p>IsInterCdf is set to a copy of Default_Is_Inter_Cdf</p>
-      </li>
-      <li>
-        <p>CompModeCdf is set to a copy of Default_Comp_Mode_Cdf</p>
-      </li>
-      <li>
-        <p>SkipModeCdf is set to a copy of Default_Skip_Mode_Cdf</p>
-      </li>
-      <li>
-        <p>SkipCdf is set to a copy of Default_Skip_Cdf</p>
-      </li>
-      <li>
-        <p>CompRefCdf is set to a copy of Default_Comp_Ref_Cdf</p>
-      </li>
-      <li>
-        <p>CompBwdRefCdf is set to a copy of Default_Comp_Bwd_Ref_Cdf</p>
-      </li>
-      <li>
-        <p>SingleRefCdf is set to a copy of Default_Single_Ref_Cdf</p>
-      </li>
-      <li>
-        <p>MvJointCdf[ i ] is set to a copy of Default_Mv_Joint_Cdf for i = 0..MV_CONTEXTS-1</p>
-      </li>
-      <li>
-        <p>MvClassCdf[ i ] is set to a copy of Default_Mv_Class_Cdf for i = 0..MV_CONTEXTS-1</p>
-      </li>
-      <li>
-        <p>MvClass0BitCdf[ i ][ comp ] is set to a copy of Default_Mv_Class0_Bit_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
-      </li>
-      <li>
-        <p>MvFrCdf[ i ] is set to a copy of Default_Mv_Fr_Cdf for i = 0..MV_CONTEXTS-1</p>
-      </li>
-      <li>
-        <p>MvClass0FrCdf[ i ] is set to a copy of Default_Mv_Class0_Fr_Cdf for i = 0..MV_CONTEXTS-1</p>
-      </li>
-      <li>
-        <p>MvClass0HpCdf[ i ][ comp ] is set to a copy of Default_Mv_Class0_Hp_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
-      </li>
-      <li>
-        <p>MvSignCdf[ i ][ comp ] is set to a copy of Default_Mv_Sign_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
-      </li>
-      <li>
-        <p>MvBitCdf[ i ][ comp ] is set to a copy of Default_Mv_Bit_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
-      </li>
-      <li>
-        <p>MvHpCdf[ i ][ comp ] is set to a copy of Default_Mv_Hp_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
-      </li>
-      <li>
-        <p>PaletteYModeCdf is set to a copy of Default_Palette_Y_Mode_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteUVModeCdf is set to a copy of Default_Palette_Uv_Mode_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteYSizeCdf is set to a copy of Default_Palette_Y_Size_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteUVSizeCdf is set to a copy of Default_Palette_Uv_Size_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize2YColorCdf is set to a copy of
+<p><strong>init_non_coeff_cdfs</strong> is a function call that indicates that the CDF tables
+which are not used in the coeff( ) syntax structure should be initialised. When
+this function is invoked, the following steps apply:</p>
+
+<ul>
+  <li>
+    <p>YModeCdf is set to a copy of Default_Y_Mode_Cdf</p>
+  </li>
+  <li>
+    <p>UVModeCflNotAllowedCdf is set to a copy of Default_Uv_Mode_Cfl_Not_Allowed_Cdf</p>
+  </li>
+  <li>
+    <p>UVModeCflAllowedCdf is set to a copy of Default_Uv_Mode_Cfl_Allowed_Cdf</p>
+  </li>
+  <li>
+    <p>AngleDeltaCdf is set to a copy of Default_Angle_Delta_Cdf</p>
+  </li>
+  <li>
+    <p>IntrabcCdf is set to a copy of Default_Intrabc_Cdf</p>
+  </li>
+  <li>
+    <p>PartitionW8Cdf is set to a copy of Default_Partition_W8_Cdf</p>
+  </li>
+  <li>
+    <p>PartitionW16Cdf is set to a copy of Default_Partition_W16_Cdf</p>
+  </li>
+  <li>
+    <p>PartitionW32Cdf is set to a copy of Default_Partition_W32_Cdf</p>
+  </li>
+  <li>
+    <p>PartitionW64Cdf is set to a copy of Default_Partition_W64_Cdf</p>
+  </li>
+  <li>
+    <p>PartitionW128Cdf is set to a copy of Default_Partition_W128_Cdf</p>
+  </li>
+  <li>
+    <p>SegmentIdCdf is set to a copy of Default_Segment_Id_Cdf</p>
+  </li>
+  <li>
+    <p>SegmentIdPredictedCdf is set to a copy of Default_Segment_Id_Predicted_Cdf</p>
+  </li>
+  <li>
+    <p>Tx8x8Cdf is set to a copy of Default_Tx_8x8_Cdf</p>
+  </li>
+  <li>
+    <p>Tx16x16Cdf is set to a copy of Default_Tx_16x16_Cdf</p>
+  </li>
+  <li>
+    <p>Tx32x32Cdf is set to a copy of Default_Tx_32x32_Cdf</p>
+  </li>
+  <li>
+    <p>Tx64x64Cdf is set to a copy of Default_Tx_64x64_Cdf</p>
+  </li>
+  <li>
+    <p>TxfmSplitCdf is set to a copy of Default_Txfm_Split_Cdf</p>
+  </li>
+  <li>
+    <p>FilterIntraModeCdf is set to a copy of Default_Filter_Intra_Mode_Cdf</p>
+  </li>
+  <li>
+    <p>FilterIntraCdf is set to a copy of Default_Filter_Intra_Cdf</p>
+  </li>
+  <li>
+    <p>InterpFilterCdf is set to a copy of Default_Interp_Filter_Cdf</p>
+  </li>
+  <li>
+    <p>MotionModeCdf is set to a copy of Default_Motion_Mode_Cdf</p>
+  </li>
+  <li>
+    <p>NewMvCdf is set to a copy of Default_New_Mv_Cdf</p>
+  </li>
+  <li>
+    <p>ZeroMvCdf is set to a copy of Default_Zero_Mv_Cdf</p>
+  </li>
+  <li>
+    <p>RefMvCdf is set to a copy of Default_Ref_Mv_Cdf</p>
+  </li>
+  <li>
+    <p>CompoundModeCdf is set to a copy of Default_Compound_Mode_Cdf</p>
+  </li>
+  <li>
+    <p>DrlModeCdf is set to a copy of Default_Drl_Mode_Cdf</p>
+  </li>
+  <li>
+    <p>IsInterCdf is set to a copy of Default_Is_Inter_Cdf</p>
+  </li>
+  <li>
+    <p>CompModeCdf is set to a copy of Default_Comp_Mode_Cdf</p>
+  </li>
+  <li>
+    <p>SkipModeCdf is set to a copy of Default_Skip_Mode_Cdf</p>
+  </li>
+  <li>
+    <p>SkipCdf is set to a copy of Default_Skip_Cdf</p>
+  </li>
+  <li>
+    <p>CompRefCdf is set to a copy of Default_Comp_Ref_Cdf</p>
+  </li>
+  <li>
+    <p>CompBwdRefCdf is set to a copy of Default_Comp_Bwd_Ref_Cdf</p>
+  </li>
+  <li>
+    <p>SingleRefCdf is set to a copy of Default_Single_Ref_Cdf</p>
+  </li>
+  <li>
+    <p>MvJointCdf[ i ] is set to a copy of Default_Mv_Joint_Cdf for i = 0..MV_CONTEXTS-1</p>
+  </li>
+  <li>
+    <p>MvClassCdf[ i ] is set to a copy of Default_Mv_Class_Cdf for i = 0..MV_CONTEXTS-1</p>
+  </li>
+  <li>
+    <p>MvClass0BitCdf[ i ][ comp ] is set to a copy of Default_Mv_Class0_Bit_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
+  </li>
+  <li>
+    <p>MvFrCdf[ i ] is set to a copy of Default_Mv_Fr_Cdf for i = 0..MV_CONTEXTS-1</p>
+  </li>
+  <li>
+    <p>MvClass0FrCdf[ i ] is set to a copy of Default_Mv_Class0_Fr_Cdf for i = 0..MV_CONTEXTS-1</p>
+  </li>
+  <li>
+    <p>MvClass0HpCdf[ i ][ comp ] is set to a copy of Default_Mv_Class0_Hp_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
+  </li>
+  <li>
+    <p>MvSignCdf[ i ][ comp ] is set to a copy of Default_Mv_Sign_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
+  </li>
+  <li>
+    <p>MvBitCdf[ i ][ comp ] is set to a copy of Default_Mv_Bit_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
+  </li>
+  <li>
+    <p>MvHpCdf[ i ][ comp ] is set to a copy of Default_Mv_Hp_Cdf for i = 0..MV_CONTEXTS-1 and comp = 0..1</p>
+  </li>
+  <li>
+    <p>PaletteYModeCdf is set to a copy of Default_Palette_Y_Mode_Cdf</p>
+  </li>
+  <li>
+    <p>PaletteUVModeCdf is set to a copy of Default_Palette_Uv_Mode_Cdf</p>
+  </li>
+  <li>
+    <p>PaletteYSizeCdf is set to a copy of Default_Palette_Y_Size_Cdf</p>
+  </li>
+  <li>
+    <p>PaletteUVSizeCdf is set to a copy of Default_Palette_Uv_Size_Cdf</p>
+  </li>
+  <li>
+    <p>PaletteSize2YColorCdf is set to a copy of
 Default_Palette_Size_2_Y_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize2UVColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize2UVColorCdf is set to a copy of
 Default_Palette_Size_2_Uv_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize3YColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize3YColorCdf is set to a copy of
 Default_Palette_Size_3_Y_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize3UVColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize3UVColorCdf is set to a copy of
 Default_Palette_Size_3_Uv_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize4YColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize4YColorCdf is set to a copy of
 Default_Palette_Size_4_Y_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize4UVColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize4UVColorCdf is set to a copy of
 Default_Palette_Size_4_Uv_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize5YColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize5YColorCdf is set to a copy of
 Default_Palette_Size_5_Y_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize5UVColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize5UVColorCdf is set to a copy of
 Default_Palette_Size_5_Uv_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize6YColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize6YColorCdf is set to a copy of
 Default_Palette_Size_6_Y_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize6UVColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize6UVColorCdf is set to a copy of
 Default_Palette_Size_6_Uv_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize7YColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize7YColorCdf is set to a copy of
 Default_Palette_Size_7_Y_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize7UVColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize7UVColorCdf is set to a copy of
 Default_Palette_Size_7_Uv_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize8YColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize8YColorCdf is set to a copy of
 Default_Palette_Size_8_Y_Color_Cdf</p>
-      </li>
-      <li>
-        <p>PaletteSize8UVColorCdf is set to a copy of
+  </li>
+  <li>
+    <p>PaletteSize8UVColorCdf is set to a copy of
 Default_Palette_Size_8_Uv_Color_Cdf</p>
-      </li>
-      <li>
-        <p>DeltaQCdf is set to a copy of Default_Delta_Q_Cdf</p>
-      </li>
-      <li>
-        <p>DeltaLFCdf is set to a copy of Default_Delta_Lf_Cdf</p>
-      </li>
-      <li>
-        <p>DeltaLFMultiCdf[ i ] is set to a copy of Default_Delta_Lf_Cdf for i = 0..FRAME_LF_COUNT-1</p>
-      </li>
-      <li>
-        <p>IntraTxTypeSet1Cdf is set to a copy of Default_Intra_Tx_Type_Set1_Cdf</p>
-      </li>
-      <li>
-        <p>IntraTxTypeSet2Cdf is set to a copy of Default_Intra_Tx_Type_Set2_Cdf</p>
-      </li>
-      <li>
-        <p>InterTxTypeSet1Cdf is set to a copy of Default_Inter_Tx_Type_Set1_Cdf</p>
-      </li>
-      <li>
-        <p>InterTxTypeSet2Cdf is set to a copy of Default_Inter_Tx_Type_Set2_Cdf</p>
-      </li>
-      <li>
-        <p>InterTxTypeSet3Cdf is set to a copy of Default_Inter_Tx_Type_Set3_Cdf</p>
-      </li>
-      <li>
-        <p>UseObmcCdf is set to a copy of Default_Use_Obmc_Cdf</p>
-      </li>
-      <li>
-        <p>InterIntraCdf is set to a copy of Default_Inter_Intra_Cdf</p>
-      </li>
-      <li>
-        <p>CompRefTypeCdf is set to a copy of Default_Comp_Ref_Type_Cdf</p>
-      </li>
-      <li>
-        <p>CflSignCdf is set to a copy of Default_Cfl_Sign_Cdf</p>
-      </li>
-      <li>
-        <p>UniCompRefCdf is set to a copy of Default_Uni_Comp_Ref_Cdf</p>
-      </li>
-      <li>
-        <p>WedgeInterIntraCdf is set to a copy of Default_Wedge_Inter_Intra_Cdf</p>
-      </li>
-      <li>
-        <p>CompGroupIdxCdf is set to a copy of Default_Comp_Group_Idx_Cdf</p>
-      </li>
-      <li>
-        <p>CompoundIdxCdf is set to a copy of Default_Compound_Idx_Cdf</p>
-      </li>
-      <li>
-        <p>CompoundTypeCdf is set to a copy of Default_Compound_Type_Cdf</p>
-      </li>
-      <li>
-        <p>InterIntraModeCdf is set to a copy of Default_Inter_Intra_Mode_Cdf</p>
-      </li>
-      <li>
-        <p>WedgeIndexCdf is set to a copy of Default_Wedge_Index_Cdf</p>
-      </li>
-      <li>
-        <p>CflAlphaCdf is set to a copy of Default_Cfl_Alpha_Cdf</p>
-      </li>
-      <li>
-        <p>UseWienerCdf is set to a copy of Default_Use_Wiener_Cdf</p>
-      </li>
-      <li>
-        <p>UseSgrprojCdf is set to a copy of Default_Use_Sgrproj_Cdf</p>
-      </li>
-      <li>
-        <p>RestorationTypeCdf is set to a copy of Default_Restoration_Type_Cdf</p>
-      </li>
-    </ul>
+  </li>
+  <li>
+    <p>DeltaQCdf is set to a copy of Default_Delta_Q_Cdf</p>
+  </li>
+  <li>
+    <p>DeltaLFCdf is set to a copy of Default_Delta_Lf_Cdf</p>
+  </li>
+  <li>
+    <p>DeltaLFMultiCdf[ i ] is set to a copy of Default_Delta_Lf_Cdf for i = 0..FRAME_LF_COUNT-1</p>
+  </li>
+  <li>
+    <p>IntraTxTypeSet1Cdf is set to a copy of Default_Intra_Tx_Type_Set1_Cdf</p>
+  </li>
+  <li>
+    <p>IntraTxTypeSet2Cdf is set to a copy of Default_Intra_Tx_Type_Set2_Cdf</p>
+  </li>
+  <li>
+    <p>InterTxTypeSet1Cdf is set to a copy of Default_Inter_Tx_Type_Set1_Cdf</p>
+  </li>
+  <li>
+    <p>InterTxTypeSet2Cdf is set to a copy of Default_Inter_Tx_Type_Set2_Cdf</p>
+  </li>
+  <li>
+    <p>InterTxTypeSet3Cdf is set to a copy of Default_Inter_Tx_Type_Set3_Cdf</p>
+  </li>
+  <li>
+    <p>UseObmcCdf is set to a copy of Default_Use_Obmc_Cdf</p>
+  </li>
+  <li>
+    <p>InterIntraCdf is set to a copy of Default_Inter_Intra_Cdf</p>
+  </li>
+  <li>
+    <p>CompRefTypeCdf is set to a copy of Default_Comp_Ref_Type_Cdf</p>
+  </li>
+  <li>
+    <p>CflSignCdf is set to a copy of Default_Cfl_Sign_Cdf</p>
+  </li>
+  <li>
+    <p>UniCompRefCdf is set to a copy of Default_Uni_Comp_Ref_Cdf</p>
+  </li>
+  <li>
+    <p>WedgeInterIntraCdf is set to a copy of Default_Wedge_Inter_Intra_Cdf</p>
+  </li>
+  <li>
+    <p>CompGroupIdxCdf is set to a copy of Default_Comp_Group_Idx_Cdf</p>
+  </li>
+  <li>
+    <p>CompoundIdxCdf is set to a copy of Default_Compound_Idx_Cdf</p>
+  </li>
+  <li>
+    <p>CompoundTypeCdf is set to a copy of Default_Compound_Type_Cdf</p>
+  </li>
+  <li>
+    <p>InterIntraModeCdf is set to a copy of Default_Inter_Intra_Mode_Cdf</p>
+  </li>
+  <li>
+    <p>WedgeIndexCdf is set to a copy of Default_Wedge_Index_Cdf</p>
+  </li>
+  <li>
+    <p>CflAlphaCdf is set to a copy of Default_Cfl_Alpha_Cdf</p>
+  </li>
+  <li>
+    <p>UseWienerCdf is set to a copy of Default_Use_Wiener_Cdf</p>
+  </li>
+  <li>
+    <p>UseSgrprojCdf is set to a copy of Default_Use_Sgrproj_Cdf</p>
+  </li>
+  <li>
+    <p>RestorationTypeCdf is set to a copy of Default_Restoration_Type_Cdf</p>
   </li>
 </ul>
 
@@ -8024,7 +8135,7 @@ is invoked, the following steps apply:</p>
 <p><strong>load_cdfs( ctx )</strong> is a function call that indicates that the CDF tables are
 loaded from frame context number ctx in the range 0 to (NUM_REF_FRAMES - 1).
 When this function is invoked, a copy of each CDF array mentioned in the
-semantics for setup_past_independence is loaded from an area of memory indexed
+semantics for init_coeff_cdfs and init_non_coeff_cdfs is loaded from an area of memory indexed
 by ctx. (The memory contents of these frame contexts have been initialized by
 previous calls to save_cdfs).  Once the CDF arrays have been loaded, the last entry
 in each array is set to 0.</p>
@@ -8048,7 +8159,7 @@ SavedSegmentIds[ prevFrame ][ row ][ col ] for row = 0..MiRows-1, for col = 0..M
     <p>Otherwise, PrevSegmentIds[ row ][ col ] is set equal to 0 for row = 0..MiRows-1, for col = 0..MiCols-1.</p>
   </li>
   <li>
-    <p>If can_use_previous is equal to 1, the motion field estimation process in <a href="#motion-field-estimation-process">section 7.7</a> is invoked.</p>
+    <p>If can_use_previous is equal to 1, the motion field estimation process in <a href="#motion-field-estimation-process">section 7.8</a> is invoked.</p>
   </li>
 </ol>
 
@@ -8105,9 +8216,9 @@ is a requirement of bitstream conformance that for all values of i in
 the range 0..(REFS_PER_FRAME - 1), all the following conditions are true:</p>
 
 <ul>
-  <li>2 * FrameWidth &gt;= RefFrameWidth[ ref_frame_idx[ i ] ]</li>
+  <li>2 * FrameWidth &gt;= RefUpscaledWidth[ ref_frame_idx[ i ] ]</li>
   <li>2 * FrameHeight &gt;= RefFrameHeight[ ref_frame_idx[ i ] ]</li>
-  <li>FrameWidth &lt;= 16 * RefFrameWidth[ ref_frame_idx[ i ] ]</li>
+  <li>FrameWidth &lt;= 16 * RefUpscaledWidth[ ref_frame_idx[ i ] ]</li>
   <li>FrameHeight &lt;= 16 * RefFrameHeight[ ref_frame_idx[ i ] ]</li>
 </ul>
 
@@ -8180,7 +8291,7 @@ filtered, and the edge direction (vertical or horizontal) being filtered.</p>
 and loop_filter_sharpness together determine when a block edge is filtered, and
 by how much the filtering can change the sample values.</p>
 
-<p>The loop filter process is described in <a href="#loop-filter-process">section 7.12</a>.</p>
+<p>The loop filter process is described in <a href="#loop-filter-process">section 7.13</a>.</p>
 
 <p><strong>loop_filter_delta_enabled</strong> equal to 1 means that the filter level depends on
 the mode and reference frame used to predict a block. loop_filter_delta_enabled
@@ -8218,7 +8329,7 @@ previous frame.</p>
 <p>The residual is specified via decoded coefficients which are adjusted by one of
 four quantization parameters before the inverse transform is applied. The
 choice depends on the plane (Y or UV) and coefficient position (DC/AC
-coefficient). The Dequantization process is specified in <a href="#reconstruction-and-dequantization">section 7.10</a>.</p>
+coefficient). The Dequantization process is specified in <a href="#reconstruction-and-dequantization">section 7.11</a>.</p>
 
 <p><strong>base_q_idx</strong> indicates the base frame qindex. This is used for Y AC
 coefficients and as the base value for the other quantizers.</p>
@@ -8632,6 +8743,13 @@ blocks may contain the syntax element compound_type. allow_masked_compound equal
 to 0 specifies that the syntax element compound_type will not be present in this
 frame.</p>
 
+<h3 id="frame-obu-semantics">Frame OBU Semantics</h3>
+
+<p>A frame OBU consists of a frame header OBU and a tile group OBU packed into a single OBU.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> The intention is to provide a more compact way of coding the common use case where
+the frame header is immediately followed by tile group data.</p>
+
 <h3 id="tile-group-obu-semantics">Tile Group OBU Semantics</h3>
 
 <p><strong>NumTiles</strong> specifies the total number of tiles in the frame.</p>
@@ -8659,7 +8777,7 @@ received in order for the purposes of specifying the decode process.</p>
 
 <p><strong>update_cdf</strong> is a function call that indicates that the CDF arrays are set
 equal to the final CDFs at the end of the largest tile (measured in bytes). This process is
-described in <a href="#cdf-update-process">section 7.5</a>.</p>
+described in <a href="#cdf-update-process">section 7.6</a>.</p>
 
 <p><strong>tile_size</strong> specifies the size in bytes of the next coded tile.</p>
 
@@ -8668,7 +8786,7 @@ Boolean decoder. The size does not include the bytes used for tile_group_obu,
 trailing_bits, and tile_size.</p>
 
 <p><strong>decode_frame</strong> is a function call that indicates that the decode frame process
-specified in <a href="#decode-frame-process">section 7.2</a> should be invoked.</p>
+specified in <a href="#decode-frame-process">section 7.3</a> should be invoked.</p>
 
 <h4 id="decode-tile-semantics">Decode Tile Semantics</h4>
 
@@ -10125,11 +10243,11 @@ difference.</p>
 
 <p><strong>predict_intra</strong> is a function call that indicates the conceptual point where
 intra prediction happens. When this function is called, the intra prediction
-process specified in <a href="#intra-prediction-process">section 7.9.1</a> is invoked.</p>
+process specified in <a href="#intra-prediction-process">section 7.10.1</a> is invoked.</p>
 
 <p><strong>predict_inter</strong> is a function call that indicates the conceptual point where
 inter prediction happens. When this function is called, the inter prediction
-process specified in <a href="#inter-prediction-process">section 7.9.2</a> is invoked.</p>
+process specified in <a href="#inter-prediction-process">section 7.10.2</a> is invoked.</p>
 
 <p><strong>predW</strong> and <strong>predH</strong> are variables containing the smallest size that can be used for
 inter prediction.
@@ -10151,7 +10269,7 @@ a smaller block size for each of the corresponding luma blocks.</p>
 
 <p><strong>predict_palette</strong> is a function call that indicates the conceptual point where
 palette prediction happens. When this function is called, the palette prediction
-process specified in <a href="#palette-prediction-process">section 7.9.3</a> is invoked.</p>
+process specified in <a href="#palette-prediction-process">section 7.10.3</a> is invoked.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The predict_inter, predict_intra, predict_palette, and
 predict_chroma_from_luma functions do not affect the syntax
@@ -10161,11 +10279,11 @@ decode process.</p>
 
 <p><strong>reconstruct</strong> is a function call that indicates the conceptual point where
 inverse transform and reconstruction happens. When this function is called,
-the reconstruction process specified in <a href="#reconstruct-process">section 7.10.2</a> is invoked.</p>
+the reconstruction process specified in <a href="#reconstruct-process">section 7.11.2</a> is invoked.</p>
 
 <p><strong>predict_chroma_from_luma</strong> is a function call that indicates the conceptual
 point where predicting chroma from luma happens. When this function is called,
-the predict chroma from luma process specified in <a href="#predict-chroma-from-luma-process">section 7.9.4</a> is invoked.</p>
+the predict chroma from luma process specified in <a href="#predict-chroma-from-luma-process">section 7.10.4</a> is invoked.</p>
 
 <p><strong>MaxLumaW</strong> and <strong>MaxLumaH</strong> are needed for chroma from luma prediction and
 store the extent of luma pixels that can be used for prediction.</p>
@@ -10384,7 +10502,22 @@ than mk+a-1.</p>
 
 <h2 id="decoding-process">Decoding Process</h2>
 
-<h3 id="general">General</h3>
+<p>AV1 contains two operating modes:</p>
+
+<ol>
+  <li>
+    <p>General decoding (input is a sequence of OBUs, output is displayed frames)</p>
+  </li>
+  <li>
+    <p>Large scale tile decoding (input is data for a specific tile, output is content of just that tile)</p>
+  </li>
+</ol>
+
+<p>The general decoding process is specified in <a href="#general-decoding-process">section 7.1</a>.</p>
+
+<p>The large scale tile coding process is specified in <a href="#large-scale-tile-decoding-process">section 7.2</a>.</p>
+
+<h3 id="general-decoding-process">General Decoding Process</h3>
 
 <p>Decoders shall produce output frames that are identical in all respects and have the same output order as
 those produced by the decoding process specified herein.</p>
@@ -10395,7 +10528,167 @@ those produced by the decoding process specified herein.</p>
 
 <p>For each OBU in turn the syntax elements are extracted as specified in <a href="#obu-syntax">section 5.1</a>.</p>
 
-<p>The syntax tables include function calls indicating when the remaining block decode processes are triggered.</p>
+<p>The syntax tables include function calls indicating when the remaining decode processes are triggered.</p>
+
+<h3 id="large-scale-tile-decoding-process">Large Scale Tile Decoding Process</h3>
+
+<p>The large scale tile decoding process allows a decoder to extract only an interesting section in a frame without the
+need to decompress the entire frame, which helps reduce decoder complexity.</p>
+
+<p>This feature is extremely useful for VR applications (e.g. light fields), which renders a single section of the frame following
+the viewers’s head movement.</p>
+
+<p>One expected use case will have a mixture of anchor frames and camera frames.
+Anchor frames can be decoded with the general decoding process, while camera frames are decoded with the large scale tile decoding process.
+The entire light field at a particular time will be represented by a small number of anchor frames (representing the view from a particular viewing position and gaze direction), plus a larger number of camera frames (representing the view from a larger number of positions and directions near to the anchor frame).
+Depending on the viewer’s head position and direction, the application will first decode the whole of an anchor frame, and then just the portions of the camera frame that are required to generate the viewable part of the display.</p>
+
+<p>The format of the container format for such applications is outside the scope of this specification.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> The reference decoder implements a particular way of sending a modified frame header and sizes
+that allow the required tiles to be efficiently retrieved.
+This format may be useful for conformance testing purposes, but these modifications are not specified as part of the normative
+decoding process and may change in the future.</p>
+
+<p>The aim of this process is to define a small set of requirements on a decoder implementation that will ensure that a compliant decoder will
+be able to support such use cases.</p>
+
+<p>The input to this process are:</p>
+
+<ul>
+  <li>
+    <p>contents of all syntax elements and variables normally produced when parsing a sequence header OBU,</p>
+  </li>
+  <li>
+    <p>contents of all syntax elements and variables normally produced when parsing a frame header OBU,</p>
+  </li>
+  <li>
+    <p>contents of all the values normally stored by the reference frame update process specified in <a href="#reference-frame-update-process">section 7.19</a>,</p>
+  </li>
+  <li>
+    <p>a bitstream corresponding to the tile data for a single tile,</p>
+  </li>
+  <li>
+    <p>a variable tileWidth representing the width of the tile in super blocks,</p>
+  </li>
+  <li>
+    <p>a variable tileHeight representing the height of the tile in super blocks,</p>
+  </li>
+  <li>
+    <p>variables startRowSb and startColSb specifying the top-left location of the tile in units of superblocks,</p>
+  </li>
+  <li>
+    <p>A variable tileBytes representing the size in bytes of the tile data.</p>
+  </li>
+</ul>
+
+<p>The output of this process is the decoded samples for the tile.</p>
+
+<p>Decoders shall produce output samples that are identical in all respects as
+those produced by this decoding process.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> In large scale tile decoding, the decode process is defined for one tile at a time.
+The expectation is that the reference buffers have been produced using the general decoding process,
+but this is not a normative requirement and applications can choose to provide the reference buffers
+in alternative manners as well.</p>
+
+<p>It is a requirement of bitstream conformance that the following conditions are met:</p>
+
+<ul>
+  <li>
+    <p>can_use_previous is equal to 0</p>
+  </li>
+  <li>
+    <p>disable_frame_end_update_cdf is equal to 1</p>
+  </li>
+  <li>
+    <p>dependent_tiles is equal to 0</p>
+  </li>
+  <li>
+    <p>FrameRestorationType[ plane ] is equal to RESTORE_NONE for plane equal to 0,1, and 2</p>
+  </li>
+  <li>
+    <p>cdef_bits is equal to 0</p>
+  </li>
+  <li>
+    <p>delta_lf_present is equal to 0</p>
+  </li>
+</ul>
+
+<p class="alert alert-info"><strong>Note:</strong> The decoding process defined here does not invoke the normal post-processing steps of deblock, cdef, superres, loop restoration and reference buffer update.  Implementations may choose to implement this process by using the general decode process with these tools disabled.</p>
+
+<p>The process is specified as:</p>
+
+<pre><code class="language-c">init_bool( tileBytes )
+clear_above_context( )
+sbSize = use_128x128_superblock ? BLOCK_128X128 : BLOCK_64X64
+sbSize4 = Num_4x4_Blocks_Wide[ sbSize ]
+MiColStart = startColSb * sbSize4
+MiColEnd = Min( MiCols, MiColStart + tileWidth * sbSize4 )
+MiRowStart = startRowSb * sbSize4
+MiRowEnd = Min( MiRows, MiRowStart + tileHeight * sbSize4 )
+for ( r = MiRowStart; r &lt; MiRowEnd; r += sbSize4 ) {
+    clear_left_context( )
+    for ( c = MiColStart; c &lt; MiColEnd; c += sbSize4 ) {
+        ReadDeltas = delta_q_present
+        clear_block_decoded_flags( c &lt; ( MiColEnd - 1 ) )
+        decode_partition( r, c, sbSize )
+    }
+}
+exit_bool( )
+w = (MiColEnd - MiColStart) * MI_SIZE
+h = (MiRowEnd - MiRowStart) * MI_SIZE
+x0 = MiColStart * MI_SIZE
+y0 = MiRowStart * MI_SIZE
+subX = subsampling_x
+subY = subsampling_y
+xC0 = MiColStart * MI_SIZE ) &gt;&gt; subX
+yC0 = MiRowStart * MI_SIZE ) &gt;&gt; subY
+</code></pre>
+
+<p class="alert alert-info"><strong>Note:</strong> The intention is that the same decoding process for tile data
+can be used as for the general decoding process.</p>
+
+<p>It is a requirement of bitstream conformance that:</p>
+
+<ul>
+  <li>
+    <p>w is less than or equal to 4096</p>
+  </li>
+  <li>
+    <p>h is less than or equal to 4096</p>
+  </li>
+  <li>
+    <p>at most 512 tiles are decoded for each frame (the frame may include more than 512 tiles, but at most 512 will be required for each render from a single frame)</p>
+  </li>
+</ul>
+
+<p>Arrays OutY, OutU, OutV (presenting the decoded samples for the tile) are specified as:</p>
+
+<ul>
+  <li>
+    <p>The array OutY is w samples across by h samples down and the sample at
+location x samples across and y samples down is given by
+OutY[ y ][ x ] = CurrFrame[ 0 ][ y0 + y ][ x0 + x ] with x = 0..w - 1 and y = 0..h - 1.</p>
+  </li>
+  <li>
+    <p>The array OutU is (w + subX) &gt;&gt; subX samples across by (h + subY) &gt;&gt; subY
+samples down and the sample at location x samples across and y samples
+down is given by OutU[ y ][ x ] = CurrFrame[ 1 ][ yC0 + y ][ xC0 + x ]
+with x = 0..(w &gt;&gt; subX) - 1 and y = 0..(h &gt;&gt; subY) - 1.</p>
+  </li>
+  <li>
+    <p>The array OutV is (w + subX) &gt;&gt; subX samples across by (h + subY) &gt;&gt; subY
+samples down and the sample at location x samples across and y samples
+down is given by OutV[ y ][ x ] = CurrFrame[ 2 ][ yC0 + y ][ xC0 + x ]
+with x = 0..(w &gt;&gt; subX) - 1 and y = 0..(h &gt;&gt; subY) - 1.</p>
+  </li>
+</ul>
+
+<p>If monochrome is equal to 0, the output of this process is arrays OutY, OutU, OutV representing the Y, U, and V samples.
+Otherwise (monochrome is equal to 1), the output of this process is array OutY.</p>
+
+<p>The bitdepth of each output sample is given by BitDepth.</p>
 
 <h3 id="decode-frame-process">Decode Frame Process</h3>
 
@@ -10406,30 +10699,40 @@ those produced by the decoding process specified herein.</p>
 <ol>
   <li>
     <p>If loop_filter_level[ 0 ] is not equal to 0 or loop_filter_level[ 1 ] is not equal to 0, the loop
-filter process specified in <a href="#loop-filter-process">section 7.12</a> is invoked (this process modifies the contents of CurrFrame).</p>
+filter process specified in <a href="#loop-filter-process">section 7.13</a> is invoked (this process modifies the contents of CurrFrame).</p>
   </li>
   <li>
-    <p>The CDEF process specified in <a href="#cdef-process">section 7.13</a> is invoked (this process takes CurrFrame and produces CdefFrame).</p>
+    <p>The CDEF process specified in <a href="#cdef-process">section 7.14</a> is invoked (this process takes CurrFrame and produces CdefFrame).</p>
   </li>
   <li>
-    <p>The upscaling process specified in <a href="#upscaling-process">section 7.14</a> is invoked with CdefFrame as input and the output is assigned to UpscaledCdefFrame.</p>
+    <p>The upscaling process specified in <a href="#upscaling-process">section 7.15</a> is invoked with CdefFrame as input and the output is assigned to UpscaledCdefFrame.</p>
   </li>
   <li>
-    <p>The upscaling process specified in <a href="#upscaling-process">section 7.14</a> is invoked with CurrFrame as input and the output is assigned to UpscaledCurrFrame.</p>
+    <p>The upscaling process specified in <a href="#upscaling-process">section 7.15</a> is invoked with CurrFrame as input and the output is assigned to UpscaledCurrFrame.</p>
   </li>
   <li>
-    <p>The loop restoration process specified in <a href="#loop-restoration-process">section 7.15</a> is invoked (this process takes UpscaledCurrFrame and UpscaledCdefFrame and produces LrFrame).</p>
+    <p>The loop restoration process specified in <a href="#loop-restoration-process">section 7.16</a> is invoked (this process takes UpscaledCurrFrame and UpscaledCdefFrame and produces LrFrame).</p>
   </li>
   <li>
-    <p>The reference frame update process as specified in <a href="#reference-frame-update-process">section 7.17</a> is
-invoked (this process saves LrFrame into the reference buffers).</p>
-  </li>
-  <li>
-    <p>If show_frame is equal to 1, the output process as specified in <a href="#output-process">section 7.16</a> is invoked (this will display a frame based on LrFrame).</p>
+    <p>The motion field motion vector storage process specified in <a href="#motion-field-motion-vector-storage-process">section 7.18</a> is invoked.</p>
   </li>
 </ol>
 
-<p>Otherwise (show_existing_frame is equal to 1), the output process as specified in <a href="#output-process">section 7.16</a> is invoked (this will display a frame based on a previously decoded frame).</p>
+<p>Otherwise (show_existing_frame is equal to 1), if frame_type is equal to KEY_FRAME, the reference frame loading process as specified in <a href="#reference-frame-loading-process">section 7.20</a>
+is invoked (this process loads frame state from the reference buffers into the current frame state variables).</p>
+
+<p>The following ordered steps now apply:</p>
+
+<ol>
+  <li>
+    <p>The reference frame update process as specified in <a href="#reference-frame-update-process">section 7.19</a> is
+invoked (this process saves the current frame state into the reference buffers).</p>
+  </li>
+  <li>
+    <p>If show_frame is equal to 1 or show_existing_frame is equal to 1, the output process as specified in <a href="#output-process">section 7.17</a> is invoked (this will display the
+current frame or a saved frame).</p>
+  </li>
+</ol>
 
 <p class="alert alert-info"><strong>Note:</strong> Although it is specified that all samples in CurrFrame are upscaled, at most 2 lines above and below each stripe
 (defined by StripeStartY and StripeEndY) will end up being read.
@@ -10506,7 +10809,7 @@ the tile group syntax table.</p>
 <p>The frame CDF arrays are set equal to the final tile CDF arrays for the largest tile (measured in bytes) as follows.</p>
 
 <p>A copy is made of the saved CDF values for each of the
-CDF arrays mentioned in the semantics for setup_past_independence. 
+CDF arrays mentioned in the semantics for init_coeff_cdfs and init_non_coeff_cdfs. 
 The name of the destination for the copy is the name of the CDF array
 with no prefix.  The name of the source for the copy is the name of the CDF array
 prefixed with “Saved”.
@@ -10533,6 +10836,7 @@ ref_frame_idx[ GOLDEN_FRAME - LAST_FRAME ] = gold_frame_idx
 </code></pre>
 
 <p>An array usedFrame marking which reference frames have been used is prepared as follows:</p>
+
 <pre><code class="language-c">for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
   usedFrame[ i ] = 0
 usedFrame[ last_frame_idx ] = 1
@@ -10633,7 +10937,7 @@ if ( ref &gt;= 0 ) {
 
 <pre><code class="language-c">find_latest_forward() {
   ref = -1
-  for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
+  for ( i = 0; i &lt; NUM_REF_FRAMES; i++ ) {
     hint = RefOrderHint[ i ]
     if ( !usedFrame[ i ] &amp;&amp; 
          hint &lt; OrderHint &amp;&amp;
@@ -10707,7 +11011,7 @@ to an invalid motion vector of -32768, -32768 as follows:</p>
 
 <p>The variable useLast (representing whether to project the motion vectors from LAST_FRAME) is set equal to ( lastAltOrderHint != curGoldOrderHint ).</p>
 
-<p>If useLast is equal to 1, the projection process in <a href="#projection-process">section 7.7.1</a> is invoked with src equal to LAST_FRAME, dir equal to 0, offsetSign equal to 1, and refStamp also passed as an input.
+<p>If useLast is equal to 1, the projection process in <a href="#projection-process">section 7.8.1</a> is invoked with src equal to LAST_FRAME, dir equal to 0, offsetSign equal to 1, and refStamp also passed as an input.
 (The output of this process is discarded.)</p>
 
 <p>The variable refStamp is set equal to MFMV_STACK_SIZE - 2.</p>
@@ -10720,7 +11024,7 @@ to an invalid motion vector of -32768, -32768 as follows:</p>
 
 <ul>
   <li>
-    <p>The projection process in <a href="#projection-process">section 7.7.1</a> is invoked with src equal to BWDREF_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, and
+    <p>The projection process in <a href="#projection-process">section 7.8.1</a> is invoked with src equal to BWDREF_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, and
 the output assigned to projOutput.</p>
   </li>
   <li>
@@ -10734,7 +11038,7 @@ the output assigned to projOutput.</p>
 
 <ul>
   <li>
-    <p>The projection process in <a href="#projection-process">section 7.7.1</a> is invoked with src equal to ALTREF2_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, and
+    <p>The projection process in <a href="#projection-process">section 7.8.1</a> is invoked with src equal to ALTREF2_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, and
 the output assigned to projOutput.</p>
   </li>
   <li>
@@ -10748,7 +11052,7 @@ the output assigned to projOutput.</p>
 
 <ul>
   <li>
-    <p>The projection process in <a href="#projection-process">section 7.7.1</a> is invoked with src equal to ALTREF_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, 
+    <p>The projection process in <a href="#projection-process">section 7.8.1</a> is invoked with src equal to ALTREF_FRAME, dir equal to 0, offsetSign equal to 0, and refStamp also passed as an input, 
 and the output assigned to projOutput.</p>
   </li>
   <li>
@@ -10756,7 +11060,7 @@ and the output assigned to projOutput.</p>
   </li>
 </ul>
 
-<p>If OrderHints[ LAST2_FRAME ] is greater than or equal to 0 and (refStamp &gt;= 0), the projection process in <a href="#projection-process">section 7.7.1</a> is invoked with
+<p>If OrderHints[ LAST2_FRAME ] is greater than or equal to 0 and (refStamp &gt;= 0), the projection process in <a href="#projection-process">section 7.8.1</a> is invoked with
 src equal to LAST2_FRAME, dir equal to 0, offsetSign equal to 1, and refStamp also passed as an input. (The output of this process is discarded.)</p>
 
 <h4 id="projection-process">Projection Process</h4>
@@ -10792,7 +11096,7 @@ src equal to LAST2_FRAME, dir equal to 0, offsetSign equal to 1, and refStamp al
 
 <p>The variable dstSign is set equal to ( dir == 0 &amp;&amp; offsetSign == 0 ) ? 1 : -1.</p>
 
-<p>If RefMiRows[ srcIdx ] is not equal to MiRows, RefMiCols[ srcIdx ] is not equal to MiCols, or RefFrameIsIntra[ srcIdx ] is equal to 1, the process exits
+<p>If RefMiRows[ srcIdx ] is not equal to MiRows, RefMiCols[ srcIdx ] is not equal to MiCols, or RefFrameType[ srcIdx ] is equal to INTRA_ONLY or KEY_FRAME, the process exits
 at this point, with the output set equal to 0.</p>
 
 <p>The process is specified as follows:</p>
@@ -10821,9 +11125,9 @@ at this point, with the output set equal to 0.</p>
 }
 </code></pre>
 
-<p>When the function get_mv_projection is called, the get mv projection process specified in <a href="#get-mv-projection-process">section 7.7.2</a> is invoked and the output assigned to projMv.</p>
+<p>When the function get_mv_projection is called, the get mv projection process specified in <a href="#get-mv-projection-process">section 7.8.2</a> is invoked and the output assigned to projMv.</p>
 
-<p>When the function get_block_position is called, the get block position process specified in <a href="#get-block-position-process">section 7.7.3</a> is invoked and the output assigned to posValid.
+<p>When the function get_block_position is called, the get block position process specified in <a href="#get-block-position-process">section 7.8.3</a> is invoked and the output assigned to posValid.
 This process also sets up the variables PosY8 and PosX8 representing the projected location in the motion field.</p>
 
 <p>The process now exits with the output set equal to 1.</p>
@@ -10950,8 +11254,8 @@ need to be projected.</p>
 <p>The following sections define the processes used for predicting the motion vectors.</p>
 
 <p>The entry point to these processes is triggered by the function call to find_mv_stack
-in the inter block mode info syntax described in <a href="#inter-block-mode-info-syntax">section 5.8.22</a>.
-This function call invokes the Find MV Stack Process specified in <a href="#find-mv-stack-process">section 7.8.1</a>.</p>
+in the inter block mode info syntax described in <a href="#inter-block-mode-info-syntax">section 5.9.22</a>.
+This function call invokes the Find MV Stack Process specified in <a href="#find-mv-stack-process">section 7.9.1</a>.</p>
 
 <h4 id="find-mv-stack-process">Find MV Stack Process</h4>
 
@@ -10981,28 +11285,28 @@ RefStackMv[ idx ][ list ][ comp ] represents component comp (0 for y or 1 for x)
     <p>The variable NewMvFound (representing a candidate is found that used NEWMV encoding) is set equal to 0.</p>
   </li>
   <li>
-    <p>The setup zero mv process specified in <a href="#setup-zero-mv-process">section 7.8.1.1</a> is invoked with the input 0 and the output is assigned to ZeroMvs[ 0 ].</p>
+    <p>The setup zero mv process specified in <a href="#setup-zero-mv-process">section 7.9.1.1</a> is invoked with the input 0 and the output is assigned to ZeroMvs[ 0 ].</p>
   </li>
   <li>
-    <p>If isCompound is equal to 1, the setup zero mv process specified in <a href="#setup-zero-mv-process">section 7.8.1.1</a> is invoked with the input 1 and the output is assigned to ZeroMvs[ 1 ].</p>
+    <p>If isCompound is equal to 1, the setup zero mv process specified in <a href="#setup-zero-mv-process">section 7.9.1.1</a> is invoked with the input 1 and the output is assigned to ZeroMvs[ 1 ].</p>
   </li>
   <li>
     <p>The variable FoundMatch is set equal to 0.</p>
   </li>
   <li>
-    <p>The scan row process in <a href="#scan-row-process">section 7.8.1.2</a> is invoked with deltaRow equal to -1 and isCompound as inputs.</p>
+    <p>The scan row process in <a href="#scan-row-process">section 7.9.1.2</a> is invoked with deltaRow equal to -1 and isCompound as inputs.</p>
   </li>
   <li>
     <p>The variable foundAboveMatch is set equal to FoundMatch, and FoundMatch is set equal to 0.</p>
   </li>
   <li>
-    <p>The scan col process in <a href="#scan-col-process">section 7.8.1.3</a> is invoked with deltaCol equal to -1 and isCompound as inputs.</p>
+    <p>The scan col process in <a href="#scan-col-process">section 7.9.1.3</a> is invoked with deltaCol equal to -1 and isCompound as inputs.</p>
   </li>
   <li>
     <p>The variable foundLeftMatch is set equal to FoundMatch, and FoundMatch is set equal to 0.</p>
   </li>
   <li>
-    <p>If Max( bw4, bh4 ) is less than or equal to 16, the scan point process in <a href="#scan-point-process">section 7.8.1.4</a> is invoked with deltaRow equal to -1, deltaCol equal to
+    <p>If Max( bw4, bh4 ) is less than or equal to 16, the scan point process in <a href="#scan-point-process">section 7.9.1.4</a> is invoked with deltaRow equal to -1, deltaCol equal to
 bw4, and isCompound as inputs.</p>
   </li>
   <li>
@@ -11025,19 +11329,10 @@ bw4, and isCompound as inputs.</p>
   </li>
   <li>
     <p>If can_use_previous is equal to 1,
-the temporal scan process in <a href="#temporal-scan-process">section 7.8.1.5</a> is invoked with isCompound as input (the temporal scan process affects ZeroMvContext).</p>
+the temporal scan process in <a href="#temporal-scan-process">section 7.9.1.5</a> is invoked with isCompound as input (the temporal scan process affects ZeroMvContext).</p>
   </li>
   <li>
-    <p>The scan point process in <a href="#scan-point-process">section 7.8.1.4</a> is invoked with deltaRow equal to -1, deltaCol equal to -1, and isCompound as inputs.</p>
-  </li>
-  <li>
-    <p>If FoundMatch is equal to 1, the variable foundAboveMatch is set equal to 1.</p>
-  </li>
-  <li>
-    <p>The variable FoundMatch is set equal to 0.</p>
-  </li>
-  <li>
-    <p>The scan row process in <a href="#scan-row-process">section 7.8.1.2</a> is invoked with deltaRow equal to -3 and isCompound as inputs.</p>
+    <p>The scan point process in <a href="#scan-point-process">section 7.9.1.4</a> is invoked with deltaRow equal to -1, deltaCol equal to -1, and isCompound as inputs.</p>
   </li>
   <li>
     <p>If FoundMatch is equal to 1, the variable foundAboveMatch is set equal to 1.</p>
@@ -11046,7 +11341,16 @@ the temporal scan process in <a href="#temporal-scan-process">section 7.8.1.5</a
     <p>The variable FoundMatch is set equal to 0.</p>
   </li>
   <li>
-    <p>The scan col process in <a href="#scan-col-process">section 7.8.1.3</a> is invoked with deltaCol equal to -3 and isCompound as inputs.</p>
+    <p>The scan row process in <a href="#scan-row-process">section 7.9.1.2</a> is invoked with deltaRow equal to -3 and isCompound as inputs.</p>
+  </li>
+  <li>
+    <p>If FoundMatch is equal to 1, the variable foundAboveMatch is set equal to 1.</p>
+  </li>
+  <li>
+    <p>The variable FoundMatch is set equal to 0.</p>
+  </li>
+  <li>
+    <p>The scan col process in <a href="#scan-col-process">section 7.9.1.3</a> is invoked with deltaCol equal to -3 and isCompound as inputs.</p>
   </li>
   <li>
     <p>If FoundMatch is equal to 1, the variable foundLeftMatch is set equal to 1.</p>
@@ -11055,16 +11359,16 @@ the temporal scan process in <a href="#temporal-scan-process">section 7.8.1.5</a
     <p>The variable FoundMatch is set equal to 0.</p>
   </li>
   <li>
-    <p>If bh4 is greater than 1, the scan row process in <a href="#scan-row-process">section 7.8.1.2</a> is invoked with deltaRow equal to -5 and isCompound as inputs.</p>
+    <p>If bh4 is greater than 1, the scan row process in <a href="#scan-row-process">section 7.9.1.2</a> is invoked with deltaRow equal to -5 and isCompound as inputs.</p>
   </li>
   <li>
     <p>If FoundMatch is equal to 1, the variable foundAboveMatch is set equal to 1.</p>
   </li>
   <li>
-    <p>The variable Found Match is set equal to 0.</p>
+    <p>The variable FoundMatch is set equal to 0.</p>
   </li>
   <li>
-    <p>If bw4 is greater than 1, the scan col process in <a href="#scan-col-process">section 7.8.1.3</a> is invoked with deltaCol equal to -5 and isCompound as inputs.</p>
+    <p>If bw4 is greater than 1, the scan col process in <a href="#scan-col-process">section 7.9.1.3</a> is invoked with deltaCol equal to -5 and isCompound as inputs.</p>
   </li>
   <li>
     <p>If FoundMatch is equal to 1, the variable foundLeftMatch is set equal to 1.</p>
@@ -11073,16 +11377,16 @@ the temporal scan process in <a href="#temporal-scan-process">section 7.8.1.5</a
     <p>The variable TotalMatches (representing all found candidates) is set equal to foundAboveMatch + foundLeftMatch.</p>
   </li>
   <li>
-    <p>The sorting process in <a href="#sorting-process">section 7.8.1.11</a> is invoked with start equal to 0 and end equal to numNearest.</p>
+    <p>The sorting process in <a href="#sorting-process">section 7.9.1.11</a> is invoked with start equal to 0 and end equal to numNearest.</p>
   </li>
   <li>
-    <p>The sorting process in <a href="#sorting-process">section 7.8.1.11</a> is invoked with start equal to numNearest and end equal to NumMvFound.</p>
+    <p>The sorting process in <a href="#sorting-process">section 7.9.1.11</a> is invoked with start equal to numNearest and end equal to NumMvFound.</p>
   </li>
   <li>
-    <p>If NumMvFound is less than 2, the extra search process in <a href="#extra-search-process">section 7.8.1.12</a> is invoked with isCompound as input.</p>
+    <p>If NumMvFound is less than 2, the extra search process in <a href="#extra-search-process">section 7.9.1.12</a> is invoked with isCompound as input.</p>
   </li>
   <li>
-    <p>The context and clamping process in <a href="#context-and-clamping-process">section 7.8.1.14</a> is invoked with isCompound, and numNew as input.</p>
+    <p>The context and clamping process in <a href="#context-and-clamping-process">section 7.9.1.14</a> is invoked with isCompound and numNew as input.</p>
   </li>
 </ol>
 
@@ -11128,7 +11432,7 @@ the temporal scan process in <a href="#temporal-scan-process">section 7.8.1.5</a
 lower_mv_precision( mv )
 </code></pre>
 
-<p>where the call to lower_mv_precision invokes the lower precision process specified in <a href="#lower-precision-process">section 7.8.1.10</a>.</p>
+<p>where the call to lower_mv_precision invokes the lower precision process specified in <a href="#lower-precision-process">section 7.9.1.10</a>.</p>
 
 <h5 id="scan-row-process">Scan Row Process</h5>
 
@@ -11192,7 +11496,7 @@ while ( i &lt; end4 ) {
 }
 </code></pre>
 
-<p>where the call to add_ref_mv_candidate invokes the process in <a href="#add-reference-motion-vector-process">section 7.8.1.7</a>.</p>
+<p>where the call to add_ref_mv_candidate invokes the process in <a href="#add-reference-motion-vector-process">section 7.9.1.7</a>.</p>
 
 <h5 id="scan-col-process">Scan Col Process</h5>
 
@@ -11239,7 +11543,7 @@ while ( i &lt; end4 ) {
 }
 </code></pre>
 
-<p>where the call to add_ref_mv_candidate invokes the process in <a href="#add-reference-motion-vector-process">section 7.8.1.7</a>.</p>
+<p>where the call to add_ref_mv_candidate invokes the process in <a href="#add-reference-motion-vector-process">section 7.9.1.7</a>.</p>
 
 <h5 id="scan-point-process">Scan Point Process</h5>
 
@@ -11265,7 +11569,7 @@ while ( i &lt; end4 ) {
 
 <p>If is_inside( mvRow, mvCol ) is equal to 1
 and RefFrames[ mvRow ][ mvCol ][ 0 ] has been written for this frame (this checks that the candidate location has been decoded),
-the add reference motion vector process in <a href="#add-reference-motion-vector-process">section 7.8.1.7</a> is invoked with mvRow, mvCol, isCompound, len as inputs.</p>
+the add reference motion vector process in <a href="#add-reference-motion-vector-process">section 7.9.1.7</a> is invoked with mvRow, mvCol, isCompound, len as inputs.</p>
 
 <h5 id="temporal-scan-process">Temporal Scan Process</h5>
 
@@ -11290,7 +11594,7 @@ the add reference motion vector process in <a href="#add-reference-motion-vector
 }
 </code></pre>
 
-<p>where the call to add_tpl_ref_mv invokes the temporal sample process in <a href="#temporal-sample-process">section 7.8.1.6</a>.</p>
+<p>where the call to add_tpl_ref_mv invokes the temporal sample process in <a href="#temporal-sample-process">section 7.9.1.6</a>.</p>
 
 <p>If bh4 is less than 2 or bw4 is less than 2, the process exits at this point.</p>
 
@@ -11420,7 +11724,7 @@ if ( deltaRow == 0 &amp;&amp; deltaCol == 0 ) {
 }
 </code></pre>
 
-<p>where the call to lower_mv_precision invokes the lower precision process specified in <a href="#lower-precision-process">section 7.8.1.10</a>.</p>
+<p>where the call to lower_mv_precision invokes the lower precision process specified in <a href="#lower-precision-process">section 7.9.1.10</a>.</p>
 
 <h5 id="add-reference-motion-vector-process">Add Reference Motion Vector Process</h5>
 
@@ -11445,14 +11749,14 @@ if ( deltaRow == 0 &amp;&amp; deltaCol == 0 ) {
 <p>If isCompound is equal to 0, the following applies for candList = 0..1:</p>
 
 <ol>
-  <li>If RefFrames[ mvRow ][ mvCol ][ candList ] is equal to RefFrame[ 0 ], the search stack process in <a href="#search-stack-process">section 7.8.1.8</a> is invoked with mvRow, mvCol, len, candList as inputs.</li>
+  <li>If RefFrames[ mvRow ][ mvCol ][ candList ] is equal to RefFrame[ 0 ], the search stack process in <a href="#search-stack-process">section 7.9.1.8</a> is invoked with mvRow, mvCol, len, and candList as inputs.</li>
 </ol>
 
 <p>Otherwise (isCompound is equal to 1), the following applies:</p>
 
 <ol>
   <li>If RefFrames[ mvRow ][ mvCol ][ 0 ] is equal to RefFrame[ 0 ] and RefFrames[ mvRow ][ mvCol ][ 1 ] is equal to RefFrame[ 1 ],
-the compound search stack process in <a href="#compound-search-stack-process">section 7.8.1.9</a> is invoked with mvRow, mvCol, len as inputs.</li>
+the compound search stack process in <a href="#compound-search-stack-process">section 7.9.1.9</a> is invoked with mvRow, mvCol, and len as inputs.</li>
 </ol>
 
 <h5 id="search-stack-process">Search Stack Process</h5>
@@ -11491,7 +11795,7 @@ If present, the weight is increased, otherwise the process adds a motion vector 
   </li>
 </ul>
 
-<p>The lower precision process specified in <a href="#lower-precision-process">section 7.8.1.10</a> is invoked with candMv.</p>
+<p>The lower precision process specified in <a href="#lower-precision-process">section 7.9.1.10</a> is invoked with candMv.</p>
 
 <p>The variable weight is set equal to len * 2.</p>
 
@@ -11528,9 +11832,6 @@ If present, the weight is increased, otherwise the process adds a motion vector 
     <p>variables mvRow and mvCol specifying (in units of 4x4 pixels) the candidate location,</p>
   </li>
   <li>
-    <p>a variable candList specifying which list in the candidate matches our reference frame,</p>
-  </li>
-  <li>
     <p>a variable len specifying the weight attached to this motion vector.</p>
   </li>
 </ul>
@@ -11552,7 +11853,7 @@ If present, the weight is increased, otherwise the process adds the motion vecto
   <li>If GmType[ RefFrame[ refList ] ] &gt; TRANSLATION, candMvs[ refList ] is set equal to ZeroMvs[ refList ].</li>
 </ul>
 
-<p>For i = 0..1, the lower precision process specified in <a href="#lower-precision-process">section 7.8.1.10</a> is invoked with candMvs[ i ].</p>
+<p>For i = 0..1, the lower precision process specified in <a href="#lower-precision-process">section 7.9.1.10</a> is invoked with candMvs[ i ].</p>
 
 <p>The variable weight is set equal to len * 2.</p>
 
@@ -11718,7 +12019,7 @@ for ( pass = 0; pass &lt; 2; pass++ ) {
 
 <p>The first pass searches the row above, the second searches the column to the left.</p>
 
-<p>The function call to add_extra_mv_candidate invokes the add extra mv candidate process specified in <a href="#add-extra-mv-candidate-process">section 7.8.1.13</a> with mvRow, mvCol, isCompound as inputs.</p>
+<p>The function call to add_extra_mv_candidate invokes the add extra mv candidate process specified in <a href="#add-extra-mv-candidate-process">section 7.9.1.13</a> with mvRow, mvCol, isCompound as inputs.</p>
 
 <p>If isCompound is equal to 1, the candidates in the RefIdMvs and RefDiffMvs arrays are added to the stack as follows (using the temporary array combinedMvs):</p>
 
@@ -11801,6 +12102,7 @@ whereas for compound prediction NumMvFound will always be greater or equal to 2 
         RefDiffCount[ list ]++
       }
     }
+  }
 } else {
   for ( candList = 0; candList &lt; 2; candList++ ) {
     candRef = RefFrames[ mvRow ][ mvCol ][ candList ]
@@ -11944,16 +12246,16 @@ suitable for use by overlapped motion compensation, or 0 otherwise.</p>
 
 <ol>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to 0..(w4 - 1) (this attempts to add candidates above the current block).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.9.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to 0..(w4 - 1) (this attempts to add candidates above the current block).</p>
   </li>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaCol equal to -1, and deltaRow equal to 0..(h4 - 1) (this attempts to add candidates to the left of the current block).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.9.3.1</a> is invoked with deltaCol equal to -1, and deltaRow equal to 0..(h4 - 1) (this attempts to add candidates to the left of the current block).</p>
   </li>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to -1 (this attempts to add a candidate to the top left).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.9.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to -1 (this attempts to add a candidate to the top left).</p>
   </li>
   <li>
-    <p>The add sample process in <a href="#add-sample-process">section 7.8.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to w4 (this attempts to add a candidate to the top right).</p>
+    <p>The add sample process in <a href="#add-sample-process">section 7.9.3.1</a> is invoked with deltaRow equal to -1, and deltaCol equal to w4 (this attempts to add a candidate to the top right).</p>
   </li>
   <li>
     <p>If NumSamples is equal to 0 and NumSamplesScanned is greater than 0, NumSamples is set equal to 1.</p>
@@ -12053,7 +12355,7 @@ values.</p>
 
 <p>These processes are triggered at points defined by function calls to
 predict_intra, predict_inter, predict_chroma_from_luma, and predict_palette in the residual syntax table described in
-<a href="#residual-syntax">section 5.8.32</a>.</p>
+<a href="#residual-syntax">section 5.9.32</a>.</p>
 
 <h4 id="intra-prediction-process">Intra Prediction Process</h4>
 
@@ -12202,19 +12504,19 @@ CurrFrame [ plane ][ y ][ x - 1 ].</p>
 
 <ul>
   <li>
-    <p>If plane is equal to 0 and use_filter_intra is true, the recursive intra prediction process specified in <a href="#recursive-intra-prediction-process">section 7.9.1.2</a> is invoked with w and h as inputs, and the output is assigned to pred.</p>
+    <p>If plane is equal to 0 and use_filter_intra is true, the recursive intra prediction process specified in <a href="#recursive-intra-prediction-process">section 7.10.1.2</a> is invoked with w and h as inputs, and the output is assigned to pred.</p>
   </li>
   <li>
-    <p>Otherwise, if is_directional_mode( mode ) is true, the directional intra prediction process specified in <a href="#directional-intra-prediction-process">section 7.9.1.3</a> is invoked with plane, x, y, haveLeft, haveAbove, mode, w, h, maxX, maxY as inputs and the output is assigned to pred.</p>
+    <p>Otherwise, if is_directional_mode( mode ) is true, the directional intra prediction process specified in <a href="#directional-intra-prediction-process">section 7.10.1.3</a> is invoked with plane, x, y, haveLeft, haveAbove, mode, w, h, maxX, maxY as inputs and the output is assigned to pred.</p>
   </li>
   <li>
-    <p>Otherwise if mode is equal to SMOOTH_PRED or SMOOTH_V_PRED or SMOOTH_H_PRED, the smooth intra prediction process specified in <a href="#smooth-intra-prediction-process">section 7.9.1.5</a> is invoked with mode, log2W, log2H, w, and h as inputs, and the output is assigned to pred.</p>
+    <p>Otherwise if mode is equal to SMOOTH_PRED or SMOOTH_V_PRED or SMOOTH_H_PRED, the smooth intra prediction process specified in <a href="#smooth-intra-prediction-process">section 7.10.1.5</a> is invoked with mode, log2W, log2H, w, and h as inputs, and the output is assigned to pred.</p>
   </li>
   <li>
-    <p>Otherwise if mode is equal to DC_PRED, the DC intra prediction process specified in <a href="#dc-intra-prediction-process">section 7.9.1.4</a> is invoked with haveLeft, haveAbove, log2W, log2H, w, and h as inputs and the output is assigned to pred.</p>
+    <p>Otherwise if mode is equal to DC_PRED, the DC intra prediction process specified in <a href="#dc-intra-prediction-process">section 7.10.1.4</a> is invoked with haveLeft, haveAbove, log2W, log2H, w, and h as inputs and the output is assigned to pred.</p>
   </li>
   <li>
-    <p>Otherwise, the basic intra prediction process specified in <a href="#basic-intra-prediction-process">section 7.9.1.1</a> is invoked with mode, w, and h as inputs, and the output is assigned to pred.</p>
+    <p>Otherwise, the basic intra prediction process specified in <a href="#basic-intra-prediction-process">section 7.10.1.1</a> is invoked with mode, w, and h as inputs, and the output is assigned to pred.</p>
   </li>
 </ul>
 
@@ -12564,7 +12866,7 @@ this transform block,</p>
     <p>The variables upsampleAbove and upsampleLeft are set equal to 0.</p>
   </li>
   <li>
-    <p>If disable_intra_edge_filter is equal to 0, the following applies:</p>
+    <p>If enable_intra_edge_filter is equal to 1, the following applies:</p>
 
     <ul>
       <li>
@@ -12573,10 +12875,10 @@ this transform block,</p>
         <ul>
           <li>
             <p>If (pAngle &gt; 90) and (pAngle &lt; 180) and (w + h) &gt;= 24), the
-filter corner process specified in <a href="#filter-corner-process">section 7.9.1.6</a> is invoked and the output assigned to both LeftCol[ -1 ] and AboveRow[ -1 ].</p>
+filter corner process specified in <a href="#filter-corner-process">section 7.10.1.6</a> is invoked and the output assigned to both LeftCol[ -1 ] and AboveRow[ -1 ].</p>
           </li>
           <li>
-            <p>The intra filter type process specified in <a href="#intra-filter-type-process">section 7.9.1.7</a> is invoked with the input variable plane and the output assigned to
+            <p>The intra filter type process specified in <a href="#intra-filter-type-process">section 7.10.1.7</a> is invoked with the input variable plane and the output assigned to
 filterType.</p>
           </li>
           <li>
@@ -12584,14 +12886,14 @@ filterType.</p>
 
             <ul>
               <li>
-                <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.9.1.8</a> is invoked
+                <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.10.1.8</a> is invoked
 with w, h, filterType, and pAngle - 90 as inputs, and the output assigned to the variable strength.</p>
               </li>
               <li>
                 <p>The variable numPx is set equal to Min( w, ( maxX - x + 1 ) ) + ( pAngle &lt; 90 ? h : 0 ) + 1.</p>
               </li>
               <li>
-                <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.9.1.11</a> is invoked with the parameters
+                <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.10.1.11</a> is invoked with the parameters
 numPx, strength, and 0 as inputs.</p>
               </li>
             </ul>
@@ -12601,14 +12903,14 @@ numPx, strength, and 0 as inputs.</p>
 
             <ul>
               <li>
-                <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.9.1.8</a> is invoked
+                <p>The intra edge filter strength selection process specified in <a href="#intra-edge-filter-strength-selection-process">section 7.10.1.8</a> is invoked
 with w, h, filterType, and pAngle - 180 as inputs, and the output assigned to the variable strength.</p>
               </li>
               <li>
                 <p>The variable numPx is set equal to Min( h, ( maxY - y + 1 ) ) + ( pAngle &gt; 180 ? w : 0 ) + 1.</p>
               </li>
               <li>
-                <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.9.1.11</a> is invoked with the parameters
+                <p>The intra edge filter process specified in <a href="#intra-edge-filter-process">section 7.10.1.11</a> is invoked with the parameters
 numPx, strength, and 1 as inputs.</p>
               </li>
             </ul>
@@ -12616,24 +12918,24 @@ numPx, strength, and 1 as inputs.</p>
         </ul>
       </li>
       <li>
-        <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.9.1.9</a> is invoked with w, h, filterType, and pAngle - 90 as inputs,
+        <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.10.1.9</a> is invoked with w, h, filterType, and pAngle - 90 as inputs,
 and the output assigned to the variable upsampleAbove.</p>
       </li>
       <li>
         <p>The variable numPx is set equal to ( w + (pAngle &lt; 90 ? h : 0) ).</p>
       </li>
       <li>
-        <p>If upsampleAbove is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.9.1.10</a> is invoked with the parameters numPx and 0 as inputs.</p>
+        <p>If upsampleAbove is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.10.1.10</a> is invoked with the parameters numPx and 0 as inputs.</p>
       </li>
       <li>
-        <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.9.1.9</a> is invoked with w, h, filterType, and pAngle - 180 as inputs,
+        <p>The intra edge upsample selection process specified in <a href="#intra-edge-upsample-selection-process">section 7.10.1.9</a> is invoked with w, h, filterType, and pAngle - 180 as inputs,
 and the output assigned to the variable upsampleLeft.</p>
       </li>
       <li>
         <p>The variable numPx is set equal to ( h + (pAngle &lt; 180 ? w : 0) ).</p>
       </li>
       <li>
-        <p>If upsampleLeft is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.9.1.10</a> is invoked with the parameters numPx and 1 as inputs.</p>
+        <p>If upsampleLeft is equal to 1, the intra edge upsample process specified in <a href="#intra-edge-upsample-process">section 7.10.1.10</a> is invoked with the parameters numPx and 1 as inputs.</p>
       </li>
     </ul>
   </li>
@@ -12981,7 +13283,7 @@ following table:</p>
 </code></pre>
       </li>
       <li>
-        <p>pred[ i ][ j ] is set equal to Clip1( Round2( smoothPred, 9 ) ).</p>
+        <p>pred[ i ][ j ] is set equal to Round2( smoothPred, 9 ).</p>
       </li>
     </ol>
   </li>
@@ -13033,7 +13335,7 @@ following table:</p>
 </code></pre>
       </li>
       <li>
-        <p>pred[ i ][ j ] is set equal to Clip1( Round2( smoothPred, 8 ) ).</p>
+        <p>pred[ i ][ j ] is set equal to Round2( smoothPred, 8 ).</p>
       </li>
     </ol>
   </li>
@@ -13085,7 +13387,7 @@ following table:</p>
 </code></pre>
       </li>
       <li>
-        <p>pred[ i ][ j ] is set equal to Clip1( Round2( smoothPred, 8 ) ).</p>
+        <p>pred[ i ][ j ] is set equal to Round2( smoothPred, 8 ).</p>
       </li>
     </ol>
   </li>
@@ -13413,38 +13715,15 @@ the following ordered steps:</p>
     </ul>
   </li>
   <li>
-    <p>The rounding variables InterRound0, InterRound1, and InterPostRound are derived as follows:</p>
-
-    <ul>
-      <li>
-        <p>InterRound0 (representing the amount to round by after horizontal filtering) is set equal to 3.</p>
-      </li>
-      <li>
-        <p>InterRound1 (representing the amount to round by after vertical filtering) is set equal to ( isCompound ? 7 : 11).</p>
-      </li>
-      <li>
-        <p>If BitDepth is equal to 12, InterRound0 is set equal to InterRound0 + 2.</p>
-      </li>
-      <li>
-        <p>If BitDepth is equal to 12 and isCompound is equal to 0, InterRound1 is set equal to InterRound1 - 2.</p>
-      </li>
-      <li>
-        <p>InterPostRound (representing the amount to round by at the end of the prediction process) is set equal to 2 * FILTER_BITS - ( InterRound0 + InterRound1 ).</p>
-      </li>
-    </ul>
+    <p>The rounding variables derivation process specified in <a href="#rounding-variables-derivation-process">section 7.10.2.1</a> is invoked with the variable isCompound as input.</p>
   </li>
-</ol>
-
-<p class="alert alert-info"><strong>Note:</strong> The rounding is chosen to ensure that the output of the horizontal filter always fits within 16 bits.</p>
-
-<ol>
   <li>
     <p>If setting useWarp equal to 1 would result in the bitstream not being conformant
-    (due to either the requirement in the warp estimation process in <a href="#warp-estimation-process">section 7.9.2.6</a> about the determinant being non-zero,
-or the requirement in the setup shear process in <a href="#setup-shear-process">section 7.9.2.4</a> about the size of the shear) then useWarp is set equal to 0.</p>
+    (due to either the requirement in the warp estimation process in <a href="#warp-estimation-process">section 7.10.2.7</a> about the determinant being non-zero,
+or the requirement in the setup shear process in <a href="#setup-shear-process">section 7.10.2.5</a> about the size of the shear) then useWarp is set equal to 0.</p>
   </li>
   <li>
-    <p>If plane is equal to 0 and motion_mode is equal to LOCALWARP and useWarp is equal to 1, the warp estimation process in <a href="#warp-estimation-process">section 7.9.2.6</a> is invoked.</p>
+    <p>If plane is equal to 0 and motion_mode is equal to LOCALWARP and useWarp is equal to 1, the warp estimation process in <a href="#warp-estimation-process">section 7.10.2.7</a> is invoked.</p>
   </li>
   <li>
     <p>The motion vector array mv is set equal to Mvs[ candRow ][ candCol ][ refList ].</p>
@@ -13457,23 +13736,24 @@ or the requirement in the setup shear process in <a href="#setup-shear-process">
         <p>If use_intrabc is equal to 0, refIdx is set equal to ref_frame_idx[ RefFrame[ refList ] - LAST_FRAME ].</p>
       </li>
       <li>
-        <p>Otherwise (use_intrabc is equal to 1), refIdx is set equal to -1 and RefFrameWidth[ -1 ] is set equal to FrameWidth and RefFrameHeight[ -1 ] is set equal to FrameHeight.</p>
+        <p>Otherwise (use_intrabc is equal to 1), refIdx is set equal to -1 and RefFrameWidth[ -1 ] is set equal to FrameWidth, RefFrameHeight[ -1 ] is set equal
+to FrameHeight, and RefUpscaledWidth[ -1 ] is set equal to UpscaledWidth.</p>
       </li>
     </ul>
   </li>
   <li>
-    <p>The motion vector scaling process in <a href="#motion-vector-scaling-process">section 7.9.2.1</a> is invoked with
+    <p>The motion vector scaling process in <a href="#motion-vector-scaling-process">section 7.10.2.2</a> is invoked with
 plane, refIdx, x, y, mv as inputs and the output being the
 initial location startX, startY, and the step sizes stepX, stepY.</p>
   </li>
   <li>
-    <p>If useWarp is equal to 1, the block warp process in <a href="#block-warp-process">section 7.9.2.3</a> is invoked with
+    <p>If useWarp is equal to 1, the block warp process in <a href="#block-warp-process">section 7.10.2.4</a> is invoked with
 plane, refList, x, y, i8, j8, w, h as inputs and the
 output is merged into the 2D array preds[ refList ] for i8 = 0..((h-1) &gt;&gt; 3) and for j8 = 0..((w-1) &gt;&gt; 3).
 (Each invocation fills in a block of output of size w by h at x offset j8 * 8 and y offset i8 * 8.)</p>
   </li>
   <li>
-    <p>If useWarp is equal to 0, the block inter prediction process in <a href="#block-inter-prediction-process">section 7.9.2.2</a> is invoked with
+    <p>If useWarp is equal to 0, the block inter prediction process in <a href="#block-inter-prediction-process">section 7.10.2.3</a> is invoked with
 plane, refIdx, startX, startY, stepX, stepY, w, h, candRow, candCol as inputs and the
 output is assigned to the 2D array preds[ refList ].</p>
   </li>
@@ -13524,7 +13804,7 @@ output is assigned to the 2D array preds[ refList ].</p>
     <p>The variable log2H is set equal to log2( h )</p>
   </li>
   <li>
-    <p>The intra prediction process specified in <a href="#intra-prediction-process">section 7.9.1</a> is invoked with plane, x, y, haveLeft, haveAbove, haveAboveRight, haveBelowLeft, mode, log2W, log2H as inputs.  (This will write intra predicted samples into CurrFrame.)</p>
+    <p>The intra prediction process specified in <a href="#intra-prediction-process">section 7.10.1</a> is invoked with plane, x, y, haveLeft, haveAbove, haveAboveRight, haveBelowLeft, mode, log2W, log2H as inputs.  (This will write intra predicted samples into CurrFrame.)</p>
   </li>
 </ol>
 
@@ -13532,20 +13812,20 @@ output is assigned to the 2D array preds[ refList ].</p>
 
 <ul>
   <li>
-    <p>If compound_type is equal to COMPOUND_WEDGE and plane is equal to 0, the wedge mask process in <a href="#wedge-mask-process">section 7.9.2.9</a> is invoked with w, h as inputs.</p>
+    <p>If compound_type is equal to COMPOUND_WEDGE and plane is equal to 0, the wedge mask process in <a href="#wedge-mask-process">section 7.10.2.10</a> is invoked with w, h as inputs.</p>
   </li>
   <li>
-    <p>Otherwise if compound_type is equal to COMPOUND_INTRA, the inter intra mask process in <a href="#inter-intra-mask-process">section 7.9.2.11</a> is invoked with preds, plane, x, y, w, h as inputs.</p>
+    <p>Otherwise if compound_type is equal to COMPOUND_INTRA, the inter intra mask process in <a href="#inter-intra-mask-process">section 7.10.2.12</a> is invoked with preds, plane, x, y, w, h as inputs.</p>
   </li>
   <li>
-    <p>Otherwise if compound_type is equal to COMPOUND_SEG and plane is equal to 0, the segment mask process in <a href="#segment-mask-process">section 7.9.2.10</a> is invoked with preds, w, h as inputs.</p>
+    <p>Otherwise if compound_type is equal to COMPOUND_SEG and plane is equal to 0, the segment mask process in <a href="#segment-mask-process">section 7.10.2.11</a> is invoked with preds, w, h as inputs.</p>
   </li>
   <li>
     <p>Otherwise, no mask array is needed.</p>
   </li>
 </ul>
 
-<p>If compound_type is equal to COMPOUND_DISTANCE, the distance weights process in <a href="#distance-weights-process">section 7.9.2.13</a> is invoked with candRow and candCol as inputs.</p>
+<p>If compound_type is equal to COMPOUND_DISTANCE, the distance weights process in <a href="#distance-weights-process">section 7.10.2.14</a> is invoked with candRow and candCol as inputs.</p>
 
 <p>The inter predicted samples are then derived as
 follows:</p>
@@ -13566,11 +13846,37 @@ follows:</p>
    for i = 0..h-1 and j = 0..w-1.</p>
   </li>
   <li>
-    <p>Otherwise, the mask blend process in <a href="#mask-blend-process">section 7.9.2.12</a> is invoked with preds, plane, x, y, w, h as inputs.</p>
+    <p>Otherwise, the mask blend process in <a href="#mask-blend-process">section 7.10.2.13</a> is invoked with preds, plane, x, y, w, h as inputs.</p>
   </li>
 </ul>
 
-<p>If motion_mode is equal to OBMC, the overlapped motion compensation in <a href="#overlapped-motion-compensation-process">section 7.9.2.7</a> is invoked with plane, x, y, w, h as inputs.</p>
+<p>If motion_mode is equal to OBMC, the overlapped motion compensation in <a href="#overlapped-motion-compensation-process">section 7.10.2.8</a> is invoked with plane, x, y, w, h as inputs.</p>
+
+<h5 id="rounding-variables-derivation-process">Rounding Variables Derivation Process</h5>
+
+<p>The input to this process is a variable isCompound.</p>
+
+<p>The rounding variables InterRound0, InterRound1, and InterPostRound are derived as follows:</p>
+
+<ul>
+  <li>
+    <p>InterRound0 (representing the amount to round by after horizontal filtering) is set equal to 3.</p>
+  </li>
+  <li>
+    <p>InterRound1 (representing the amount to round by after vertical filtering) is set equal to ( isCompound ? 7 : 11).</p>
+  </li>
+  <li>
+    <p>If BitDepth is equal to 12, InterRound0 is set equal to InterRound0 + 2.</p>
+  </li>
+  <li>
+    <p>If BitDepth is equal to 12 and isCompound is equal to 0, InterRound1 is set equal to InterRound1 - 2.</p>
+  </li>
+  <li>
+    <p>InterPostRound (representing the amount to round by at the end of the prediction process) is set equal to 2 * FILTER_BITS - ( InterRound0 + InterRound1 ).</p>
+  </li>
+</ul>
+
+<p class="alert alert-info"><strong>Note:</strong> The rounding is chosen to ensure that the output of the horizontal filter always fits within 16 bits.</p>
 
 <h5 id="motion-vector-scaling-process">Motion Vector Scaling Process</h5>
 
@@ -13603,28 +13909,28 @@ compared to the current frame.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> When intra block copy is being used, refIdx will be equal to -1
 to signal prediction from the frame currently being decoded.
-The arrays RefFrameWidth and RefFrameHeight include values at index -1 giving the
-dimensions of the current frame.</p>
+The arrays RefFrameWidth, RefFrameHeight, and RefUpscaledWidth include values
+at index -1 giving the dimensions of the current frame.</p>
 
 <p>It is a requirement of bitstream conformance that all the following conditions
 are satisfied:</p>
 
 <ul>
   <li>
-    <p>2 * FrameWidth &gt;= RefFrameWidth[ refIdx ]</p>
+    <p>2 * FrameWidth &gt;= RefUpscaledWidth[ refIdx ]</p>
   </li>
   <li>
     <p>2 * FrameHeight &gt;= RefFrameHeight[ refIdx ]</p>
   </li>
   <li>
-    <p>FrameWidth &lt;= 16 * RefFrameWidth[ refIdx ]</p>
+    <p>FrameWidth &lt;= 16 * RefUpscaledWidth[ refIdx ]</p>
   </li>
   <li>
     <p>FrameHeight &lt;= 16 * RefFrameHeight[ refIdx ]</p>
   </li>
 </ul>
 
-<p>A variable xScale is set equal to (RefFrameWidth[ refIdx ] &lt;&lt;
+<p>A variable xScale is set equal to (RefUpscaledWidth[ refIdx ] &lt;&lt;
 REF_SCALE_SHIFT + ( FrameWidth / 2 ) ) / FrameWidth.</p>
 
 <p>A variable yScale is set equal to (RefFrameHeight[ refIdx ] &lt;&lt;
@@ -13733,7 +14039,7 @@ plane as follows:</p>
   </li>
 </ul>
 
-<p>The variable lastX is set equal to ( (RefFrameWidth[ refIdx ] + subX) &gt;&gt;
+<p>The variable lastX is set equal to ( (RefUpscaledWidth[ refIdx ] + subX) &gt;&gt;
 subX) - 1.</p>
 
 <p>The variable lastY is set equal to ( (RefFrameHeight[ refIdx ] + subY) &gt;&gt;
@@ -13971,7 +14277,7 @@ plane as follows:</p>
   </li>
 </ul>
 
-<p>The variable lastX is set equal to ( (RefFrameWidth[ refIdx ] + subX) &gt;&gt;
+<p>The variable lastX is set equal to ( (RefUpscaledWidth[ refIdx ] + subX) &gt;&gt;
 subX) - 1.</p>
 
 <p>The variable lastY is set equal to ( (RefFrameHeight[ refIdx ] + subY) &gt;&gt;
@@ -14002,7 +14308,7 @@ subY) - 1.</p>
 
 <p>(dstX and dstY specify the destination location in the luma plane using WARPEDMODEL_PREC_BITS bits of precision).</p>
 
-<p>The setup shear process specified in <a href="#setup-shear-process">section 7.9.2.4</a> is invoked with warpParams as input, and the outputs are assigned to alpha, beta, gamma, and delta.</p>
+<p>The setup shear process specified in <a href="#setup-shear-process">section 7.10.2.5</a> is invoked with warpParams as input, and the outputs are assigned to alpha, beta, gamma, and delta.</p>
 
 <p>The sub-sample interpolation is effected via two one-dimensional convolutions.
 First a horizontal filter is used to build up a temporary array, and then this
@@ -14171,7 +14477,7 @@ for (i1 = -7; i1 &lt; 8; i1++) {
 
 <p>The variable beta0 is set equal to Clip3( -32768, 32767, warpParams[ 3 ] ).</p>
 
-<p>The resolve divisor process specified in <a href="#resolve-divisor-process">section 7.9.2.5</a> is invoked with warpParams[ 2 ] as input, and the outputs assigned to divShift and divFactor.</p>
+<p>The resolve divisor process specified in <a href="#resolve-divisor-process">section 7.10.2.6</a> is invoked with warpParams[ 2 ] as input, and the outputs assigned to divShift and divFactor.</p>
 
 <p>The variable v is set equal to ( warpParams[ 4 ] &lt;&lt; WARPEDMODEL_PREC_BITS ).</p>
 
@@ -14308,7 +14614,7 @@ for (i = 0; i &lt; NumSamples; i++) {
 
 <p>It is a requirement of bitstream conformance that det is not equal to 0.</p>
 
-<p>The resolve divisor process specified in <a href="#resolve-divisor-process">section 7.9.2.5</a> is invoked with det as input, and the outputs assigned to divShift and divFactor.</p>
+<p>The resolve divisor process specified in <a href="#resolve-divisor-process">section 7.10.2.6</a> is invoked with det as input, and the outputs assigned to divShift and divFactor.</p>
 
 <p>The local warp parameters in LocalWarpParams are derived as follows:</p>
 
@@ -14455,12 +14761,12 @@ if ( AvailL ) {
     <p>The variable predY is set equal to (y4 * 4) &gt;&gt; subY.</p>
   </li>
   <li>
-    <p>The motion vector scaling process in <a href="#motion-vector-scaling-process">section 7.9.2.1</a> is invoked with
+    <p>The motion vector scaling process in <a href="#motion-vector-scaling-process">section 7.10.2.2</a> is invoked with
 plane, refIdx, predX, predY, mv as inputs and the output being the
 initial location startX, startY, and the step sizes stepX, stepY.</p>
   </li>
   <li>
-    <p>The block inter prediction process in <a href="#block-inter-prediction-process">section 7.9.2.2</a> is invoked with
+    <p>The block inter prediction process in <a href="#block-inter-prediction-process">section 7.10.2.3</a> is invoked with
 plane, refIdx, startX, startY, stepX, stepY, predW, predH, candRow, candCol as inputs and the
 output is assigned to the 2D array obmcPred.</p>
   </li>
@@ -14468,7 +14774,7 @@ output is assigned to the 2D array obmcPred.</p>
     <p>obmcPred[ i ][ j ] is set equal to Clip1( obmcPred[ i ][ j ] ) for i = 0..predH-1 and j = 0..predW-1.</p>
   </li>
   <li>
-    <p>The blending process in <a href="#overlap-blending-process">section 7.9.2.8</a> is invoked with plane, predX, predY, predW, predH, pass, obmcPred, and mask as inputs.</p>
+    <p>The blending process in <a href="#overlap-blending-process">section 7.10.2.9</a> is invoked with plane, predX, predY, predW, predH, pass, obmcPred, and mask as inputs.</p>
   </li>
 </ol>
 
@@ -15284,7 +15590,7 @@ coefficient for a particular plane and is derived as follows:</p>
 <p>The reconstruct process is invoked to perform dequantization, inverse
 transform and reconstruction. This process is triggered at a point defined by
 a function call to reconstruct in the transform block syntax table described in
-<a href="#transform-block-syntax">section 5.8.33</a>.</p>
+<a href="#transform-block-syntax">section 5.9.33</a>.</p>
 
 <p>The inputs to this process are:</p>
 
@@ -15397,11 +15703,11 @@ flipLR is set equal to 0.</p>
       </li>
     </ul>
 
-    <p>c. Dequant[ i ][ j ] is set equal to ( Quant[ i * tw + j ] *
-    q2 ) / dqDenom.</p>
+    <p>c. Dequant[ i ][ j ] is set equal to Clip3( - ( 1 &lt;&lt; ( 7 + BitDepth ) ), ( 1 &lt;&lt; ( 7 + BitDepth ) ) - 1, ( Quant[ i * tw + j ] *
+    q2 ) / dqDenom ).</p>
   </li>
   <li>
-    <p>Invoke the 2D inverse transform block process defined in <a href="#2d-inverse-transform">section 7.11.2</a>
+    <p>Invoke the 2D inverse transform block process defined in <a href="#2d-inverse-transform">section 7.12.2</a>
 with the variables txSize, txType and transpose as input. The inverse transform outputs are stored
 in the Residual buffer.</p>
   </li>
@@ -15424,13 +15730,12 @@ Clip1( CurrFrame[ plane ][ y + yy ][ x + xx ] + ( transpose ? Residual[ j ][ i ]
 </ol>
 
 <p>It is a requirement of bitstream conformance that the values written into the
-Dequant and Residual arrays in steps 1 and 2 are representable by a signed integer with 8 +
-BitDepth bits.</p>
+Residual array in step 2 are representable by a signed integer with 8 + BitDepth bits.</p>
 
 <h3 id="inverse-transform-process">Inverse Transform Process</h3>
 
 <p>This section details the inverse transforms used during the reconstruction
-processes detailed in <a href="#reconstruction-and-dequantization">section 7.10</a>.</p>
+processes detailed in <a href="#reconstruction-and-dequantization">section 7.11</a>.</p>
 
 <h4 id="1d-transforms">1D Transforms</h4>
 
@@ -15589,24 +15894,6 @@ and is specified as follows:</p>
   <li>The function H( b, a, 0, r ) is invoked.</li>
 </ol>
 
-<h5 id="intermediate-clamping-process">Intermediate Clamping Process</h5>
-
-<p>This process clamps the contents of the array T of length 2<sup>n</sup>.</p>
-
-<p>The inputs to this process are:</p>
-
-<ul>
-  <li>
-    <p>a variable n that specifies the base 2 logarithm of the length of the input array,</p>
-  </li>
-  <li>
-    <p>a variable r that specifies the clamping range.</p>
-  </li>
-</ul>
-
-<p>T[ i ] is set equal to Clip3( - ( 1 &lt;&lt; ( r - 1 ) ), ( 1 &lt;&lt; ( r - 1 ) ) - 1, T[ i ] )
-for i = 0..((1 &lt;&lt; n) - 1).</p>
-
 <h5 id="inverse-dct-array-permutation-process">Inverse DCT Array Permutation Process</h5>
 
 <p>This process performs an in-place permutation of the array T of length 2<sup>n</sup>
@@ -15639,11 +15926,7 @@ permuted array T which is of length 2<sup>n</sup> for 2 ≤ n ≤ 6.</p>
 
 <ol>
   <li>
-    <p>Invoke the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> with the input variables
-n and r.</p>
-  </li>
-  <li>
-    <p>Invoke the inverse DCT permutation process as specified in <a href="#inverse-dct-array-permutation-process">section 7.11.1.3</a> with the input variable n.</p>
+    <p>Invoke the inverse DCT permutation process as specified in <a href="#inverse-dct-array-permutation-process">section 7.12.1.2</a> with the input variable n.</p>
   </li>
   <li>
     <p>If n is equal to 6, invoke B( 32 + i, 63 - i, 63 - 4 * brev( 4, i ), 0, r ) for i = 0..15.</p>
@@ -15957,7 +16240,7 @@ are representable by a signed integer using r bits of precision.</p>
 
 <ol>
   <li>
-    <p>Invoke the ADST input array permutation process specified in <a href="#inverse-adst-input-array-permutation-process">section 7.11.1.5</a> with the 
+    <p>Invoke the ADST input array permutation process specified in <a href="#inverse-adst-input-array-permutation-process">section 7.12.1.4</a> with the 
 input variable n set to 3.</p>
   </li>
   <li>
@@ -15976,7 +16259,7 @@ input variable n set to 3.</p>
     <p>Invoke B( 2 + 4 * i, 3 + 4 * i, 32, 1, r ) for i = 0..1.</p>
   </li>
   <li>
-    <p>Invoke the ADST output array permutation process specified in <a href="#inverse-adst-output-array-permutation-process">section 7.11.1.6</a> with the 
+    <p>Invoke the ADST output array permutation process specified in <a href="#inverse-adst-output-array-permutation-process">section 7.12.1.5</a> with the 
 input variable n set to 3.</p>
   </li>
 </ol>
@@ -15991,7 +16274,7 @@ input variable n set to 3.</p>
 
 <ol>
   <li>
-    <p>Invoke the ADST input array permutation process specified in <a href="#inverse-adst-input-array-permutation-process">section 7.11.1.5</a> with the 
+    <p>Invoke the ADST input array permutation process specified in <a href="#inverse-adst-input-array-permutation-process">section 7.12.1.4</a> with the 
 input variable n set to 4.</p>
   </li>
   <li>
@@ -16018,7 +16301,7 @@ for i = 0..1, for j = 0..1.</p>
     <p>Invoke B( 2 + 4 * i, 3 + 4 * i, 32, 1, r ) for i = 0..3.</p>
   </li>
   <li>
-    <p>Invoke the ADST output array permutation process specified in <a href="#inverse-adst-output-array-permutation-process">section 7.11.1.6</a> with the 
+    <p>Invoke the ADST output array permutation process specified in <a href="#inverse-adst-output-array-permutation-process">section 7.12.1.5</a> with the 
 input variable n set to 4.</p>
   </li>
 </ol>
@@ -16039,22 +16322,19 @@ input variable n set to 4.</p>
   </li>
 </ul>
 
-<p>First, the intermediate clamping process specified in <a href="#intermediate-clamping-process">section 7.11.1.2</a> is invoked, with the input
-variables n and r.</p>
-
 <p>The following steps apply:</p>
 
 <ul>
   <li>
-    <p>If n is equal to 2, invoke the inverse ADST4 process in <a href="#inverse-adst4-process">section 7.11.1.7</a>, with the input
+    <p>If n is equal to 2, invoke the inverse ADST4 process in <a href="#inverse-adst4-process">section 7.12.1.6</a>, with the input
 variable r.</p>
   </li>
   <li>
-    <p>Otherwise, if n is equal to 3, invoke the inverse ADST8 process in <a href="#inverse-adst8-process">section 7.11.1.8</a>, with the
+    <p>Otherwise, if n is equal to 3, invoke the inverse ADST8 process in <a href="#inverse-adst8-process">section 7.12.1.7</a>, with the
 input variable r.</p>
   </li>
   <li>
-    <p>Otherwise (n is equal to 4), invoke the inverse ADST16 process in <a href="#inverse-adst16-process">section 7.11.1.9</a>, with the
+    <p>Otherwise (n is equal to 4), invoke the inverse ADST16 process in <a href="#inverse-adst16-process">section 7.12.1.8</a>, with the
 input variable r.</p>
   </li>
 </ul>
@@ -16137,23 +16417,23 @@ of the length of the input array.</p>
 <ul>
   <li>
     <p>If n is equal to 2, invoke the inverse identity transform 4 process in
-<a href="#inverse-identity-transform-4-process">section 7.11.1.12</a>.</p>
+<a href="#inverse-identity-transform-4-process">section 7.12.1.11</a>.</p>
   </li>
   <li>
     <p>Otherwise, if n is equal to 3, invoke the inverse identity transform 8 process in
-<a href="#inverse-identity-transform-8-process">section 7.11.1.13</a>.</p>
+<a href="#inverse-identity-transform-8-process">section 7.12.1.12</a>.</p>
   </li>
   <li>
     <p>Otherwise, if n is equal to 4, invoke the inverse identity transform 16 process in
-<a href="#inverse-identity-transform-16-process">section 7.11.1.14</a>.</p>
+<a href="#inverse-identity-transform-16-process">section 7.12.1.13</a>.</p>
   </li>
   <li>
     <p>Otherwise if n is equal to 5, invoke the inverse identity transform 32 process in
-<a href="#inverse-identity-transform-32-process">section 7.11.1.15</a>.</p>
+<a href="#inverse-identity-transform-32-process">section 7.12.1.14</a>.</p>
   </li>
   <li>
     <p>Otherwise (n is equal to 6), invoke the inverse identity transform 64 process in
-<a href="#inverse-identity-transform-64-process">section 7.11.1.16</a>.</p>
+<a href="#inverse-identity-transform-64-process">section 7.12.1.15</a>.</p>
   </li>
 </ul>
 
@@ -16216,27 +16496,30 @@ j = 0..(w-1).</p>
   </li>
   <li>
     <p>If Lossless is equal to 1, invoke the Inverse WHT process as specified in
-<a href="#inverse-walsh-hadamard-transform-process">section 7.11.1.11</a> with shift equal to 2.</p>
+<a href="#inverse-walsh-hadamard-transform-process">section 7.12.1.10</a> with shift equal to 2.</p>
   </li>
   <li>
     <p>Otherwise, if txType is equal to one of DCT_DCT, ADST_DCT, FLIPADST_DCT or H_DCT,
-invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.11.1.4</a> with the
+invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.12.1.3</a> with the
 input variable n equal to log2W and the input variable r equal to rowClampRange.</p>
   </li>
   <li>
     <p>Otherwise, if txType is equal to one of DCT_ADST, ADST_ADST, DCT_FLIPADST, FLIPADST_FLIPADST, 
 ADST_FLIPADST, FLIPADST_ADST, H_ADST, or H_FLIPADST, invoke the inverse ADST process as 
-specified in <a href="#inverse-adst-process">section 7.11.1.10</a> with input variable n equal to log2W and the input variable
+specified in <a href="#inverse-adst-process">section 7.12.1.9</a> with input variable n equal to log2W and the input variable
 r equal to rowClampRange.</p>
   </li>
   <li>
-    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.11.1.17</a> with the
+    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.12.1.16</a> with the
 input variable n equal to log2W.</p>
   </li>
   <li>
     <p>Set Residual[ i ][ j ] equal to Round2( T[ j ], rowShift ) for j = 0..(w-1).</p>
   </li>
 </ul>
+
+<p>Between the row and column transforms, Residual[ i ][ j ] is set equal to Clip3( - ( 1 &lt;&lt; ( colClampRange - 1 ) ),
+( 1 &lt;&lt; ( colClampRange - 1 ) ) - 1, Residual[ i ][ j ] ) for i = 0..(h-1), for j = 0..(w-1).</p>
 
 <p>The column transforms with j = 0..(w-1) are applied as follows:</p>
 
@@ -16246,23 +16529,23 @@ input variable n equal to log2W.</p>
   </li>
   <li>
     <p>If Lossless is equal to 1, invoke the Inverse WHT process as specified in
-<a href="#inverse-walsh-hadamard-transform-process">section 7.11.1.11</a> with shift equal to 0.</p>
+<a href="#inverse-walsh-hadamard-transform-process">section 7.12.1.10</a> with shift equal to 0.</p>
   </li>
   <li>
     <p>Otherwise, if txType is equal to one of DCT_DCT, DCT_ADST, DCT_FLIPADST or
-V_DCT, invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.11.1.4</a>
+V_DCT, invoke the inverse DCT process as specified in <a href="#inverse-dct-process">section 7.12.1.3</a>
 with the input variable n equal to log2H and the input variable r equal to
 colClampRange.</p>
   </li>
   <li>
     <p>Otherwise, if txType is equal to one of ADST_DCT, ADST_ADST, FLIPADST_DCT, 
 FLIPADST_FLIPADST, ADST_FLIPADST, FLIPADST_ADST, V_ADST, or V_FLIPADST,
-invoke the inverse ADST process as specified in <a href="#inverse-adst-process">section 7.11.1.10</a> with input variable n equal to
+invoke the inverse ADST process as specified in <a href="#inverse-adst-process">section 7.12.1.9</a> with input variable n equal to
 log2H and the input variable r equal to
 colClampRange.</p>
   </li>
   <li>
-    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.11.1.17</a> with the
+    <p>Otherwise, invoke the inverse identity transform process specified in <a href="#inverse-identity-transform-process">section 7.12.1.16</a> with the
 input variable n equal to log2H.</p>
   </li>
   <li>
@@ -16307,7 +16590,7 @@ follows:</p>
 </code></pre>
 
 <p>When the function loop_filter_edge is called, the edge loop filter process specified
-in <a href="#edge-loop-filter-process">section 7.12.1</a> is invoked with the variables plane, pass, row, and col as inputs.</p>
+in <a href="#edge-loop-filter-process">section 7.13.1</a> is invoked with the variables plane, pass, row, and col as inputs.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The loop filter is an integral part of the decoding process, in that
 the results of loop filtering are used in the prediction of subsequent frames.</p>
@@ -16509,16 +16792,16 @@ to 1.</p>
   </li>
 </ul>
 
-<p>The filter size process specified in <a href="#filter-size-process">section 7.12.2</a> is invoked with the inputs
+<p>The filter size process specified in <a href="#filter-size-process">section 7.13.2</a> is invoked with the inputs
 txSz, prevTxSz, pass, subX, subY, and plane, and the output assigned to
 the variable filterSize (containing the maximum filter size that can be
 used).</p>
 
-<p>The adaptive filter strength process specified in <a href="#adaptive-filter-strength-process">section 7.12.3</a> is invoked with
+<p>The adaptive filter strength process specified in <a href="#adaptive-filter-strength-process">section 7.13.3</a> is invoked with
 the inputs row, col, plane, and pass, and the output assigned to the variables
 lvl, limit, blimit, and thresh.</p>
 
-<p>If lvl is equal to 0, the adaptive filter strength process specified in <a href="#adaptive-filter-strength-process">section 7.12.3</a> is invoked with
+<p>If lvl is equal to 0, the adaptive filter strength process specified in <a href="#adaptive-filter-strength-process">section 7.13.3</a> is invoked with
 the inputs prevRow, prevCol, plane, and pass, and the output assigned to the variables
 lvl, limit, blimit, and thresh.</p>
 
@@ -16526,7 +16809,7 @@ lvl, limit, blimit, and thresh.</p>
 
 <ul>
   <li>If applyFilter is equal to 1 and lvl is greater than zero, the sample
-  filtering process specified in <a href="#sample-filtering-process">section 7.12.5</a> is invoked with the input variable
+  filtering process specified in <a href="#sample-filtering-process">section 7.13.5</a> is invoked with the input variable
   x set equal to xP + dy * i, the input variable y set equal to yP + dx * i,
   and the variables plane, limit, blimit, thresh, dx, dy,
   and filterSize supplied as inputs.</li>
@@ -16637,7 +16920,7 @@ DeltaLFs[ row ][ col ][ ( plane == 0 ) ? pass : ( plane + 1 ) ].</p>
     </ol>
   </li>
   <li>
-    <p>The adaptive filter strength selection process specified in <a href="#adaptive-filter-strength-selection-process">section 7.12.4</a> is invoked, with segment,
+    <p>The adaptive filter strength selection process specified in <a href="#adaptive-filter-strength-selection-process">section 7.13.4</a> is invoked, with segment,
 ref, modeType, deltaLF, plane, and pass as inputs, and the output being the output variable
 lvl.</p>
   </li>
@@ -16773,7 +17056,7 @@ being filtered,</p>
 
 <p>The outputs of this process are modified values in the array CurrFrame.</p>
 
-<p>First the filter mask process specified in <a href="#filter-mask-process">section 7.12.5.1</a> is invoked with the
+<p>First the filter mask process specified in <a href="#filter-mask-process">section 7.13.5.1</a> is invoked with the
 inputs x, y, plane, limit, blimit, thresh, dx, dy, and filterSize, and the
 output is assigned to the variables hevMask, filterMask, flatMask, and
 flatMask2.</p>
@@ -16787,16 +17070,16 @@ dx, dy as follows:</p>
   </li>
   <li>
     <p>Otherwise, if filterSize is equal to TX_4X4 or flatMask is equal to 0, the
-narrow filter process specified in <a href="#narrow-filter-process">section 7.12.5.2</a> is invoked with the
+narrow filter process specified in <a href="#narrow-filter-process">section 7.13.5.2</a> is invoked with the
 additional input variable hevMask.</p>
   </li>
   <li>
     <p>Otherwise, if filterSize is equal to TX_8X8 or flatMask2 is equal to 0,
-the wide filter process specified in <a href="#wide-filter-process">section 7.12.5.3</a> is invoked with the
+the wide filter process specified in <a href="#wide-filter-process">section 7.13.5.3</a> is invoked with the
 additional input variable log2Size set to 3.</p>
   </li>
   <li>
-    <p>Otherwise, the wide filter process specified in <a href="#wide-filter-process">section 7.12.5.3</a> is invoked
+    <p>Otherwise, the wide filter process specified in <a href="#wide-filter-process">section 7.13.5.3</a> is invoked
 with the additional input variable log2Size set to 4.</p>
   </li>
 </ul>
@@ -17125,7 +17408,7 @@ for (r = 0; r &lt; MiRows; r += step4) {
 }
 </code></pre>
 
-<p>When the cdef_block function is called, the CDEF block process specified in <a href="#cdef-block-process">section 7.13.1</a> is invoked with r, c, and idx as inputs.</p>
+<p>When the cdef_block function is called, the CDEF block process specified in <a href="#cdef-block-process">section 7.14.1</a> is invoked with r, c, and idx as inputs.</p>
 
 <h4 id="cdef-block-process">CDEF Block Process</h4>
 
@@ -17173,7 +17456,7 @@ CdefFrame will be overwritten later in this process.</p>
 
 <p>The variable skip is set equal to Skips[ r ][ c ].</p>
 
-<p>If skip is equal to 0, the CDEF direction process specified in <a href="#cdef-direction-process">section 7.13.2</a> is invoked with r and c as inputs, and the outputs assigned to variables yDir and var.</p>
+<p>If skip is equal to 0, the CDEF direction process specified in <a href="#cdef-direction-process">section 7.14.2</a> is invoked with r and c as inputs, and the outputs assigned to variables yDir and var.</p>
 
 <p>If skip is equal to 0, the following ordered steps apply:</p>
 
@@ -17197,7 +17480,7 @@ CdefFrame will be overwritten later in this process.</p>
     <p>The variable damping is set equal to CdefDamping + coeffShift.</p>
   </li>
   <li>
-    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.13.3</a> is invoked with plane equal to 0, r, c, priStr, secStr, damping, and dir as input.</p>
+    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.14.3</a> is invoked with plane equal to 0, r, c, priStr, secStr, damping, and dir as input.</p>
   </li>
   <li>
     <p>If NumPlanes is equal to 1, the process terminates at this point (i.e. filtering is not done for the U and V planes).</p>
@@ -17215,10 +17498,10 @@ CdefFrame will be overwritten later in this process.</p>
     <p>The variable damping is set equal to CdefDamping + coeffShift - 1.</p>
   </li>
   <li>
-    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.13.3</a> is invoked with plane equal to 1, r, c, priStr, secStr, damping, and dir as input.</p>
+    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.14.3</a> is invoked with plane equal to 1, r, c, priStr, secStr, damping, and dir as input.</p>
   </li>
   <li>
-    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.13.3</a> is invoked with plane equal to 2, r, c, priStr, secStr, damping, and dir as input.</p>
+    <p>The CDEF filter process specified in <a href="#cdef-filter-process">section 7.14.3</a> is invoked with plane equal to 2, r, c, priStr, secStr, damping, and dir as input.</p>
   </li>
 </ol>
 
@@ -17590,7 +17873,7 @@ Samples outside the current stripe are fetched from UpscaledCurrFrame (these sam
 }
 </code></pre>
 
-<p>When loop_restore_block is called, the loop restore block process in <a href="#loop-restore-block-process">section 7.15.1</a> is invoked with plane, row, and col as inputs.</p>
+<p>When loop_restore_block is called, the loop restore block process in <a href="#loop-restore-block-process">section 7.16.1</a> is invoked with plane, row, and col as inputs.</p>
 
 <h4 id="loop-restore-block-process">Loop Restore Block Process</h4>
 
@@ -17728,10 +18011,10 @@ if larger blocks are used - provided all contained samples belong to the same lo
 
 <ul>
   <li>
-    <p>If rType is equal to RESTORE_WIENER, the Wiener filter process specified in <a href="#wiener-filter-process">section 7.15.4</a> is invoked with plane, unitRow, unitCol, x, y, w, and h as inputs.</p>
+    <p>If rType is equal to RESTORE_WIENER, the Wiener filter process specified in <a href="#wiener-filter-process">section 7.16.4</a> is invoked with plane, unitRow, unitCol, x, y, w, and h as inputs.</p>
   </li>
   <li>
-    <p>Otherwise, if rType is equal to RESTORE_SGRPROJ, the self guided filter process specified in <a href="#self-guided-filter-process">section 7.15.2</a> is invoked with plane, unitRow, unitCol, x, y, w, and h as inputs.</p>
+    <p>Otherwise, if rType is equal to RESTORE_SGRPROJ, the self guided filter process specified in <a href="#self-guided-filter-process">section 7.16.2</a> is invoked with plane, unitRow, unitCol, x, y, w, and h as inputs.</p>
   </li>
   <li>
     <p>Otherwise (rType is equal to RESTORE_NONE), no filtering is applied.</p>
@@ -17767,13 +18050,13 @@ if larger blocks are used - provided all contained samples belong to the same lo
     <p>The variable pass is set equal to 0.</p>
   </li>
   <li>
-    <p>The box filter process specified in <a href="#box-filter-process">section 7.15.3</a> is invoked with plane, x, y, w, h, set, and pass as inputs, and the output assigned to flt0.</p>
+    <p>The box filter process specified in <a href="#box-filter-process">section 7.16.3</a> is invoked with plane, x, y, w, h, set, and pass as inputs, and the output assigned to flt0.</p>
   </li>
   <li>
     <p>The variable pass is set equal to 1.</p>
   </li>
   <li>
-    <p>The box filter process specified in <a href="#box-filter-process">section 7.15.3</a> is invoked with plane, x, y, w, h, set, and pass as inputs, and the output assigned to flt1.</p>
+    <p>The box filter process specified in <a href="#box-filter-process">section 7.16.3</a> is invoked with plane, x, y, w, h, set, and pass as inputs, and the output assigned to flt1.</p>
   </li>
 </ol>
 
@@ -17867,7 +18150,7 @@ for ( i = -1; i &lt; h + 1; i++ ) {
 
 <p class="alert alert-info"><strong>Note:</strong> When pass is equal to 0, only odd rows (i.e. entries A[ i ][ j ] and B[ i ][ j ] with i odd) will be used to generate the output.</p>
 
-<p>where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.15.6</a> should be invoked
+<p>where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.16.6</a> should be invoked
 and the output assigned to variable c.</p>
 
 <p>After A and B are prepared, the output array F is generated as follows:</p>
@@ -17938,9 +18221,11 @@ and the output assigned to variable c.</p>
 First a horizontal filter is used to build up a temporary array, and then this
 array is vertically filtered to obtain the final prediction.</p>
 
-<p>The Wiener coefficient process specified in <a href="#wiener-coefficient-process">section 7.15.5</a> is invoked with an input of LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 0 ] and the output assigned to vfilter.</p>
+<p>The rounding variables derivation process specified in <a href="#rounding-variables-derivation-process">section 7.10.2.1</a> is invoked with the input variable isCompound set equal to 0.</p>
 
-<p>The Wiener coefficient process specified in <a href="#wiener-coefficient-process">section 7.15.5</a> is invoked with an input of LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 1 ] and the output assigned to hfilter.</p>
+<p>The Wiener coefficient process specified in <a href="#wiener-coefficient-process">section 7.16.5</a> is invoked with an input of LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 0 ] and the output assigned to vfilter.</p>
+
+<p>The Wiener coefficient process specified in <a href="#wiener-coefficient-process">section 7.16.5</a> is invoked with an input of LrWiener[ TileNum ][ plane ][ unitRow ][ unitCol ][ 1 ] and the output assigned to hfilter.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The horizontal filter needs to be applied before the vertical filter, but the horizontal coefficients are sent after the vertical coefficients.</p>
 
@@ -17950,20 +18235,20 @@ array is vertically filtered to obtain the final prediction.</p>
   <li>
     <p>The array intermediate is specified as follows:</p>
 
-    <pre><code class="language-c">offset = (1 &lt;&lt; (BitDepth + EXTRAPREC_BITS - 1))
-limit = (1 &lt;&lt; (BitDepth + 1 + EXTRAPREC_BITS)) - 1
+    <pre><code class="language-c">offset = (1 &lt;&lt; (BitDepth + FILTER_BITS - InterRound0 - 1))
+limit = (1 &lt;&lt; (BitDepth + 1 + FILTER_BITS - InterRound0)) - 1
 for ( r = 0; r &lt; h + 7; r++ ) {
     for ( c = 0; c &lt; w; c++ ) {
         s = 0
         for ( t = 0; t &lt; 7; t++ )
             s += hfilter[ t ] * get_source_sample( plane, x + c + t - 3, y + r - 3 )
-        v = Round2(s, FILTER_BITS - EXTRAPREC_BITS)
+        v = Round2(s, InterRound0)
         intermediate[ r ][ c ] = Clip3( -offset, limit - offset, v)
     }
 }
 </code></pre>
 
-    <p>Where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.15.6</a> should be invoked.</p>
+    <p>Where the call to get_source_sample specifies that the get source sample process specified in <a href="#get-source-sample-process">section 7.16.6</a> should be invoked.</p>
 
     <p class="alert alert-info"><strong>Note:</strong> The intermediate result is clipped so that ( intermediate[ r ][ c ] + offset ) fits in an unsigned variable with (BitDepth + 3) bits.</p>
   </li>
@@ -17975,7 +18260,7 @@ for ( r = 0; r &lt; h + 7; r++ ) {
         s = 0
         for ( t = 0; t &lt; 7; t++ )
             s += vfilter[ t ] * intermediate[ r + t ][ c ]
-        v = Round2( s, FILTER_BITS + EXTRAPREC_BITS )
+        v = Round2( s, InterRound1 )
         LrFrame[ plane ][ y + r ][ x + c ] = Clip1( v )
     }
 }
@@ -18056,7 +18341,7 @@ In other words, requests for the third line (above or below) are given a copy of
 
 <ul>
   <li>
-    <p>The variable w is set equal to RefFrameWidth[ frame_to_show_map_idx ].</p>
+    <p>The variable w is set equal to RefUpscaledWidth[ frame_to_show_map_idx ].</p>
   </li>
   <li>
     <p>The variable h is set equal to RefFrameHeight[ frame_to_show_map_idx ].</p>
@@ -18132,7 +18417,7 @@ with x = 0..((w + subX) &gt;&gt; subX) - 1 and y = 0..((h + subY) &gt;&gt; subY)
 </ul>
 
 <p>If film_grain_params_present is equal to 1 and apply_grain is equal to 1, then
-the film grain synthesis process specified in <a href="#film-grain-synthesis-process">section 7.16.1</a> is invoked with inputs of w, h, subX, and subY.
+the film grain synthesis process specified in <a href="#film-grain-synthesis-process">section 7.17.1</a> is invoked with inputs of w, h, subX, and subY.
 (This process modifies the output arrays OutY, OutU, OutV).</p>
 
 <p>Finally, the frame to be displayed is defined to be the arrays OutY, OutU, OutV where the bit depth for each sample is BitDepth.</p>
@@ -18176,13 +18461,13 @@ the film grain synthesis process specified in <a href="#film-grain-synthesis-pro
     <p>The variable GrainMax is set equal to (256 &lt;&lt; (BitDepth - 8)) - 1 - GrainCenter.</p>
   </li>
   <li>
-    <p>The generate grain process specified in <a href="#generate-grain-process">section 7.16.1.2</a> is invoked.</p>
+    <p>The generate grain process specified in <a href="#generate-grain-process">section 7.17.1.2</a> is invoked.</p>
   </li>
   <li>
-    <p>The scaling lookup initialization process specified in <a href="#scaling-lookup-initialization-process">section 7.16.1.3</a> is invoked.</p>
+    <p>The scaling lookup initialization process specified in <a href="#scaling-lookup-initialization-process">section 7.17.1.3</a> is invoked.</p>
   </li>
   <li>
-    <p>The add noise process specified in <a href="#add-noise-synthesis-process">section 7.16.1.4</a> is invoked with w, h, subX, and subY as inputs.</p>
+    <p>The add noise process specified in <a href="#add-noise-synthesis-process">section 7.17.1.4</a> is invoked with w, h, subX, and subY as inputs.</p>
   </li>
 </ol>
 
@@ -18190,15 +18475,18 @@ the film grain synthesis process specified in <a href="#film-grain-synthesis-pro
 
 <p>The input to this process is a variable bits specifying the number of random bits to return.</p>
 
-<p>The output of this process is a psuedo-random number based on the state in RandomRegister.</p>
+<p>The output of this process is a pseudo-random number based on the state in RandomRegister.</p>
 
 <p>The process is specified as follows:</p>
 
-<pre><code class="language-c">r = RandomRegister
-b = ((r &gt;&gt; 0) ^ (r &gt;&gt; 1) ^ (r &gt;&gt; 3) ^ (r &gt;&gt; 12)) &amp; 1
-r = (r &gt;&gt; 1) | (bit &lt;&lt; 15)
-result = (r &gt;&gt; (16 - bits)) &amp; ((1 &lt;&lt; bits) - 1)
-RandomRegister = r
+<pre><code class="language-c">get_random_number( bits ) {
+  r = RandomRegister
+  b = ((r &gt;&gt; 0) ^ (r &gt;&gt; 1) ^ (r &gt;&gt; 3) ^ (r &gt;&gt; 12)) &amp; 1
+  r = (r &gt;&gt; 1) | (bit &lt;&lt; 15)
+  result = (r &gt;&gt; (16 - bits)) &amp; ((1 &lt;&lt; bits) - 1)
+  RandomRegister = r
+  return result
+}
 </code></pre>
 
 <p>The output of this process is the variable result.</p>
@@ -18222,7 +18510,7 @@ for ( y = 0; y &lt; 73; y++ ) {
 }
 </code></pre>
 
-<p>where the function call get_random_number invokes the random number process specified in <a href="#random-number-process">section 7.16.1.1</a>.</p>
+<p>where the function call get_random_number invokes the random number process specified in <a href="#random-number-process">section 7.17.1.1</a>.</p>
 
 <p>Then an auto-regressive filter is applied to the white noise as follows:</p>
 
@@ -18251,7 +18539,7 @@ for ( y = 3; y &lt; 73; y++ ) {
 
 <p>The variable chromaH (representing the height of the chroma noise array) is set equal to (subY ? 38 : 73).</p>
 
-<p>White noise arrays CbGrain and CrGrain 44 samples wide and 38 samples high are generated as follows:</p>
+<p>White noise arrays CbGrain and CrGrain chromaW samples wide and chromaH samples high are generated as follows:</p>
 
 <pre><code class="language-c">shift = 12 - BitDepth - grain_scale_shift
 for ( y = 0; y &lt; chromaH; y++ ) {
@@ -18404,7 +18692,7 @@ for ( y = 0; y &lt; h/2 ; y += 16 ) {
     rand = get_random_number( 8 )
     offsetX = rand &gt;&gt; 4
     offsetY = rand &amp; 15
-    for ( plane = 0 ; plane &lt; NumPlanes; plane++ )
+    for ( plane = 0 ; plane &lt; NumPlanes; plane++ ) {
       planeSubX = ( plane &gt; 0) ? subX : 0
       planeSubY = ( plane &gt; 0) ? subY : 0
       planeOffsetX = planeSubX ? 6 + offsetX : 9 + offsetX * 2
@@ -18455,7 +18743,7 @@ for ( y = 0; y &lt; h/2 ; y += 16 ) {
     for ( x = 0; x &lt; (w &gt;&gt; planeSubX) ; x++ ) {
       g = noiseStripe[ lumaNum ][ plane ][ i ][ x ]
       if ( planeSubY == 0 ) {
-        if ( i &lt; 2 &amp;&amp; lumaNum &gt; 0 &amp;&amp; overlap_flag )
+        if ( i &lt; 2 &amp;&amp; lumaNum &gt; 0 &amp;&amp; overlap_flag ) {
           old = noiseStripe[ lumaNum - 1 ][ plane ][ i + 32 ][ x ]
           if ( i == 0 ) {
             v = old * 27 + g * 17
@@ -18465,7 +18753,7 @@ for ( y = 0; y &lt; h/2 ; y += 16 ) {
           g = Clip3( GrainMin, GrainMax, Round2(g, 5) )
         }
       } else {
-        if ( i &lt; 1 &amp;&amp; lumaNum &gt; 0 &amp;&amp; overlap_flag )
+        if ( i &lt; 1 &amp;&amp; lumaNum &gt; 0 &amp;&amp; overlap_flag ) {
           old = noiseStripe[ lumaNum - 1 ][ plane ][ i + 16 ][ x ]
           v = old * 23 + g * 22
           g = Clip3( GrainMin, GrainMax, Round2(g, 5) )
@@ -18557,6 +18845,32 @@ The scale_lut function is specified as follows:</p>
 }
 </code></pre>
 
+<h3 id="motion-field-motion-vector-storage-process">Motion Field Motion Vector Storage Process</h3>
+
+<p>This process applies some filtering and reordering to the motion vectors to prepare them
+for storage as part of the reference frame update process.</p>
+
+<p>The following applies for row = 0..MiRows-1, for col = 0..MiCols-1:</p>
+
+<pre><code class="language-c">    MfRefFrames[ row ][ col ][ 0 ] = NONE
+    MfRefFrames[ row ][ col ][ 1 ] = NONE
+    for ( list = 0; list &lt; 2; list++ ) {
+        r = RefFrames[ row ][ col ][ list ]
+        MfMvs[ row ][ col ][ list ][ 0 ] = 0
+        MfMvs[ row ][ col ][ list ][ 1 ] = 0
+        if ( r &gt; INTRA_FRAME &amp;&amp; RefOrderHint[ r ] != OrderHint ) {
+            refIdx = ( RefOrderHint[ r ] &gt; OrderHint ) ? 1 : 0
+            mvRow = Mvs[ row ][ col ][ list ][ 0 ]
+            mvCol = Mvs[ row ][ col ][ list ][ 1 ]
+            if ( Abs( mvRow ) &lt;= REFMVS_LIMIT &amp;&amp; Abs( mvCol ) &lt;= REFMVS_LIMIT ) {
+                MfRefFrames[ row ][ col ][ refIdx ] = r
+                MfMvs[ row ][ col ][ list ][ 0 ] = mvRow
+                MfMvs[ row ][ col ][ list ][ 1 ] = mvCol
+            }
+        }
+    }
+</code></pre>
+
 <h3 id="reference-frame-update-process">Reference Frame Update Process</h3>
 
 <p>This process is invoked as the final step in decoding a frame.</p>
@@ -18576,7 +18890,10 @@ if (refresh_frame_flags &gt;&gt; i) &amp; 1 is equal to 1):</p>
     <p>RefValid[ i ] is set equal to 1.</p>
   </li>
   <li>
-    <p>RefFrameWidth[ i ] is set equal to UpscaledWidth.</p>
+    <p>RefUpscaledWidth[ i ] is set equal to UpscaledWidth.</p>
+  </li>
+  <li>
+    <p>RefFrameWidth[ i ] is set equal to FrameWidth.</p>
   </li>
   <li>
     <p>RefFrameHeight[ i ] is set equal to FrameHeight.</p>
@@ -18594,7 +18911,7 @@ if (refresh_frame_flags &gt;&gt; i) &amp; 1 is equal to 1):</p>
     <p>RefMiRows[ i ] is set equal to MiRows.</p>
   </li>
   <li>
-    <p>RefFrameIsIntra[ i ] is set equal to FrameIsIntra.</p>
+    <p>RefFrameType[ i ] is set equal to frame_type.</p>
   </li>
   <li>
     <p>RefSubsamplingX[ i ] is set equal to subsampling_x.</p>
@@ -18610,37 +18927,22 @@ if (refresh_frame_flags &gt;&gt; i) &amp; 1 is equal to 1):</p>
   </li>
   <li>
     <p>FrameStore[ i ][ 0 ][ y ][ x ] is set equal to LrFrame[ 0 ][ y ][ x ]
-for x = 0..FrameWidth-1, for y = 0..FrameHeight-1.</p>
+for x = 0..UpscaledWidth-1, for y = 0..FrameHeight-1.</p>
   </li>
   <li>
     <p>FrameStore[ i ][ plane ][ y ][ x ] is set equal to
 LrFrame[ plane ][ y ][ x ] for plane = 1..2,
-for x = 0..((FrameWidth + subsampling_x) &gt;&gt; subsampling_x) - 1,
+for x = 0..((UpscaledWidth + subsampling_x) &gt;&gt; subsampling_x) - 1,
 for y = 0..((FrameHeight + subsampling_y) &gt;&gt; subsampling_y) - 1.</p>
   </li>
   <li>
-    <p>The following applies for row = 0..MiRows-1, for col = 0..MiCols-1:</p>
+    <p>SavedRefFrames[ i ][ row ][ col ][ list ] is set equal to MfRefFrames[ row ][ col ][ list ] for
+list = 0..1, for row = 0..MiRows-1, for col = 0..MiCols-1.</p>
   </li>
-</ul>
-
-<pre><code class="language-c">    SavedRefFrames[ i ][ row ][ col ][ 0 ] = NONE
-    SavedRefFrames[ i ][ row ][ col ][ 1 ] = NONE
-    for ( list = 0; list &lt; 2; list++ ) {
-        r = RefFrames[ row ][ col ][ list ]
-        if ( r &gt; INTRA_FRAME &amp;&amp; RefOrderHint[ r ] != OrderHint ) {
-            refIdx = ( RefOrderHint[ r ] &gt; OrderHint ) ? 1 : 0
-            mvRow = Mvs[ row ][ col ][ list ][ 0 ]
-            mvCol = Mvs[ row ][ col ][ list ][ 1 ]
-            if ( Abs( mvRow ) &lt;= REFMVS_LIMIT &amp;&amp; Abs( mvCol ) &lt;= REFMVS_LIMIT ) {
-                SavedRefFrames[ i ][ row ][ col ][ refIdx ] = r
-                SavedMvs[ i ][ row ][ col ][ list ][ 0 ] = mvRow
-                SavedMvs[ i ][ row ][ col ][ list ][ 1 ] = mvCol
-            }
-        }
-    }
-</code></pre>
-
-<ul>
+  <li>
+    <p>SavedMvs[ i ][ row ][ col ][ list ][ comp ] is set equal to MfMvs[ row ][ col ][ list ][ comp ] for
+comp = 0..1, for list = 0..1, for row = 0..MiRows-1, for col = 0..MiCols-1.</p>
+  </li>
   <li>
     <p>SavedGmParams[ i ][ ref ][ j ] is set equal to gm_params[ ref ][ j ]
 for ref = LAST_FRAME..ALTREF_FRAME,
@@ -18671,13 +18973,91 @@ if (refresh_frame_flags &gt;&gt; i) &amp; 1 is equal to 1):</p>
 When this function is invoked the following takes place:</p>
 
 <ul>
-  <li>A copy of each CDF array mentioned in the semantics for setup_past_independence is saved in an area of memory indexed by ctx.</li>
+  <li>A copy of each CDF array mentioned in the semantics for init_coeff_cdfs and init_non_coeff_cdfs is saved in an area of memory indexed by ctx.</li>
 </ul>
 
 <p>save_grain_params( i ) is a function call that indicates that all the syntax elements that can be
 read in film_grain_params should be saved into an area of memory indexed by i.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> Although this process stores all the motion vectors, only the values where row and col are both odd will be used again.</p>
+
+<h3 id="reference-frame-loading-process">Reference Frame Loading Process</h3>
+
+<p>This process is the reverse of the reference frame update process specified in <a href="#reference-frame-update-process">section 7.19</a>. It loads saved values for a previous reference
+frame back into the current frame variables. The index of the saved reference frame to load is given by the syntax element frame_to_show_map_idx.</p>
+
+<ul>
+  <li>
+    <p>UpscaledWidth is set equal to RefUpscaledWidth[ frame_to_show_map_idx ].</p>
+  </li>
+  <li>
+    <p>FrameWidth is set equal to RefFrameWidth[ frame_to_show_map_idx ].</p>
+  </li>
+  <li>
+    <p>FrameHeight is set equal to RefFrameHeight[ frame_to_show_map_idx ].</p>
+  </li>
+  <li>
+    <p>RenderWidth is set equal to RefRenderWidth[ frame_to_show_map_idx ].</p>
+  </li>
+  <li>
+    <p>RenderHeight is set equal to RefRenderHeight[ frame_to_show_map_idx ].</p>
+  </li>
+  <li>
+    <p>MiCols is set equal to RefMiCols[ frame_to_show_map_idx ].</p>
+  </li>
+  <li>
+    <p>MiRows is set equal to RefMiRows[ frame_to_show_map_idx ].</p>
+  </li>
+  <li>
+    <p>subsampling_x is set equal to RefSubsamplingX[ frame_to_show_map_idx ].</p>
+  </li>
+  <li>
+    <p>subsampling_y is set equal to RefSubsamplingY[ frame_to_show_map_idx ].</p>
+  </li>
+  <li>
+    <p>BitDepth is set equal to RefBitDepth[ frame_to_show_map_idx ].</p>
+  </li>
+  <li>
+    <p>OrderHint is set equal to RefOrderHint[ frame_to_show_map_idx ].</p>
+  </li>
+  <li>
+    <p>RefOrderHint[ j ] is set equal to SavedOrderHints[ frame_to_show_map_idx ][ j ] for j = 0..NUM_REF_FRAMES-1.</p>
+  </li>
+  <li>
+    <p>LrFrame[ 0 ][ y ][ x ] is set equal to FrameStore[ frame_to_show_map_idx ][ 0 ][ y ][ x ]
+for x = 0..UpscaledWidth-1, for y = 0..FrameHeight-1.</p>
+  </li>
+  <li>
+    <p>LrFrame[ plane ][ y ][ x ] is set equal to FrameStore[ frame_to_show_map_idx ][ plane ][ y ][ x ]
+ for plane = 1..2,
+for x = 0..((UpscaledWidth + subsampling_x) &gt;&gt; subsampling_x) - 1,
+for y = 0..((FrameHeight + subsampling_y) &gt;&gt; subsampling_y) - 1.</p>
+  </li>
+  <li>
+    <p>MfRefFrames[ row ][ col ][ list ] is set equal to SavedRefFrames[ frame_to_show_map_idx ][ row ][ col ][ list ]
+for list = 0..1, for row = 0..MiRows-1, for col = 0..MiCols-1.</p>
+  </li>
+  <li>
+    <p>MfMvs[ row ][ col ][ list ][ comp ] is set equal to SavedMvs[ frame_to_show_map_idx ][ row ][ col ][ list ][ comp ]
+for comp = 0..1, for list = 0..1, for row = 0..MiRows-1, for col = 0..MiCols-1.</p>
+  </li>
+  <li>
+    <p>gm_params[ ref ][ j ] is set equal to SavedGmParams[ frame_to_show_map_idx ][ ref ][ j ]
+for ref = LAST_FRAME..ALTREF_FRAME,
+for j = 0..5.</p>
+  </li>
+  <li>
+    <p>SegmentIds[ row ][ col ] is set equal to SavedSegmentIds[ frame_to_show_map_idx ][ row ][ col ]
+for row = 0..MiRows-1,
+for col = 0..MiCols-1.</p>
+  </li>
+  <li>
+    <p>The function load_cdfs( frame_to_show_map_idx ) is invoked.</p>
+  </li>
+  <li>
+    <p>If film_grain_params_present is equal to 1, the function load_grain_params( i ) is invoked (see <a href="#film-grain-params-semantics">section 6.7.20</a>).</p>
+  </li>
+</ul>
 
 <h2 id="parsing-process">Parsing Process</h2>
 
@@ -18734,7 +19114,7 @@ number of bytes long.</p>
 <p>The variable BoolMaxBits is set to 8 * sz - 15.</p>
 
 <p>A copy is made of each of the CDF arrays mentioned in the semantics for
-setup_past_independence. The name of the copy is the name of the CDF array
+init_coeff_cdfs and init_non_coeff_cdfs. The name of the copy is the name of the CDF array
 prefixed with “Tile”.  This copying produces the following arrays:</p>
 
 <ul>
@@ -19063,7 +19443,7 @@ equal to 0 whenever this process is invoked.</p>
 It is legal for frames to end with more than one byte of padding.</p>
 
 <p>If UpdateCdfs is equal to 1, a copy is made of the final CDF values for each of the
-CDF arrays mentioned in the semantics for setup_past_independence. 
+CDF arrays mentioned in the semantics for init_coeff_cdfs and init_non_coeff_cdfs. 
 The name of the destination for the copy is the name of the CDF array
 prefixed with “Saved”.  The name of the source for the copy is the name of the CDF array
 prefixed with “Tile”.
@@ -20405,7 +20785,127 @@ the Specification.</p>
 
 <h3 id="scan-tables">Scan Tables</h3>
 
-<p>This section defines the scan order for different types of transform.</p>
+<p>This section defines the scan order for different types of transform. Each table is named in the form &lt;type&gt;_Scan_&lt;w&gt;x&lt;h&gt;, and contains an ordered
+list of positions within a rectangle of width w and height h. Each position is calculated as w * y + x.</p>
+
+<p>The following table lists pairs of scan tables which are transposes of each other. A table T_wxh is a
+transpose of another table T_hxw if the following function returns 1:</p>
+
+<pre><code class="language-c">is_transpose( ) {
+    for ( pos = 0; pos &lt; w * h; pos++ ) {
+        x1 = T_wxh[ pos ] % w
+        y1 = T_wxh[ pos ] / w
+        x2 = T_hxw[ pos ] % h
+        y2 = T_hxw[ pos ] / h
+        if ( x1 != y2 || y1 != x2 )
+            return 0
+    }
+    return 1
+}
+</code></pre>
+
+<table class="table table-sm table-bordered">
+  <thead>
+    <tr>
+      <th style="text-align: center">Table</th>
+      <th style="text-align: center">Transpose</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">Default_Scan_4x8</td>
+      <td style="text-align: center">Default_Scan_8x4</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Default_Scan_16x32</td>
+      <td style="text-align: center">Default_Scan_32x16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Default_Scan_16x4</td>
+      <td style="text-align: center">Default_Scan_4x16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Default_Scan_16x8</td>
+      <td style="text-align: center">Default_Scan_8x16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Default_Scan_32x8</td>
+      <td style="text-align: center">Default_Scan_8x32</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mcol_Scan_4x4</td>
+      <td style="text-align: center">Mrow_Scan_4x4</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mcol_Scan_4x8</td>
+      <td style="text-align: center">Mrow_Scan_8x4</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mcol_Scan_8x8</td>
+      <td style="text-align: center">Mrow_Scan_8x8</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mcol_Scan_16x8</td>
+      <td style="text-align: center">Mrow_Scan_8x16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mcol_Scan_16x16</td>
+      <td style="text-align: center">Mrow_Scan_16x16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mcol_Scan_16x32</td>
+      <td style="text-align: center">Mrow_Scan_32x16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mcol_Scan_32x32</td>
+      <td style="text-align: center">Mrow_Scan_32x32</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mcol_Scan_16x4</td>
+      <td style="text-align: center">Mrow_Scan_4x16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mcol_Scan_32x8</td>
+      <td style="text-align: center">Mrow_Scan_8x32</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mrow_Scan_4x4</td>
+      <td style="text-align: center">Mcol_Scan_4x4</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mrow_Scan_4x8</td>
+      <td style="text-align: center">Mcol_Scan_8x4</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mrow_Scan_8x8</td>
+      <td style="text-align: center">Mcol_Scan_8x8</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mrow_Scan_16x8</td>
+      <td style="text-align: center">Mcol_Scan_8x16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mrow_Scan_16x16</td>
+      <td style="text-align: center">Mcol_Scan_16x16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mrow_Scan_16x32</td>
+      <td style="text-align: center">Mcol_Scan_32x16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mrow_Scan_32x32</td>
+      <td style="text-align: center">Mcol_Scan_32x32</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mrow_Scan_16x4</td>
+      <td style="text-align: center">Mcol_Scan_4x16</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">Mrow_Scan_32x8</td>
+      <td style="text-align: center">Mcol_Scan_8x32</td>
+    </tr>
+  </tbody>
+</table>
 
 <pre><code class="language-c">Default_Scan_4x4[ 16 ] = {
     0, 1, 4, 8,
@@ -21340,25 +21840,6 @@ Num_4x4_Blocks_High[ x ] gives the the height of the block in units of 4 samples
 <p>For a block size x,
 Block_Height[ x ] gives the width of the block in units of samples.
 Block_Height[ x ] is defined to be equal to 4 * Num_4x4_Blocks_High[ x ].</p>
-
-<p>For a block size x,
-Num_8x8_Blocks_Wide[ x ] gives the width of the block in units of 8 samples (rounded up).</p>
-
-<pre><code class="language-c">Num_8x8_Blocks_Wide[ BLOCK_SIZES ] = { 
-    1, 1, 1, 1, 1, 2, 2, 2, 4, 4, 4, 8,
-    8, 8, 16, 16, 1, 2, 1, 4, 2, 8, 4, 16,
- }
-</code></pre>
-
-<p>For a block size x,
-Num_8x8_Blocks_High[ x ] gives the height of the block in units of 8 samples (rounded up).</p>
-
-<pre><code class="language-c">Num_8x8_Blocks_High[ BLOCK_SIZES ] =
-{
-    1, 1, 1, 1, 2, 1, 2, 4, 2, 4, 8, 4, 8, 
-    16, 8, 16, 2, 1, 4, 1, 8, 2, 16, 4
-}
-</code></pre>
 
 <p>Size_Group is used to map a block size into a context for intra syntax elements.</p>
 
@@ -31919,7 +32400,6 @@ Default_Palette_Size_8_Uv_Color_Cdf[ PALETTE_COLOR_CONTEXTS ][ 9 ] = {
 </code></pre>
 
 <div class="annex">
-
   <h2 class="no_count" id="annex-a-profiles-and-levels">Annex A: Profiles and Levels</h2>
 
   <h3 class="no_toc no_count" id="overview">Overview</h3>
@@ -31962,17 +32442,10 @@ a container format alongside audio and timing information.</p>
 
   <pre class="syntax"><code>bitstream( sz ) {
     while ( sz &gt; 0 ) {
-        ObuSize = 0
-        for (i = 0; i &lt; 8; i++) {
-            uleb128_byte                                                       f(8)
-            ObuSize |= ( (uleb128_byte &amp; 0x7f) &lt;&lt; (i*7) )
-            sz -= 1
-            if ( !(uleb128_byte &amp; 0x80) ) {
-                break
-            }
-        }
-        open_bitstream_unit( ObuSize )
-        sz -= ObuSize
+        <b class="syntax-element">obu_size</b>                                                             leb128()
+        sz -= Leb128Bytes
+        open_bitstream_unit( obu_size )
+        sz -= obu_size
     }
 }
 </code></pre>
@@ -31982,16 +32455,13 @@ a container format alongside audio and timing information.</p>
   <p><strong>sz</strong> specifies the number of bytes in the entire bitstream and is provided by
 external means.</p>
 
-  <p><strong>uleb128_byte</strong> is used to compute ObuSize by sending 7 bits at a time, with the most significant bit used to indicate that there are more bytes to be read.</p>
+  <p><strong>obu_size</strong> specifies the size in bytes of the next OBU.</p>
 
-  <p>It is a requirement of bitstream conformance that the most significant bit of uleb128_byte is equal to 0 when i is equal to 7.
-(This ensures that the ObuSize never uses more than 8 bytes.)</p>
-
-  <p class="alert alert-info"><strong>Note:</strong> There are multiple ways of encoding the same size depending on how many leading zero bits are encoded.
-There is no requirement that the ObuSize is sent using the most compressed representation.
-This can be useful for encoder implementations that want to leave a fixed amount of space to be filled in later for this size.</p>
-
-  <p><strong>ObuSize</strong> specifies the size in bytes of the next OBU.</p>
+  <p class="alert alert-info"><strong>Note:</strong> It is legal for the OBU to set obu_has_payload_length_field equal to 1 to indicate
+that the obu_payload_size syntax element is present.  In this case, the decoding process
+assumes that obu_size and obu_payload_size are set consistently.
+If obu_size and obu_payload_size are both present, but inconsistent, then the packed file
+is deemed invalid.</p>
 
   <h2 class="no_count" id="annex-c-included-experiments">Annex C: Included Experiments</h2>
 
@@ -32156,6 +32626,10 @@ This can be useful for encoder implementations that want to leave a fixed amount
         <td> </td>
       </tr>
       <tr>
+        <td>ext_tile</td>
+        <td> </td>
+      </tr>
+      <tr>
         <td>ext_tx</td>
         <td> </td>
       </tr>
@@ -32197,6 +32671,10 @@ This can be useful for encoder implementations that want to leave a fixed amount
       </tr>
       <tr>
         <td>frame_size</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>fwd_kf</td>
         <td> </td>
       </tr>
       <tr>
@@ -32309,6 +32787,14 @@ This can be useful for encoder implementations that want to leave a fixed amount
       </tr>
       <tr>
         <td>no_frame_context_signalling</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>obu_frame</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>obu_size_after_header</td>
         <td> </td>
       </tr>
       <tr>
@@ -32475,16 +32961,12 @@ This can be useful for encoder implementations that want to leave a fixed amount
     </thead>
     <tbody>
       <tr>
-        <td>ext_tile</td>
-        <td>Waiting for definition of auxiliary stream</td>
+        <td>explicit_order_hints</td>
+        <td>Code still under development</td>
       </tr>
       <tr>
-        <td>fwd_kf</td>
-        <td> </td>
-      </tr>
-      <tr>
-        <td>obu_move_length</td>
-        <td>No code at present</td>
+        <td>trailing_bits</td>
+        <td>Code not yet merged</td>
       </tr>
     </tbody>
   </table>
