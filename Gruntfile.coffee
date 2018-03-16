@@ -22,8 +22,8 @@ module.exports = (grunt) ->
               '| ' + '&nbsp;'.repeat(match.substring(1).length - 1)
           } ]
         files: [ {
-          src:  '_site/98.testing.md'
-          dest: '_site/'
+          src:  '98.testing.md'
+          dest: '_tmp/'
         } ]
     copy:
       docs:
@@ -50,6 +50,7 @@ module.exports = (grunt) ->
         bundleExec: true
         skip_initial_build: false
         verbose: false
+        src: '.'
         dest: '_site'
       serve: options:
         serve: false
@@ -85,7 +86,7 @@ module.exports = (grunt) ->
   # Register the default tasks.
   grunt.registerTask 'default', [
     'clean'
-    #'replace:preserveIndents'
+    'replace:preserveIndents'
     'jekyll'
     'replace:boldSyntaxElements'
     'copy'

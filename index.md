@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: web
 title: AV1 Bitstream &amp; Decoding Process Specification
 version_date: Released 2017-xx-xx
 ---
@@ -44,7 +44,7 @@ version_date: Released 2017-xx-xx
 
 {% include_relative bibliography.md %}
 
-{% include_relative 98.testing.md %}
+{% include_relative _tmp/98.testing.md %}
 
 {% comment %}
 {% include_relative 99.function-reference-links.md %}

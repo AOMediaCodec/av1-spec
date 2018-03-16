@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <title>AV1 Bitstream &amp; Decoding Process Specification</title>
-  <link rel="stylesheet" href="assets/css/av1-spec.css">
   <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/av1-spec.css">
   <link rel="apple-touch-icon" sizes="57x57" href="assets/images/icons/apple-icon-57x57.png">
   <link rel="apple-touch-icon" sizes="60x60" href="assets/images/icons/apple-icon-60x60.png">
   <link rel="apple-touch-icon" sizes="72x72" href="assets/images/icons/apple-icon-72x72.png">
@@ -38,7 +38,7 @@
 
 <p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-13 17:40:46 -0700</em></p>
+<p><em>Last modified: 2018-03-16 11:43:01 -0700</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -32535,27 +32535,27 @@ sRGB.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_forbidden_bit</b></td>
+      <td>    <b class="syntax-element">obu_forbidden_bit</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_type</b></td>
+      <td>    <b class="syntax-element">obu_type</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_reserved_2bits</b></td>
+      <td>    <b class="syntax-element">obu_reserved_2bits</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_extension_flag</b></td>
+      <td>    <b class="syntax-element">obu_extension_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( obu_extension_flag == 1 )</td>
+      <td>    if ( obu_extension_flag == 1 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>obu_extension_header()</td>
+      <td>        obu_extension_header()</td>
       <td> </td>
     </tr>
     <tr>
@@ -32574,71 +32574,71 @@ sRGB.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>sbSize = use_128x128_superblock ? BLOCK_128X128 : BLOCK_64X64</td>
+      <td>    sbSize = use_128x128_superblock ? BLOCK_128X128 : BLOCK_64X64</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( MiSize == sbSize &amp;&amp; skip )</td>
+      <td>    if ( MiSize == sbSize &amp;&amp; skip )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return</td>
+      <td>        return</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( ReadDeltas ) {</td>
+      <td>    if ( ReadDeltas ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_q_abs</b></td>
+      <td>        <b class="syntax-element">delta_q_abs</b></td>
       <td>S()</td>
     </tr>
     <tr>
-      <td>if ( delta_q_abs == DELTA_Q_SMALL ) {</td>
+      <td>        if ( delta_q_abs == DELTA_Q_SMALL ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_q_rem_bits</b></td>
+      <td>            <b class="syntax-element">delta_q_rem_bits</b></td>
       <td>L(3)</td>
     </tr>
     <tr>
-      <td>delta_q_rem_bits++</td>
+      <td>            delta_q_rem_bits++</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_q_abs_bits</b></td>
+      <td>            <b class="syntax-element">delta_q_abs_bits</b></td>
       <td>L(delta_q_rem_bits)</td>
     </tr>
     <tr>
-      <td>delta_q_abs = delta_q_abs_bits + (1 « delta_q_rem_bits) + 1</td>
+      <td>            delta_q_abs = delta_q_abs_bits + (1 « delta_q_rem_bits) + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (delta_q_abs) {</td>
+      <td>        if (delta_q_abs) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_q_sign_bit</b></td>
+      <td>            <b class="syntax-element">delta_q_sign_bit</b></td>
       <td>L(1)</td>
     </tr>
     <tr>
-      <td>reducedDeltaQIndex = delta_q_sign_bit ? -delta_q_abs : delta_q_abs</td>
+      <td>            reducedDeltaQIndex = delta_q_sign_bit ? -delta_q_abs : delta_q_abs</td>
       <td> </td>
     </tr>
     <tr>
-      <td>CurrentQIndex = Clip3(1, 255, CurrentQIndex + (reducedDeltaQIndex « delta_q_res))</td>
+      <td>            CurrentQIndex = Clip3(1, 255, CurrentQIndex + (reducedDeltaQIndex « delta_q_res))</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
