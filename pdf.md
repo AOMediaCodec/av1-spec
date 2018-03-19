@@ -5,10 +5,14 @@ version_date: Released 2017-xx-xx
 ---
 
 {% include_relative section.links.md %}
+<div id="cover" markdown="1">
 {% include_relative 00.title.md %}
 {% include_relative 00.version.md %}
+</div>
 {% include_relative 00.abstract.md %}
+<div id="toc" markdown="1">
 {% include_relative 00.toc.md %}
+</div>
 {% include_relative 01.scope.md %}
 {% include_relative 02.terms.md %}
 {% include_relative 03.symbols.md %}

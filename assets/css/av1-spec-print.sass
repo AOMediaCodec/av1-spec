@@ -9,6 +9,9 @@ body
   font-size: 10pt
   color: #000
   background-color: #fff
+
+// General page rules
+
 @page
   size: letter portrait
   margin: .75in .5in
@@ -40,10 +43,26 @@ body
     font-family: Arial, sans-serif
     transform: rotate(315deg)
     white-space: pre
-//@page:first
-//  margin-top: 10cm
-//  @bottom
-//    content: normal
+
+// Cover page -- Uses :first to undo normal page styling
+
+@page:first
+  width: 100vw
+  height: 100vh
+  margin-top: 25%
+  @top-right
+    content: normal
+  @top-left
+    content: normal
+  @bottom-right
+    content: normal
+  @bottom-left
+    content: normal
+
+div#cover
+  page-break-after: always
+  counter-reset: page
+
 h1
   string-set: doctitle content()
 h2
