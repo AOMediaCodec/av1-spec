@@ -10,10 +10,10 @@ module.exports = (grunt) ->
           replacement: (match) ->
             '<b class="syntax-element">' + match.substring(2) + '</b>'
         } ]
-        files: [ {
-          src:  '_site/index.html'
-          dest: 'docs/index.html'
-        } ]
+        files: [
+          { src:  '_site/index.html', dest: 'docs/index.html' },
+          { src:  '_site/pdf.html', dest: 'docs/av1-spec.html' }
+        ]
       preserveIndents:
         options:
           patterns: [ {
@@ -77,12 +77,17 @@ module.exports = (grunt) ->
           base: '.'
           keepalive: true
           livereload: false
+    exec:
+      pdf:
+        cmd: 'prince docs/av1-spec.html -o docs/av1-spec.pdf'
+        stderr: false
   # Load the NPM tasks.
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-connect'
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-jekyll'
   grunt.loadNpmTasks 'grunt-replace'
+  grunt.loadNpmTasks('grunt-exec');
   # Register the default tasks.
   grunt.registerTask 'default', [
     'clean'
