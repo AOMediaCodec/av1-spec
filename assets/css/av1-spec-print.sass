@@ -71,9 +71,13 @@ div#cover
 h1
   string-set: doctitle content()
 h2
+  page-break-before: always
   string-set: sectiontitle content()
 h1, h2, h3, dt
   page-break-after: avoid
+h2 + table,
+h2 + pre.syntax
+  page-break-before: avoid
 dd
   page-break-before: avoid
 img, table, figure
