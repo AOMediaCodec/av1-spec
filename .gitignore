@@ -1,5 +1,9 @@
 _site/
+_tmp/
 _build/
 .sass-cache/
 node_modules/
 .jekyll-metadata
+docs/av1-spec.html
+docs/av1-spec.pdf
+docs/assets/css/av1-spec-print.css
