@@ -21,10 +21,10 @@ module.exports = (grunt) ->
             replacement: (match) ->
               '| ' + '&nbsp;'.repeat(match.substring(1).length - 1)
           } ]
-        files: [ {
-          src:  '98.testing.md'
-          dest: '_tmp/'
-        } ]
+        files: [
+          { src:  '98.testing.md', dest: '_tmp/' },
+          { src:  '04.conventions.md', dest: '_tmp/' }
+        ]
     copy:
       docs:
         files: [ {
