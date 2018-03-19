@@ -64,9 +64,20 @@ body
   @bottom-left
     content: normal
 
-div#cover
+// End Cover page
+
+// Front matter
+
+div#frontmatter
+  page: frontmatter
+
+@page frontmatter
   page-break-after: always
   counter-reset: page
+  @bottom-right
+    content: normal
+
+// End front matter
 
 h1
   string-set: doctitle content()
