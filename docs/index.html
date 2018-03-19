@@ -36,9 +36,9 @@
 
 <h1 class="no_toc" id="av1-bitstream--decoding-process-specification">AV1 Bitstream &amp; Decoding Process Specification</h1>
 
-<p><em>Copyright 2017, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
+<p><em>Copyright 2018, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-16 19:52:56 -0700</em></p>
+<p><em>Last modified: 2018-03-19 11:53:20 -0700</em></p>
 
 <div class="alert alert-danger">
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
@@ -859,13 +859,9 @@ video sequence.</p>
   </dd>
   <dt>Tile</dt>
   <dd>
-    <p>A rectangular region of the frame that is intended to be able to be decoded
-and encoded independently, although loop-filtering across tile edges may still
+    <p>A rectangular region of the frame that can be decoded
+and encoded independently, although loop-filtering across tile edges is still
 be applied.</p>
-
-    <p class="alert alert-info"><strong>Note:</strong> For AV1 this intention is only partially met. Partitioning into
-columns works as expected, but partitioning into rows does not. The decode of
-a tile depends on the decode of the tile above if dependent_tiles is equal to 1.</p>
   </dd>
   <dt>Transform block</dt>
   <dd>
@@ -2972,6 +2968,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         OrderHint = CurrentVideoFrame
         CurrentVideoFrame += 1
     }
+    if ( FrameIsIntra || error_resilient_mode ) {
+        primary_ref_frame = PRIMARY_REF_NONE
+    } else {
+        <b class="syntax-element">primary_ref_frame</b>                                                    f(3)
+    }
     allow_high_precision_mv = 0
     can_use_previous = 0
     allow_intrabc = 0
@@ -3058,12 +3059,6 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         disable_frame_end_update_cdf = 1
     } else {
         <b class="syntax-element">disable_frame_end_update_cdf</b>                                         f(1)
-    }
-    
-    if ( FrameIsIntra || error_resilient_mode ) {
-        primary_ref_frame = PRIMARY_REF_NONE
-    } else {
-        <b class="syntax-element">primary_ref_frame</b>                                                    f(3)
     }
     if ( FrameIsIntra || error_resilient_mode ) {
         setup_past_independence ( )
@@ -3245,6 +3240,12 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     if ( AllLossless || allow_intrabc ) {
         loop_filter_level[ 0 ] = 0
         loop_filter_level[ 1 ] = 0
+        for ( i = 0; i &lt; TOTAL_REFS_PER_FRAME; i++ ) {
+            loop_filter_ref_deltas[ i ] = 0
+        }
+        for ( i = 0; i &lt; 2; i++ ) {
+            loop_filter_mode_deltas[ i ] = 0
+        }
         return
     }
     <b class="syntax-element">loop_filter_level[ 0 ]</b>                                                   f(6)
@@ -3270,6 +3271,13 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
                 if ( update_mode_delta == 1 )
                     <b class="syntax-element">loop_filter_mode_deltas[ i ]</b>                             su(1+6)
             }
+        }
+    } else {
+        for ( i = 0; i &lt; TOTAL_REFS_PER_FRAME; i++ ) {
+            loop_filter_ref_deltas[ i ] = 0
+        }
+        for ( i = 0; i &lt; 2; i++ ) {
+            loop_filter_mode_deltas[ i ] = 0
         }
     }
 }
@@ -3329,17 +3337,17 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 
 <pre class="syntax"><code>segmentation_params( ) {
     <b class="syntax-element">segmentation_enabled</b>                                                     f(1)
-    SegIdPreSkip = 0
     if ( segmentation_enabled == 1 ) {
-        if ( FrameIsIntra || error_resilient_mode ) {
+        if ( primary_ref_frame == PRIMARY_REF_NONE ) {
             segmentation_update_map = 1
             segmentation_temporal_update = 0
+            segmentation_update_data = 1
         } else {
             <b class="syntax-element">segmentation_update_map</b>                                          f(1)
             if ( segmentation_update_map == 1 )
                 <b class="syntax-element">segmentation_temporal_update</b>                                 f(1)
+            <b class="syntax-element">segmentation_update_data</b>                                         f(1)
         }
-        <b class="syntax-element">segmentation_update_data</b>                                             f(1)
         if ( segmentation_update_data == 1 ) {
             for ( i = 0; i &lt; MAX_SEGMENTS; i++ ) {
                 for ( j = 0; j &lt; SEG_LVL_MAX; j++ ) {
@@ -3347,10 +3355,6 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
                     <b class="syntax-element">feature_enabled</b>                                          f(1)
                     FeatureEnabled[ i ][ j ] = feature_enabled
                     if ( feature_enabled == 1 ) {
-                        if ( j &gt;= SEG_LVL_REF_FRAME ) {
-                            SegIdPreSkip = 1
-                        }
-                        LastActiveSegId = i
                         bitsToRead = Segmentation_Feature_Bits[ j ]
                         limit = Segmentation_Feature_Max[ j ]
                         if ( Segmentation_Feature_Signed[ j ] == 1 ) {
@@ -3362,6 +3366,24 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
                         }
                     }
                     FeatureData[ i ][ j ] = clippedValue
+                }
+            }
+        }
+    } else {
+        for ( i = 0; i &lt; MAX_SEGMENTS; i++ ) {
+            for ( j = 0; j &lt; SEG_LVL_MAX; j++ ) {
+                FeatureEnabled[ i ][ j ] = 0
+                FeatureData[ i ][ j ] = 0
+            }
+        }
+    }
+    SegIdPreSkip = 0
+    for ( i = 0; i &lt; MAX_SEGMENTS; i++ ) {
+        for ( j = 0; j &lt; SEG_LVL_MAX; j++ ) {
+            if ( FeatureEnabled[ i ][ j ] ) {
+                LastActiveSegId = i
+                if ( j &gt;= SEG_LVL_REF_FRAME ) {
+                    SegIdPreSkip = 1
                 }
             }
         }
@@ -3463,24 +3485,6 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
         MiRowStarts[ i ] = MiRows
         TileRows = i
         TileRowsLog2 = tile_log2(1, TileRows)
-    }
-    if ( TileRowsLog2 &gt; 0 ) {
-        <b class="syntax-element">dependent_tiles</b>                                                      f(1)
-        if ( dependent_tiles ) {
-            AllowDependentTileRow[ 0 ] = 0
-            startMi = 0
-            maxTileHeightMi = maxTileHeightSb &lt;&lt; sbShift
-            for (i = 0; i &lt; TileRows; i++) {
-                if (MiRowStarts[i+1] - startMi &gt; maxTileHeightMi) {
-                    AllowDependentTileRow[i] = 0
-                    startMi = MiRowStarts[i]
-                } else {
-                    AllowDependentTileRow[i] = 1
-                }
-            }
-        }
-    } else {
-        dependent_tiles = 0
     }
     if ( TileColsLog2 &gt; 0 )
         <b class="syntax-element">loop_filter_across_tiles_v</b>                                           f(1)
@@ -3734,7 +3738,11 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
 <h4 id="global-motion-params-syntax">Global Motion Params Syntax</h4>
 
 <pre class="syntax"><code>global_motion_params( ) {
-    if ( FrameIsIntra || error_resilient_mode || !can_use_previous) {
+    if ( FrameIsIntra || 
+         error_resilient_mode ||
+         !can_use_previous ||
+         (primary_ref_frame == PRIMARY_REF_NONE) 
+       ) {
         for (ref = LAST_FRAME; ref &lt;= ALTREF_FRAME; ref++) {
             GmType[ref] = IDENTITY
             for ( i = 0; i &lt; 6; i++ )
@@ -4018,10 +4026,7 @@ However, these fractional bits will be discarded during the Setup Zero MV proces
 <h4 id="decode-tile-syntax">Decode Tile Syntax</h4>
 
 <pre class="syntax"><code>decode_tile( ) {
-    if ( !dependent_tiles || 
-         (TileCol == 0 &amp;&amp; !AllowDependentTileRow[ TileRow ]) ) {
-        clear_above_context( )
-    }
+    clear_above_context( )
     for ( i = 0; i &lt; FRAME_LF_COUNT; i++ )
         DeltaLF[ i ] = 0
     for ( plane = 0; plane &lt; NumPlanes; plane++ ) {
@@ -6159,21 +6164,13 @@ Tx_Type_Inter_Inv_Set3[ 2 ]  = { IDTX, DCT_DCT }
 
 <h4 id="is-inside-function">Is Inside Function</h4>
 
-<p>is_inside determines whether a candidate position is accessible.
-Moving across the top tile edge is allowed when
-dependent_tiles is equal to 1 and allowed by the AllowDependentTileRow array, but
-moving across the other tile edges is always prohibited.</p>
+<p>is_inside determines whether a candidate position is inside the current tile.</p>
 
 <pre class="syntax"><code>is_inside( candidateR, candidateC ) {
-    if (candidateC &gt;= MiColStart &amp;&amp;
-        candidateC &lt; MiColEnd &amp;&amp;
-        candidateR &lt; MiRowEnd) {
-        if (candidateR &gt;= MiRowStart)
-            return 1
-        if (dependent_tiles &amp;&amp; AllowDependentTileRow[ TileRow ])
-            return 1
-    }
-    return 0
+    return ( candidateC &gt;= MiColStart &amp;&amp;
+             candidateC &lt; MiColEnd &amp;&amp;
+             candidateR &gt;= MiRowStart &amp;&amp;
+             candidateR &lt; MiRowEnd )
 }
 </code></pre>
 
@@ -7644,6 +7641,17 @@ that all of the following conditions are true:</p>
 <p><strong>frame_size_override_flag</strong> equal to 1 specifies that the frame size will be contained in the bitstream.
 frame_size_override_flag equal to 0 specifies that the frame size is equal to the size in the sequence header.</p>
 
+<p><strong>frame_offset_update</strong> provides a hint to the motion vector prediction as to how many frames later this frame is expected to be shown.</p>
+
+<p><strong>OrderHint</strong> specifies the offset of when this frame is expected to be shown relative to the last key frame.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> There is no requirement that OrderHint should reflect the true output order.
+As a guideline, the motion vector prediction is expected to be more accurate if the true output order is used for frames that will be shown later.
+If a frame is never to be shown (e.g. it has been constructed as an average of several frames for reference purposes),
+the encoder is free to choose whichever value of frame_offset_update will give the best compression.</p>
+
+<p><strong>primary_ref_frame</strong> specifies which reference frame contains the CDF values and other state that should be loaded at the start of the frame.</p>
+
 <p><strong>allow_screen_content_tools</strong> equal to 1 indicates that intra blocks may use
 palette encoding; allow_screen_content_tools equal to 0 indicates that palette
 encoding is never used.</p>
@@ -7714,17 +7722,6 @@ disable_frame_end_update_cdf equal to 0 indicates that the end of frame CDF upda
 
 <p class="alert alert-info"><strong>Note:</strong> It can be useful to disable the CDF update because it means the next frame can start to be decoded
 as soon as the frame headers of the current frame have been processed.</p>
-
-<p><strong>primary_ref_frame</strong> specifies which slot the CDF values should be loaded from at the start of the frame.</p>
-
-<p><strong>frame_offset_update</strong> provides a hint to the motion vector prediction as to how many frames later this frame is expected to be shown.</p>
-
-<p><strong>OrderHint</strong> specifies the offset of when this frame is expected to be shown relative to the last key frame.</p>
-
-<p class="alert alert-info"><strong>Note:</strong> There is no requirement that OrderHint should reflect the true output order.
-As a guideline, the motion vector prediction is expected to be more accurate if the true output order is used for frames that will be shown later.
-If a frame is never to be shown (e.g. it has been constructed as an average of several frames for reference purposes),
-the encoder is free to choose whichever value of frame_offset_update will give the best compression.</p>
 
 <p><strong>OrderHints</strong> specifies the expected output order for each reference frame.</p>
 
@@ -8140,23 +8137,29 @@ by ctx. (The memory contents of these frame contexts have been initialized by
 previous calls to save_cdfs).  Once the CDF arrays have been loaded, the last entry
 in each array is set to 0.</p>
 
-<p><strong>load_previous( )</strong> is a function call that indicates that information from the
-previous frame should be loaded for use in decoding the current frame.
+<p><strong>load_previous( )</strong> is a function call that indicates that information from a
+previous frame may be loaded for use in decoding the current frame.
 When this function is invoked the following ordered steps apply:</p>
 
 <ol>
   <li>
-    <p>The variable prevFrame is set equal to ref_frame_idx[ 0 ].</p>
+    <p>If primary_ref_frame is not equal to PRIMARY_REF_NONE, the variable prevFrame is set equal to ref_frame_idx[ 0 ].</p>
   </li>
   <li>
-    <p>gm_params is set equal to SavedGmParams[ prevFrame ].</p>
+    <p>If primary_ref_frame is not equal to PRIMARY_REF_NONE, gm_params is set equal to SavedGmParams[ prevFrame ].</p>
   </li>
   <li>
-    <p>If segmentation_enabled is equal to 1, RefMiCols[ prevFrame ] is equal to MiCols, and
+    <p>If primary_ref_frame is not equal to PRIMARY_REF_NONE, segmentation_enabled is equal to 1, RefMiCols[ prevFrame ] is equal to MiCols, and
 RefMiRows[ prevFrame ] is equal to MiRows, PrevSegmentIds[ row ][ col ] is set equal to
 SavedSegmentIds[ prevFrame ][ row ][ col ] for row = 0..MiRows-1, for col = 0..MiCols-1.</p>
 
     <p>Otherwise, PrevSegmentIds[ row ][ col ] is set equal to 0 for row = 0..MiRows-1, for col = 0..MiCols-1.</p>
+  </li>
+  <li>
+    <p>If primary_ref_frame is not equal to PRIMARY_REF_NONE, the function load_loop_filter_params( prevFrame ) specified in <a href="#reference-frame-loading-process">section 7.20</a> is invoked.</p>
+  </li>
+  <li>
+    <p>If primary_ref_frame is not equal to PRIMARY_REF_NONE, the function load_segmentation_params( prevFrame ) specified in <a href="#reference-frame-loading-process">section 7.20</a> is invoked.</p>
   </li>
   <li>
     <p>If can_use_previous is equal to 1, the motion field estimation process in <a href="#motion-field-estimation-process">section 7.8</a> is invoked.</p>
@@ -8302,6 +8305,9 @@ reference frame.</p>
 additional syntax elements that specify which mode and reference frame deltas
 are to be updated. loop_filter_delta_update equal to 0 means that these syntax
 elements are not present.</p>
+
+<p>If primary_ref_frame is equal to PRIMARY_REF_NONE, it is a requirement of
+bitstream conformance that loop_filter_delta_update is equal to 1.</p>
 
 <p><strong>update_ref_delta</strong> equal to 1 means that the bitstream contains the syntax
 element loop_filter_ref_delta; update_ref_delta equal to 0 means that the
@@ -8479,19 +8485,6 @@ for each tile down the image.</p>
 <p><strong>maxTileHeightSb</strong> specifies the maximum height (in units of superblocks) that can be used for a tile (to avoid making tiles with too much area).</p>
 
 <p><strong>maxTileHeightMi</strong> contains the maximum height (in units of 4x4 pixels) that can be used for a tile.</p>
-
-<p><strong>dependent_tiles</strong> equal to 0 indicates that there are no syntax dependencies
-between tiles, dependent_tiles equal to 1 indicates that there can be
-dependencies between tiles.</p>
-
-<p class="alert alert-info"><strong>Note:</strong> When dependent_tiles is equal to 1, the context determination, motion
-vector prediction, and intra prediction are allowed to depend on the tile above.</p>
-
-<p><strong>AllowDependentTileRow</strong> is an array that specifies which tile rows are allowed to use
-syntax dependencies between tiles.</p>
-
-<p class="alert alert-info"><strong>Note:</strong> The AllowDependentTileRow array ensures that the syntax decode can be split into
-independent units of a certain maximum size even when dependent_tiles is equal to 1.</p>
 
 <p><strong>loop_filter_across_tiles_v</strong> equal to 1 indicates that loop filtering is allowed
 across vertical tile edges. loop_filter_across_tiles_v equal to 0 indicates that loop
@@ -10600,9 +10593,6 @@ in alternative manners as well.</p>
   </li>
   <li>
     <p>disable_frame_end_update_cdf is equal to 1</p>
-  </li>
-  <li>
-    <p>dependent_tiles is equal to 0</p>
   </li>
   <li>
     <p>FrameRestorationType[ plane ] is equal to RESTORE_NONE for plane equal to 0,1, and 2</p>
@@ -18959,6 +18949,12 @@ for col = 0..MiCols-1.</p>
   <li>
     <p>If film_grain_params_present is equal to 1, the function save_grain_params( i ) is invoked (see below).</p>
   </li>
+  <li>
+    <p>The function save_loop_filter_params( i ) is invoked (see below).</p>
+  </li>
+  <li>
+    <p>The function save_segmentation_params( i ) is invoked (see below).</p>
+  </li>
 </ul>
 
 <p>For each value of i from 0 to NUM_REF_FRAMES - 1, the following applies
@@ -18979,7 +18975,14 @@ When this function is invoked the following takes place:</p>
 <p>save_grain_params( i ) is a function call that indicates that all the syntax elements that can be
 read in film_grain_params should be saved into an area of memory indexed by i.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> Although this process stores all the motion vectors, only the values where row and col are both odd will be used again.</p>
+<p>save_loop_filter_params( i ) is a function call that indicates that the values of
+loop_filter_ref_deltas[ j ] for j = 0 .. TOTAL_REFS_PER_FRAME-1,
+and the values of loop_filter_mode_deltas[ j ] for j = 0 .. 1 should be saved into an area of memory indexed by i.</p>
+
+<p>save_segmentation_params( i ) is a function call that indicates that the values of
+FeatureEnabled[ j ][ k ] and FeatureData[ j ][ k ] for j = 0 .. MAX_SEGMENTS-1, for k = 0 .. SEG_LVL_MAX-1 should be saved into an area of memory indexed by i.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> Although this process stores all the motion vectors into SavedMvs, only the values where row and col are both odd will affect the decoding process.</p>
 
 <h3 id="reference-frame-loading-process">Reference Frame Loading Process</h3>
 
@@ -19057,7 +19060,20 @@ for col = 0..MiCols-1.</p>
   <li>
     <p>If film_grain_params_present is equal to 1, the function load_grain_params( i ) is invoked (see <a href="#film-grain-params-semantics">section 6.7.20</a>).</p>
   </li>
+  <li>
+    <p>The function load_loop_filter_params( frame_to_show_map_idx ) is invoked (see below).</p>
+  </li>
+  <li>
+    <p>The function load_segmentation_params( frame_to_show_map_idx ) is invoked (see below).</p>
+  </li>
 </ul>
+
+<p>load_loop_filter_params( i ) is a function call that indicates that the values of
+loop_filter_ref_deltas[ j ] for j = 0 .. TOTAL_REFS_PER_FRAME-1,
+and the values of loop_filter_mode_deltas[ j ] for j = 0 .. 1 should be loaded from an area of memory indexed by i.</p>
+
+<p>load_segmentation_params( i ) is a function call that indicates that the values of
+FeatureEnabled[ j ][ k ] and FeatureData[ j ][ k ] for j = 0 .. MAX_SEGMENTS-1, for k = 0 .. SEG_LVL_MAX-1 should be loaded from an area of memory indexed by i.</p>
 
 <h2 id="parsing-process">Parsing Process</h2>
 
@@ -23009,14 +23025,14 @@ with zero mean and standard deviation of about 512 clipped to the range of [-204
 }
 </code></pre>
 
-<p>Default_Segment_Id_Cdf[ SEGMENT_ID_CONTEXTS ][ MAX_SEGMENTS + 1 ] = {
+<pre><code class="language-c">Default_Segment_Id_Cdf[ SEGMENT_ID_CONTEXTS ][ MAX_SEGMENTS + 1 ] = {
   { 5622, 7893, 16093, 18233, 27809, 28373, 32533, 32768, 0 },
   { 14274, 18230, 22557, 24935, 29980, 30851, 32344, 32768, 0 },
   { 27527, 28487, 28723, 28890, 32397, 32647, 32679, 32768, 0 }
-}</p>
-<pre><code>
-~~~~~ c
-Default_Segment_Id_Predicted_Cdf[ SEGMENT_ID_PREDICTED_CONTEXTS ][ 3 ] = {
+}
+</code></pre>
+
+<pre><code class="language-c">Default_Segment_Id_Predicted_Cdf[ SEGMENT_ID_PREDICTED_CONTEXTS ][ 3 ] = {
   { 128 * 128, 32768, 0 },
   { 128 * 128, 32768, 0 },
   { 128 * 128, 32768, 0 }
@@ -32420,10 +32436,10 @@ resolution and performance characteristics.</p>
   </ul>
 
   <p class="alert alert-info"><strong>Note:</strong> Main profile consists of YUV 4:2:0 or monochrome sequences with bit depth equal to 8 or 10.
-High profile consists of YUV 4:4:4 sequences with bit depth equal to 8 or 10 (monochrome is not allowed in high profile).
-Professional profile consists of YUV 4:2:2 sequences with bit depth equal to 8 or 10 or 12,
+High profile consists of all main profile sequences plus YUV 4:4:4 sequences with bit depth equal to 8 or 10 (monochrome is not allowed when seq_profile=1).
+Professional profile consists of all high and main profile sequences plus YUV 4:2:2 sequences with bit depth equal to 8 or 10 or 12,
 4:2:0 sequences with bit depth equal to 12,
-and 4:4:4 sequences with bit depth equal to 12.</p>
+4:4:4 sequences with bit depth equal to 12, and monochrome sequences with bit depth equal to 12.</p>
 
   <h4 id="levels">Levels</h4>
 
@@ -32555,14 +32571,6 @@ is deemed invalid.</p>
       </tr>
       <tr>
         <td>delta_q</td>
-        <td> </td>
-      </tr>
-      <tr>
-        <td>dependent_horztilegroups</td>
-        <td> </td>
-      </tr>
-      <tr>
-        <td>dependent_horztiles</td>
         <td> </td>
       </tr>
       <tr>
