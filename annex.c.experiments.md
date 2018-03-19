@@ -31,8 +31,6 @@ The specification has been updated to include the following list of adopted expe
 | daala_ec                      |
 | deblock_13tap                 |
 | delta_q                       |
-| dependent_horztilegroups      |
-| dependent_horztiles           |
 | dual_filter                   |
 | ec_adapt                      |
 | ec_multisymbol                |
