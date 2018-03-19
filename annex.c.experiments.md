@@ -35,6 +35,7 @@ The specification has been updated to include the following list of adopted expe
 | ec_adapt                      |
 | ec_multisymbol                |
 | ec_smallmul                   |
+| explicit_order_hint           |
 | ext_comp_refs                 |
 | ext_delta_q                   |
 | ext_intra                     |
