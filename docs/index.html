@@ -38,9 +38,10 @@
 
 <p><em>Copyright 2018, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-19 11:53:20 -0700</em></p>
+<p><em>Last modified: 2018-03-19 12:57:42 -0700</em></p>
 
-<div class="alert alert-danger">
+<div id="draft-legend" class="alert alert-danger">
+
   <h2 class="no_toc no_count text-center" style="" id="draft-document"><strong>Draft Document</strong></h2>
 
   <p>This is a <strong>draft document</strong> that will change substantially before release. Do
@@ -137,6 +138,7 @@ $(document).ready(function() {
       </li>
       <li><a href="#frame-header-obu-syntax" id="markdown-toc-frame-header-obu-syntax">Frame Header OBU Syntax</a>        <ul>
           <li><a href="#uncompressed-header-syntax" id="markdown-toc-uncompressed-header-syntax">Uncompressed Header Syntax</a></li>
+          <li><a href="#get-relative-distance-function" id="markdown-toc-get-relative-distance-function">Get Relative Distance Function</a></li>
           <li><a href="#reference-frame-marking-function" id="markdown-toc-reference-frame-marking-function">Reference Frame Marking Function</a></li>
           <li><a href="#frame-size-syntax" id="markdown-toc-frame-size-syntax">Frame Size Syntax</a></li>
           <li><a href="#render-size-syntax" id="markdown-toc-render-size-syntax">Render Size Syntax</a></li>
@@ -2699,6 +2701,12 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     } else {
         seq_force_integer_mv = SELECT_INTEGER_MV
     }
+    if ( enable_order_hint ) {
+        <b class="syntax-element">order_hint_bits_minus1</b>                                               f(3)
+        OrderHintBits = order_hint_bits_minus1 + 1
+    } else {
+        OrderHintBits = 0
+    }
     color_config( )
     <b class="syntax-element">timing_info_present_flag</b>                                                 f(1)
     if ( timing_info_present_flag ) {
@@ -2925,7 +2933,6 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         if ( frame_type == KEY_FRAME ) {
             refresh_frame_flags = (1 &lt;&lt; NUM_REF_FRAMES) - 1
         }
-        CurrentVideoFrame += 1
         load_grain_params( frame_to_show_map_idx )
         return
     }
@@ -2961,13 +2968,8 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
         mark_ref_frames( )
     }
     <b class="syntax-element">frame_size_override_flag</b>                                                 f(1)
-    if (show_frame == 0) {
-        <b class="syntax-element">frame_offset_update</b>                                                  f(5)
-        OrderHint = CurrentVideoFrame + frame_offset_update
-    } else {
-        OrderHint = CurrentVideoFrame
-        CurrentVideoFrame += 1
-    }
+    <b class="syntax-element">order_hint</b>                                                               f(OrderHintBits)
+    OrderHint = order_hint
     if ( FrameIsIntra || error_resilient_mode ) {
         primary_ref_frame = PRIMARY_REF_NONE
     } else {
@@ -2987,6 +2989,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
             <b class="syntax-element">allow_intrabc</b>                                                    f(1)
         }
     } else {
+        if ( error_resilient_mode &amp;&amp; enable_order_hint ) {
+            for ( i = 0; i &lt; NUM_REF_FRAMES; i++) {
+                <b class="syntax-element">ref_order_hint[ i ]</b>                                          f(OrderHintBits)
+            }
+        }
         if ( frame_type == INTRA_ONLY_FRAME ) {
             <b class="syntax-element">refresh_frame_flags</b>                                              f(8)
             frame_size( )
@@ -3000,7 +3007,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
             } else {
                 <b class="syntax-element">refresh_frame_flags</b>                                          f(8)
             }
-            if ( error_resilient_mode ) {
+            if ( !enable_order_hint ) {
               frame_refs_short_signaling = 0
             } else {
               <b class="syntax-element">frame_refs_short_signaling</b>                                     f(1)
@@ -3051,7 +3058,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
                  error_resilient_mode ) {
                 RefFrameSignBias[ refFrame ] = 0
             } else {
-                RefFrameSignBias[ refFrame ] = hint &gt; OrderHint
+                RefFrameSignBias[ refFrame ] = get_relative_dist( hint, OrderHint) &gt; 0
             }
         }
     }
@@ -3116,6 +3123,21 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     if ( show_frame || showable_frame) {
         film_grain_params( )
     }
+}
+</code></pre>
+
+<h4 id="get-relative-distance-function">Get Relative Distance Function</h4>
+
+<p>This function computes the distance between
+two order hints by sign extending the result of subtracting the values.</p>
+
+<pre class="syntax"><code>get_relative_dist( a, b ) {
+    if ( !enable_order_hint )
+        return 0
+    diff = a - b
+    m = 1 &lt;&lt; (OrderHintBits - 1)
+    diff = (diff &amp; (m - 1)) - (diff &amp; m)
+    return diff
 }
 </code></pre>
 
@@ -3648,13 +3670,13 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
         backwardIdx = -1
         for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {
             refHint = RefOrderHint[ ref_frame_idx[ i ] ]
-            if ( refHint &lt; OrderHint ) {
-                if ( forwardIdx &lt; 0 || refHint &gt; forwardHint ) {
+            if ( get_relative_dist( refHint, OrderHint ) &lt; 0 ) {
+                if ( forwardIdx &lt; 0 || get_relative_dist( refHint, forwardHint) &gt; 0 ) {
                     forwardIdx = i
                     forwardHint = refHint
                 }
-            } else if ( refHint &gt; OrderHint ) {
-                if ( backwardIdx &lt; 0 || refHint &lt; backwardHint ) {
+            } else if ( get_relative_dist( refHint, OrderHint) &gt; 0 ) {
+                if ( backwardIdx &lt; 0 || get_relative_dist( refHint, backwardHint) &lt; 0 ) {
                     backwardIdx = i
                     backwardHint = refHint
                 }
@@ -3670,8 +3692,9 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
             secondForwardIdx = -1
             for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {
                 refHint = RefOrderHint[ ref_frame_idx[ i ] ]
-                if ( refHint &lt; forwardHint ) {
-                    if ( secondForwardIdx &lt; 0 || refHint &gt; secondForwardHint ) {
+                if ( get_relative_dist( refHint, forwardHint ) &lt; 0 ) {
+                    if ( secondForwardIdx &lt; 0 || 
+                         get_relative_dist( refHint, secondForwardHint ) &gt; 0 ) {
                         secondForwardIdx = i
                         secondForwardHint = refHint
                     }
@@ -6695,6 +6718,10 @@ equal to SELECT_INTEGER_MV.</p>
 will be present in the frame header (providing allow_screen_content_tools is equal to 1).  Otherwise, seq_force_integer_mv
 contains the value for force_integer_mv.</p>
 
+<p><strong>order_hint_bits_minus1</strong> is used to compute OrderHintBits.</p>
+
+<p><strong>OrderHintBits</strong> specifies the number of bits used for the order_hint syntax element.</p>
+
 <p><strong>timing_info_present_flag</strong> specifies whether timing info is present in the bitstream.</p>
 
 <p><strong>film_grain_params_present</strong> specifies whether film grain parameters are present in the bitstream.</p>
@@ -7643,12 +7670,14 @@ frame_size_override_flag equal to 0 specifies that the frame size is equal to th
 
 <p><strong>frame_offset_update</strong> provides a hint to the motion vector prediction as to how many frames later this frame is expected to be shown.</p>
 
-<p><strong>OrderHint</strong> specifies the offset of when this frame is expected to be shown relative to the last key frame.</p>
+<p><strong>order_hint</strong> is used to compute OrderHint.</p>
+
+<p><strong>OrderHint</strong> specifies OrderHintBits least significant bits of the expected output order for this frame.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> There is no requirement that OrderHint should reflect the true output order.
 As a guideline, the motion vector prediction is expected to be more accurate if the true output order is used for frames that will be shown later.
 If a frame is never to be shown (e.g. it has been constructed as an average of several frames for reference purposes),
-the encoder is free to choose whichever value of frame_offset_update will give the best compression.</p>
+the encoder is free to choose whichever value of OrderHint will give the best compression.</p>
 
 <p><strong>primary_ref_frame</strong> specifies which reference frame contains the CDF values and other state that should be loaded at the start of the frame.</p>
 
@@ -7664,6 +7693,13 @@ force_integer_mv will be equal to 1 for intra frames, so only integer offsets ar
 
 <p><strong>force_integer_mv</strong> equal to 1 specifies that motion vectors will always be integers.
 force_integer_mv equal to 0 specifies that motion vectors can contain fractional bits.</p>
+
+<p><strong>ref_order_hint[ i ]</strong> specifies the expected output order hint for each reference buffer.</p>
+
+<p>It is a requirement of bitstream conformance that ref_order_hint[ i ] is equal to RefOrderHint[ i ].</p>
+
+<p class="alert alert-info"><strong>Note:</strong> The values in the ref_order_hint array are provided to allow implementations to gracefully handle
+cases when some frames have been lost.</p>
 
 <p><strong>refresh_frame_flags</strong> contains a bitmask that specifies which reference frame
 slots will be updated with the current frame after it is decoded.</p>
@@ -7724,9 +7760,6 @@ disable_frame_end_update_cdf equal to 0 indicates that the end of frame CDF upda
 as soon as the frame headers of the current frame have been processed.</p>
 
 <p><strong>OrderHints</strong> specifies the expected output order for each reference frame.</p>
-
-<p><strong>CurrentVideoFrame</strong> is a variable which is increased by 1 before each frame is decoded. Its value
-is only used relatively, so its initial value is unimportant; it can be initialized to zero.</p>
 
 <p><strong>AllLossless</strong> is a variable that is equal to 1 when all segments use lossless
 encoding.</p>
@@ -10813,7 +10846,7 @@ For example, the array YModeCdf will be updated with values equal to the content
 
 <ul>
   <li>the syntax elements last_frame_idx and gold_frame_idx,</li>
-  <li>the values stored within the RefOrderHint array (these values represent the expected output order of the frames).</li>
+  <li>the values stored within the RefOrderHint array (these values represent the least significant bits of the expected output order of the frames).</li>
 </ul>
 
 <p>The reference buffers used for the LAST_FRAME and GOLDEN_FRAME references are sent explicitly and used to set the corresponding entries of ref_frame_idx as follows
@@ -10833,13 +10866,21 @@ usedFrame[ last_frame_idx ] = 1
 usedFrame[ gold_frame_idx ] = 1
 </code></pre>
 
-<p>The variable lastOrderHint (representing the expected output order for LAST_FRAME) is set equal to RefOrderHint[ last_frame_idx ].</p>
+<p>A variable curFrameHint is set equal to 1 &lt;&lt; (OrderHintBits - 1).</p>
 
-<p>It is a requirement of bitstream conformance that lastOrderHint is strictly less than OrderHint.</p>
+<p>An array shiftedOrderHints (containing the expected output order shifted such that the current frame has hint equal to curFrameHint) is prepared as follows:</p>
 
-<p>The variable goldOrderHint (representing the expected output order for GOLDEN_FRAME) is set equal to RefOrderHint[ gold_frame_idx ].</p>
+<pre><code class="language-c">for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
+  shiftedOrderHints[ i ] = curFrameHint + get_relative_dist( RefOrderHint[ i ], OrderHint )
+</code></pre>
 
-<p>It is a requirement of bitstream conformance that goldOrderHint is strictly less than OrderHint.</p>
+<p>The variable lastOrderHint (representing the expected output order for LAST_FRAME) is set equal to shiftedOrderHints[ last_frame_idx ].</p>
+
+<p>It is a requirement of bitstream conformance that lastOrderHint is strictly less than curFrameHint.</p>
+
+<p>The variable goldOrderHint (representing the expected output order for GOLDEN_FRAME) is set equal to shiftedOrderHints[ gold_frame_idx ].</p>
+
+<p>It is a requirement of bitstream conformance that goldOrderHint is strictly less than curFrameHint.</p>
 
 <p>The ALTREF_FRAME reference is set to be a backward reference to the frame with highest output order as follows:</p>
 
@@ -10855,9 +10896,9 @@ if ( ref &gt;= 0 ) {
 <pre><code class="language-c">find_latest_backward() {
   ref = -1
   for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
-    hint = RefOrderHint[ i ]
+    hint = shiftedOrderHints[ i ]
     if ( !usedFrame[ i ] &amp;&amp; 
-         hint &gt;= OrderHint &amp;&amp;
+         hint &gt;= curFrameHint &amp;&amp;
          ( ref &lt; 0 || hint &gt;= latestOrderHint ) ) {
       ref = i
       latestOrderHint = hint
@@ -10881,9 +10922,9 @@ if ( ref &gt;= 0 ) {
 <pre><code class="language-c">find_earliest_backward() {
   ref = -1
   for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
-    hint = RefOrderHint[ i ]
+    hint = shiftedOrderHints[ i ]
     if ( !usedFrame[ i ] &amp;&amp; 
-         hint &gt;= OrderHint &amp;&amp;
+         hint &gt;= curFrameHint &amp;&amp;
          ( ref &lt; 0 || hint &lt; earliestOrderHint ) ) {
       ref = i
       earliestOrderHint = hint
@@ -10928,9 +10969,9 @@ if ( ref &gt;= 0 ) {
 <pre><code class="language-c">find_latest_forward() {
   ref = -1
   for ( i = 0; i &lt; NUM_REF_FRAMES; i++ ) {
-    hint = RefOrderHint[ i ]
+    hint = shiftedOrderHints[ i ]
     if ( !usedFrame[ i ] &amp;&amp; 
-         hint &lt; OrderHint &amp;&amp;
+         hint &lt; curFrameHint &amp;&amp;
          ( ref &lt; 0 || hint &gt;= latestOrderHint ) ) {
       ref = i
       latestOrderHint = hint
@@ -10944,7 +10985,7 @@ if ( ref &gt;= 0 ) {
 
 <pre><code class="language-c">ref = -1
 for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )
-  hint = RefOrderHint[ i ]
+  hint = shiftedOrderHints[ i ]
   if ( ref &lt; 0 || hint &lt; earliestOrderHint ) {
     ref = i
     earliestOrderHint = hint
@@ -11008,7 +11049,7 @@ to an invalid motion vector of -32768, -32768 as follows:</p>
 
 <p class="alert alert-info"><strong>Note:</strong> refStamp is decreased even if the projection process is not invoked.</p>
 
-<p>The variable useBwd is set equal to ( OrderHints[ BWDREF_FRAME ] &gt; OrderHint ).</p>
+<p>The variable useBwd is set equal to get_relative_dist( OrderHints[ BWDREF_FRAME ], OrderHint ) &gt; 0.</p>
 
 <p>If useBwd is equal to 1, the following steps apply:</p>
 
@@ -11022,7 +11063,7 @@ the output assigned to projOutput.</p>
   </li>
 </ul>
 
-<p>The variable useAlt2 is set equal to ( OrderHints[ ALTREF2_FRAME ] &gt; OrderHint ).</p>
+<p>The variable useAlt2 is set equal to get_relative_dist( OrderHints[ ALTREF2_FRAME ], OrderHint ) &gt; 0.</p>
 
 <p>If useAlt2 is equal to 1, the following steps apply:</p>
 
@@ -11036,7 +11077,7 @@ the output assigned to projOutput.</p>
   </li>
 </ul>
 
-<p>The variable useAlt is set equal to ( OrderHints[ ALTREF_FRAME ] &gt; OrderHint ).</p>
+<p>The variable useAlt is set equal to get_relative_dist( OrderHints[ ALTREF_FRAME ], OrderHint ) &gt; 0.</p>
 
 <p>If useAlt is equal to 1 and (refStamp &gt;= 0), the following steps apply:</p>
 
@@ -11050,7 +11091,7 @@ and the output assigned to projOutput.</p>
   </li>
 </ul>
 
-<p>If OrderHints[ LAST2_FRAME ] is greater than or equal to 0 and (refStamp &gt;= 0), the projection process in <a href="#projection-process">section 7.8.1</a> is invoked with
+<p>If (refStamp &gt;= 0), the projection process in <a href="#projection-process">section 7.8.1</a> is invoked with
 src equal to LAST2_FRAME, dir equal to 0, offsetSign equal to 1, and refStamp also passed as an input. (The output of this process is discarded.)</p>
 
 <h4 id="projection-process">Projection Process</h4>
@@ -11097,12 +11138,14 @@ at this point, with the output set equal to 0.</p>
         col = 2 * x8 + 1
         srcRef = SavedRefFrames[ srcIdx ][ row ][ col ][ dir ]
         if ( srcRef &gt; INTRA_FRAME ) {
-            posValid = Abs( SavedOrderHints[ srcIdx ][ srcRef ] - OrderHints[ src ] ) &lt; MAX_FRAME_DISTANCE &amp;&amp;
-                       Abs( SavedOrderHints[ srcIdx ][ srcRef ] - OrderHint ) &lt; MAX_FRAME_DISTANCE
+            posValid = Abs( get_relative_dist(SavedOrderHints[ srcIdx ][ srcRef ], OrderHints[ src ]) ) &lt; MAX_FRAME_DISTANCE &amp;&amp;
+                       Abs( get_relative_dist(SavedOrderHints[ srcIdx ][ srcRef ], OrderHint) ) &lt; MAX_FRAME_DISTANCE
             if ( posValid ) {
                 mv = SavedMvs[ srcIdx ][ row ][ col ][ dir ]
                 projMv = get_mv_projection( mv, srcRef, src, src, sign, dstSign )
                 posValid = get_block_position( y8, x8, offsetSign, projMv )
+                if ( ProjDenominator &lt; 0 )
+                    posValid = 0
                 if ( posValid ) {
                     for ( dst = LAST_FRAME; dst &lt;= ALTREF_FRAME; dst++ ) {
                         projMv = get_mv_projection( mv, srcRef, src, dst, sign, -sign )
@@ -11163,17 +11206,19 @@ In order to use the motion vector for predictions using a different reference fr
 
 <p>The variable refOrderHint (representing the expected output order of the frame referenced by the motion vector) is set equal to SavedOrderHints[ srcIdx ][ ref ].</p>
 
-<p>The variable mvOffset (representing the number of frames covered by the motion vector) is set equal to Clip3( 1, MAX_FRAME_DISTANCE, sign * (srcOrderHint - refOrderHint) ).</p>
+<p>The variable ProjDenominator (representing the number of frames covered by the motion vector) is set equal to sign * get_relative_dist(srcOrderHint, refOrderHint).</p>
 
-<p>The variable dstOrderHint (representing the expected output order of the reference frame that is being targetted) is set equal to OrderHints[ dst ].</p>
+<p>The variable clippedDenominator is set equal to Clip3( 1, MAX_FRAME_DISTANCE, ProjDenominator ).</p>
+
+<p>The variable dstOrderHint (representing the expected output order of the reference frame that is being targeted) is set equal to OrderHints[ dst ].</p>
 
 <p>The variable dstOffset (representing the number of frames that the motion vector should cover after it is scaled) is set equal to
-Clip3( -MAX_FRAME_DISTANCE, MAX_FRAME_DISTANCE, dstSign * (dstOrderHint - OrderHint) ).</p>
+Clip3( -MAX_FRAME_DISTANCE, MAX_FRAME_DISTANCE, -dstSign * get_relative_dist(OrderHint, dstOrderHint) ).</p>
 
 <p>The projected motion vector is specified as follows:</p>
 
 <pre><code class="language-c">for ( i = 0; i &lt; 2; i++ )
-    projMv[ i ] = Round2Signed( mv[ i ] * dstOffset * Div_Mult[ mvOffset ], 14 )
+    projMv[ i ] = Round2Signed( mv[ i ] * dstOffset * Div_Mult[ clippedDenominator ], 14 )
 </code></pre>
 
 <p>where Div_Mult is a constant lookup table specified as:</p>
@@ -15168,7 +15213,7 @@ and subY is set equal to subsampling_y.</p>
 
 <pre><code class="language-c">for ( refList = 0; refList &lt; 2; refList++ ) {
   h = OrderHints[ RefFrames[ candRow ][ candCol ][ refList ] ]
-  dist[ refList ] = Clip3( 0, MAX_FRAME_DISTANCE, Abs( h - OrderHint ) )
+  dist[ refList ] = Clip3( 0, MAX_FRAME_DISTANCE, Abs( get_relative_dist( h, OrderHint ) ) )
 }
 d0 = dist[ 1 ]
 d1 = dist[ 0 ]
@@ -18848,8 +18893,8 @@ for storage as part of the reference frame update process.</p>
         r = RefFrames[ row ][ col ][ list ]
         MfMvs[ row ][ col ][ list ][ 0 ] = 0
         MfMvs[ row ][ col ][ list ][ 1 ] = 0
-        if ( r &gt; INTRA_FRAME &amp;&amp; RefOrderHint[ r ] != OrderHint ) {
-            refIdx = ( RefOrderHint[ r ] &gt; OrderHint ) ? 1 : 0
+        if ( r &gt; INTRA_FRAME ) {
+            refIdx = get_relative_dist( RefOrderHint[ r ], OrderHint ) &gt; 0 ? 1 : 0
             mvRow = Mvs[ row ][ col ][ list ][ 0 ]
             mvCol = Mvs[ row ][ col ][ list ][ 1 ]
             if ( Abs( mvRow ) &lt;= REFMVS_LIMIT &amp;&amp; Abs( mvCol ) &lt;= REFMVS_LIMIT ) {
@@ -20739,8 +20784,8 @@ if ( AvailL ) {
 
 <p><strong>compound_idx</strong>: The cdf is given by TileCompoundIdxCdf[ ctx ], where ctx is computed as follows:</p>
 
-<pre><code class="language-c">fwd = Abs( OrderHints[ RefFrame[ 0 ] ] - OrderHint )
-bck = Abs( OrderHints[ RefFrame[ 1 ] ] - OrderHint )
+<pre><code class="language-c">fwd = Abs( get_relative_dist( OrderHints[ RefFrame[ 0 ] ], OrderHint ) )
+bck = Abs( get_relative_dist( OrderHints[ RefFrame[ 1 ] ], OrderHint ) )
 ctx = ( fwd == bck ) ? 3 : 0
 if ( AvailU ) {
   if ( !AboveSingle )
@@ -32587,6 +32632,10 @@ is deemed invalid.</p>
       </tr>
       <tr>
         <td>ec_smallmul</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>explicit_order_hint</td>
         <td> </td>
       </tr>
       <tr>
