@@ -7,6 +7,9 @@ version_date: Released 2017-xx-xx
 {% include_relative section.links.md %}
 {% include_relative 00.title.md %}
 {% include_relative 00.version.md %}
+<div id="draft-legend" class="alert alert-danger" markdown="1">
+{% include_relative 00.draft-legend.md %}
+</div>
 {% include_relative 00.abstract.md %}
 {% include_relative 00.toc.md %}
 {% include_relative 01.scope.md %}

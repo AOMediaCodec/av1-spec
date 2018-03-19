@@ -9,7 +9,12 @@ version_date: Released 2017-xx-xx
 {% include_relative 00.title.md %}
 {% include_relative 00.version.md %}
 </div>
+<div id="draft-legend" class="alert alert-danger" markdown="1">
+{% include_relative 00.draft-legend.md %}
+</div>
+<div id="abstract" markdown="1">
 {% include_relative 00.abstract.md %}
+</div>
 <div id="toc" markdown="1">
 {% include_relative 00.toc.md %}
 </div>
@@ -31,7 +36,9 @@ version_date: Released 2017-xx-xx
 {% include_relative annex.c.experiments.md %}
 </div>
 
+<div id="biblio" markdown="1">
 {% include_relative bibliography.md %}
+</div>
 {% include_relative _tmp/98.testing.md %}
 
 {% comment %}
