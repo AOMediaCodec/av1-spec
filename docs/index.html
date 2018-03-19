@@ -38,7 +38,7 @@
 
 <p><em>Copyright 2018, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-19 13:15:02 -0700</em></p>
+<p><em>Last modified: 2018-03-19 13:52:47 -0700</em></p>
 
 <div id="draft-legend" class="alert alert-danger">
 
@@ -2253,13 +2253,16 @@ and Round2Signed) are defined as follows:</p>
 
 <p><img src="assets/images/formula-round2signed.svg.png" class=".img-fluid" alt="" /></p>
 
-<p>The FloorLog2(x) function is defined to be the floor of the base 2 logarithm of the input x.</p>
+<p>The FloorLog2(x) function is defined to be the floor of the base 2 logarithm of
+the input x.</p>
 
-<p>The input x will always be an integer, and will always be greater than or equal to 1.</p>
+<p>The input x will always be an integer, and will always be greater than or equal
+to 1.</p>
 
 <p>This function extracts the location of the most significant bit in x.</p>
 
-<p>An equivalent definition (using the pseudo-code notation introduced in the following section) is:</p>
+<p>An equivalent definition (using the pseudo-code notation introduced in the
+following section) is:</p>
 
 <pre><code class="language-c">FloorLog2( x ) {
   s = 0
@@ -2291,12 +2294,14 @@ underscore characters. Variables starting with an upper case letter are
 derived for the decoding of the current syntax structure and all depending
 syntax structures. These variables may be used in the decoding process for
 later syntax structures. Variables starting with a lower case letter are only
-used within the process from which they are derived.  (Single character variables are allowed.)</p>
+used within the process from which they are derived. (Single character variables
+are allowed.)</p>
 
-<p>Constant values appear in all upper case letters with underscore characters (e.g. MI_SIZE).</p>
+<p>Constant values appear in all upper case letters with underscore characters
+(e.g. MI_SIZE).</p>
 
-<p>Constant lookup tables appear as words (with the first letter of each word in upper case,
-and remaining letters in lower case) separated with underscore
+<p>Constant lookup tables appear as words (with the first letter of each word in
+upper case, and remaining letters in lower case) separated with underscore
 characters (e.g. Block_Width[…]).</p>
 
 <p>Hexadecimal notation, indicated by prefixing the hexadecimal number by <code>0x</code>,
@@ -2316,63 +2321,219 @@ value TRUE is represented by any value not equal to 0.</p>
 <code>syntax_element</code> appears (with bold face font), it specifies that this syntax
 element is parsed from the bitstream.</p>
 
-<pre class="syntax"><code>/* A statement can be a syntax element with associated
-descriptor or can be an expression used to specify its
-existence, type, and value, as in the following examples */
-
-<b class="syntax-element">syntax_element</b>                                                               f(1)
-
-/* A group of statements enclosed in brackets is a
-compound statement and is treated functionally as a single
-statement. */
-
-{
-    statement
-    ...
-}
-
-/* A "while" structure specifies that the statement is
-to be evaluated repeatedly while the condition remains
-true. */
-
-while ( condition )
-    statement
-
-/* A "do .. while" structure executes the statement once,
-and then tests the condition. It repeatedly evaluates the
-statement while the condition remains true. */
-
-do
-    statement
-while ( condition )
-
-/* An "if .. else" structure tests the condition first. If
-it is true, the primary statement is evaluated. Otherwise,
-the alternative statement is evaluated. If the alternative
-statement is unnecessary to be evaluated, the "else" and
-corresponding alternative statement can be omitted. */
-
-if ( condition )
-    primary statement
-else
-    alternative statement
-
-/* A "for" structure evaluates the initial statement at the
-beginning then tests the condition. If it is true, the primary
-and subsequent statements are evaluated until the condition
-becomes false. */
-
-for ( initial statement; condition; subsequent statement )
-    primary statement
-</code></pre>
+<table class="syntax">
+  <tbody>
+    <tr>
+      <td>                                                          </td>
+      <td><strong>Type</strong></td>
+    </tr>
+    <tr>
+      <td>/* A statement can be a syntax element with associated</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>descriptor or can be an expression used to specify its</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>existence, type, and value, as in the following</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>examples */</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>                                                          </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td><b class="syntax-element">syntax_element</b></td>
+      <td>f(1)</td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>/* A group of statements enclosed in brackets is a</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>compound statement and is treated functionally as a single</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>statement. */</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>{</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    statement</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    …</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>/* A “while” structure specifies that the statement is</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>to be evaluated repeatedly while the condition remains</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>true. */</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>while ( condition )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    statement</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>/* A “do .. while” structure executes the statement once,</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>and then tests the condition. It repeatedly evaluates the</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>statement while the condition remains true. */</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>do</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    statement</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>while ( condition )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>/* An “if .. else” structure tests the condition first. If</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>it is true, the primary statement is evaluated. Otherwise,</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>the alternative statement is evaluated. If the alternative</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>statement is unnecessary to be evaluated, the “else” and</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>corresponding alternative statement can be omitted. */</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>if ( condition )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    primary statement</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>else</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    alternative statement</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>/* A “for” structure evaluates the initial statement at the</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>beginning then tests the condition. If it is true, the primary</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>and subsequent statements are evaluated until the condition</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>becomes false. */</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>for ( initial statement; condition; subsequent statement )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    primary statement</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
 
 <h3 id="functions">Functions</h3>
 
 <p>Bitstream functions used for syntax description are specified in this section.</p>
 
-<p>Other functions are included in the syntax tables.
-The convention is that a section is called syntax if it causes syntax elements to be read from the bitstream, either directly or indirectly through subprocesses.
-The remaining sections are called functions.</p>
+<p>Other functions are included in the syntax tables. The convention is that a
+section is called syntax if it causes syntax elements to be read from the
+bitstream, either directly or indirectly through subprocesses. The remaining
+sections are called functions.</p>
 
 <p>The specification of these functions makes use of a bitstream position
 indicator. This bitstream position indicator locates the position of the bit
@@ -2383,7 +2544,8 @@ that is going to be read next.</p>
 <p><strong>init_bool( sz ):</strong> Initialize the arithmetic decode process for the boolean
 decoder with a size of sz bytes as specified in <a href="#initialization-process-for-boolean-decoder">section 8.2.1</a>.</p>
 
-<p><strong>exit_bool( ):</strong> Exit the arithmetic decode process as described in <a href="#exit-process-for-boolean-decoder">section 8.2.3</a>.</p>
+<p><strong>exit_bool( ):</strong> Exit the arithmetic decode process as described in
+<a href="#exit-process-for-boolean-decoder">section 8.2.3</a>.</p>
 
 <h3 id="descriptors">Descriptors</h3>
 
@@ -2403,36 +2565,108 @@ invoked and the syntax element is set equal to the return value.</p>
 <p>Variable length unsigned n-bit number appearing directly in the bitstream.
 The parsing process for this descriptor is specified below:</p>
 
-<pre class="syntax"><code>uvlc() {
-    leadingZeros = 0
-    while( 1 ) {
-        <b class="syntax-element">done</b>                                                                 f(1)
-        if ( done )
-            break
-        leadingZeros++
-    }
-    if ( leadingZeros &gt;= 32 ) {
-        return ( 1 &lt;&lt; 32 ) - 1
-    }
-    <b class="syntax-element">value</b>                                                                    f(leadingZeros)
-    return value + ( 1 &lt;&lt; leadingZeros ) - 1
-}
-</code></pre>
+<table class="syntax">
+  <tbody>
+    <tr>
+      <td>uvlc() {</td>
+      <td><strong>Type</strong></td>
+    </tr>
+    <tr>
+      <td>    leadingZeros = 0</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    while( 1 ) {</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        <b class="syntax-element">done</b></td>
+      <td>f(1)</td>
+    </tr>
+    <tr>
+      <td>        if ( done )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>            break</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        leadingZeros++</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    }</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    if ( leadingZeros &gt;= 32 ) {</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        return ( 1 « 32 ) - 1</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    }</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    <b class="syntax-element">value</b></td>
+      <td>f(leadingZeros)</td>
+    </tr>
+    <tr>
+      <td>    return value + ( 1 « leadingZeros ) - 1</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
 
 <h4 id="len">le(n)</h4>
 
 <p>Unsigned little-endian n-byte number appearing directly in the bitstream.
 The parsing process for this descriptor is specified below:</p>
 
-<pre class="syntax"><code>le(n) {
-    t = 0
-    for( i = 0; i &lt; n; i++) {
-        <b class="syntax-element">byte</b>                                                                 f(8)
-        t += ( byte &lt;&lt; ( i * 8 ) )
-    }
-    return t
-}
-</code></pre>
+<table class="syntax">
+  <tbody>
+    <tr>
+      <td>le(n) {</td>
+      <td><strong>Type</strong></td>
+    </tr>
+    <tr>
+      <td>    t = 0</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    for( i = 0; i &lt; n; i++) {</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        <b class="syntax-element">byte</b></td>
+      <td>f(8)</td>
+    </tr>
+    <tr>
+      <td>        t += ( byte « ( i * 8 ) )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    }</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    return t</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
 
 <p class="alert alert-info"><strong>Note:</strong> This syntax element will only be present when the bitstream position
 is byte aligned.</p>
@@ -2447,33 +2681,77 @@ is byte aligned.</p>
 <p>In this encoding, the most significant bit of each byte is equal to 1 to signal
 that more bytes should be read, or equal to 0 to signal the end of the encoding.</p>
 
-<p>A variable Leb128Bytes is set equal to the number of bytes read during this process.</p>
+<p>A variable Leb128Bytes is set equal to the number of bytes read during this
+process.</p>
 
 <p>The parsing process for this descriptor is specified below:</p>
 
-<pre class="syntax"><code>leb128() {
-    value = 0
-    for (i = 0; i &lt; 8; i++) {
-        <b class="syntax-element">leb128_byte</b>                                                          f(8)
-        value |= ( (leb128_byte &amp; 0x7f) &lt;&lt; (i*7) )
-        Leb128Bytes += 1
-        if ( !(leb128_byte &amp; 0x80) ) {
-            break
-        }
-    }
-    return value
-}
-</code></pre>
+<table class="syntax">
+  <tbody>
+    <tr>
+      <td>leb128() {</td>
+      <td><strong>Type</strong></td>
+    </tr>
+    <tr>
+      <td>    value = 0</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    for (i = 0; i &lt; 8; i++) {</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        <b class="syntax-element">leb128_byte</b></td>
+      <td>f(8)</td>
+    </tr>
+    <tr>
+      <td>        value |= ( (leb128_byte &amp; 0x7f) « (i*7) )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        Leb128Bytes += 1</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        if ( !(leb128_byte &amp; 0x80) ) {</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>            break</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        }</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    }</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    return value</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
 
-<p><strong>leb128_byte</strong> contains 8 bits read from the bitstream.  The bottom 7 bits are used to compute the variable value.
-The most significant bit is used to indicate that there are more bytes to be read.</p>
+<p><strong>leb128_byte</strong> contains 8 bits read from the bitstream.  The bottom 7 bits are
+used to compute the variable value. The most significant bit is used to indicate
+that there are more bytes to be read.</p>
 
-<p>It is a requirement of bitstream conformance that the most significant bit of leb128_byte is equal to 0 if i is equal to 7.
-(This ensures that this syntax descriptor never uses more than 8 bytes.)</p>
+<p>It is a requirement of bitstream conformance that the most significant bit of
+leb128_byte is equal to 0 if i is equal to 7. (This ensures that this syntax
+descriptor never uses more than 8 bytes.)</p>
 
-<p class="alert alert-info"><strong>Note:</strong> There are multiple ways of encoding the same value depending on how many leading zero bits are encoded.
-There is no requirement that this syntax descriptor uses the most compressed representation.
-This can be useful for encoder implementations by allowing a fixed amount of space to be filled in later when the value becomes known.</p>
+<p class="alert alert-info"><strong>Note:</strong> There are multiple ways of encoding the same value depending on how
+many leading zero bits are encoded. There is no requirement that this syntax
+descriptor uses the most compressed representation. This can be useful for
+encoder implementations by allowing a fixed amount of space to be filled in
+later when the value becomes known.</p>
 
 <h4 id="sun">su(n)</h4>
 
@@ -2481,23 +2759,48 @@ This can be useful for encoder implementations by allowing a fixed amount of spa
 (The unsigned integer corresponds to the bottom n bits of the signed integer.)
 The parsing process for this descriptor is specified below:</p>
 
-<pre class="syntax"><code>su(n) {
-    <b class="syntax-element">value</b>                                                                    f(n)
-    signMask = 1 &lt;&lt; (n - 1)
-    if (value &amp; signMask)
-        value = value - 2 * signMask
-    return value
-}
-</code></pre>
+<table class="syntax">
+  <tbody>
+    <tr>
+      <td>su(n) {</td>
+      <td><strong>Type</strong></td>
+    </tr>
+    <tr>
+      <td>    <b class="syntax-element">value</b></td>
+      <td>f(n)</td>
+    </tr>
+    <tr>
+      <td>    signMask = 1 « (n - 1)</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    if (value &amp; signMask)</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        value = value - 2 * signMask</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    return value</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
 
 <h4 id="nsn">ns(n)</h4>
 
-<p>Unsigned encoded integer with maximum number of values n (i.e. output in range 0..n-1).</p>
+<p>Unsigned encoded integer with maximum number of values n (i.e. output in range
+0..n-1).</p>
 
-<p>This descriptor is similar to f(ceil(log2(n))), but reduces wastage incurred when encoding non-power of two
-value ranges by encoding 1 fewer bits for the lower part of the value range. For example, when
-n is equal to 5, the encodings are as follows (full binary encodings are also presented for
-comparison):</p>
+<p>This descriptor is similar to f(ceil(log2(n))), but reduces wastage incurred
+when encoding non-power of two value ranges by encoding 1 fewer bits for the
+lower part of the value range. For example, when n is equal to 5, the encodings
+are as follows (full binary encodings are also presented for comparison):</p>
 
 <table class="table table-sm table-bordered table-striped">
   <thead>
@@ -2509,27 +2812,27 @@ comparison):</p>
   </thead>
   <tbody>
     <tr>
-      <td style="text-align: center">0</td>
+      <td style="text-align: center">    0</td>
       <td style="text-align: center">000</td>
       <td style="text-align: center">00</td>
     </tr>
     <tr>
-      <td style="text-align: center">1</td>
+      <td style="text-align: center">    1</td>
       <td style="text-align: center">001</td>
       <td style="text-align: center">01</td>
     </tr>
     <tr>
-      <td style="text-align: center">2</td>
+      <td style="text-align: center">    2</td>
       <td style="text-align: center">010</td>
       <td style="text-align: center">10</td>
     </tr>
     <tr>
-      <td style="text-align: center">3</td>
+      <td style="text-align: center">    3</td>
       <td style="text-align: center">011</td>
       <td style="text-align: center">110</td>
     </tr>
     <tr>
-      <td style="text-align: center">4</td>
+      <td style="text-align: center">    4</td>
       <td style="text-align: center">100</td>
       <td style="text-align: center">111</td>
     </tr>
@@ -2538,19 +2841,49 @@ comparison):</p>
 
 <p>The parsing process for this descriptor is specified as:</p>
 
-<pre class="syntax"><code>ns( n ) {
-    w = FloorLog2(n) + 1
-    m = (1 &lt;&lt; w) - n
-    <b class="syntax-element">v</b>                                                                        f(w - 1)
-    if (v &lt; m)
-        return v
-    <b class="syntax-element">extra_bit</b>                                                                f(1)
-    return (v &lt;&lt; 1) - m + extra_bit
-}
-</code></pre>
+<table class="syntax">
+  <tbody>
+    <tr>
+      <td>ns( n ) {</td>
+      <td><strong>Type</strong></td>
+    </tr>
+    <tr>
+      <td>    w = FloorLog2(n) + 1</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    m = (1 « w) - n</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    <b class="syntax-element">v</b></td>
+      <td>f(w - 1)</td>
+    </tr>
+    <tr>
+      <td>    if (v &lt; m)</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        return v</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    <b class="syntax-element">extra_bit</b></td>
+      <td>f(1)</td>
+    </tr>
+    <tr>
+      <td>    return (v « 1) - m + extra_bit</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
 
-<p>The abbreviation ns stands for non-symmetric.
-This encoding is non-symmetric because the values are not all coded with the same number of bits.</p>
+<p>The abbreviation ns stands for non-symmetric. This encoding is non-symmetric
+because the values are not all coded with the same number of bits.</p>
 
 <h4 id="ln">L(n)</h4>
 
@@ -2563,26 +2896,59 @@ this process).</p>
 
 <p>An arithmetic encoded symbol coded from a small alphabet of at most 16 entries.</p>
 
-<p>The symbol is decoded based on a context sensitive CDF (see <a href="#parsing-process-for-cdf-encoded-syntax-elements">section 8.3</a> for the specification of this process).</p>
+<p>The symbol is decoded based on a context sensitive CDF (see <a href="#parsing-process-for-cdf-encoded-syntax-elements">section 8.3</a> for
+the specification of this process).</p>
 
 <h4 id="nsn-1">NS(n)</h4>
 
-<p>Unsigned arithmetic encoded integer with maximum number of values n (i.e. output in range 0..n-1).</p>
+<p>Unsigned arithmetic encoded integer with maximum number of values n (i.e. output
+in range 0..n-1).</p>
 
-<p>This descriptor is the same as ns(n) except the underlying bits are coded arithmetically.</p>
+<p>This descriptor is the same as ns(n) except the underlying bits are coded
+arithmetically.</p>
 
 <p>The parsing process for this descriptor is specified as:</p>
 
-<pre class="syntax"><code>NS( n ) {
-    w = FloorLog2(n) + 1
-    m = (1 &lt;&lt; w) - n
-    <b class="syntax-element">v</b>                                                                        L(w - 1)
-    if (v &lt; m)
-        return v
-    <b class="syntax-element">extra_bit</b>                                                                L(1)
-    return (v &lt;&lt; 1) - m + extra_bit
-}
-</code></pre>
+<table class="syntax">
+  <tbody>
+    <tr>
+      <td>NS( n ) {</td>
+      <td><strong>Type</strong></td>
+    </tr>
+    <tr>
+      <td>    w = FloorLog2(n) + 1</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    m = (1 « w) - n</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    <b class="syntax-element">v</b></td>
+      <td>L(w - 1)</td>
+    </tr>
+    <tr>
+      <td>    if (v &lt; m)</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        return v</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    <b class="syntax-element">extra_bit</b></td>
+      <td>L(1)</td>
+    </tr>
+    <tr>
+      <td>    return (v « 1) - m + extra_bit</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
 
 <h2 id="syntax-structures">Syntax Structures</h2>
 
