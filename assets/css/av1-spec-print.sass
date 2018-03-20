@@ -49,7 +49,7 @@ body
     transform: rotate(315deg)
     white-space: pre
 
-// Cover page -- Uses :first to undo normal page styling
+// Cover page -- Uses `:first` to undo normal page styling
 
 @page:first
   width: 100vw
@@ -79,6 +79,8 @@ div#frontmatter
 
 // End front matter
 
+// Page breaks, strings, colors, Bootstrap overrides
+
 h1
   string-set: doctitle content()
 h2
@@ -101,3 +103,6 @@ pre
   border: 0
 .noprint
   display: none !important
+a
+  color: #0a3f77
+
