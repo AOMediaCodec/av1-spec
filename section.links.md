@@ -65,6 +65,7 @@
 [section 7.10.4]: #predict-chroma-from-luma-process
 [section 7.10.2.8]: #overlapped-motion-compensation-process
 [section 5.7.9]: #interpolation-filter-syntax
+[section 6.1.4]: #byte-alignment-semantics
 [section 5.9.25]: #assign-mv-syntax
 [section 6.3.2]: #timing-info-semantics
 [section 4.3]: #relational-operators
