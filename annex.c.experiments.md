@@ -121,6 +121,7 @@ The specification has been updated to include the following list of adopted expe
 | tile_info_first               |
 | tile_groups                   |
 | timecodes                     |
+| trailing_bits                 |
 | tx64x64                       |
 | txk_sel                       |
 | txmg                          |
@@ -135,8 +136,8 @@ The specification has not yet been updated with the following experiments:
 
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
-| explicit_order_hints          | Code still under development
-| trailing_bits                 | Code not yet merged
+| operating_points              | Code still under development
+| obu_redundant_frame_header    | Code still under development
 {:.table .table-sm .table-bordered }
 
 
