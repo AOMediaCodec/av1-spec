@@ -74,8 +74,6 @@ The specification has been updated to include the following list of adopted expe
 | kf_ctx                        |
 | loop_restoration              |
 | loopfilter_level              |
-| loopfiltering_across_tiles    |
-| loopfilter_across_tiles_ext   |
 | lowprecision_blend            |
 | lv_map                        |
 | lv_map_multi                  |
