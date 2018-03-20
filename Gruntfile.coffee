@@ -23,7 +23,8 @@ module.exports = (grunt) ->
           } ]
         files: [
           { src:  '98.testing.md', dest: '_tmp/' },
-          { src:  '04.conventions.md', dest: '_tmp/' }
+          { src:  '04.conventions.md', dest: '_tmp/' },
+          { src:  '06.bitstream.syntax.md', dest: '_tmp/' }
         ]
     copy:
       docs:
