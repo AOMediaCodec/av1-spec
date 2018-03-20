@@ -89,6 +89,7 @@ The specification has been updated to include the following list of adopted expe
 | new_tokenset                  |
 | no_frame_context_signalling   |
 | obu_frame                     |
+| obu_redundant_frame_header    |
 | obu_size_after_header         |
 | obu_sizing                    |
 | one_sided_compound            |
@@ -137,7 +138,6 @@ The specification has not yet been updated with the following experiments:
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
 | operating_points              | Code still under development
-| obu_redundant_frame_header    | Code still under development
 {:.table .table-sm .table-bordered }
 
 
