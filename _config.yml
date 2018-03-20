@@ -30,7 +30,7 @@ markdown: kramdown
 kramdown:
   syntax_highlighter: rouge
   syntax_highlighter_opts:
-    disable: true
+    disable: false
 #gems:
 # - jekyll-github-metadata
 exclude:
