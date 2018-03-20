@@ -38,7 +38,7 @@
 
 <p><em>Copyright 2018, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-19 17:56:25 -0700</em></p>
+<p><em>Last modified: 2018-03-19 18:17:49 -0700</em></p>
 
 <div id="draft-legend" class="alert alert-danger">
 
@@ -2964,95 +2964,95 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>obu_header()</td>
+      <td>    obu_header()</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( obu_has_payload_length_field ) {</td>
+      <td>    if ( obu_has_payload_length_field ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_payload_size</b></td>
+      <td>        <b class="syntax-element">obu_payload_size</b></td>
       <td>leb128()</td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>obu_payload_size = sz - 1 - obu_extension_flag</td>
+      <td>        obu_payload_size = sz - 1 - obu_extension_flag</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( obu_type == OBU_SEQUENCE_HEADER )</td>
+      <td>    if ( obu_type == OBU_SEQUENCE_HEADER )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>sequence_header_obu()</td>
+      <td>        sequence_header_obu()</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else if ( obu_type == OBU_TD )</td>
+      <td>    else if ( obu_type == OBU_TD )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>temporal_delimiter_obu()</td>
+      <td>        temporal_delimiter_obu()</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else if ( obu_type == OBU_FRAME_HEADER )</td>
+      <td>    else if ( obu_type == OBU_FRAME_HEADER )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>frame_header_obu( )</td>
+      <td>        frame_header_obu( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else if ( obu_type == OBU_TILE_GROUP )</td>
+      <td>    else if ( obu_type == OBU_TILE_GROUP )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>tile_group_obu( obu_payload_size )</td>
+      <td>        tile_group_obu( obu_payload_size )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else if ( obu_type == OBU_METADATA )</td>
+      <td>    else if ( obu_type == OBU_METADATA )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>metadata_obu( obu_payload_size )</td>
+      <td>        metadata_obu( obu_payload_size )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else if ( obu_type == OBU_FRAME )</td>
+      <td>    else if ( obu_type == OBU_FRAME )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>frame_obu( obu_payload_size )</td>
+      <td>        frame_obu( obu_payload_size )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else if ( obu_type == OBU_PADDING )</td>
+      <td>    else if ( obu_type == OBU_PADDING )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>padding_obu()</td>
+      <td>        padding_obu()</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else</td>
+      <td>    else</td>
       <td> </td>
     </tr>
     <tr>
-      <td>reserved_obu( obu_payload_size )</td>
+      <td>        reserved_obu( obu_payload_size )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>trailing_bits()</td>
+      <td>    trailing_bits()</td>
       <td> </td>
     </tr>
     <tr>
@@ -3071,31 +3071,31 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_forbidden_bit</b></td>
+      <td>    <b class="syntax-element">obu_forbidden_bit</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_type</b></td>
+      <td>    <b class="syntax-element">obu_type</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_extension_flag</b></td>
+      <td>    <b class="syntax-element">obu_extension_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_has_payload_length_field</b></td>
+      <td>    <b class="syntax-element">obu_has_payload_length_field</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_reserved_1bit</b></td>
+      <td>    <b class="syntax-element">obu_reserved_1bit</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( obu_extension_flag == 1 )</td>
+      <td>    if ( obu_extension_flag == 1 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>obu_extension_header()</td>
+      <td>        obu_extension_header()</td>
       <td> </td>
     </tr>
     <tr>
@@ -3114,15 +3114,15 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">temporal_id</b></td>
+      <td>    <b class="syntax-element">temporal_id</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">spatial_id</b></td>
+      <td>    <b class="syntax-element">spatial_id</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">extension_header_reserved_3bits</b></td>
+      <td>    <b class="syntax-element">extension_header_reserved_3bits</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
@@ -3141,11 +3141,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>while ( get_position( ) &amp; 7 )</td>
+      <td>    while ( get_position( ) &amp; 7 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">zero_bit</b></td>
+      <td>        <b class="syntax-element">zero_bit</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
@@ -3164,11 +3164,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; sz; i++ )</td>
+      <td>    for ( i = 0; i &lt; sz; i++ )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">reserved_obu_payload_byte</b></td>
+      <td>        <b class="syntax-element">reserved_obu_payload_byte</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
@@ -3187,215 +3187,215 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">seq_profile</b></td>
+      <td>    <b class="syntax-element">seq_profile</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">level[ 0 ]</b></td>
+      <td>    <b class="syntax-element">level[ 0 ]</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">max_spatial_layers_cnt</b></td>
+      <td>    <b class="syntax-element">max_spatial_layers_cnt</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>for ( i = 1; i &lt;= max_spatial_layers_cnt; i++ )</td>
+      <td>    for ( i = 1; i &lt;= max_spatial_layers_cnt; i++ )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">level[ i ]</b></td>
+      <td>        <b class="syntax-element">level[ i ]</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">frame_width_bits_minus_1</b></td>
+      <td>    <b class="syntax-element">frame_width_bits_minus_1</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">frame_height_bits_minus_1</b></td>
+      <td>    <b class="syntax-element">frame_height_bits_minus_1</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td>n = frame_width_bits_minus_1 + 1</td>
+      <td>    n = frame_width_bits_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">max_frame_width_minus_1</b></td>
+      <td>    <b class="syntax-element">max_frame_width_minus_1</b></td>
       <td>f(n)</td>
     </tr>
     <tr>
-      <td>n = frame_height_bits_minus_1 + 1</td>
+      <td>    n = frame_height_bits_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">max_frame_height_minus_1</b></td>
+      <td>    <b class="syntax-element">max_frame_height_minus_1</b></td>
       <td>f(n)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">frame_id_numbers_present_flag</b></td>
+      <td>    <b class="syntax-element">frame_id_numbers_present_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( frame_id_numbers_present_flag ) {</td>
+      <td>    if ( frame_id_numbers_present_flag ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_frame_id_length_minus2</b></td>
+      <td>        <b class="syntax-element">delta_frame_id_length_minus2</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">additional_frame_id_length_minus1</b></td>
+      <td>        <b class="syntax-element">additional_frame_id_length_minus1</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">use_128x128_superblock</b></td>
+      <td>    <b class="syntax-element">use_128x128_superblock</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">enable_dual_filter</b></td>
+      <td>    <b class="syntax-element">enable_dual_filter</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">enable_order_hint</b></td>
+      <td>    <b class="syntax-element">enable_order_hint</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( enable_order_hint ) {</td>
+      <td>    if ( enable_order_hint ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">enable_jnt_comp</b></td>
+      <td>        <b class="syntax-element">enable_jnt_comp</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>enable_jnt_comp = 0</td>
+      <td>        enable_jnt_comp = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">seq_choose_screen_content_tools</b></td>
+      <td>    <b class="syntax-element">seq_choose_screen_content_tools</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( seq_choose_screen_content_tools ) {</td>
+      <td>    if ( seq_choose_screen_content_tools ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>seq_force_screen_content_tools = SELECT_SCREEN_CONTENT_TOOLS</td>
+      <td>        seq_force_screen_content_tools = SELECT_SCREEN_CONTENT_TOOLS</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">seq_force_screen_content_tools</b></td>
+      <td>        <b class="syntax-element">seq_force_screen_content_tools</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td> </td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>if ( seq_force_screen_content_tools &gt; 0 ) {</td>
+      <td>                                                          </td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">seq_choose_integer_mv</b></td>
+      <td>    if ( seq_force_screen_content_tools &gt; 0 ) {</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        <b class="syntax-element">seq_choose_integer_mv</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if (seq_choose_integer_mv) {</td>
+      <td>        if (seq_choose_integer_mv) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>seq_force_integer_mv = SELECT_INTEGER_MV</td>
+      <td>            seq_force_integer_mv = SELECT_INTEGER_MV</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">seq_force_integer_mv</b></td>
+      <td>            <b class="syntax-element">seq_force_integer_mv</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>seq_force_integer_mv = SELECT_INTEGER_MV</td>
+      <td>        seq_force_integer_mv = SELECT_INTEGER_MV</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( enable_order_hint ) {</td>
+      <td>    if ( enable_order_hint ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">order_hint_bits_minus1</b></td>
+      <td>        <b class="syntax-element">order_hint_bits_minus1</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td>OrderHintBits = order_hint_bits_minus1 + 1</td>
+      <td>        OrderHintBits = order_hint_bits_minus1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>OrderHintBits = 0</td>
+      <td>        OrderHintBits = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>color_config( )</td>
+      <td>    color_config( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">timing_info_present_flag</b></td>
+      <td>    <b class="syntax-element">timing_info_present_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( timing_info_present_flag ) {</td>
+      <td>    if ( timing_info_present_flag ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>timing_info( )</td>
+      <td>        timing_info( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">film_grain_params_present</b></td>
+      <td>    <b class="syntax-element">film_grain_params_present</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
@@ -3414,235 +3414,235 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">high_bitdepth</b></td>
+      <td>    <b class="syntax-element">high_bitdepth</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( seq_profile &gt;= 2 &amp;&amp; high_bitdepth ) {</td>
+      <td>    if ( seq_profile &gt;= 2 &amp;&amp; high_bitdepth ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">twelve_bit</b></td>
+      <td>        <b class="syntax-element">twelve_bit</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>BitDepth = twelve_bit ? 12 : 10</td>
+      <td>        BitDepth = twelve_bit ? 12 : 10</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>BitDepth = high_bitdepth ? 10 : 8</td>
+      <td>        BitDepth = high_bitdepth ? 10 : 8</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( seq_profile == 1 ) {</td>
+      <td>    if ( seq_profile == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>mono_chrome = 0</td>
+      <td>        mono_chrome = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">mono_chrome</b></td>
+      <td>        <b class="syntax-element">mono_chrome</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>NumPlanes = mono_chrome ? 1 : 3</td>
+      <td>    NumPlanes = mono_chrome ? 1 : 3</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">color_description_present_flag</b></td>
+      <td>    <b class="syntax-element">color_description_present_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( color_description_present_flag ) {</td>
+      <td>    if ( color_description_present_flag ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">color_primaries</b></td>
+      <td>        <b class="syntax-element">color_primaries</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">transfer_characteristics</b></td>
+      <td>        <b class="syntax-element">transfer_characteristics</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">matrix_coefficients</b></td>
+      <td>        <b class="syntax-element">matrix_coefficients</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>color_primaries = CP_UNSPECIFIED</td>
+      <td>        color_primaries = CP_UNSPECIFIED</td>
       <td> </td>
     </tr>
     <tr>
-      <td>transfer_characteristics = TC_UNSPECIFIED</td>
+      <td>        transfer_characteristics = TC_UNSPECIFIED</td>
       <td> </td>
     </tr>
     <tr>
-      <td>matrix_coefficients = MC_UNSPECIFIED</td>
+      <td>        matrix_coefficients = MC_UNSPECIFIED</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( mono_chrome ) {</td>
+      <td>    if ( mono_chrome ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>color_range = 1</td>
+      <td>        color_range = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>subsampling_x = 1</td>
+      <td>        subsampling_x = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>subsampling_y = 1</td>
+      <td>        subsampling_y = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>chroma_sample_position = CSP_UNKNOWN</td>
+      <td>        chroma_sample_position = CSP_UNKNOWN</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else if ( color_primaries == CP_BT_709 &amp;&amp;</td>
+      <td>    } else if ( color_primaries == CP_BT_709 &amp;&amp;</td>
       <td> </td>
     </tr>
     <tr>
-      <td>transfer_characteristics == TC_SRGB &amp;&amp;</td>
+      <td>                transfer_characteristics == TC_SRGB &amp;&amp;</td>
       <td> </td>
     </tr>
     <tr>
-      <td>matrix_coefficients == MC_IDENTITY ) {</td>
+      <td>                matrix_coefficients == MC_IDENTITY ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>subsampling_x = 0</td>
+      <td>        subsampling_x = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>subsampling_y = 0</td>
+      <td>        subsampling_y = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">color_range</b></td>
+      <td>        <b class="syntax-element">color_range</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( seq_profile == 0 ) {</td>
+      <td>        if ( seq_profile == 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>subsampling_x = 1</td>
+      <td>            subsampling_x = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>subsampling_y = 1</td>
+      <td>            subsampling_y = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else if ( seq_profile == 1 ) {</td>
+      <td>        } else if ( seq_profile == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>subsampling_x = 0</td>
+      <td>            subsampling_x = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>subsampling_y = 0</td>
+      <td>            subsampling_y = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( BitDepth == 12 ) {</td>
+      <td>            if ( BitDepth == 12 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">subsampling_x</b></td>
+      <td>                <b class="syntax-element">subsampling_x</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( subsampling_x )</td>
+      <td>                if ( subsampling_x )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">subsampling_y</b></td>
+      <td>                    <b class="syntax-element">subsampling_y</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>else</td>
+      <td>                else</td>
       <td> </td>
     </tr>
     <tr>
-      <td>subsampling_y = 0</td>
+      <td>                    subsampling_y = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>subsampling_x = 1</td>
+      <td>                subsampling_x = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>subsampling_y = 0</td>
+      <td>                subsampling_y = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (subsampling_x &amp;&amp; subsampling_y) {</td>
+      <td>        if (subsampling_x &amp;&amp; subsampling_y) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">chroma_sample_position</b></td>
+      <td>            <b class="syntax-element">chroma_sample_position</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">separate_uv_delta_q</b></td>
+      <td>    <b class="syntax-element">separate_uv_delta_q</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
@@ -3661,23 +3661,23 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">num_units_in_tick</b></td>
+      <td>    <b class="syntax-element">num_units_in_tick</b></td>
       <td>f(32)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">time_scale</b></td>
+      <td>    <b class="syntax-element">time_scale</b></td>
       <td>f(32)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">equal_picture_interval</b></td>
+      <td>    <b class="syntax-element">equal_picture_interval</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if (equal_picture_interval)</td>
+      <td>    if (equal_picture_interval)</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">num_ticks_per_picture_minus1</b></td>
+      <td>       <b class="syntax-element">num_ticks_per_picture_minus1</b></td>
       <td>uvlc()</td>
     </tr>
     <tr>
@@ -3696,7 +3696,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>SeenFrameHeader = 0</td>
+      <td>    SeenFrameHeader = 0</td>
       <td> </td>
     </tr>
     <tr>
@@ -3717,15 +3717,15 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_padding_length</b></td>
+      <td>    <b class="syntax-element">obu_padding_length</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; obu_padding_length; i++ )</td>
+      <td>    for ( i = 0; i &lt; obu_padding_length; i++ )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">obu_padding_byte</b></td>
+      <td>        <b class="syntax-element">obu_padding_byte</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
@@ -3744,39 +3744,39 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">metadata_type</b></td>
+      <td>    <b class="syntax-element">metadata_type</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
-      <td>if ( metadata_type == METADATA_TYPE_PRIVATE_DATA )</td>
+      <td>    if ( metadata_type == METADATA_TYPE_PRIVATE_DATA )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>metadata_private_data( sz − 2 )</td>
+      <td>        metadata_private_data( sz − 2 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else if ( metadata_type == METADATA_TYPE_HDR_CLL )</td>
+      <td>    else if ( metadata_type == METADATA_TYPE_HDR_CLL )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>metadata_hdr_cll( sz − 2 )</td>
+      <td>        metadata_hdr_cll( sz − 2 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else if ( metadata_type == METADATA_TYPE_HDR_MDCV )</td>
+      <td>    else if ( metadata_type == METADATA_TYPE_HDR_MDCV )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>metadata_hdr_mdcv( sz − 2 )</td>
+      <td>        metadata_hdr_mdcv( sz − 2 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else if ( metadata_type == METADATA_TYPE_SCALABILITY )</td>
+      <td>    else if ( metadata_type == METADATA_TYPE_SCALABILITY )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>metadata_scalability( sz − 2 )</td>
+      <td>        metadata_scalability( sz − 2 )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3795,11 +3795,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; sz; i++ )</td>
+      <td>    for ( i = 0; i &lt; sz; i++ )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">metadata_private_data_payload_byte[ i ]</b></td>
+      <td>        <b class="syntax-element">metadata_private_data_payload_byte[ i ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
@@ -3818,11 +3818,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">max_cll</b></td>
+      <td>    <b class="syntax-element">max_cll</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">max_fall</b></td>
+      <td>    <b class="syntax-element">max_fall</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
@@ -3841,35 +3841,35 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; 3; i++ ) {</td>
+      <td>    for ( i = 0; i &lt; 3; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">primary_chromaticity_x[ i ]</b></td>
+      <td>        <b class="syntax-element">primary_chromaticity_x[ i ]</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">primary_chromaticity_y[ i ]</b></td>
+      <td>        <b class="syntax-element">primary_chromaticity_y[ i ]</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">white_point_chromaticity_x</b></td>
+      <td>    <b class="syntax-element">white_point_chromaticity_x</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">white_point_chromaticity_y</b></td>
+      <td>    <b class="syntax-element">white_point_chromaticity_y</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">luminance_max</b></td>
+      <td>    <b class="syntax-element">luminance_max</b></td>
       <td>f(32)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">luminance_min</b></td>
+      <td>    <b class="syntax-element">luminance_min</b></td>
       <td>f(32)</td>
     </tr>
     <tr>
@@ -3888,15 +3888,15 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">scalability_mode_idc</b></td>
+      <td>    <b class="syntax-element">scalability_mode_idc</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>if (scalability_mode_idc == SCALABILITY_SS)</td>
+      <td>    if (scalability_mode_idc == SCALABILITY_SS)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>scalability_structure(  sz – 1 )</td>
+      <td>        scalability_structure(  sz – 1 )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3915,111 +3915,111 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">spatial_layers_cnt</b></td>
+      <td>    <b class="syntax-element">spatial_layers_cnt</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">spatial_layer_dimensions_present_flag</b></td>
+      <td>    <b class="syntax-element">spatial_layer_dimensions_present_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">spatial_layer_description_present_flag</b></td>
+      <td>    <b class="syntax-element">spatial_layer_description_present_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">temporal_group_description_present_flag</b></td>
+      <td>    <b class="syntax-element">temporal_group_description_present_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">scalability_structure_reserved_3bits</b></td>
+      <td>    <b class="syntax-element">scalability_structure_reserved_3bits</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td>if ( spatial_layer_dimensions_present_flag ) {</td>
+      <td>    if ( spatial_layer_dimensions_present_flag ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt;= spatial_layers_cnt ; i++ ) {</td>
+      <td>        for ( i = 0; i &lt;= spatial_layers_cnt ; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">spatial_layer_max_width[ i ]</b></td>
+      <td>            <b class="syntax-element">spatial_layer_max_width[ i ]</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">spatial_layer_max_height[ i ]</b></td>
+      <td>            <b class="syntax-element">spatial_layer_max_height[ i ]</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( spatial_layer_description_present_flag ) {</td>
+      <td>    if ( spatial_layer_description_present_flag ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt;= spatial_layers_cnt; i++ )</td>
+      <td>        for ( i = 0; i &lt;= spatial_layers_cnt; i++ )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">spatial_layer_ref_id[ i ]</b></td>
+      <td>            <b class="syntax-element">spatial_layer_ref_id[ i ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (temporal_group_description_present_flag) {</td>
+      <td>    if (temporal_group_description_present_flag) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">temporal_group_size</b></td>
+      <td>        <b class="syntax-element">temporal_group_size</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; temporal_group_size; i++ ) {</td>
+      <td>        for ( i = 0; i &lt; temporal_group_size; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">temporal_group_temporal_id[ i ]</b></td>
+      <td>            <b class="syntax-element">temporal_group_temporal_id[ i ]</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">temporal_group_temporal_switching_up_point_flag[ i ]</b></td>
+      <td>            <b class="syntax-element">temporal_group_temporal_switching_up_point_flag[ i ]</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">temporal_group_spatial_switching_up_point_flag[ i ]</b></td>
+      <td>            <b class="syntax-element">temporal_group_spatial_switching_up_point_flag[ i ]</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">temporal_group_ref_cnt[ i ]</b></td>
+      <td>            <b class="syntax-element">temporal_group_ref_cnt[ i ]</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td>for ( j = 0; j &lt; temporal_group_ref_cnt[ i ]; j++ ) {</td>
+      <td>            for ( j = 0; j &lt; temporal_group_ref_cnt[ i ]; j++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">temporal_group_ref_pic_diff[ i ][ j ]</b></td>
+      <td>                <b class="syntax-element">temporal_group_ref_pic_diff[ i ][ j ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -4038,63 +4038,63 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if ( SeenFrameHeader == 1 ) {</td>
+      <td>    if ( SeenFrameHeader == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>frame_header_copy()</td>
+      <td>        frame_header_copy()</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SeenFrameHeader = 1</td>
+      <td>        SeenFrameHeader = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>uncompressed_header( )</td>
+      <td>        uncompressed_header( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>trailing_bits( )</td>
+      <td>        trailing_bits( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( show_existing_frame ) {</td>
+      <td>        if ( show_existing_frame ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>decode_frame( )</td>
+      <td>            decode_frame( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SeenFrameHeader = 0</td>
+      <td>            SeenFrameHeader = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TileNum = 0</td>
+      <td>            TileNum = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>MaxTileSize = 0</td>
+      <td>            MaxTileSize = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SeenFrameHeader = 1</td>
+      <td>            SeenFrameHeader = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -4113,815 +4113,815 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>idLen = ( additional_frame_id_length_minus1 +</td>
+      <td>    idLen = ( additional_frame_id_length_minus1 +</td>
       <td> </td>
     </tr>
     <tr>
-      <td>delta_frame_id_length_minus2 + 3 )</td>
+      <td>              delta_frame_id_length_minus2 + 3 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">show_existing_frame</b></td>
+      <td>    <b class="syntax-element">show_existing_frame</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( show_existing_frame == 1 ) {</td>
+      <td>    if ( show_existing_frame == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">frame_to_show_map_idx</b></td>
+      <td>        <b class="syntax-element">frame_to_show_map_idx</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td>refresh_frame_flags = 0</td>
+      <td>        refresh_frame_flags = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( frame_id_numbers_present_flag ) {</td>
+      <td>        if ( frame_id_numbers_present_flag ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">display_frame_id</b></td>
+      <td>            <b class="syntax-element">display_frame_id</b></td>
       <td>f(idLen)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>frame_type = RefType[ frame_to_show_map_idx ]</td>
+      <td>        frame_type = RefType[ frame_to_show_map_idx ]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( frame_type == KEY_FRAME ) {</td>
+      <td>        if ( frame_type == KEY_FRAME ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>refresh_frame_flags = (1 « NUM_REF_FRAMES) - 1</td>
+      <td>            refresh_frame_flags = (1 « NUM_REF_FRAMES) - 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>load_grain_params( frame_to_show_map_idx )</td>
+      <td>        load_grain_params( frame_to_show_map_idx )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return</td>
+      <td>        return</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">frame_type</b></td>
+      <td>    <b class="syntax-element">frame_type</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>FrameIsIntra = (frame_type == INTRA_ONLY_FRAME ||</td>
+      <td>    FrameIsIntra = (frame_type == INTRA_ONLY_FRAME ||</td>
       <td> </td>
     </tr>
     <tr>
-      <td>frame_type == KEY_FRAME)</td>
+      <td>                    frame_type == KEY_FRAME)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( frame_type == KEY_FRAME ) {</td>
+      <td>    if ( frame_type == KEY_FRAME ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )</td>
+      <td>        for ( i = 0; i &lt; NUM_REF_FRAMES; i++ )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RefValid[ i ] = 0</td>
+      <td>            RefValid[ i ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">show_frame</b></td>
+      <td>    <b class="syntax-element">show_frame</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">error_resilient_mode</b></td>
+      <td>    <b class="syntax-element">error_resilient_mode</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">enable_intra_edge_filter</b></td>
+      <td>    <b class="syntax-element">enable_intra_edge_filter</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">allow_filter_intra</b></td>
+      <td>    <b class="syntax-element">allow_filter_intra</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">disable_cdf_update</b></td>
+      <td>    <b class="syntax-element">disable_cdf_update</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( seq_force_screen_content_tools == SELECT_SCREEN_CONTENT_TOOLS ) {</td>
+      <td>    if ( seq_force_screen_content_tools == SELECT_SCREEN_CONTENT_TOOLS ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">allow_screen_content_tools</b></td>
+      <td>        <b class="syntax-element">allow_screen_content_tools</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>allow_screen_content_tools = seq_force_screen_content_tools</td>
+      <td>        allow_screen_content_tools = seq_force_screen_content_tools</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( allow_screen_content_tools ) {</td>
+      <td>    if ( allow_screen_content_tools ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( seq_force_integer_mv == SELECT_INTEGER_MV ) {</td>
+      <td>        if ( seq_force_integer_mv == SELECT_INTEGER_MV ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">force_integer_mv</b></td>
+      <td>            <b class="syntax-element">force_integer_mv</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>force_integer_mv = seq_force_integer_mv</td>
+      <td>            force_integer_mv = seq_force_integer_mv</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>force_integer_mv = 0</td>
+      <td>        force_integer_mv = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( frame_id_numbers_present_flag ) {</td>
+      <td>    if ( frame_id_numbers_present_flag ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>PrevFrameID = current_frame_id</td>
+      <td>        PrevFrameID = current_frame_id</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">current_frame_id</b></td>
+      <td>        <b class="syntax-element">current_frame_id</b></td>
       <td>f(idLen)</td>
     </tr>
     <tr>
-      <td>mark_ref_frames( )</td>
+      <td>        mark_ref_frames( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">frame_size_override_flag</b></td>
+      <td>    <b class="syntax-element">frame_size_override_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">order_hint</b></td>
+      <td>    <b class="syntax-element">order_hint</b></td>
       <td>f(OrderHintBits)</td>
     </tr>
     <tr>
-      <td>OrderHint = order_hint</td>
+      <td>    OrderHint = order_hint</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( FrameIsIntra || error_resilient_mode ) {</td>
+      <td>    if ( FrameIsIntra || error_resilient_mode ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>primary_ref_frame = PRIMARY_REF_NONE</td>
+      <td>        primary_ref_frame = PRIMARY_REF_NONE</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">primary_ref_frame</b></td>
+      <td>        <b class="syntax-element">primary_ref_frame</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>allow_high_precision_mv = 0</td>
+      <td>    allow_high_precision_mv = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>can_use_previous = 0</td>
+      <td>    can_use_previous = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>allow_intrabc = 0</td>
+      <td>    allow_intrabc = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( frame_type == KEY_FRAME ) {</td>
+      <td>    if ( frame_type == KEY_FRAME ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( show_frame )</td>
+      <td>        if ( show_frame )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>refresh_frame_flags = 0xFF</td>
+      <td>            refresh_frame_flags = 0xFF</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else</td>
+      <td>        else</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">refresh_frame_flags</b></td>
+      <td>            <b class="syntax-element">refresh_frame_flags</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>frame_size( )</td>
+      <td>        frame_size( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>render_size( )</td>
+      <td>        render_size( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( allow_screen_content_tools &amp;&amp; UpscaledWidth == FrameWidth ) {</td>
+      <td>        if ( allow_screen_content_tools &amp;&amp; UpscaledWidth == FrameWidth ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">allow_intrabc</b></td>
+      <td>            <b class="syntax-element">allow_intrabc</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( error_resilient_mode &amp;&amp; enable_order_hint ) {</td>
+      <td>        if ( error_resilient_mode &amp;&amp; enable_order_hint ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; NUM_REF_FRAMES; i++) {</td>
+      <td>            for ( i = 0; i &lt; NUM_REF_FRAMES; i++) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">ref_order_hint[ i ]</b></td>
+      <td>                <b class="syntax-element">ref_order_hint[ i ]</b></td>
       <td>f(OrderHintBits)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( frame_type == INTRA_ONLY_FRAME ) {</td>
+      <td>        if ( frame_type == INTRA_ONLY_FRAME ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">refresh_frame_flags</b></td>
+      <td>            <b class="syntax-element">refresh_frame_flags</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>frame_size( )</td>
+      <td>            frame_size( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>render_size( )</td>
+      <td>            render_size( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( allow_screen_content_tools &amp;&amp; UpscaledWidth == FrameWidth ) {</td>
+      <td>            if ( allow_screen_content_tools &amp;&amp; UpscaledWidth == FrameWidth ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">allow_intrabc</b></td>
+      <td>                <b class="syntax-element">allow_intrabc</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( frame_type == SWITCH_FRAME ) {</td>
+      <td>            if ( frame_type == SWITCH_FRAME ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>refresh_frame_flags = 0xFF</td>
+      <td>                refresh_frame_flags = 0xFF</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">refresh_frame_flags</b></td>
+      <td>                <b class="syntax-element">refresh_frame_flags</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( !enable_order_hint ) {</td>
+      <td>            if ( !enable_order_hint ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>frame_refs_short_signaling = 0</td>
+      <td>              frame_refs_short_signaling = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">frame_refs_short_signaling</b></td>
+      <td>              <b class="syntax-element">frame_refs_short_signaling</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( frame_refs_short_signaling ) {</td>
+      <td>              if ( frame_refs_short_signaling ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">last_frame_idx</b></td>
+      <td>                <b class="syntax-element">last_frame_idx</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">gold_frame_idx</b></td>
+      <td>                <b class="syntax-element">gold_frame_idx</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td>set_frame_refs()</td>
+      <td>                set_frame_refs()</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>              }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {</td>
+      <td>            for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( !frame_refs_short_signaling )</td>
+      <td>                if ( !frame_refs_short_signaling )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">ref_frame_idx[ i ]</b></td>
+      <td>                  <b class="syntax-element">ref_frame_idx[ i ]</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td>if ( frame_id_numbers_present_flag ) {</td>
+      <td>                if ( frame_id_numbers_present_flag ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>n = delta_frame_id_length_minus2 + 2</td>
+      <td>                    n = delta_frame_id_length_minus2 + 2</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_frame_id_minus1</b></td>
+      <td>                    <b class="syntax-element">delta_frame_id_minus1</b></td>
       <td>f(n)</td>
     </tr>
     <tr>
-      <td>DeltaFrameId = delta_frame_id_minus1 + 1</td>
+      <td>                    DeltaFrameId = delta_frame_id_minus1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RefFrameId[ i ] = ((current_frame_id + (1 « idLen) -</td>
+      <td>                    RefFrameId[ i ] = ((current_frame_id + (1 « idLen) -</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaFrameId ) % (1 « idLen))</td>
+      <td>                                  DeltaFrameId ) % (1 « idLen))</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>                }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( frame_size_override_flag &amp;&amp; !error_resilient_mode ) {</td>
+      <td>            if ( frame_size_override_flag &amp;&amp; !error_resilient_mode ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>frame_size_with_refs( )</td>
+      <td>                frame_size_with_refs( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>frame_size( )</td>
+      <td>                frame_size( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>render_size( )</td>
+      <td>                render_size( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( force_integer_mv ) {</td>
+      <td>            if ( force_integer_mv ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>allow_high_precision_mv = 0</td>
+      <td>                allow_high_precision_mv = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">allow_high_precision_mv</b></td>
+      <td>                <b class="syntax-element">allow_high_precision_mv</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>read_interpolation_filter( )</td>
+      <td>            read_interpolation_filter( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">is_motion_mode_switchable</b></td>
+      <td>            <b class="syntax-element">is_motion_mode_switchable</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( error_resilient_mode || !enable_order_hint ) {</td>
+      <td>            if ( error_resilient_mode || !enable_order_hint ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>can_use_previous = 0</td>
+      <td>                can_use_previous = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">can_use_previous</b></td>
+      <td>                <b class="syntax-element">can_use_previous</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( !FrameIsIntra ) {</td>
+      <td>    if ( !FrameIsIntra ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {</td>
+      <td>        for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>refFrame = LAST_FRAME + i</td>
+      <td>            refFrame = LAST_FRAME + i</td>
       <td> </td>
     </tr>
     <tr>
-      <td>hint = RefOrderHint[ ref_frame_idx[ i ] ]</td>
+      <td>            hint = RefOrderHint[ ref_frame_idx[ i ] ]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>OrderHints[ refFrame ] = hint</td>
+      <td>            OrderHints[ refFrame ] = hint</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( frame_type == SWITCH_FRAME ||</td>
+      <td>            if ( frame_type == SWITCH_FRAME ||</td>
       <td> </td>
     </tr>
     <tr>
-      <td>!enable_order_hint ||</td>
+      <td>                 !enable_order_hint ||</td>
       <td> </td>
     </tr>
     <tr>
-      <td>error_resilient_mode ) {</td>
+      <td>                 error_resilient_mode ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RefFrameSignBias[ refFrame ] = 0</td>
+      <td>                RefFrameSignBias[ refFrame ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RefFrameSignBias[ refFrame ] = get_relative_dist( hint, OrderHint) &gt; 0</td>
+      <td>                RefFrameSignBias[ refFrame ] = get_relative_dist( hint, OrderHint) &gt; 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( error_resilient_mode ) {</td>
+      <td>    if ( error_resilient_mode ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>disable_frame_end_update_cdf = 1</td>
+      <td>        disable_frame_end_update_cdf = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">disable_frame_end_update_cdf</b></td>
+      <td>        <b class="syntax-element">disable_frame_end_update_cdf</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( FrameIsIntra || error_resilient_mode ) {</td>
+      <td>    if ( FrameIsIntra || error_resilient_mode ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>setup_past_independence ( )</td>
+      <td>        setup_past_independence ( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>init_non_coeff_cdfs( )</td>
+      <td>        init_non_coeff_cdfs( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else if ( primary_ref_frame == PRIMARY_REF_NONE ) {</td>
+      <td>    } else if ( primary_ref_frame == PRIMARY_REF_NONE ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>init_non_coeff_cdfs( )</td>
+      <td>        init_non_coeff_cdfs( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>load_previous( )</td>
+      <td>        load_previous( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>load_cdfs( ref_frame_idx[ primary_ref_frame ] )</td>
+      <td>        load_cdfs( ref_frame_idx[ primary_ref_frame ] )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>load_previous( )</td>
+      <td>        load_previous( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>tile_info( )</td>
+      <td>    tile_info( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>quantization_params( )</td>
+      <td>    quantization_params( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>segmentation_params( )</td>
+      <td>    segmentation_params( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>delta_q_params( )</td>
+      <td>    delta_q_params( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>delta_lf_params( )</td>
+      <td>    delta_lf_params( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( FrameIsIntra || error_resilient_mode ||</td>
+      <td>    if ( FrameIsIntra || error_resilient_mode ||</td>
       <td> </td>
     </tr>
     <tr>
-      <td>primary_ref_frame == PRIMARY_REF_NONE ) {</td>
+      <td>         primary_ref_frame == PRIMARY_REF_NONE ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>init_coeff_cdfs( )</td>
+      <td>        init_coeff_cdfs( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>AllLossless = 1</td>
+      <td>    AllLossless = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( segmentId = 0; segmentId &lt; MAX_SEGMENTS; segmentId++ ) {</td>
+      <td>    for ( segmentId = 0; segmentId &lt; MAX_SEGMENTS; segmentId++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>qindex = get_qindex( 1, segmentId )</td>
+      <td>        qindex = get_qindex( 1, segmentId )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>LosslessArray[ segmentId ] = qindex == 0 &amp;&amp; DeltaQYDc == 0 &amp;&amp;</td>
+      <td>        LosslessArray[ segmentId ] = qindex == 0 &amp;&amp; DeltaQYDc == 0 &amp;&amp;</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQUAc == 0 &amp;&amp; DeltaQUDc == 0 &amp;&amp;</td>
+      <td>                                     DeltaQUAc == 0 &amp;&amp; DeltaQUDc == 0 &amp;&amp;</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQVAc == 0 &amp;&amp; DeltaQVDc == 0</td>
+      <td>                                     DeltaQVAc == 0 &amp;&amp; DeltaQVDc == 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( !LosslessArray[ segmentId ] )</td>
+      <td>        if ( !LosslessArray[ segmentId ] )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>AllLossless = 0</td>
+      <td>            AllLossless = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( using_qmatrix ) {</td>
+      <td>        if ( using_qmatrix ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( LosslessArray[ segmentId ] ) {</td>
+      <td>            if ( LosslessArray[ segmentId ] ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SegQMLevel[ 0 ][ segmentId ] = 15</td>
+      <td>                SegQMLevel[ 0 ][ segmentId ] = 15</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SegQMLevel[ 1 ][ segmentId ] = 15</td>
+      <td>                SegQMLevel[ 1 ][ segmentId ] = 15</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SegQMLevel[ 2 ][ segmentId ] = 15</td>
+      <td>                SegQMLevel[ 2 ][ segmentId ] = 15</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SegQMLevel[ 0 ][ segmentId ] = qm_y</td>
+      <td>                SegQMLevel[ 0 ][ segmentId ] = qm_y</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SegQMLevel[ 1 ][ segmentId ] = qm_u</td>
+      <td>                SegQMLevel[ 1 ][ segmentId ] = qm_u</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SegQMLevel[ 2 ][ segmentId ] = qm_v</td>
+      <td>                SegQMLevel[ 2 ][ segmentId ] = qm_v</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>loop_filter_params( )</td>
+      <td>    loop_filter_params( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>cdef_params( )</td>
+      <td>    cdef_params( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>lr_params( )</td>
+      <td>    lr_params( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>read_tx_mode( )</td>
+      <td>    read_tx_mode( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>frame_reference_mode( )</td>
+      <td>    frame_reference_mode( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>skip_mode_params( )</td>
+      <td>    skip_mode_params( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>compound_tools( )</td>
+      <td>    compound_tools( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">reduced_tx_set</b></td>
+      <td>    <b class="syntax-element">reduced_tx_set</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>global_motion_params( )</td>
+      <td>    global_motion_params( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( show_frame ) {</td>
+      <td>    if ( show_frame ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>showable_frame = 0</td>
+      <td>        showable_frame = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">showable_frame</b></td>
+      <td>        <b class="syntax-element">showable_frame</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( show_frame || showable_frame) {</td>
+      <td>    if ( show_frame || showable_frame) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>film_grain_params( )</td>
+      <td>        film_grain_params( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -4943,27 +4943,27 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if ( !enable_order_hint )</td>
+      <td>    if ( !enable_order_hint )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return 0</td>
+      <td>        return 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>diff = a - b</td>
+      <td>    diff = a - b</td>
       <td> </td>
     </tr>
     <tr>
-      <td>m = 1 « (OrderHintBits - 1)</td>
+      <td>    m = 1 « (OrderHintBits - 1)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>diff = (diff &amp; (m - 1)) - (diff &amp; m)</td>
+      <td>    diff = (diff &amp; (m - 1)) - (diff &amp; m)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return diff</td>
+      <td>    return diff</td>
       <td> </td>
     </tr>
     <tr>
@@ -4982,59 +4982,59 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>diffLen = delta_frame_id_length_minus2 + 2</td>
+      <td>    diffLen = delta_frame_id_length_minus2 + 2</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; NUM_REF_FRAMES; i++ ) {</td>
+      <td>    for ( i = 0; i &lt; NUM_REF_FRAMES; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( current_frame_id &gt; ( 1 « diffLen ) ) {</td>
+      <td>        if ( current_frame_id &gt; ( 1 « diffLen ) ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( RefFrameId[ i ] &gt; current_frame_id</td>
+      <td>            if ( RefFrameId[ i ] &gt; current_frame_id</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RefFrameId[ i ] &lt; ( current_frame_id - ( 1 « diffLen ) )</td>
+      <td>                 RefFrameId[ i ] &lt; ( current_frame_id - ( 1 « diffLen ) )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RefValid[ i ] = 0</td>
+      <td>                RefValid[ i ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( RefFrameId[ i ] &gt; current_frame_id</td>
+      <td>            if ( RefFrameId[ i ] &gt; current_frame_id</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RefFrameId[ i ] &lt; ( ( 1 « idLen ) +</td>
+      <td>                 RefFrameId[ i ] &lt; ( ( 1 « idLen ) +</td>
       <td> </td>
     </tr>
     <tr>
-      <td>current_frame_id -</td>
+      <td>                                     current_frame_id -</td>
       <td> </td>
     </tr>
     <tr>
-      <td>( 1 « diffLen ) ) )</td>
+      <td>                                     ( 1 « diffLen ) ) )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RefValid[ i ] = 0</td>
+      <td>                RefValid[ i ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -5053,55 +5053,55 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if (frame_size_override_flag) {</td>
+      <td>    if (frame_size_override_flag) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>n = frame_width_bits_minus_1 + 1</td>
+      <td>        n = frame_width_bits_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">frame_width_minus_1</b></td>
+      <td>        <b class="syntax-element">frame_width_minus_1</b></td>
       <td>f(n)</td>
     </tr>
     <tr>
-      <td>n = frame_height_bits_minus_1 + 1</td>
+      <td>        n = frame_height_bits_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">frame_height_minus_1</b></td>
+      <td>        <b class="syntax-element">frame_height_minus_1</b></td>
       <td>f(n)</td>
     </tr>
     <tr>
-      <td>FrameWidth = frame_width_minus_1 + 1</td>
+      <td>        FrameWidth = frame_width_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FrameHeight = frame_height_minus_1 + 1</td>
+      <td>        FrameHeight = frame_height_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FrameWidth = max_frame_width_minus_1 + 1</td>
+      <td>        FrameWidth = max_frame_width_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FrameHeight = max_frame_height_minus_1 + 1</td>
+      <td>        FrameHeight = max_frame_height_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>compute_image_size( )</td>
+      <td>    compute_image_size( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>superres_params( )</td>
+      <td>    superres_params( )</td>
       <td> </td>
     </tr>
     <tr>
@@ -5120,43 +5120,43 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">render_and_frame_size_different</b></td>
+      <td>    <b class="syntax-element">render_and_frame_size_different</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( render_and_frame_size_different == 1 ) {</td>
+      <td>    if ( render_and_frame_size_different == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">render_width_minus_1</b></td>
+      <td>        <b class="syntax-element">render_width_minus_1</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">render_height_minus_1</b></td>
+      <td>        <b class="syntax-element">render_height_minus_1</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
-      <td>RenderWidth = render_width_minus_1 + 1</td>
+      <td>        RenderWidth = render_width_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RenderHeight = render_height_minus_1 + 1</td>
+      <td>        RenderHeight = render_height_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RenderWidth = UpscaledWidth</td>
+      <td>        RenderWidth = UpscaledWidth</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RenderHeight = FrameHeight</td>
+      <td>        RenderHeight = FrameHeight</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -5175,75 +5175,75 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; REFS_PER_FRAME; i++ ) {</td>
+      <td>    for ( i = 0; i &lt; REFS_PER_FRAME; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">found_ref</b></td>
+      <td>        <b class="syntax-element">found_ref</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( found_ref == 1 ) {</td>
+      <td>        if ( found_ref == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>UpscaledWidth = RefUpscaledWidth[ ref_frame_idx[ i ] ]</td>
+      <td>            UpscaledWidth = RefUpscaledWidth[ ref_frame_idx[ i ] ]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FrameWidth = RefFrameWidth[ ref_frame_idx[ i ] ]</td>
+      <td>            FrameWidth = RefFrameWidth[ ref_frame_idx[ i ] ]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FrameHeight = RefFrameHeight[ ref_frame_idx[ i ] ]</td>
+      <td>            FrameHeight = RefFrameHeight[ ref_frame_idx[ i ] ]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RenderWidth = RefRenderWidth[ ref_frame_idx[ i ] ]</td>
+      <td>            RenderWidth = RefRenderWidth[ ref_frame_idx[ i ] ]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>RenderHeight = RefRenderHeight[ ref_frame_idx[ i ] ]</td>
+      <td>            RenderHeight = RefRenderHeight[ ref_frame_idx[ i ] ]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>break</td>
+      <td>            break</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( found_ref == 0 ) {</td>
+      <td>    if ( found_ref == 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>frame_size( )</td>
+      <td>        frame_size( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>render_size( )</td>
+      <td>        render_size( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>compute_image_size( )</td>
+      <td>        compute_image_size( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>superres_params( )</td>
+      <td>        superres_params( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -5262,43 +5262,43 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">use_superres</b></td>
+      <td>  <b class="syntax-element">use_superres</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if (use_superres) {</td>
+      <td>  if (use_superres) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">coded_denom</b></td>
+      <td>    <b class="syntax-element">coded_denom</b></td>
       <td>f(SUPERRES_DENOM_BITS)</td>
     </tr>
     <tr>
-      <td>SuperresDenom = coded_denom + SUPERRES_DENOM_MIN</td>
+      <td>    SuperresDenom = coded_denom + SUPERRES_DENOM_MIN</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>  } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SuperresDenom = SUPERRES_NUM</td>
+      <td>    SuperresDenom = SUPERRES_NUM</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>  }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>UpscaledWidth = FrameWidth</td>
+      <td>  UpscaledWidth = FrameWidth</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FrameWidth = (UpscaledWidth * SUPERRES_NUM +</td>
+      <td>  FrameWidth = (UpscaledWidth * SUPERRES_NUM +</td>
       <td> </td>
     </tr>
     <tr>
-      <td>(SuperresDenom / 2)) / SuperresDenom</td>
+      <td>                (SuperresDenom / 2)) / SuperresDenom</td>
       <td> </td>
     </tr>
     <tr>
@@ -5317,11 +5317,11 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>MiCols = 2 * ( ( FrameWidth + 7 ) » 3 )</td>
+      <td>    MiCols = 2 * ( ( FrameWidth + 7 ) » 3 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>MiRows = 2 * ( ( FrameHeight + 7 ) » 3 )</td>
+      <td>    MiRows = 2 * ( ( FrameHeight + 7 ) » 3 )</td>
       <td> </td>
     </tr>
     <tr>
@@ -5340,27 +5340,27 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">is_filter_switchable</b></td>
+      <td>    <b class="syntax-element">is_filter_switchable</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( is_filter_switchable == 1 ) {</td>
+      <td>    if ( is_filter_switchable == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>interpolation_filter = SWITCHABLE</td>
+      <td>        interpolation_filter = SWITCHABLE</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">interpolation_filter</b></td>
+      <td>        <b class="syntax-element">interpolation_filter</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -5379,175 +5379,175 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if ( AllLossless || allow_intrabc ) {</td>
+      <td>    if ( AllLossless || allow_intrabc ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>loop_filter_level[ 0 ] = 0</td>
+      <td>        loop_filter_level[ 0 ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>loop_filter_level[ 1 ] = 0</td>
+      <td>        loop_filter_level[ 1 ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; TOTAL_REFS_PER_FRAME; i++ ) {</td>
+      <td>        for ( i = 0; i &lt; TOTAL_REFS_PER_FRAME; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>loop_filter_ref_deltas[ i ] = 0</td>
+      <td>            loop_filter_ref_deltas[ i ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; 2; i++ ) {</td>
+      <td>        for ( i = 0; i &lt; 2; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>loop_filter_mode_deltas[ i ] = 0</td>
+      <td>            loop_filter_mode_deltas[ i ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return</td>
+      <td>        return</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">loop_filter_level[ 0 ]</b></td>
+      <td>    <b class="syntax-element">loop_filter_level[ 0 ]</b></td>
       <td>f(6)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">loop_filter_level[ 1 ]</b></td>
+      <td>    <b class="syntax-element">loop_filter_level[ 1 ]</b></td>
       <td>f(6)</td>
     </tr>
     <tr>
-      <td>if ( NumPlanes &gt; 1 ) {</td>
+      <td>    if ( NumPlanes &gt; 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( loop_filter_level[ 0 ] || loop_filter_level[ 1 ] ) {</td>
+      <td>        if ( loop_filter_level[ 0 ] || loop_filter_level[ 1 ] ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">loop_filter_level[ 2 ]</b></td>
+      <td>            <b class="syntax-element">loop_filter_level[ 2 ]</b></td>
       <td>f(6)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">loop_filter_level[ 3 ]</b></td>
+      <td>            <b class="syntax-element">loop_filter_level[ 3 ]</b></td>
       <td>f(6)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">loop_filter_sharpness</b></td>
+      <td>    <b class="syntax-element">loop_filter_sharpness</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">loop_filter_delta_enabled</b></td>
+      <td>    <b class="syntax-element">loop_filter_delta_enabled</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( loop_filter_delta_enabled == 1 ) {</td>
+      <td>    if ( loop_filter_delta_enabled == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">loop_filter_delta_update</b></td>
+      <td>        <b class="syntax-element">loop_filter_delta_update</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( loop_filter_delta_update == 1 ) {</td>
+      <td>        if ( loop_filter_delta_update == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; TOTAL_REFS_PER_FRAME; i++ ) {</td>
+      <td>            for ( i = 0; i &lt; TOTAL_REFS_PER_FRAME; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">update_ref_delta</b></td>
+      <td>                <b class="syntax-element">update_ref_delta</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( update_ref_delta == 1 )</td>
+      <td>                if ( update_ref_delta == 1 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">loop_filter_ref_deltas[ i ]</b></td>
+      <td>                    <b class="syntax-element">loop_filter_ref_deltas[ i ]</b></td>
       <td>su(1+6)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; 2; i++ ) {</td>
+      <td>            for ( i = 0; i &lt; 2; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">update_mode_delta</b></td>
+      <td>                <b class="syntax-element">update_mode_delta</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( update_mode_delta == 1 )</td>
+      <td>                if ( update_mode_delta == 1 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">loop_filter_mode_deltas[ i ]</b></td>
+      <td>                    <b class="syntax-element">loop_filter_mode_deltas[ i ]</b></td>
       <td>su(1+6)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; TOTAL_REFS_PER_FRAME; i++ ) {</td>
+      <td>        for ( i = 0; i &lt; TOTAL_REFS_PER_FRAME; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>loop_filter_ref_deltas[ i ] = 0</td>
+      <td>            loop_filter_ref_deltas[ i ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; 2; i++ ) {</td>
+      <td>        for ( i = 0; i &lt; 2; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>loop_filter_mode_deltas[ i ] = 0</td>
+      <td>            loop_filter_mode_deltas[ i ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -5566,127 +5566,127 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">base_q_idx</b></td>
+      <td>    <b class="syntax-element">base_q_idx</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>DeltaQYDc = read_delta_q( )</td>
+      <td>    DeltaQYDc = read_delta_q( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( NumPlanes &gt; 1 ) {</td>
+      <td>    if ( NumPlanes &gt; 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( separate_uv_delta_q )</td>
+      <td>        if ( separate_uv_delta_q )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">diff_uv_delta</b></td>
+      <td>          <b class="syntax-element">diff_uv_delta</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>else</td>
+      <td>        else</td>
       <td> </td>
     </tr>
     <tr>
-      <td>diff_uv_delta = 0</td>
+      <td>          diff_uv_delta = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQUDc = read_delta_q( )</td>
+      <td>        DeltaQUDc = read_delta_q( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQUAc = read_delta_q( )</td>
+      <td>        DeltaQUAc = read_delta_q( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( diff_uv_delta ) {</td>
+      <td>        if ( diff_uv_delta ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQVDc = read_delta_q( )</td>
+      <td>          DeltaQVDc = read_delta_q( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQVAc = read_delta_q( )</td>
+      <td>          DeltaQVAc = read_delta_q( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQVDc = DeltaQUDc</td>
+      <td>          DeltaQVDc = DeltaQUDc</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQVAc = DeltaQUAc</td>
+      <td>          DeltaQVAc = DeltaQUAc</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQUDc = 0</td>
+      <td>        DeltaQUDc = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQUDc = 0</td>
+      <td>        DeltaQUDc = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQVAc = 0</td>
+      <td>        DeltaQVAc = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>DeltaQVAc = 0</td>
+      <td>        DeltaQVAc = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">using_qmatrix</b></td>
+      <td>    <b class="syntax-element">using_qmatrix</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if (using_qmatrix) {</td>
+      <td>    if (using_qmatrix) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">qm_y</b></td>
+      <td>        <b class="syntax-element">qm_y</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">qm_u</b></td>
+      <td>        <b class="syntax-element">qm_u</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td>if ( !separate_uv_delta_q )</td>
+      <td>        if ( !separate_uv_delta_q )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>qm_v = qm_u</td>
+      <td>            qm_v = qm_u</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else</td>
+      <td>        else</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">qm_v</b></td>
+      <td>            <b class="syntax-element">qm_v</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -5705,31 +5705,31 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_coded</b></td>
+      <td>    <b class="syntax-element">delta_coded</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( delta_coded ) {</td>
+      <td>    if ( delta_coded ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_q</b></td>
+      <td>        <b class="syntax-element">delta_q</b></td>
       <td>su(1+6)</td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>delta_q = 0</td>
+      <td>        delta_q = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return delta_q</td>
+      <td>    return delta_q</td>
       <td> </td>
     </tr>
     <tr>
@@ -5748,211 +5748,211 @@ two order hints by sign extending the result of subtracting the values.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td><b class="syntax-element">segmentation_enabled</b></td>
+      <td>    <b class="syntax-element">segmentation_enabled</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( segmentation_enabled == 1 ) {</td>
+      <td>    if ( segmentation_enabled == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( primary_ref_frame == PRIMARY_REF_NONE ) {</td>
+      <td>        if ( primary_ref_frame == PRIMARY_REF_NONE ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>segmentation_update_map = 1</td>
+      <td>            segmentation_update_map = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>segmentation_temporal_update = 0</td>
+      <td>            segmentation_temporal_update = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>segmentation_update_data = 1</td>
+      <td>            segmentation_update_data = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">segmentation_update_map</b></td>
+      <td>            <b class="syntax-element">segmentation_update_map</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( segmentation_update_map == 1 )</td>
+      <td>            if ( segmentation_update_map == 1 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">segmentation_temporal_update</b></td>
+      <td>                <b class="syntax-element">segmentation_temporal_update</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">segmentation_update_data</b></td>
+      <td>            <b class="syntax-element">segmentation_update_data</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( segmentation_update_data == 1 ) {</td>
+      <td>        if ( segmentation_update_data == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; MAX_SEGMENTS; i++ ) {</td>
+      <td>            for ( i = 0; i &lt; MAX_SEGMENTS; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( j = 0; j &lt; SEG_LVL_MAX; j++ ) {</td>
+      <td>                for ( j = 0; j &lt; SEG_LVL_MAX; j++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>feature_value = 0</td>
+      <td>                    feature_value = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">feature_enabled</b></td>
+      <td>                    <b class="syntax-element">feature_enabled</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>FeatureEnabled[ i ][ j ] = feature_enabled</td>
+      <td>                    FeatureEnabled[ i ][ j ] = feature_enabled</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( feature_enabled == 1 ) {</td>
+      <td>                    if ( feature_enabled == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>bitsToRead = Segmentation_Feature_Bits[ j ]</td>
+      <td>                        bitsToRead = Segmentation_Feature_Bits[ j ]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>limit = Segmentation_Feature_Max[ j ]</td>
+      <td>                        limit = Segmentation_Feature_Max[ j ]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( Segmentation_Feature_Signed[ j ] == 1 ) {</td>
+      <td>                        if ( Segmentation_Feature_Signed[ j ] == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">feature_value</b></td>
+      <td>                            <b class="syntax-element">feature_value</b></td>
       <td>su(1+bitsToRead)</td>
     </tr>
     <tr>
-      <td>clippedValue = Clip3( -limit, limit, feature_value)</td>
+      <td>                            clippedValue = Clip3( -limit, limit, feature_value)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>                        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">feature_value</b></td>
+      <td>                            <b class="syntax-element">feature_value</b></td>
       <td>f(bitsToRead)</td>
     </tr>
     <tr>
-      <td>clippedValue = Clip3( 0, limit, feature_value)</td>
+      <td>                            clippedValue = Clip3( 0, limit, feature_value)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>                        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>                    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FeatureData[ i ][ j ] = clippedValue</td>
+      <td>                    FeatureData[ i ][ j ] = clippedValue</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>                }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; MAX_SEGMENTS; i++ ) {</td>
+      <td>        for ( i = 0; i &lt; MAX_SEGMENTS; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( j = 0; j &lt; SEG_LVL_MAX; j++ ) {</td>
+      <td>            for ( j = 0; j &lt; SEG_LVL_MAX; j++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FeatureEnabled[ i ][ j ] = 0</td>
+      <td>                FeatureEnabled[ i ][ j ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FeatureData[ i ][ j ] = 0</td>
+      <td>                FeatureData[ i ][ j ] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SegIdPreSkip = 0</td>
+      <td>    SegIdPreSkip = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; MAX_SEGMENTS; i++ ) {</td>
+      <td>    for ( i = 0; i &lt; MAX_SEGMENTS; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( j = 0; j &lt; SEG_LVL_MAX; j++ ) {</td>
+      <td>        for ( j = 0; j &lt; SEG_LVL_MAX; j++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( FeatureEnabled[ i ][ j ] ) {</td>
+      <td>            if ( FeatureEnabled[ i ][ j ] ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>LastActiveSegId = i</td>
+      <td>                LastActiveSegId = i</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( j &gt;= SEG_LVL_REF_FRAME ) {</td>
+      <td>                if ( j &gt;= SEG_LVL_REF_FRAME ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SegIdPreSkip = 1</td>
+      <td>                    SegIdPreSkip = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>                }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -5981,47 +5981,47 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>sbCols = use_128x128_superblock ? ( ( MiCols + 31 ) » 5 ) : ( ( MiCols + 15 ) » 4 )</td>
+      <td>    sbCols = use_128x128_superblock ? ( ( MiCols + 31 ) » 5 ) : ( ( MiCols + 15 ) » 4 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>sbRows = use_128x128_superblock ? ( ( MiRows + 31 ) » 5 ) : ( ( MiRows + 15 ) » 4 )</td>
+      <td>    sbRows = use_128x128_superblock ? ( ( MiRows + 31 ) » 5 ) : ( ( MiRows + 15 ) » 4 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>sbShift = use_128x128_superblock ? 5 : 4</td>
+      <td>    sbShift = use_128x128_superblock ? 5 : 4</td>
       <td> </td>
     </tr>
     <tr>
-      <td>sbSize = sbShift + 2</td>
+      <td>    sbSize = sbShift + 2</td>
       <td> </td>
     </tr>
     <tr>
-      <td>maxTileWidthSb = MAX_TILE_WIDTH » sbSize</td>
+      <td>    maxTileWidthSb = MAX_TILE_WIDTH » sbSize</td>
       <td> </td>
     </tr>
     <tr>
-      <td>maxTileAreaSb = MAX_TILE_AREA » ( 2 * sbSize )</td>
+      <td>    maxTileAreaSb = MAX_TILE_AREA » ( 2 * sbSize )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>minLog2TileCols = tile_log2(maxTileWidthSb, sbCols)</td>
+      <td>    minLog2TileCols = tile_log2(maxTileWidthSb, sbCols)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>maxLog2TileCols = tile_log2(1, Min(sbCols, MAX_TILE_COLS))</td>
+      <td>    maxLog2TileCols = tile_log2(1, Min(sbCols, MAX_TILE_COLS))</td>
       <td> </td>
     </tr>
     <tr>
-      <td>maxLog2TileRows = tile_log2(1, Min(sbRows, MAX_TILE_ROWS))</td>
+      <td>    maxLog2TileRows = tile_log2(1, Min(sbRows, MAX_TILE_ROWS))</td>
       <td> </td>
     </tr>
     <tr>
-      <td>minLog2Tiles = Max(minLog2TileCols,</td>
+      <td>    minLog2Tiles = Max(minLog2TileCols,</td>
       <td> </td>
     </tr>
     <tr>
-      <td>tile_log2(maxTileAreaSb, sbRows * sbCols))</td>
+      <td>                       tile_log2(maxTileAreaSb, sbRows * sbCols))</td>
       <td> </td>
     </tr>
     <tr>
@@ -6029,75 +6029,75 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">uniform_tile_spacing_flag</b></td>
+      <td>    <b class="syntax-element">uniform_tile_spacing_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( uniform_tile_spacing_flag ) {</td>
+      <td>    if ( uniform_tile_spacing_flag ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TileColsLog2 = minLog2TileCols</td>
+      <td>        TileColsLog2 = minLog2TileCols</td>
       <td> </td>
     </tr>
     <tr>
-      <td>while ( TileColsLog2 &lt; maxLog2TileCols ) {</td>
+      <td>        while ( TileColsLog2 &lt; maxLog2TileCols ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">increment_tile_cols_log2</b></td>
+      <td>            <b class="syntax-element">increment_tile_cols_log2</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( increment_tile_cols_log2 == 1 )</td>
+      <td>            if ( increment_tile_cols_log2 == 1 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TileColsLog2++</td>
+      <td>                TileColsLog2++</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else</td>
+      <td>            else</td>
       <td> </td>
     </tr>
     <tr>
-      <td>break</td>
+      <td>                break</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>tileWidthSb = (sbCols + (1 « TileColsLog2) - 1) » TileColsLog2</td>
+      <td>        tileWidthSb = (sbCols + (1 « TileColsLog2) - 1) » TileColsLog2</td>
       <td> </td>
     </tr>
     <tr>
-      <td>i = 0</td>
+      <td>        i = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for (startSb = 0; startSb &lt; sbCols; startSb += tileWidthSb) {</td>
+      <td>        for (startSb = 0; startSb &lt; sbCols; startSb += tileWidthSb) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>MiColStarts[ i ] = startSb « sbShift</td>
+      <td>          MiColStarts[ i ] = startSb « sbShift</td>
       <td> </td>
     </tr>
     <tr>
-      <td>i += 1</td>
+      <td>          i += 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>MiColStarts[i] = MiCols</td>
+      <td>        MiColStarts[i] = MiCols</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TileCols = i</td>
+      <td>        TileCols = i</td>
       <td> </td>
     </tr>
     <tr>
@@ -6105,155 +6105,131 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td> </td>
     </tr>
     <tr>
-      <td>minLog2TileRows = Max( minLog2Tiles - TileColsLog2, 0)</td>
+      <td>        minLog2TileRows = Max( minLog2Tiles - TileColsLog2, 0)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>maxTileHeightSb = sbRows » minLog2TileRows</td>
+      <td>        maxTileHeightSb = sbRows » minLog2TileRows</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TileRowsLog2 = minLog2TileRows</td>
+      <td>        TileRowsLog2 = minLog2TileRows</td>
       <td> </td>
     </tr>
     <tr>
-      <td>while ( TileRowsLog2 &lt; maxLog2TileRows ) {</td>
+      <td>        while ( TileRowsLog2 &lt; maxLog2TileRows ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">increment_tile_rows_log2</b></td>
+      <td>            <b class="syntax-element">increment_tile_rows_log2</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( increment_tile_rows_log2 == 1 )</td>
+      <td>            if ( increment_tile_rows_log2 == 1 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TileRowsLog2++</td>
+      <td>                TileRowsLog2++</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else</td>
+      <td>            else</td>
       <td> </td>
     </tr>
     <tr>
-      <td>break</td>
+      <td>                break</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>tileHeightSb = (sbRows + (1 « TileRowsLog2) - 1) » TileRowsLog2</td>
+      <td>        tileHeightSb = (sbRows + (1 « TileRowsLog2) - 1) » TileRowsLog2</td>
       <td> </td>
     </tr>
     <tr>
-      <td>i = 0</td>
+      <td>        i = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for (startSb = 0; startSb &lt; sbRows; startSb += tileHeightSb) {</td>
+      <td>        for (startSb = 0; startSb &lt; sbRows; startSb += tileHeightSb) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>MiRowStarts[ i ] = startSb « sbShift</td>
+      <td>          MiRowStarts[ i ] = startSb « sbShift</td>
       <td> </td>
     </tr>
     <tr>
-      <td>i += 1</td>
+      <td>          i += 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>MiRowStarts[i] = MiRows</td>
+      <td>        MiRowStarts[i] = MiRows</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TileRows = i</td>
+      <td>        TileRows = i</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>widestTileSb = 0</td>
+      <td>        widestTileSb = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>startSb = 0</td>
+      <td>        startSb = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; startSb &lt; sbCols &amp;&amp; i &lt; MAX_TILE_COLS; i++ ) {</td>
+      <td>        for ( i = 0; startSb &lt; sbCols &amp;&amp; i &lt; MAX_TILE_COLS; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>MiColStarts[ i ] = startSb « sbShift</td>
+      <td>            MiColStarts[ i ] = startSb « sbShift</td>
       <td> </td>
     </tr>
     <tr>
-      <td>maxWidth = Min(sbCols - startSb, maxTileWidthSb)</td>
+      <td>            maxWidth = Min(sbCols - startSb, maxTileWidthSb)</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">width_in_sbs_minus_1</b></td>
+      <td>            <b class="syntax-element">width_in_sbs_minus_1</b></td>
       <td>ns(maxWidth)</td>
     </tr>
     <tr>
-      <td>sizeSb = width_in_sbs_minus_1 + 1</td>
+      <td>            sizeSb = width_in_sbs_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>widestTileSb = Max( sizeSb, widestTileSb )</td>
+      <td>            widestTileSb = Max( sizeSb, widestTileSb )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>startSb += sizeSb</td>
+      <td>            startSb += sizeSb</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>MiColStarts[i] = MiCols</td>
+      <td>        MiColStarts[i] = MiCols</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TileCols = i</td>
+      <td>        TileCols = i</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TileColsLog2 = tile_log2(1, TileCols)</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td> </td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>if ( minLog2Tiles &gt; 0 )</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>maxTileAreaSb = (sbRows * sbCols) » (minLog2Tiles + 1)</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>else</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>maxTileAreaSb = sbRows * sbCols</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>maxTileHeightSb = Max( maxTileAreaSb / widestTileSb, 1 )</td>
+      <td>        TileColsLog2 = tile_log2(1, TileCols)</td>
       <td> </td>
     </tr>
     <tr>
@@ -6261,99 +6237,123 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td> </td>
     </tr>
     <tr>
-      <td>startSb = 0</td>
+      <td>        if ( minLog2Tiles &gt; 0 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; startSb &lt; sbRows &amp;&amp; i &lt; MAX_TILE_ROWS; i++ ) {</td>
+      <td>            maxTileAreaSb = (sbRows * sbCols) » (minLog2Tiles + 1)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>MiRowStarts[ i ] = startSb « sbShift</td>
+      <td>        else</td>
       <td> </td>
     </tr>
     <tr>
-      <td>maxHeight = Min(sbRows - startSb, maxTileHeightSb)</td>
+      <td>            maxTileAreaSb = sbRows * sbCols</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">height_in_sbs_minus_1</b></td>
+      <td>        maxTileHeightSb = Max( maxTileAreaSb / widestTileSb, 1 )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        startSb = 0</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        for ( i = 0; startSb &lt; sbRows &amp;&amp; i &lt; MAX_TILE_ROWS; i++ ) {</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>            MiRowStarts[ i ] = startSb « sbShift</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>            maxHeight = Min(sbRows - startSb, maxTileHeightSb)</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>            <b class="syntax-element">height_in_sbs_minus_1</b></td>
       <td>ns(maxHeight)</td>
     </tr>
     <tr>
-      <td>sizeSb = height_in_sbs_minus_1 + 1</td>
+      <td>            sizeSb = height_in_sbs_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>startSb += sizeSb</td>
+      <td>            startSb += sizeSb</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>MiRowStarts[ i ] = MiRows</td>
+      <td>        MiRowStarts[ i ] = MiRows</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TileRows = i</td>
+      <td>        TileRows = i</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TileRowsLog2 = tile_log2(1, TileRows)</td>
+      <td>        TileRowsLog2 = tile_log2(1, TileRows)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( TileColsLog2 &gt; 0 )</td>
+      <td>    if ( TileColsLog2 &gt; 0 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">loop_filter_across_tiles_v</b></td>
+      <td>        <b class="syntax-element">loop_filter_across_tiles_v</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>else</td>
+      <td>    else</td>
       <td> </td>
     </tr>
     <tr>
-      <td>loop_filter_across_tiles_v = 0</td>
+      <td>        loop_filter_across_tiles_v = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( TileRowsLog2 &gt; 0 )</td>
+      <td>    if ( TileRowsLog2 &gt; 0 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">loop_filter_across_tiles_h</b></td>
+      <td>        <b class="syntax-element">loop_filter_across_tiles_h</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>else</td>
+      <td>    else</td>
       <td> </td>
     </tr>
     <tr>
-      <td>loop_filter_across_tiles_h = 0</td>
+      <td>        loop_filter_across_tiles_h = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( TileColsLog2 &gt; 0 || TileRowsLog2 &gt; 0 ) {</td>
+      <td>    if ( TileColsLog2 &gt; 0 || TileRowsLog2 &gt; 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">tile_size_bytes_minus_1</b></td>
+      <td>        <b class="syntax-element">tile_size_bytes_minus_1</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>TileSizeBytes = tile_size_bytes_minus_1 + 1</td>
+      <td>        TileSizeBytes = tile_size_bytes_minus_1 + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -6374,15 +6374,15 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>for (k = 0; (blkSize « k) &lt; target; k++) {</td>
+      <td>  for (k = 0; (blkSize « k) &lt; target; k++) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>  }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return k</td>
+      <td>  return k</td>
       <td> </td>
     </tr>
     <tr>
@@ -6401,35 +6401,35 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>delta_q_res = 0</td>
+      <td>    delta_q_res = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>delta_q_present = 0</td>
+      <td>    delta_q_present = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( segmentQuantizerActive == 0 &amp;&amp; base_q_idx &gt; 0 ) {</td>
+      <td>    if ( segmentQuantizerActive == 0 &amp;&amp; base_q_idx &gt; 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_q_present</b></td>
+      <td>        <b class="syntax-element">delta_q_present</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( delta_q_present ) {</td>
+      <td>    if ( delta_q_present ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_q_res</b></td>
+      <td>        <b class="syntax-element">delta_q_res</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -6448,43 +6448,43 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>delta_lf_present = 0</td>
+      <td>    delta_lf_present = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>delta_lf_res = 0</td>
+      <td>    delta_lf_res = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>delta_lf_multi = 0</td>
+      <td>    delta_lf_multi = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( delta_q_present ) {</td>
+      <td>    if ( delta_q_present ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_lf_present</b></td>
+      <td>        <b class="syntax-element">delta_lf_present</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( delta_lf_present ) {</td>
+      <td>        if ( delta_lf_present ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_lf_res</b></td>
+      <td>            <b class="syntax-element">delta_lf_res</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">delta_lf_multi</b></td>
+      <td>            <b class="syntax-element">delta_lf_multi</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -6503,95 +6503,95 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if ( AllLossless || allow_intrabc ) {</td>
+      <td>    if ( AllLossless || allow_intrabc ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>cdef_bits = 0</td>
+      <td>        cdef_bits = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>cdef_y_pri_strength[0] = 0</td>
+      <td>        cdef_y_pri_strength[0] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>cdef_y_sec_strength[0] = 0</td>
+      <td>        cdef_y_sec_strength[0] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>cdef_uv_pri_strength[0] = 0</td>
+      <td>        cdef_uv_pri_strength[0] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>cdef_uv_sec_strength[0] = 0</td>
+      <td>        cdef_uv_sec_strength[0] = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return</td>
+      <td>        return</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cdef_damping_minus_3</b></td>
+      <td>    <b class="syntax-element">cdef_damping_minus_3</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>CdefDamping = cdef_damping_minus_3 + 3</td>
+      <td>    CdefDamping = cdef_damping_minus_3 + 3</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cdef_bits</b></td>
+      <td>    <b class="syntax-element">cdef_bits</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>for (i = 0; i &lt; (1 « cdef_bits); i++) {</td>
+      <td>    for (i = 0; i &lt; (1 « cdef_bits); i++) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cdef_y_pri_strength[i]</b></td>
+      <td>        <b class="syntax-element">cdef_y_pri_strength[i]</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cdef_y_sec_strength[i]</b></td>
+      <td>        <b class="syntax-element">cdef_y_sec_strength[i]</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>if (cdef_y_sec_strength[i] == 3)</td>
+      <td>        if (cdef_y_sec_strength[i] == 3)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>cdef_y_sec_strength[i] += 1</td>
+      <td>            cdef_y_sec_strength[i] += 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( NumPlanes &gt; 1 ) {</td>
+      <td>        if ( NumPlanes &gt; 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cdef_uv_pri_strength[i]</b></td>
+      <td>            <b class="syntax-element">cdef_uv_pri_strength[i]</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cdef_uv_sec_strength[i]</b></td>
+      <td>            <b class="syntax-element">cdef_uv_sec_strength[i]</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>if (cdef_uv_sec_strength[i] == 3)</td>
+      <td>            if (cdef_uv_sec_strength[i] == 3)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>cdef_uv_sec_strength[i] += 1</td>
+      <td>                cdef_uv_sec_strength[i] += 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -6610,155 +6610,155 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if ( AllLossless || allow_intrabc ) {</td>
+      <td>    if ( AllLossless || allow_intrabc ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FrameRestorationType[0] = RESTORE_NONE</td>
+      <td>        FrameRestorationType[0] = RESTORE_NONE</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FrameRestorationType[1] = RESTORE_NONE</td>
+      <td>        FrameRestorationType[1] = RESTORE_NONE</td>
       <td> </td>
     </tr>
     <tr>
-      <td>FrameRestorationType[2] = RESTORE_NONE</td>
+      <td>        FrameRestorationType[2] = RESTORE_NONE</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return</td>
+      <td>        return</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>usesLr = 0</td>
+      <td>    usesLr = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>usesChromaLr = 0</td>
+      <td>    usesChromaLr = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for (i = 0; i &lt; NumPlanes; i++) {</td>
+      <td>    for (i = 0; i &lt; NumPlanes; i++) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">lr_type</b></td>
+      <td>        <b class="syntax-element">lr_type</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>FrameRestorationType[i] = Remap_Lr_Type[lr_type]</td>
+      <td>        FrameRestorationType[i] = Remap_Lr_Type[lr_type]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (FrameRestorationType[i] != RESTORE_NONE) {</td>
+      <td>        if (FrameRestorationType[i] != RESTORE_NONE) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>usesLr = 1</td>
+      <td>            usesLr = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( i &gt; 0 ) {</td>
+      <td>            if ( i &gt; 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>usesChromaLr = 1</td>
+      <td>                usesChromaLr = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( usesLr ) {</td>
+      <td>    if ( usesLr ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( use_128x128_superblock ) {</td>
+      <td>        if ( use_128x128_superblock ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">lr_unit_shift</b></td>
+      <td>            <b class="syntax-element">lr_unit_shift</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>lr_unit_shift++</td>
+      <td>            lr_unit_shift++</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">lr_unit_shift</b></td>
+      <td>            <b class="syntax-element">lr_unit_shift</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( lr_unit_shift ) {</td>
+      <td>            if ( lr_unit_shift ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">lr_unit_extra_shift</b></td>
+      <td>                <b class="syntax-element">lr_unit_extra_shift</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>lr_unit_shift += lr_unit_extra_shift</td>
+      <td>                lr_unit_shift += lr_unit_extra_shift</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>LoopRestorationSize[ 0 ] = RESTORATION_TILESIZE_MAX » (2 - lr_unit_shift)</td>
+      <td>        LoopRestorationSize[ 0 ] = RESTORATION_TILESIZE_MAX » (2 - lr_unit_shift)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (subsampling_x &amp;&amp; subsampling_y &amp;&amp; usesChromaLr ) {</td>
+      <td>        if (subsampling_x &amp;&amp; subsampling_y &amp;&amp; usesChromaLr ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">lr_uv_shift</b></td>
+      <td>            <b class="syntax-element">lr_uv_shift</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>lr_uv_shift = 0</td>
+      <td>            lr_uv_shift = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>LoopRestorationSize[ 1 ] = LoopRestorationSize[ 0 ] » lr_uv_shift</td>
+      <td>        LoopRestorationSize[ 1 ] = LoopRestorationSize[ 0 ] » lr_uv_shift</td>
       <td> </td>
     </tr>
     <tr>
-      <td>LoopRestorationSize[ 2 ] = LoopRestorationSize[ 0 ] » lr_uv_shift</td>
+      <td>        LoopRestorationSize[ 2 ] = LoopRestorationSize[ 0 ] » lr_uv_shift</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -6784,43 +6784,43 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if ( AllLossless == 1 ) {</td>
+      <td>    if ( AllLossless == 1 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TxMode = ONLY_4X4</td>
+      <td>        TxMode = ONLY_4X4</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">tx_mode_select</b></td>
+      <td>        <b class="syntax-element">tx_mode_select</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( tx_mode_select ) {</td>
+      <td>        if ( tx_mode_select ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TxMode = TX_MODE_SELECT</td>
+      <td>            TxMode = TX_MODE_SELECT</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>TxMode = TX_MODE_LARGEST</td>
+      <td>            TxMode = TX_MODE_LARGEST</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -6839,207 +6839,207 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if ( FrameIsIntra || !reference_select || error_resilient_mode || !enable_order_hint ) {</td>
+      <td>    if ( FrameIsIntra || !reference_select || error_resilient_mode || !enable_order_hint ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>skipModeAllowed = 0</td>
+      <td>        skipModeAllowed = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>forwardIdx = -1</td>
+      <td>        forwardIdx = -1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>backwardIdx = -1</td>
+      <td>        backwardIdx = -1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {</td>
+      <td>        for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>refHint = RefOrderHint[ ref_frame_idx[ i ] ]</td>
+      <td>            refHint = RefOrderHint[ ref_frame_idx[ i ] ]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( get_relative_dist( refHint, OrderHint ) &lt; 0 ) {</td>
+      <td>            if ( get_relative_dist( refHint, OrderHint ) &lt; 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( forwardIdx &lt; 0 || get_relative_dist( refHint, forwardHint) &gt; 0 ) {</td>
+      <td>                if ( forwardIdx &lt; 0 || get_relative_dist( refHint, forwardHint) &gt; 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>forwardIdx = i</td>
+      <td>                    forwardIdx = i</td>
       <td> </td>
     </tr>
     <tr>
-      <td>forwardHint = refHint</td>
+      <td>                    forwardHint = refHint</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>                }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else if ( get_relative_dist( refHint, OrderHint) &gt; 0 ) {</td>
+      <td>            } else if ( get_relative_dist( refHint, OrderHint) &gt; 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( backwardIdx &lt; 0 || get_relative_dist( refHint, backwardHint) &lt; 0 ) {</td>
+      <td>                if ( backwardIdx &lt; 0 || get_relative_dist( refHint, backwardHint) &lt; 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>backwardIdx = i</td>
+      <td>                    backwardIdx = i</td>
       <td> </td>
     </tr>
     <tr>
-      <td>backwardHint = refHint</td>
+      <td>                    backwardHint = refHint</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>                }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( forwardIdx &lt; 0 ) {</td>
+      <td>        if ( forwardIdx &lt; 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>skipModeAllowed = 0</td>
+      <td>            skipModeAllowed = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else if ( backwardIdx &gt;= 0 ) {</td>
+      <td>        } else if ( backwardIdx &gt;= 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>skipModeAllowed = 1</td>
+      <td>            skipModeAllowed = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SkipModeFrame[ 0 ] = LAST_FRAME + Min(forwardIdx, backwardIdx)</td>
+      <td>            SkipModeFrame[ 0 ] = LAST_FRAME + Min(forwardIdx, backwardIdx)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SkipModeFrame[ 1 ] = LAST_FRAME + Max(forwardIdx, backwardIdx)</td>
+      <td>            SkipModeFrame[ 1 ] = LAST_FRAME + Max(forwardIdx, backwardIdx)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>secondForwardIdx = -1</td>
+      <td>            secondForwardIdx = -1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {</td>
+      <td>            for( i = 0; i &lt; REFS_PER_FRAME; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>refHint = RefOrderHint[ ref_frame_idx[ i ] ]</td>
+      <td>                refHint = RefOrderHint[ ref_frame_idx[ i ] ]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( get_relative_dist( refHint, forwardHint ) &lt; 0 ) {</td>
+      <td>                if ( get_relative_dist( refHint, forwardHint ) &lt; 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( secondForwardIdx &lt; 0 ||</td>
+      <td>                    if ( secondForwardIdx &lt; 0 ||</td>
       <td> </td>
     </tr>
     <tr>
-      <td>get_relative_dist( refHint, secondForwardHint ) &gt; 0 ) {</td>
+      <td>                         get_relative_dist( refHint, secondForwardHint ) &gt; 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>secondForwardIdx = i</td>
+      <td>                        secondForwardIdx = i</td>
       <td> </td>
     </tr>
     <tr>
-      <td>secondForwardHint = refHint</td>
+      <td>                        secondForwardHint = refHint</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>                    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>                }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( secondForwardIdx &lt; 0 ) {</td>
+      <td>            if ( secondForwardIdx &lt; 0 ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>skipModeAllowed = 0</td>
+      <td>                skipModeAllowed = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>skipModeAllowed = 1</td>
+      <td>                skipModeAllowed = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SkipModeFrame[ 0 ] = LAST_FRAME + Min(forwardIdx, secondForwardIdx)</td>
+      <td>                SkipModeFrame[ 0 ] = LAST_FRAME + Min(forwardIdx, secondForwardIdx)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>SkipModeFrame[ 1 ] = LAST_FRAME + Max(forwardIdx, secondForwardIdx)</td>
+      <td>                SkipModeFrame[ 1 ] = LAST_FRAME + Max(forwardIdx, secondForwardIdx)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( skipModeAllowed ) {</td>
+      <td>    if ( skipModeAllowed ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">skip_mode_present</b></td>
+      <td>        <b class="syntax-element">skip_mode_present</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>skip_mode_present = 0</td>
+      <td>        skip_mode_present = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -7058,19 +7058,19 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>compoundReferenceAllowed = 0</td>
+      <td>    compoundReferenceAllowed = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( !FrameIsIntra ) {</td>
+      <td>    if ( !FrameIsIntra ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>bufIdx = ref_frame_idx[0]</td>
+      <td>        bufIdx = ref_frame_idx[0]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>refOffset0 = RefOrderHint[bufIdx]</td>
+      <td>        refOffset0 = RefOrderHint[bufIdx]</td>
       <td> </td>
     </tr>
     <tr>
@@ -7078,59 +7078,59 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td> </td>
     </tr>
     <tr>
-      <td>for (ref = LAST_FRAME + 1; ref &lt;= ALTREF_FRAME; ref++) {</td>
+      <td>        for (ref = LAST_FRAME + 1; ref &lt;= ALTREF_FRAME; ref++) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>bufIdx = ref_frame_idx[ref - LAST_FRAME]</td>
+      <td>            bufIdx = ref_frame_idx[ref - LAST_FRAME]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>refOffset = RefOrderHint[bufIdx]</td>
+      <td>            refOffset = RefOrderHint[bufIdx]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (refOffset != refOffset0) {</td>
+      <td>            if (refOffset != refOffset0) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>compoundReferenceAllowed = 1</td>
+      <td>                compoundReferenceAllowed = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>break</td>
+      <td>                break</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( compoundReferenceAllowed ) {</td>
+      <td>    if ( compoundReferenceAllowed ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">reference_select</b></td>
+      <td>        <b class="syntax-element">reference_select</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>reference_select = 0</td>
+      <td>        reference_select = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -7149,43 +7149,43 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if ( FrameIsIntra ) {</td>
+      <td>    if ( FrameIsIntra ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>allow_interintra_compound = 0</td>
+      <td>        allow_interintra_compound = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">allow_interintra_compound</b></td>
+      <td>        <b class="syntax-element">allow_interintra_compound</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( FrameIsIntra || !reference_select) {</td>
+      <td>    if ( FrameIsIntra || !reference_select) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>allow_masked_compound = 0</td>
+      <td>        allow_masked_compound = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">allow_masked_compound</b></td>
+      <td>        <b class="syntax-element">allow_masked_compound</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -7204,111 +7204,111 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if ( FrameIsIntra ||</td>
+      <td>    if ( FrameIsIntra ||</td>
       <td> </td>
     </tr>
     <tr>
-      <td>error_resilient_mode ||</td>
+      <td>         error_resilient_mode ||</td>
       <td> </td>
     </tr>
     <tr>
-      <td>!can_use_previous ||</td>
+      <td>         !can_use_previous ||</td>
       <td> </td>
     </tr>
     <tr>
-      <td>(primary_ref_frame == PRIMARY_REF_NONE)</td>
+      <td>         (primary_ref_frame == PRIMARY_REF_NONE)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>) {</td>
+      <td>       ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for (ref = LAST_FRAME; ref &lt;= ALTREF_FRAME; ref++) {</td>
+      <td>        for (ref = LAST_FRAME; ref &lt;= ALTREF_FRAME; ref++) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>GmType[ref] = IDENTITY</td>
+      <td>            GmType[ref] = IDENTITY</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; 6; i++ )</td>
+      <td>            for ( i = 0; i &lt; 6; i++ )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>gm_params[ ref ][ i ] = (i%3 == 2) ? 1 « WARPEDMODEL_PREC_BITS : 0</td>
+      <td>                gm_params[ ref ][ i ] = (i%3 == 2) ? 1 « WARPEDMODEL_PREC_BITS : 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( FrameIsIntra )</td>
+      <td>    if ( FrameIsIntra )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return</td>
+      <td>        return</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for (ref = LAST_FRAME; ref &lt;= ALTREF_FRAME; ref++) {</td>
+      <td>    for (ref = LAST_FRAME; ref &lt;= ALTREF_FRAME; ref++) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">is_global</b></td>
+      <td>        <b class="syntax-element">is_global</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if (is_global) {</td>
+      <td>        if (is_global) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">is_rot_zoom</b></td>
+      <td>            <b class="syntax-element">is_rot_zoom</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if (is_rot_zoom) {</td>
+      <td>            if (is_rot_zoom) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>type = ROTZOOM</td>
+      <td>                type = ROTZOOM</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">is_translation</b></td>
+      <td>                <b class="syntax-element">is_translation</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>type = is_translation ? TRANSLATION : AFFINE</td>
+      <td>                type = is_translation ? TRANSLATION : AFFINE</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>type = IDENTITY</td>
+      <td>            type = IDENTITY</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>GmType[ref] = type</td>
+      <td>        GmType[ref] = type</td>
       <td> </td>
     </tr>
     <tr>
@@ -7316,67 +7316,67 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td> </td>
     </tr>
     <tr>
-      <td>if (type &gt;= ROTZOOM) {</td>
+      <td>        if (type &gt;= ROTZOOM) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>read_global_param(type,ref,2)</td>
+      <td>            read_global_param(type,ref,2)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>read_global_param(type,ref,3)</td>
+      <td>            read_global_param(type,ref,3)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (type == AFFINE) {</td>
+      <td>            if (type == AFFINE) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>read_global_param(type,ref,4)</td>
+      <td>                read_global_param(type,ref,4)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>read_global_param(type,ref,5)</td>
+      <td>                read_global_param(type,ref,5)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>gm_params[ref][4] = -gm_params[ref][3]</td>
+      <td>                gm_params[ref][4] = -gm_params[ref][3]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>gm_params[ref][5] = gm_params[ref][2]</td>
+      <td>                gm_params[ref][5] = gm_params[ref][2]</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (type &gt;= TRANSLATION) {</td>
+      <td>        if (type &gt;= TRANSLATION) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>read_global_param(type,ref,0)</td>
+      <td>            read_global_param(type,ref,0)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>read_global_param(type,ref,1)</td>
+      <td>            read_global_param(type,ref,1)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -7395,71 +7395,71 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>absBits = GM_ABS_ALPHA_BITS</td>
+      <td>    absBits = GM_ABS_ALPHA_BITS</td>
       <td> </td>
     </tr>
     <tr>
-      <td>precBits = GM_ALPHA_PREC_BITS</td>
+      <td>    precBits = GM_ALPHA_PREC_BITS</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (idx &lt; 2) {</td>
+      <td>    if (idx &lt; 2) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (type == TRANSLATION) {</td>
+      <td>        if (type == TRANSLATION) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>absBits = GM_ABS_TRANS_ONLY_BITS - !allow_high_precision_mv</td>
+      <td>            absBits = GM_ABS_TRANS_ONLY_BITS - !allow_high_precision_mv</td>
       <td> </td>
     </tr>
     <tr>
-      <td>precBits = GM_TRANS_ONLY_PREC_BITS - !allow_high_precision_mv</td>
+      <td>            precBits = GM_TRANS_ONLY_PREC_BITS - !allow_high_precision_mv</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>absBits = GM_ABS_TRANS_BITS</td>
+      <td>            absBits = GM_ABS_TRANS_BITS</td>
       <td> </td>
     </tr>
     <tr>
-      <td>precBits = GM_TRANS_PREC_BITS</td>
+      <td>            precBits = GM_TRANS_PREC_BITS</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>precDiff = WARPEDMODEL_PREC_BITS - precBits</td>
+      <td>    precDiff = WARPEDMODEL_PREC_BITS - precBits</td>
       <td> </td>
     </tr>
     <tr>
-      <td>round = (idx % 3) == 2 ? (1 « WARPEDMODEL_PREC_BITS) : 0</td>
+      <td>    round = (idx % 3) == 2 ? (1 « WARPEDMODEL_PREC_BITS) : 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>sub = (idx % 3) == 2 ? (1 « precBits) : 0</td>
+      <td>    sub = (idx % 3) == 2 ? (1 « precBits) : 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>mx = (1 « absBits)</td>
+      <td>    mx = (1 « absBits)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>r = (gm_params[ref][idx] » precDiff) - sub</td>
+      <td>    r = (gm_params[ref][idx] » precDiff) - sub</td>
       <td> </td>
     </tr>
     <tr>
-      <td>gm_params[ref][idx] = (decode_signed_subexp_with_ref( -mx, mx + 1, r ) « precDiff) + round</td>
+      <td>    gm_params[ref][idx] = (decode_signed_subexp_with_ref( -mx, mx + 1, r ) « precDiff) + round</td>
       <td> </td>
     </tr>
     <tr>
@@ -7482,11 +7482,11 @@ discarded during the Setup Zero MV process.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>x = decode_unsigned_subexp_with_ref(high - low, r - low)</td>
+      <td>    x = decode_unsigned_subexp_with_ref(high - low, r - low)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return x + low</td>
+      <td>    return x + low</td>
       <td> </td>
     </tr>
     <tr>
@@ -7505,27 +7505,27 @@ discarded during the Setup Zero MV process.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>v = decode_subexp( mx )</td>
+      <td>    v = decode_subexp( mx )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ((r « 1) &lt;= mx) {</td>
+      <td>    if ((r « 1) &lt;= mx) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return inverse_recenter(r, v)</td>
+      <td>        return inverse_recenter(r, v)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return mx - 1 - inverse_recenter(mx - 1 - r, v)</td>
+      <td>        return mx - 1 - inverse_recenter(mx - 1 - r, v)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -7544,83 +7544,83 @@ discarded during the Setup Zero MV process.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>i = 0</td>
+      <td>    i = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>mk = 0</td>
+      <td>    mk = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>k = 3</td>
+      <td>    k = 3</td>
       <td> </td>
     </tr>
     <tr>
-      <td>while (1) {</td>
+      <td>    while (1) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>b2 = i ? k + i - 1 : k</td>
+      <td>        b2 = i ? k + i - 1 : k</td>
       <td> </td>
     </tr>
     <tr>
-      <td>a = 1 « b2</td>
+      <td>        a = 1 « b2</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (numSyms &lt;= mk + 3 * a) {</td>
+      <td>        if (numSyms &lt;= mk + 3 * a) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">subexp_final_bits</b></td>
+      <td>            <b class="syntax-element">subexp_final_bits</b></td>
       <td>ns(numSyms - mk)</td>
     </tr>
     <tr>
-      <td>return subexp_final_bits + mk</td>
+      <td>            return subexp_final_bits + mk</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>        } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">subexp_more_bits</b></td>
+      <td>            <b class="syntax-element">subexp_more_bits</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if (subexp_more_bits) {</td>
+      <td>            if (subexp_more_bits) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>i++</td>
+      <td>               i++</td>
       <td> </td>
     </tr>
     <tr>
-      <td>mk += a</td>
+      <td>               mk += a</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>            } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">subexp_bits</b></td>
+      <td>               <b class="syntax-element">subexp_bits</b></td>
       <td>f(b2)</td>
     </tr>
     <tr>
-      <td>return subexp_bits + mk</td>
+      <td>               return subexp_bits + mk</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>            }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
@@ -7639,27 +7639,27 @@ discarded during the Setup Zero MV process.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if (v &gt; 2 * r)</td>
+      <td>  if (v &gt; 2 * r)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return v</td>
+      <td>    return v</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else if (v &amp; 1)</td>
+      <td>  else if (v &amp; 1)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return r - ((v + 1) » 1)</td>
+      <td>    return r - ((v + 1) » 1)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>else</td>
+      <td>  else</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return r + (v » 1)</td>
+      <td>    return r + (v » 1)</td>
       <td> </td>
     </tr>
     <tr>
@@ -7678,23 +7678,23 @@ discarded during the Setup Zero MV process.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if ( v &gt; 2 * m )</td>
+      <td>    if ( v &gt; 2 * m )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return v</td>
+      <td>        return v</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( v &amp; 1 )</td>
+      <td>    if ( v &amp; 1 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return m - ((v + 1) » 1)</td>
+      <td>        return m - ((v + 1) » 1)</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return m + (v » 1)</td>
+      <td>    return m + (v » 1)</td>
       <td> </td>
     </tr>
     <tr>
@@ -7713,303 +7713,303 @@ discarded during the Setup Zero MV process.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>if ( !film_grain_params_present ) {</td>
+      <td>    if ( !film_grain_params_present ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return</td>
+      <td>        return</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">apply_grain</b></td>
+      <td>    <b class="syntax-element">apply_grain</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>if ( !apply_grain ) {</td>
+      <td>    if ( !apply_grain ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>reset_grain_params()</td>
+      <td>        reset_grain_params()</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return</td>
+      <td>        return</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">grain_seed</b></td>
+      <td>    <b class="syntax-element">grain_seed</b></td>
       <td>f(16)</td>
     </tr>
     <tr>
-      <td>if ( frame_type == INTER_FRAME )</td>
+      <td>    if ( frame_type == INTER_FRAME )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">update_grain</b></td>
+      <td>        <b class="syntax-element">update_grain</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>else</td>
+      <td>    else</td>
       <td> </td>
     </tr>
     <tr>
-      <td>update_grain = 1</td>
+      <td>        update_grain = 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( !update_grain ) {</td>
+      <td>    if ( !update_grain ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">film_grain_params_ref_idx</b></td>
+      <td>        <b class="syntax-element">film_grain_params_ref_idx</b></td>
       <td>f(3)</td>
     </tr>
     <tr>
-      <td>tempGrainSeed = grain_seed</td>
+      <td>        tempGrainSeed = grain_seed</td>
       <td> </td>
     </tr>
     <tr>
-      <td>load_grain_params( film_grain_params_ref_idx )</td>
+      <td>        load_grain_params( film_grain_params_ref_idx )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>grain_seed = tempGrainSeed</td>
+      <td>        grain_seed = tempGrainSeed</td>
       <td> </td>
     </tr>
     <tr>
-      <td>return</td>
+      <td>        return</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">num_y_points</b></td>
+      <td>    <b class="syntax-element">num_y_points</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; num_y_points; i++ ) {</td>
+      <td>    for ( i = 0; i &lt; num_y_points; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">point_y_value[ i ]</b></td>
+      <td>        <b class="syntax-element">point_y_value[ i ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">point_y_scaling[ i ]</b></td>
+      <td>        <b class="syntax-element">point_y_scaling[ i ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( !mono_chrome ) {</td>
+      <td>    if ( !mono_chrome ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">chroma_scaling_from_luma</b></td>
+      <td>        <b class="syntax-element">chroma_scaling_from_luma</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( mono_chrome || chroma_scaling_from_luma ) {</td>
+      <td>    if ( mono_chrome || chroma_scaling_from_luma ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>num_cb_points = 0</td>
+      <td>        num_cb_points = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>num_cr_points = 0</td>
+      <td>        num_cr_points = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">num_cb_points</b></td>
+      <td>        <b class="syntax-element">num_cb_points</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; num_cb_points; i++ ) {</td>
+      <td>        for ( i = 0; i &lt; num_cb_points; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">point_cb_value[ i ]</b></td>
+      <td>            <b class="syntax-element">point_cb_value[ i ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">point_cb_scaling[ i ]</b></td>
+      <td>            <b class="syntax-element">point_cb_scaling[ i ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">num_cr_points</b></td>
+      <td>        <b class="syntax-element">num_cr_points</b></td>
       <td>f(4)</td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; num_cr_points; i++ ) {</td>
+      <td>        for ( i = 0; i &lt; num_cr_points; i++ ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">point_cr_value[ i ]</b></td>
+      <td>            <b class="syntax-element">point_cr_value[ i ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">point_cr_scaling[ i ]</b></td>
+      <td>            <b class="syntax-element">point_cr_scaling[ i ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>        }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">grain_scaling_minus_8</b></td>
+      <td>    <b class="syntax-element">grain_scaling_minus_8</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">ar_coeff_lag</b></td>
+      <td>    <b class="syntax-element">ar_coeff_lag</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>numPosLuma = 2 * ar_coeff_lag * ( ar_coeff_lag + 1 )</td>
+      <td>    numPosLuma = 2 * ar_coeff_lag * ( ar_coeff_lag + 1 )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if (num_y_points) {</td>
+      <td>    if (num_y_points) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>numPosChroma = numPosLuma + 1</td>
+      <td>        numPosChroma = numPosLuma + 1</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; numPosLuma; i++ )</td>
+      <td>        for ( i = 0; i &lt; numPosLuma; i++ )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">ar_coeffs_y_plus_128[ i ]</b></td>
+      <td>            <b class="syntax-element">ar_coeffs_y_plus_128[ i ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>} else {</td>
+      <td>    } else {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>numPosChroma = numPosLuma</td>
+      <td>        numPosChroma = numPosLuma</td>
       <td> </td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( chroma_scaling_from_luma || num_cb_points ) {</td>
+      <td>    if ( chroma_scaling_from_luma || num_cb_points ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; numPosChroma; i++ )</td>
+      <td>        for ( i = 0; i &lt; numPosChroma; i++ )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">ar_coeffs_cb_plus_128[ i ]</b></td>
+      <td>            <b class="syntax-element">ar_coeffs_cb_plus_128[ i ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( chroma_scaling_from_luma || num_cr_points ) {</td>
+      <td>    if ( chroma_scaling_from_luma || num_cr_points ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>for ( i = 0; i &lt; numPosChroma; i++ )</td>
+      <td>        for ( i = 0; i &lt; numPosChroma; i++ )</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">ar_coeffs_cr_plus_128[ i ]</b></td>
+      <td>            <b class="syntax-element">ar_coeffs_cr_plus_128[ i ]</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">ar_coeff_shift_minus_6</b></td>
+      <td>    <b class="syntax-element">ar_coeff_shift_minus_6</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">grain_scale_shift</b></td>
+      <td>    <b class="syntax-element">grain_scale_shift</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>if ( num_cb_points ) {</td>
+      <td>    if ( num_cb_points ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cb_mult</b></td>
+      <td>        <b class="syntax-element">cb_mult</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cb_luma_mult</b></td>
+      <td>        <b class="syntax-element">cb_luma_mult</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cb_offset</b></td>
+      <td>        <b class="syntax-element">cb_offset</b></td>
       <td>f(9)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td>if ( num_cr_points ) {</td>
+      <td>    if ( num_cr_points ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cr_mult</b></td>
+      <td>        <b class="syntax-element">cr_mult</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cr_luma_mult</b></td>
+      <td>        <b class="syntax-element">cr_luma_mult</b></td>
       <td>f(8)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">cr_offset</b></td>
+      <td>        <b class="syntax-element">cr_offset</b></td>
       <td>f(9)</td>
     </tr>
     <tr>
-      <td>}</td>
+      <td>    }</td>
       <td> </td>
     </tr>
     <tr>
-      <td><b class="syntax-element">overlap_flag</b></td>
+      <td>    <b class="syntax-element">overlap_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
-      <td><b class="syntax-element">clip_to_restricted_range</b></td>
+      <td>    <b class="syntax-element">clip_to_restricted_range</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
@@ -8028,27 +8028,27 @@ discarded during the Setup Zero MV process.</p>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>startBitPos = get_position( )</td>
+      <td>    startBitPos = get_position( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>frame_header_obu( )</td>
+      <td>    frame_header_obu( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>endBitPos = get_position( )</td>
+      <td>    endBitPos = get_position( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>headerBytes = (endBitPos - startBitPos) / 8</td>
+      <td>    headerBytes = (endBitPos - startBitPos) / 8</td>
       <td> </td>
     </tr>
     <tr>
-      <td>sz -= headerBytes</td>
+      <td>    sz -= headerBytes</td>
       <td> </td>
     </tr>
     <tr>
-      <td>tile_group_obu( sz )</td>
+      <td>    tile_group_obu( sz )</td>
       <td> </td>
     </tr>
     <tr>
