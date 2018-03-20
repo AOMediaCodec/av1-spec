@@ -23,7 +23,7 @@
     "grunt-contrib-connect": "^1.0.2",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-exec": "^3.0.0",
-    "grunt-jekyll": "^0.4.6",
+    "grunt-jekyll": "^0.4.7",
     "grunt-replace": "^1.0.1"
   },
   "keywords": []

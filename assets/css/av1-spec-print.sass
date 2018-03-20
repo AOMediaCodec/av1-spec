@@ -91,9 +91,12 @@ h2 + pre.syntax
   page-break-before: avoid
 dd
   page-break-before: avoid
-img, table, figure
+img, figure
   max-width: 100% !important
-  page-break-inside: avoid
+  page-break-inside: avoid // Don't break within images
+table
+  max-width: 100% !important
+  page-break-inside: auto // Do break within tables
 pre
   border: 0
 .noprint

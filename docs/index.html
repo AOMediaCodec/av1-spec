@@ -38,7 +38,7 @@
 
 <p><em>Copyright 2018, The <a href="http://aomedia.org/">Alliance for Open Media</a></em></p>
 
-<p><em>Last modified: 2018-03-19 20:45:34 -0700</em></p>
+<p><em>Last modified: 2018-03-20 12:02:27 -0700</em></p>
 
 <div id="draft-legend" class="alert alert-danger">
 
@@ -118,6 +118,7 @@ $(document).ready(function() {
           <li><a href="#obu-header-syntax" id="markdown-toc-obu-header-syntax">OBU Header Syntax</a></li>
           <li><a href="#obu-extension-header-syntax" id="markdown-toc-obu-extension-header-syntax">OBU Extension Header Syntax</a></li>
           <li><a href="#trailing-bits-syntax" id="markdown-toc-trailing-bits-syntax">Trailing Bits Syntax</a></li>
+          <li><a href="#byte-alignment-syntax" id="markdown-toc-byte-alignment-syntax">Byte alignment Syntax</a></li>
         </ul>
       </li>
       <li><a href="#reserved-obu-syntax" id="markdown-toc-reserved-obu-syntax">Reserved OBU Syntax</a></li>
@@ -238,6 +239,7 @@ $(document).ready(function() {
           <li><a href="#obu-header-semantics" id="markdown-toc-obu-header-semantics">OBU Header Semantics</a></li>
           <li><a href="#obu-extension-header-semantics" id="markdown-toc-obu-extension-header-semantics">OBU Extension Header Semantics</a></li>
           <li><a href="#trailing-bits-semantics" id="markdown-toc-trailing-bits-semantics">Trailing Bits Semantics</a></li>
+          <li><a href="#byte-alignment-semantics" id="markdown-toc-byte-alignment-semantics">Byte Alignment Semantics</a></li>
         </ul>
       </li>
       <li><a href="#reserved-obu-semantics" id="markdown-toc-reserved-obu-semantics">Reserved OBU Semantics</a></li>
@@ -2544,7 +2546,7 @@ that is going to be read next.</p>
 <p><strong>init_bool( sz ):</strong> Initialize the arithmetic decode process for the boolean
 decoder with a size of sz bytes as specified in <a href="#initialization-process-for-boolean-decoder">section 8.2.1</a>.</p>
 
-<p><strong>exit_bool( ):</strong> Exit the arithmetic decode process as described in
+<p><strong>exit_bool( readPadding ):</strong> Exit the arithmetic decode process as described in
 <a href="#exit-process-for-boolean-decoder">section 8.2.3</a>.</p>
 
 <h3 id="descriptors">Descriptors</h3>
@@ -2694,6 +2696,10 @@ process.</p>
     </tr>
     <tr>
       <td>    value = 0</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    Leb128Bytes = 0</td>
       <td> </td>
     </tr>
     <tr>
@@ -2960,7 +2966,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <table class="syntax">
   <tbody>
     <tr>
-      <td>open_bitstream_unit( sz {</td>
+      <td>open_bitstream_unit( sz ) {</td>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
@@ -2968,11 +2974,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>    if ( obu_has_payload_length_field ) {</td>
+      <td>    if ( obu_has_size_field ) {</td>
       <td> </td>
     </tr>
     <tr>
-      <td>        <b class="syntax-element">obu_payload_size</b></td>
+      <td>        <b class="syntax-element">obu_size</b></td>
       <td>leb128()</td>
     </tr>
     <tr>
@@ -2980,7 +2986,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>        obu_payload_size = sz - 1 - obu_extension_flag</td>
+      <td>        obu_size = sz - 1 - obu_extension_flag</td>
       <td> </td>
     </tr>
     <tr>
@@ -2988,11 +2994,15 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
+      <td>    startPosition = get_position( )</td>
+      <td> </td>
+    </tr>
+    <tr>
       <td>    if ( obu_type == OBU_SEQUENCE_HEADER )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>        sequence_header_obu()</td>
+      <td>        sequence_header_obu( )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3000,7 +3010,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>        temporal_delimiter_obu()</td>
+      <td>        temporal_delimiter_obu( )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3012,11 +3022,19 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
+      <td>    else if ( obu_type == OBU_REDUNDANT_FRAME_HEADER )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        frame_header_obu( )</td>
+      <td> </td>
+    </tr>
+    <tr>
       <td>    else if ( obu_type == OBU_TILE_GROUP )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>        tile_group_obu( obu_payload_size )</td>
+      <td>        tile_group_obu( obu_size )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3024,7 +3042,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>        metadata_obu( obu_payload_size )</td>
+      <td>        metadata_obu( )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3032,7 +3050,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>        frame_obu( obu_payload_size )</td>
+      <td>        frame_obu( obu_size )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3040,7 +3058,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>        padding_obu()</td>
+      <td>        padding_obu( )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3048,11 +3066,23 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>        reserved_obu( obu_payload_size )</td>
+      <td>        reserved_obu( )</td>
       <td> </td>
     </tr>
     <tr>
-      <td>    trailing_bits()</td>
+      <td>    currentPosition = get_position( )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    payloadBits = currentPosition - startPosition</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    if ( obu_size &gt; 0 )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        trailing_bits( obu_size * 8 - payloadBits )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3083,7 +3113,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>    <b class="syntax-element">obu_has_payload_length_field</b></td>
+      <td>    <b class="syntax-element">obu_has_size_field</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
@@ -3137,7 +3167,42 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <table class="syntax">
   <tbody>
     <tr>
-      <td>trailing_bits( ) {</td>
+      <td>trailing_bits( nbBits ) {</td>
+      <td><strong>Type</strong></td>
+    </tr>
+    <tr>
+      <td>    <b class="syntax-element">trailing_one_bit</b></td>
+      <td>f(1)</td>
+    </tr>
+    <tr>
+      <td>    while ( nbBits &gt; 0 ) {</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        <b class="syntax-element">trailing_zero_bit</b></td>
+      <td>f(1)</td>
+    </tr>
+    <tr>
+      <td>        nbBits–</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    }</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>}</td>
+      <td> </td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="byte-alignment-syntax">Byte alignment Syntax</h4>
+
+<table class="syntax">
+  <tbody>
+    <tr>
+      <td>byte_alignment( ) {</td>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
@@ -3160,16 +3225,8 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <table class="syntax">
   <tbody>
     <tr>
-      <td>reserved_obu( sz ) {</td>
+      <td>reserved_obu( ) {</td>
       <td><strong>Type</strong></td>
-    </tr>
-    <tr>
-      <td>    for ( i = 0; i &lt; sz; i++ )</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>        <b class="syntax-element">reserved_obu_payload_byte</b></td>
-      <td>f(8)</td>
     </tr>
     <tr>
       <td>}</td>
@@ -3177,6 +3234,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     </tr>
   </tbody>
 </table>
+
+<p class="alert alert-info"><strong>Note:</strong>Reserved OBUs do not have a defined syntax. The obu_type reserved
+values are reserved for future use. Decoders should ignore the entire OBU if
+they do not understand the obu_type. Ignoring the OBU can be done based on
+obu_size.</p>
 
 <h3 id="sequence-header-obu-syntax">Sequence Header OBU Syntax</h3>
 
@@ -3191,15 +3253,11 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>    <b class="syntax-element">level[ 0 ]</b></td>
-      <td>f(4)</td>
-    </tr>
-    <tr>
       <td>    <b class="syntax-element">max_spatial_layers_cnt</b></td>
       <td>f(2)</td>
     </tr>
     <tr>
-      <td>    for ( i = 1; i &lt;= max_spatial_layers_cnt; i++ )</td>
+      <td>    for ( i = 0; i &lt;= max_spatial_layers_cnt; i++ )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3717,10 +3775,6 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>    <b class="syntax-element">obu_padding_length</b></td>
-      <td>f(8)</td>
-    </tr>
-    <tr>
       <td>    for ( i = 0; i &lt; obu_padding_length; i++ )</td>
       <td> </td>
     </tr>
@@ -3735,12 +3789,19 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
   </tbody>
 </table>
 
+<p class="alert alert-info"><strong>Note:</strong> obu_padding_length is not coded in the bitstream but can be computed
+based on obu_size minus the number of trailing bytes.
+In practice, though, since this is
+padding data meant to be skipped, decoders do not need to determine neither
+that length nor the number of trailing bytes. They can ignore the entire OBU.
+Ignoring the OBU can be done based on obu_size.</p>
+
 <h3 id="metadata-obu-syntax">Metadata OBU Syntax</h3>
 
 <table class="syntax">
   <tbody>
     <tr>
-      <td>metadata_obu( sz ) {</td>
+      <td>metadata_obu( ) {</td>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
@@ -3752,7 +3813,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>        metadata_private_data( sz − 2 )</td>
+      <td>        metadata_private_data( )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3760,7 +3821,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>        metadata_hdr_cll( sz − 2 )</td>
+      <td>        metadata_hdr_cll( )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3768,7 +3829,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>        metadata_hdr_mdcv( sz − 2 )</td>
+      <td>        metadata_hdr_mdcv( )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3776,7 +3837,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>        metadata_scalability( sz − 2 )</td>
+      <td>        metadata_scalability( )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3791,16 +3852,8 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <table class="syntax">
   <tbody>
     <tr>
-      <td>metadata_private_data( sz ) {</td>
+      <td>metadata_private_data( ) {</td>
       <td><strong>Type</strong></td>
-    </tr>
-    <tr>
-      <td>    for ( i = 0; i &lt; sz; i++ )</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>        <b class="syntax-element">metadata_private_data_payload_byte[ i ]</b></td>
-      <td>f(8)</td>
     </tr>
     <tr>
       <td>}</td>
@@ -3809,12 +3862,20 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
   </tbody>
 </table>
 
+<p class="alert alert-info"><strong>Note:</strong>  The exact syntax of the private metadata OBU is not defined. External
+specifications can define the syntax. From a decoder perspective, it suffices
+to say that decoders should ignore the entire OBU if they don’t understand
+the metadata_type. The last byte of the valid content of the private data is
+considered to be the last byte that is not equal to zero. This rule is to
+prevent the dropping of valid bytes by systems that interpret trailing zero
+bytes as a padding continuation of the trailing bits in an OBU.</p>
+
 <h4 id="metadata-high-dynamic-range-content-light-level-syntax">Metadata High Dynamic Range Content Light Level Syntax</h4>
 
 <table class="syntax">
   <tbody>
     <tr>
-      <td>metadata_hdr_cll( sz ) {</td>
+      <td>metadata_hdr_cll( ) {</td>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
@@ -3837,7 +3898,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <table class="syntax">
   <tbody>
     <tr>
-      <td>metadata_hdr_mdcv( sz ) {</td>
+      <td>metadata_hdr_mdcv( ) {</td>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
@@ -3884,7 +3945,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <table class="syntax">
   <tbody>
     <tr>
-      <td>metadata_scalability( sz ) {</td>
+      <td>metadata_scalability( ) {</td>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
@@ -3896,7 +3957,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>        scalability_structure(  sz – 1 )</td>
+      <td>        scalability_structure( )</td>
       <td> </td>
     </tr>
     <tr>
@@ -3911,7 +3972,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
 <table class="syntax">
   <tbody>
     <tr>
-      <td>scalability_structure( sz ) {</td>
+      <td>scalability_structure( ) {</td>
       <td><strong>Type</strong></td>
     </tr>
     <tr>
@@ -4055,10 +4116,6 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
     </tr>
     <tr>
       <td>        uncompressed_header( )</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>        trailing_bits( )</td>
       <td> </td>
     </tr>
     <tr>
@@ -4209,7 +4266,19 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td>f(1)</td>
     </tr>
     <tr>
-      <td>    <b class="syntax-element">error_resilient_mode</b></td>
+      <td>    if ( frame_type == SWITCH_FRAME )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        error_resilient_mode = 1</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    else</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        <b class="syntax-element">error_resilient_mode</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
@@ -4301,7 +4370,19 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>    <b class="syntax-element">frame_size_override_flag</b></td>
+      <td>    if ( frame_type == SWITCH_FRAME )</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        frame_size_override_flag = 1</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>    else</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>        <b class="syntax-element">frame_size_override_flag</b></td>
       <td>f(1)</td>
     </tr>
     <tr>
@@ -4353,7 +4434,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>            refresh_frame_flags = 0xFF</td>
+      <td>            refresh_frame_flags = (1 « NUM_REF_FRAMES) - 1</td>
       <td> </td>
     </tr>
     <tr>
@@ -4445,7 +4526,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>                refresh_frame_flags = 0xFF</td>
+      <td>                refresh_frame_flags = (1 « NUM_REF_FRAMES) - 1</td>
       <td> </td>
     </tr>
     <tr>
@@ -4649,11 +4730,7 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>                 !enable_order_hint ||</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>                 error_resilient_mode ) {</td>
+      <td>                 !enable_order_hint ) {</td>
       <td> </td>
     </tr>
     <tr>
@@ -4681,24 +4758,8 @@ each of the syntax elements is presented in <a href="#syntax-structures-semantic
       <td> </td>
     </tr>
     <tr>
-      <td>    if ( error_resilient_mode ) {</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>        disable_frame_end_update_cdf = 1</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>    } else {</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>        <b class="syntax-element">disable_frame_end_update_cdf</b></td>
+      <td>    <b class="syntax-element">disable_frame_end_update_cdf</b></td>
       <td>f(1)</td>
-    </tr>
-    <tr>
-      <td>    }</td>
-      <td> </td>
     </tr>
     <tr>
       <td>    if ( FrameIsIntra || error_resilient_mode ) {</td>
@@ -6309,38 +6370,6 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td> </td>
     </tr>
     <tr>
-      <td>    if ( TileColsLog2 &gt; 0 )</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>        <b class="syntax-element">loop_filter_across_tiles_v</b></td>
-      <td>f(1)</td>
-    </tr>
-    <tr>
-      <td>    else</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>        loop_filter_across_tiles_v = 0</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>    if ( TileRowsLog2 &gt; 0 )</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>        <b class="syntax-element">loop_filter_across_tiles_h</b></td>
-      <td>f(1)</td>
-    </tr>
-    <tr>
-      <td>    else</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td>        loop_filter_across_tiles_h = 0</td>
-      <td> </td>
-    </tr>
-    <tr>
       <td>    if ( TileColsLog2 &gt; 0 || TileRowsLog2 &gt; 0 ) {</td>
       <td> </td>
     </tr>
@@ -6839,7 +6868,7 @@ Segmentation_Feature_Max[ SEG_LVL_MAX ] = {
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>    if ( FrameIsIntra || !reference_select || error_resilient_mode || !enable_order_hint ) {</td>
+      <td>    if ( FrameIsIntra || !reference_select || !enable_order_hint ) {</td>
       <td> </td>
     </tr>
     <tr>
@@ -8036,6 +8065,10 @@ discarded during the Setup Zero MV process.</p>
       <td> </td>
     </tr>
     <tr>
+      <td>    byte_alignment( )</td>
+      <td> </td>
+    </tr>
+    <tr>
       <td>    endBitPos = get_position( )</td>
       <td> </td>
     </tr>
@@ -8133,7 +8166,7 @@ discarded during the Setup Zero MV process.</p>
       <td> </td>
     </tr>
     <tr>
-      <td>    trailing_bits( )</td>
+      <td>    byte_alignment( )</td>
       <td> </td>
       <td> </td>
     </tr>
@@ -8243,7 +8276,7 @@ discarded during the Setup Zero MV process.</p>
       <td> </td>
     </tr>
     <tr>
-      <td>        exit_bool( )</td>
+      <td>        exit_bool( !lastTile )</td>
       <td> </td>
       <td> </td>
     </tr>
@@ -11629,7 +11662,11 @@ of the segmentation map covered by the current block.</p>
       <td> </td>
     </tr>
     <tr>
-      <td>    if ( force_integer_mv || NumSamples == 0) {</td>
+      <td>    if ( force_integer_mv || NumSamples == 0 ||</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>         !can_use_previous || is_scaled( RefFrame[0] ) ) {</td>
       <td> </td>
     </tr>
     <tr>
@@ -11658,6 +11695,18 @@ of the segmentation map covered by the current block.</p>
     </tr>
   </tbody>
 </table>
+
+<p>where is_scaled is a function that determines whether a
+reference frame uses scaling and is specified as:</p>
+
+<pre><code class="language-c">is_scaled( refFrame ) {
+  refIdx = ref_frame_idx[ refFrame - LAST_FRAME ]
+  xScale = (RefUpscaledWidth[ refIdx ] &lt;&lt; REF_SCALE_SHIFT + ( FrameWidth / 2 ) ) / FrameWidth
+  yScale = (RefFrameHeight[ refIdx ] &lt;&lt; REF_SCALE_SHIFT + ( FrameHeight / 2 ) ) / FrameHeight
+  noScale = 1 &lt;&lt; REF_SCALE_SHIFT
+  return xScale != noScale \|\| yScale != noScale
+}
+</code></pre>
 
 <h4 id="read-inter-intra-syntax">Read Inter Intra Syntax</h4>
 
@@ -11823,7 +11872,7 @@ of the segmentation map covered by the current block.</p>
       <td> </td>
     </tr>
     <tr>
-      <td>            if ( enable_jnt_comp &amp;&amp; !error_resilient_mode ) {</td>
+      <td>            if ( enable_jnt_comp ) {</td>
       <td> </td>
     </tr>
     <tr>
@@ -15919,19 +15968,19 @@ Tx_Type_Inter_Inv_Set3[ 2 ]  = { IDTX, DCT_DCT }
       <td><strong>Type</strong></td>
     </tr>
     <tr>
-      <td>    colStart = loop_filter_across_tiles_v ? 0 : MiColStart</td>
+      <td>    colStart = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>    colEnd = loop_filter_across_tiles_v ? MiCols : MiColEnd</td>
+      <td>    colEnd = MiCols</td>
       <td> </td>
     </tr>
     <tr>
-      <td>    rowStart = loop_filter_across_tiles_h ? 0 : MiRowStart</td>
+      <td>    rowStart = 0</td>
       <td> </td>
     </tr>
     <tr>
-      <td>    rowEnd = loop_filter_across_tiles_h ? MiRows : MiRowEnd</td>
+      <td>    rowEnd = MiRows</td>
       <td> </td>
     </tr>
     <tr>
@@ -16837,29 +16886,34 @@ structures.</p>
 
 <h3 id="obu-semantics">OBU Semantics</h3>
 
-<p>The bitstream consists of a sequence of open bitstream units (OBUs).</p>
+<p>An ordered series of OBUs is presented to the decoding process. Each OBU is
+given to the decoding process as a string of bytes along with a variable sz that
+identifies the total number of bytes in the OBU.</p>
 
-<p>Each OBU is given to the decoding process in turn as a bitstream along
-with a variable sz that gives the total number of bytes in the OBU.</p>
-
-<p>If the syntax element obu_has_payload_length_field (in the OBU header) is equal to 1,
+<p>If the syntax element obu_has_size_field (in the OBU header) is equal to 1,
 then the variable sz will be unused and does not have to be provided.</p>
 
-<p><strong>obu_payload_size</strong> contains the size in bytes of the OBU payload.
-(The payload is defined to be all bytes in the OBU that follow the obu_payload_size syntax element.
-In other words obu_payload_size is equal to the number of bytes in the OBU not including the bytes within obu_header or the obu_payload_size syntax element.)</p>
+<p><strong>obu_size</strong> contains the size in bytes of the OBU not including the bytes within obu_header or the obu_size syntax element.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> Encoders should always set obu_payload_size equal to the actual size of the OBU.
-Decoders should ignore any extra bytes if obu_payload_size is greater than the actual size of the OBU.
-(For example, this may be needed if a future version of AV1 defines some additional
-fields at the end of the frame header, that are not strictly required for decoding,
-but if interpreted can improve the decoding).</p>
+<p>Methods of framing the OBUs (i.e. of identifying the series of OBUs and their size
+and payload data) in a delivery or container format may be established in a manner
+outside the scope of this Specification. One simple method is described in Annex
+B.</p>
 
-<p>OBUs must begin at a byte boundary.</p>
+<p>OBU data starts on the first (most significant) bit and ends on the last bit of the given bytes. The
+payload of an OBU lies between the first bit of the given bytes and the last bit
+before the first trailing bit. Trailing bits are always present, unless the OBU
+consists of only the header. Trailing bits achieve byte alignment when the payload
+of an OBU is not byte aligned. The trailing bits may also used for additional byte
+padding, and if used are taken into account in the sz value. In all cases, the pattern
+used for the trailing bits guarantees that all OBUs (except header-only OBUs) end
+with the same pattern: one bit set to one, optionally followed by zeros.</p>
 
-<p>Methods of framing the OBUs in a container format are outside the
-scope of this Specification. However, one simple method of packing OBUs
-is described in Annex B.</p>
+<p class="alert alert-info"><strong>Note:</strong> As a validity check for malformed encoded data and for operation in
+environments in which losses and errors can occur, decoders may detect an error
+if the end of the parsed data is not directly followed by the correct trailing bits
+pattern or if the parsing of the OBU header and payload leads to the consumption
+of bits within the trailing bits.</p>
 
 <h4 id="obu-header-semantics">OBU Header Semantics</h4>
 
@@ -16910,7 +16964,11 @@ possible by preventing emulation of MPEG2 transport stream ids.</p>
       <td>OBU_FRAME</td>
     </tr>
     <tr>
-      <td>7-14</td>
+      <td>7</td>
+      <td>OBU_REDUNDANT_FRAME_HEADER</td>
+    </tr>
+    <tr>
+      <td>8-14</td>
       <td>Reserved</td>
     </tr>
     <tr>
@@ -16924,8 +16982,8 @@ possible by preventing emulation of MPEG2 transport stream ids.</p>
 
 <p><strong>obu_extension_flag</strong> indicates if the optional obu_extension_header is present.</p>
 
-<p><strong>obu_has_payload_length_field</strong> equal to 1 indicates that the obu_payload_size syntax element
-will be present.  obu_has_payload_length_field equal to 0 indicates that the obu_payload_size
+<p><strong>obu_has_size_field</strong> equal to 1 indicates that the obu_size syntax element
+will be present.  obu_has_size_field equal to 0 indicates that the obu_size
 syntax element will not be present.</p>
 
 <p><strong>obu_reserved_1bit</strong> must be set to 0. The value is ignored by a decoder.</p>
@@ -16952,6 +17010,13 @@ where T’ &lt;= T and S’ &lt;= S.</p>
 
 <h4 id="trailing-bits-semantics">Trailing Bits Semantics</h4>
 
+<p>*trailing_one_bit** shall be equal to 1.</p>
+
+<p><strong>trailing_zero_bit</strong> shall be equal to 0 and is inserted into the bitstream to align
+the bit position to a multiple of 8 bits and add optional zero padding bytes to the OBU.</p>
+
+<h4 id="byte-alignment-semantics">Byte Alignment Semantics</h4>
+
 <p><strong>zero_bit</strong> shall be equal to 0 and is inserted into the bitstream to align
 the bit position to a multiple of 8 bits.</p>
 
@@ -16959,8 +17024,6 @@ the bit position to a multiple of 8 bits.</p>
 
 <p>The reserved OBU allows the extension of this specification with additional OBU
 types in a way that allows older decoders to ignore them.</p>
-
-<p><strong>reserved_obu_payload_byte</strong> is a payload byte of the reserved OBU.</p>
 
 <h3 id="sequence-header-obu-semantics">Sequence Header OBU Semantics</h3>
 
@@ -17510,11 +17573,9 @@ It should be initialized to zero.</p>
 
 <h3 id="padding-obu-semantics">Padding OBU Semantics</h3>
 
-<p>The padding OBU offers padding from 1 to 256 bytes.  Multiple padding units can be present, each padding with an arbitrary number of bytes.</p>
+<p>Multiple padding units can be present, each padding with an arbitrary number of bytes.</p>
 
-<p><strong>obu_padding_length</strong> indicates the length of the remaining payload in bytes.</p>
-
-<p><strong>obu_padding_byte</strong> is a padding bytes.  Padding bytes may have arbitrary values and have no effect on the decoding process.</p>
+<p><strong>obu_padding_byte</strong> is a padding byte.  Padding bytes may have arbitrary values and have no effect on the decoding process.</p>
 
 <h3 id="metadata-obu-semantics">Metadata OBU Semantics</h3>
 
@@ -17555,8 +17616,7 @@ It should be initialized to zero.</p>
 
 <p>Private data allows the transfer of arbitrary, application-specific binary information.</p>
 
-<p><strong>metadata_private_data_payload_byte[ i ]</strong> carries the payload of the private data.
-Private data may have arbitrary values and have no effect on the decoding process.</p>
+<p>Private data may have arbitrary values and have no effect on the decoding process.</p>
 
 <h4 id="metadata-high-dynamic-range-content-light-level-semantics">Metadata High Dynamic Range Content Light Level Semantics</h4>
 
@@ -17905,7 +17965,16 @@ frame_header_obu should be inserted at this point.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> Bitstreams may contain several copies of the frame_header_obu interspersed
 with tile_group_obu to allow for greater error resilience.
-However, all copies must contain identical contents.</p>
+However, the copies must contain identical contents to the original frame_header_obu.</p>
+
+<p>If obu_type is equal to OBU_FRAME_HEADER, it is a requirement of bitstream conformance that
+SeenFrameHeader is equal to 0.</p>
+
+<p>If obu_type is equal to OBU_REDUNDANT_FRAME_HEADER, it is a requirement of bitstream conformance that
+SeenFrameHeader is equal to 1.</p>
+
+<p class="alert alert-info"><strong>Note:</strong> These requirements ensure that the first frame header for a frame has obu_type equal to OBU_FRAME_HEADER,
+while later copies of this frame header (if present) have obu_type equal to OBU_REDUNDANT_FRAME_HEADER.</p>
 
 <p><strong>TileNum</strong> is a variable giving the index (zero-based) of the current tile.</p>
 
@@ -18112,7 +18181,7 @@ encoding.</p>
 reduced subset of the full set of transform types.</p>
 
 <p><strong>showable_frame</strong> equal to 1 specifies that the frame may be displayed using the show_existing_frame mechanism.
-showable_frame equal to 0 specifies that this frame may not be displayed using the show_existing_frame mechanism.</p>
+showable_frame equal to 0 specifies that this frame will not be displayed using the show_existing_frame mechanism.</p>
 
 <p>It is a requirement of bitstream conformance that when show_existing_frame is used to show a previous frame,
 that the value of showable_frame for the previous frame was equal to 1.</p>
@@ -18863,14 +18932,6 @@ for each tile down the image.</p>
 
 <p><strong>maxTileHeightMi</strong> contains the maximum height (in units of 4x4 pixels) that can be used for a tile.</p>
 
-<p><strong>loop_filter_across_tiles_v</strong> equal to 1 indicates that loop filtering is allowed
-across vertical tile edges. loop_filter_across_tiles_v equal to 0 indicates that loop
-filtering is not allowed across vertical tile edges.</p>
-
-<p><strong>loop_filter_across_tiles_h</strong> equal to 1 indicates that loop filtering is allowed
-across horizontal tile edges. loop_filter_across_tiles_h equal to 0 indicates that loop
-filtering is not allowed across horizontal tile edges.</p>
-
 <p><strong>tile_size_bytes_minus_1</strong> is used to compute TileSizeBytes.</p>
 
 <p><strong>TileSizeBytes</strong> specifies the number of bytes needed to code each tile size.</p>
@@ -19151,9 +19212,9 @@ described in <a href="#cdf-update-process">section 7.6</a>.</p>
 
 <p><strong>tile_size</strong> specifies the size in bytes of the next coded tile.</p>
 
-<p class="alert alert-info"><strong>Note:</strong> This size includes any padding bytes added by the exit process for the
-Boolean decoder. The size does not include the bytes used for tile_group_obu,
-trailing_bits, and tile_size.</p>
+<p class="alert alert-info"><strong>Note:</strong> This size includes any padding bytes if added by the exit process for the
+Boolean decoder. The size does not include the bytes used for tile_size or syntax elements sent before tile_size.
+For the last tile in the tile group, tile_size is computed instead of being read and includes the OBU trailing bits.</p>
 
 <p><strong>decode_frame</strong> is a function call that indicates that the decode frame process
 specified in <a href="#decode-frame-process">section 7.3</a> should be invoked.</p>
@@ -20323,7 +20384,7 @@ with an intra prediction.</p>
 <p><strong>wedge_interintra</strong> equal to 1 specifies that wedge blending should be used.
 wedge_interintra equal to 0 specifies that intra blending should be used.</p>
 
-<p><strong>wedge_index</strong> specifies the angle to be used during wedge blending.</p>
+<p><strong>wedge_index</strong> is used to derive the direction and offset of the wedge mask used during blending.</p>
 
 <h4 id="read-compound-type-semantics">Read Compound Type Semantics</h4>
 
@@ -20369,42 +20430,7 @@ compound_idx equal to 0 indicates that the averaging scheme should be used for b
 <p class="alert alert-info"><strong>Note:</strong> COMPOUND_AVERAGE, COMPOUND_INTRA, and COMPOUND_DISTANCE cannot be directly signaled with the compound_type
 syntax element but are inferred from other syntax elements.</p>
 
-<p><strong>wedge_index</strong> specifies the angle to be used during wedge blending:</p>
-
-<table class="table table-sm table-bordered">
-  <thead>
-    <tr>
-      <th style="text-align: center">wedge_index</th>
-      <th style="text-align: center">Name of wedge_index</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: center">0</td>
-      <td style="text-align: center">WEDGE_HORIZONTAL</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">1</td>
-      <td style="text-align: center">WEDGE_VERTICAL</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">2</td>
-      <td style="text-align: center">WEDGE_OBLIQUE27</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">3</td>
-      <td style="text-align: center">WEDGE_OBLIQUE63</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">4</td>
-      <td style="text-align: center">WEDGE_OBLIQUE117</td>
-    </tr>
-    <tr>
-      <td style="text-align: center">5</td>
-      <td style="text-align: center">WEDGE_OBLIQUE153</td>
-    </tr>
-  </tbody>
-</table>
+<p><strong>wedge_index</strong> is used to derive the direction and offset of the wedge mask used during blending.</p>
 
 <p><strong>wedge_sign</strong> specifies the sign of the wedge blend.</p>
 
@@ -21002,7 +21028,7 @@ for ( r = MiRowStart; r &lt; MiRowEnd; r += sbSize4 ) {
         decode_partition( r, c, sbSize )
     }
 }
-exit_bool( )
+exit_bool( 0 )
 w = (MiColEnd - MiColStart) * MI_SIZE
 h = (MiRowEnd - MiRowStart) * MI_SIZE
 x0 = MiColStart * MI_SIZE
@@ -25276,18 +25302,18 @@ for (j = 0; j &lt; w; j ++) {
     for (i = 0; i &lt; h; i += 2) {
         MasterMask[ WEDGE_OBLIQUE63 ][ i ][ j ] = Wedge_Master_Oblique_Even[ Clip3( 0, MASK_MASTER_SIZE - 1, j - shift ) ]
         shift -= 1
-        MasterMask[ WEDGE_OBLIQUE63 ][ i + 1][ j ] = Wedge_Master_Oblique_Even[ Clip3( 0, MASK_MASTER_SIZE - 1, j - shift ) ]
+        MasterMask[ WEDGE_OBLIQUE63 ][ i + 1][ j ] = Wedge_Master_Oblique_Odd[ Clip3( 0, MASK_MASTER_SIZE - 1, j - shift ) ]
         MasterMask[ WEDGE_VERTICAL ][ i ][ j ] = Wedge_Master_Vertical[ j ]
         MasterMask[ WEDGE_VERTICAL ][ i + 1 ][ j ] = Wedge_Master_Vertical[ j ]
     }
 }
 for (i = 0; i &lt; h; i++) {
     for (j = 0; j &lt; w; j++) {
-      msk = MasterMask[WEDGE_OBLIQUE63][ i ][ j ]
-      MasterMask[WEDGE_OBLIQUE27][j  ][ i ] = msk
-      MasterMask[WEDGE_OBLIQUE117][ i ][ w - 1 - j ] = 64 - msk
-      MasterMask[WEDGE_OBLIQUE153][ w - 1 - j ][ i ] = 64 - msk
-      MasterMask[WEDGE_HORIZONTAL][ j ][ i ] = MasterMask[WEDGE_VERTICAL][ i ][ j ]
+      msk = MasterMask[ WEDGE_OBLIQUE63 ][ i ][ j ]
+      MasterMask[ WEDGE_OBLIQUE27 ][ j  ][ i ] = msk
+      MasterMask[ WEDGE_OBLIQUE117 ][ i ][ w - 1 - j ] = 64 - msk
+      MasterMask[ WEDGE_OBLIQUE153 ][ w - 1 - j ][ i ] = 64 - msk
+      MasterMask[ WEDGE_HORIZONTAL ][ j ][ i ] = MasterMask[ WEDGE_VERTICAL ][ i ][ j ]
     }
 }
 for (bsize = BLOCK_8X8; bsize &lt; BLOCK_SIZES; bsize++) {
@@ -25300,15 +25326,15 @@ for (bsize = BLOCK_8X8; bsize &lt; BLOCK_SIZES; bsize++) {
             yoff = MASK_MASTER_SIZE / 2 - ((get_wedge_yoff(bsize, wedge) * h) &gt;&gt; 3)
             sum = 0
             for (i = 0; i &lt; w; i++)
-              sum += MasterMask[dir][ yoff ][ xoff+i ]
+              sum += MasterMask[ dir ][ yoff ][ xoff+i ]
             for (i = 1; i &lt; h; i++)
-              sum += MasterMask[dir][ yoff+i ][ xoff ]
+              sum += MasterMask[ dir ][ yoff+i ][ xoff ]
             avg = (sum + (w + h - 1) / 2) / (w + h - 1)
             flipSign = (avg &lt; 32)
             for (i = 0; i &lt; h; i++) {
                 for (j = 0; j &lt; w; j++) {
-                  WedgeMasks[bsize][flipSign][wedge][ i ][ j ] = MasterMask[ dir ][ yoff+i ][ xoff+j ]
-                  WedgeMasks[bsize][!flipSign][wedge][ i ][ j ] = 64 - MasterMask[ dir ][ yoff+i ][ xoff+j ]
+                  WedgeMasks[ bsize ][ flipSign ][ wedge ][ i ][ j ] = MasterMask[ dir ][ yoff+i ][ xoff+j ]
+                  WedgeMasks[ bsize ][ !flipSign ][ wedge ][ i ][ j ] = 64 - MasterMask[ dir ][ yoff+i ][ xoff+j ]
                 }
             }
         }
@@ -25398,6 +25424,43 @@ Wedge_Codebook[3][16][3] = {
     }
 }
 </code></pre>
+
+<p>The wedge direction constants used above are defined as follows:</p>
+
+<table class="table table-sm table-bordered">
+  <thead>
+    <tr>
+      <th style="text-align: center">Constant</th>
+      <th style="text-align: center">Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">WEDGE_HORIZONTAL</td>
+      <td style="text-align: center">0</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">WEDGE_VERTICAL</td>
+      <td style="text-align: center">1</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">WEDGE_OBLIQUE27</td>
+      <td style="text-align: center">2</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">WEDGE_OBLIQUE63</td>
+      <td style="text-align: center">3</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">WEDGE_OBLIQUE117</td>
+      <td style="text-align: center">4</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">WEDGE_OBLIQUE153</td>
+      <td style="text-align: center">5</td>
+    </tr>
+  </tbody>
+</table>
 
 <h5 id="segment-mask-process">Segment Mask Process</h5>
 
@@ -27138,29 +27201,12 @@ equal to 1.</p>
   </li>
 </ul>
 
-<p>The variable isTileEdge (equal to 1 if the samples come from different tiles) is derived as follows:</p>
-
-<ul>
-  <li>
-    <p>If TileNums[ prevRow ][ prevCol ] is equal to TileNums[ row ][ col ], isTileEdge is set equal to 0.</p>
-  </li>
-  <li>
-    <p>Otherwise, isTileEdge is set equal to 1</p>
-  </li>
-</ul>
-
 <p>The variable applyFilter (equal to 1 if the samples are filtered) is
 derived as follows:</p>
 
 <ul>
   <li>
     <p>If isTxEdge is equal to 0, applyFilter is set equal to 0.</p>
-  </li>
-  <li>
-    <p>Otherwise, if pass is equal to 0 and loop_filter_across_tiles_v is equal to 0 and isTileEdge is equal to 1, applyFilter is set equal to 0</p>
-  </li>
-  <li>
-    <p>Otherwise, if pass is equal to 1 and loop_filter_across_tiles_h is equal to 0 and isTileEdge is equal to 1, applyFilter is set equal to 0</p>
   </li>
   <li>
     <p>Otherwise, if isBlockEdge is equal to 1 or skip is equal to 0 or isIntra is equal to 1 or prevSkip is equal to 0 or prevIsIntra is equal to 1, applyFilter is set equal
@@ -28144,13 +28190,8 @@ Cdef_440Directions[8] = { 1, 2, 2, 2, 3, 4, 6, 0 }
             fullTileX1 = MiColStarts[i+1] &lt;&lt; (MI_SIZE_LOG2 - subX)
             upscaledX1 = (fullTileX1 * superres_denom) / SUPERRES_NUM
         }
-        if (loop_filter_across_tiles_v) {
-            minX = 0
-            maxX = miW * MI_SIZE - 1
-        } else {
-            minX = downscaledX0
-            maxX = fullTileX1 - 1
-        }
+        minX = 0
+        maxX = miW * MI_SIZE - 1
         for (y = 0; y &lt; planeH; y++) {
             for (x = upscaledX0; x &lt; upscaledX1; x++) {
                 srcX = -(1 &lt;&lt; SUPERRES_SCALE_BITS) + initialSubpelX + x*stepX
@@ -28312,61 +28353,25 @@ plane as follows:</p>
 
 <p>The variable unitCol (specifying the horizontal index of the current loop restoration unit) is set equal to Min( unitCols - 1, (col * MI_SIZE - tileLeft) / unitSize).</p>
 
-<p>The horizontal extent of the space allowed for filtering is configured depending on loop_filter_across_tiles_v as follows:</p>
+<p>The horizontal extent of the space allowed for filtering is specified as follows:</p>
 
 <ul>
   <li>
-    <p>If loop_filter_across_tiles_v is equal to 1, the following applies:</p>
-
-    <ul>
-      <li>
-        <p>TileStartX is set equal to 0</p>
-      </li>
-      <li>
-        <p>TileEndX is set equal to Round2( UpscaledWidth, subX) - 1</p>
-      </li>
-    </ul>
+    <p>TileStartX is set equal to 0</p>
   </li>
   <li>
-    <p>Otherwise (loop_filter_across_tiles_v is equal to 0), the following applies:</p>
-
-    <ul>
-      <li>
-        <p>TileStartX is set equal to tileLeft</p>
-      </li>
-      <li>
-        <p>TileEndX is set equal to tileRight - 1</p>
-      </li>
-    </ul>
+    <p>TileEndX is set equal to Round2( UpscaledWidth, subX) - 1</p>
   </li>
 </ul>
 
-<p>The vertical extent of the space allowed for filtering is configured depending on loop_filter_across_tiles_h as follows:</p>
+<p>The vertical extent of the space allowed for filtering is specified as follows:</p>
 
 <ul>
   <li>
-    <p>If loop_filter_across_tiles_h is equal to 1, the following applies:</p>
-
-    <ul>
-      <li>
-        <p>TileStartY is set equal to 0</p>
-      </li>
-      <li>
-        <p>TileEndY is set equal to Round2( FrameHeight, subY ) - 1</p>
-      </li>
-    </ul>
+    <p>TileStartY is set equal to 0</p>
   </li>
   <li>
-    <p>Otherwise (loop_filter_across_tiles_h is equal to 0), the following applies:</p>
-
-    <ul>
-      <li>
-        <p>TileStartY is set equal to (MiRowStart * MI_SIZE &gt;&gt; subY)</p>
-      </li>
-      <li>
-        <p>TileEndY is set equal to Round2( Min( FrameHeight, MiRowEnd * MI_SIZE ), subY) - 1</p>
-      </li>
-    </ul>
+    <p>TileEndY is set equal to Round2( FrameHeight, subY ) - 1</p>
   </li>
 </ul>
 
@@ -28921,6 +28926,7 @@ for ( y = 3; y &lt; 73; y++ ) {
 <p>White noise arrays CbGrain and CrGrain chromaW samples wide and chromaH samples high are generated as follows:</p>
 
 <pre><code class="language-c">shift = 12 - BitDepth - grain_scale_shift
+RandomRegister = grain_seed ^ 0xb524
 for ( y = 0; y &lt; chromaH; y++ ) {
   for ( x = 0; x &lt; chromaW; x++ ) {
     if ( num_cb_points &gt; 0 ) {
@@ -28929,6 +28935,11 @@ for ( y = 0; y &lt; chromaH; y++ ) {
       g = 0
     }
     CbGrain[ y ][ x ] = Round2( g, shift )
+  }
+}
+RandomRegister = grain_seed ^ 0xd849
+for ( y = 0; y &lt; chromaH; y++ ) {
+  for ( x = 0; x &lt; chromaW; x++ ) {
     if ( num_cr_points &gt; 0 ) {
       g = Gaussian_Sequence[ get_random_number( 11 ) ]
     } else {
@@ -29491,7 +29502,7 @@ first bit is given by the most significant bit of the first byte.</p>
 
 <p>Aside from the uncompressed header and the partition sizes, the entire
 bitstream is entropy coded. The entropy decoder is referred to as the “Boolean
-decoder” and the function init_bool( sz ), exit_bool( ), and read_bool( p )
+decoder” and the function init_bool( sz ), exit_bool( readPadding ), and read_bool( p )
 are used in this Specification to indicate the entropy decoding operation.</p>
 
 <h4 id="initialization-process-for-boolean-decoder">Initialization Process for Boolean Decoder</h4>
@@ -29834,18 +29845,22 @@ cdf[ 2 ] = 0
 
 <h4 id="exit-process-for-boolean-decoder">Exit Process for Boolean Decoder</h4>
 
-<p>This process is invoked when the function exit_bool( ) is called from the syntax
+<p>This process is invoked when the function exit_bool( readPadding ) is called from the syntax
 structure.</p>
-
-<p>The padding syntax element is read using the f(BoolMaxBits) parsing process.</p>
 
 <p>It is a requirement of bitstream conformance that BoolMaxBits is greater than or
 equal to 0 whenever this process is invoked.</p>
 
-<p>It is a requirement of bitstream conformance that padding is equal to 0.</p>
+<p>If readPadding is equal to 1, the padding syntax element is read using the f(BoolMaxBits) parsing process.</p>
+
+<p>If readPadding is equal to 1, it is a requirement of bitstream conformance that padding is equal to 0.</p>
 
 <p class="alert alert-info"><strong>Note:</strong> The padding is required to make the bit position byte aligned.
 It is legal for frames to end with more than one byte of padding.</p>
+
+<p>If readPadding is equal to 0 (this happens for the last tile in a tile group), no reading of padding
+is performed at this level of the syntax.  The remamining bits will be read by trailing_bits at the end
+of the OBU.</p>
 
 <p>If UpdateCdfs is equal to 1, a copy is made of the final CDF values for each of the
 CDF arrays mentioned in the semantics for init_coeff_cdfs and init_non_coeff_cdfs. 
@@ -42847,10 +42862,10 @@ a container format alongside audio and timing information.</p>
 
   <pre class="syntax"><code>bitstream( sz ) {
     while ( sz &gt; 0 ) {
-        <b class="syntax-element">obu_size</b>                                                             leb128()
+        <b class="syntax-element">obu_length</b>                                                           leb128()
         sz -= Leb128Bytes
-        open_bitstream_unit( obu_size )
-        sz -= obu_size
+        open_bitstream_unit( obu_length )
+        sz -= obu_length
     }
 }
 </code></pre>
@@ -42860,12 +42875,12 @@ a container format alongside audio and timing information.</p>
   <p><strong>sz</strong> specifies the number of bytes in the entire bitstream and is provided by
 external means.</p>
 
-  <p><strong>obu_size</strong> specifies the size in bytes of the next OBU.</p>
+  <p><strong>obu_length</strong> specifies the length in bytes of the next OBU.</p>
 
-  <p class="alert alert-info"><strong>Note:</strong> It is legal for the OBU to set obu_has_payload_length_field equal to 1 to indicate
-that the obu_payload_size syntax element is present.  In this case, the decoding process
-assumes that obu_size and obu_payload_size are set consistently.
-If obu_size and obu_payload_size are both present, but inconsistent, then the packed file
+  <p class="alert alert-info"><strong>Note:</strong> It is legal for the OBU to set obu_has_size_field equal to 1 to indicate
+that the obu_size syntax element is present.  In this case, the decoding process
+assumes that obu_size and obu_length are set consistently.
+If obu_size and obu_length are both present, but inconsistent, then the packed file
 is deemed invalid.</p>
 
   <h2 class="no_count" id="annex-c-included-experiments">Annex C: Included Experiments</h2>
@@ -43135,14 +43150,6 @@ is deemed invalid.</p>
         <td> </td>
       </tr>
       <tr>
-        <td>loopfiltering_across_tiles</td>
-        <td> </td>
-      </tr>
-      <tr>
-        <td>loopfilter_across_tiles_ext</td>
-        <td> </td>
-      </tr>
-      <tr>
         <td>lowprecision_blend</td>
         <td> </td>
       </tr>
@@ -43192,6 +43199,10 @@ is deemed invalid.</p>
       </tr>
       <tr>
         <td>obu_frame</td>
+        <td> </td>
+      </tr>
+      <tr>
+        <td>obu_redundant_frame_header</td>
         <td> </td>
       </tr>
       <tr>
@@ -43323,6 +43334,10 @@ is deemed invalid.</p>
         <td> </td>
       </tr>
       <tr>
+        <td>trailing_bits</td>
+        <td> </td>
+      </tr>
+      <tr>
         <td>tx64x64</td>
         <td> </td>
       </tr>
@@ -43362,12 +43377,8 @@ is deemed invalid.</p>
     </thead>
     <tbody>
       <tr>
-        <td>explicit_order_hints</td>
+        <td>operating_points</td>
         <td>Code still under development</td>
-      </tr>
-      <tr>
-        <td>trailing_bits</td>
-        <td>Code not yet merged</td>
       </tr>
     </tbody>
   </table>
