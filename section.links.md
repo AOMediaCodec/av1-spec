@@ -134,7 +134,6 @@
 [section 6.7.4]: #render-size-semantics
 [section 7.2]: #large-scale-tile-decoding-process
 [section 5.7.15]: #tile-size-calculation-function
-[section 6.9.16]: #inter-tx-size-semantics
 [section 5.5]: #padding-obu-syntax
 [section 5.9.24]: #ref-frames-syntax
 [section 7.10.2.10]: #wedge-mask-process
@@ -168,7 +167,6 @@
 [section 7.10.2.9]: #overlap-blending-process
 [section 7.9.1.12]: #extra-search-process
 [section 7.10.1.2]: #recursive-intra-prediction-process
-[section 5.9.15]: #inter-tx-size-syntax
 [section 6.7.17]: #global-param-semantics
 [section 6.9.4]: #decode-block-semantics
 [section 6.4]: #temporal-delimiter-obu-semantics
@@ -184,6 +182,7 @@
 [section 7.10.2]: #inter-prediction-process
 [section 7.10.3]: #palette-prediction-process
 [section 5.9.47]: #palette-tokens-syntax
+[section 7.9.2]: #has-overlappable-candidates-process
 [section 7.13]: #loop-filter-process
 [section 5.9.26]: #read-motion-mode-syntax
 [section 5.7.5]: #render-size-syntax
@@ -267,7 +266,7 @@
 [section 5.9.53]: #clamp-mv-col-function
 [section 6.9.22]: #filter-intra-mode-info-semantics
 [section 7.17.1.4]: #add-noise-synthesis-process
-[section 7.9.2]: #has-overlappable-candidates-process
+[section 5.9.15]: #block-tx-size-syntax
 [section 6.7.18]: #decode-subexp-semantics
 [section 6.9.28]: #mv-component-semantics
 [section 7.12.2]: #2d-inverse-transform
@@ -286,6 +285,7 @@
 [section 7.10.1.1]: #basic-intra-prediction-process
 [section 7.17]: #output-process
 [section 7.9.1.6]: #temporal-sample-process
+[section 6.9.16]: #block-tx-size-semantics
 [section 5.7.21]: #skip-mode-params-syntax
 [section 5.9.33]: #transform-block-syntax
 [section 7.20]: #reference-frame-loading-process
