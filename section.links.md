@@ -66,6 +66,7 @@
 [section 7.10.2.8]: #overlapped-motion-compensation-process
 [section 5.7.9]: #interpolation-filter-syntax
 [section 6.1.4]: #byte-alignment-semantics
+[section 8.2.3]: #exit-process-for-symbol-decoder
 [section 5.9.25]: #assign-mv-syntax
 [section 6.3.2]: #timing-info-semantics
 [section 4.3]: #relational-operators
@@ -127,7 +128,6 @@
 [section 5.7.19]: #loop-restoration-params-syntax
 [section 5.9.36]: #get-plane-residual-size-function
 [section 7.12.1.9]: #inverse-adst-process
-[section 8.2.1]: #initialization-process-for-boolean-decoder
 [section 7.10.1.4]: #dc-intra-prediction-process
 [section 5.9]: #tile-group-obu-syntax
 [section 6.8]: #frame-obu-semantics
@@ -205,7 +205,6 @@
 [section 5.9.10]: #skip-syntax
 [section 7.17.1]: #film-grain-synthesis-process
 [section 6.7.10]: #quantization-params-semantics
-[section 8.2.3]: #exit-process-for-boolean-decoder
 [section 7.12.1.3]: #inverse-dct-process
 [section 5.9.6]: #intra-frame-mode-info-syntax
 [section 8.3.1]: #cdf-selection-process
@@ -222,7 +221,6 @@
 [section 7.12.1.6]: #inverse-adst4-process
 [section 5.9.2]: #clear-block-decoded-flags-function
 [section 6.7.21]: #tx-mode-semantics
-[section 8.2]: #parsing-process-for-boolean-decoder
 [section 6.9.35]: #palette-tokens-semantics
 [section 5.7.23]: #compound-tools-syntax
 [section 7.16.6]: #get-source-sample-process
@@ -301,6 +299,7 @@
 [section 5.9.8]: #read-segment-id-syntax
 [section 6.7.19]: #decode-uniform-semantics
 [section 7.13.5.3]: #wide-filter-process
+[section 8.2.1]: #initialization-process-for-symbol-decoder
 [section 5.4]: #temporal-delimiter-obu-syntax
 [section 5.1.2]: #obu-extension-header-syntax
 [section 5.7.26]: #decode-signed-subexp-with-ref-syntax
@@ -313,6 +312,7 @@
 [section 5.6.1]: #metadata-private-data-syntax
 [section 7.11]: #reconstruction-and-dequantization
 [section 5]: #syntax-structures
+[section 8.2]: #parsing-process-for-symbol-decoder
 [section B]: #annex-b-bitstream-format
 [section 5.9.5]: #mode-info-syntax
 [section 7.12.1.10]: #inverse-walsh-hadamard-transform-process
