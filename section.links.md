@@ -316,6 +316,7 @@
 [section B]: #annex-b-bitstream-format
 [section 5.9.5]: #mode-info-syntax
 [section 7.12.1.10]: #inverse-walsh-hadamard-transform-process
+[section 5.1.4]: #byte-alignment-syntax
 [section 8]: #parsing-process
 [section 5.9.42]: #is-directional-mode-function
 [section 5.9.37]: #coefficients-syntax
