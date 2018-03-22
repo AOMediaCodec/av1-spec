@@ -17,7 +17,7 @@ version_date: Released 2017-xx-xx
   {% include_relative 00.abstract.md %}
   </div>
   <div id="toc" markdown="1">
-  {% include_relative 00.toc-print.md %}
+  {% include_relative 00.toc.md %}
   </div>
 </div>
 <div style="counter-reset: page"></div>
@@ -42,7 +42,7 @@ version_date: Released 2017-xx-xx
 <div id="biblio" markdown="1">
 {% include_relative bibliography.md %}
 </div>
-{% include_relative _tmp/98.testing.md %}
 
 {% comment %}
+{% include_relative _tmp/98.testing.md %}
 {% endcomment %}
