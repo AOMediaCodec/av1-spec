@@ -90,7 +90,6 @@
 [section 5.7.18]: #cdef-params-syntax
 [section 6.9.31]: #coefficients-semantics
 [section 9.4]: #quantizer-matrix-tables
-[section 7.4]: #frame-order-constraints
 [section 6.9.25]: #read-inter-intra-semantics
 [section 4.9.7]: #ln
 [section 6.9.17]: #var-tx-size-semantics
@@ -128,6 +127,7 @@
 [section 5.7.19]: #loop-restoration-params-syntax
 [section 5.9.36]: #get-plane-residual-size-function
 [section 7.12.1.9]: #inverse-adst-process
+[section 7.5]: #random-access-decoding
 [section 7.10.1.4]: #dc-intra-prediction-process
 [section 5.9]: #tile-group-obu-syntax
 [section 6.8]: #frame-obu-semantics
@@ -305,7 +305,7 @@
 [section 5.7.26]: #decode-signed-subexp-with-ref-syntax
 [section 6.9.9]: #skip-mode-semantics
 [section 6.7.16]: #global-motion-params-semantics
-[section 7.5]: #ordering-of-obus
+[section 7.4]: #ordering-of-obus
 [section 4.9.6]: #nsn
 [section 7.13.3]: #adaptive-filter-strength-process
 [section 5.9.21]: #intra-block-mode-info-syntax
