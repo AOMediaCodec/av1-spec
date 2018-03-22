@@ -11,7 +11,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 00.draft-legend.md %}
 </div>
 {% include_relative 00.abstract.md %}
-{% include_relative 00.toc-web.md %}
+{% include_relative 00.toc.md %}
 {% include_relative 01.scope.md %}
 {% include_relative 02.terms.md %}
 {% include_relative 03.symbols.md %}
@@ -31,8 +31,8 @@ version_date: Released 2017-xx-xx
 </div>
 
 {% include_relative bibliography.md %}
-{% include_relative _tmp/98.testing.md %}
 
 {% comment %}
+{% include_relative _tmp/98.testing.md %}
 {% include_relative 99.function-reference-links.md %}
 {% endcomment %}
