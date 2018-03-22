@@ -6,19 +6,18 @@ version_date: Released 2017-xx-xx
 
 {% include_relative section.links.md %}
 <div id="frontmatter">
-  <div id="cover" markdown="1">
-  {% include_relative 00.title.md %}
-  {% include_relative 00.version.md %}
-  </div>
-  <div id="draft-legend" class="alert alert-danger" markdown="1">
-  {% include_relative 00.draft-legend.md %}
-  </div>
-  <div id="abstract" markdown="1">
-  {% include_relative 00.abstract.md %}
-  </div>
-  <div id="toc" markdown="1">
-  {% include_relative 00.toc.md %}
-  </div>
+<div id="cover" markdown="1">
+{% include_relative 00.title.md %}
+{% include_relative 00.version.md %}
+{% include_relative AUTHORS.md %}
+<div id="draft-legend" class="alert alert-danger" markdown="1">
+{% include_relative 00.draft-legend.md %}
+</div>
+{% include_relative 00.abstract.md %}
+<div id="toc" markdown="1">
+{% include_relative 00.toc.md %}
+</div>
+</div>
 </div>
 <div style="counter-reset: page"></div>
 {% include_relative 01.scope.md %}
