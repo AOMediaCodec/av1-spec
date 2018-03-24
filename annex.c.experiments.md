@@ -91,6 +91,7 @@ The specification has been updated to include the following list of adopted expe
 | obu_size_after_header         |
 | obu_sizing                    |
 | one_sided_compound            |
+| operating_points              |
 | opt_ref_mv                    |
 | palette                       |
 | palette_delta_encoding        |
@@ -135,7 +136,7 @@ The specification has not yet been updated with the following experiments:
 
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
-| operating_points              | Code still under development
+| -                             | 
 {:.table .table-sm .table-bordered }
 
 
