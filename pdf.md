@@ -13,6 +13,7 @@ version_date: Released 2017-xx-xx
 <div id="draft-legend" class="alert alert-danger" markdown="1">
 {% include_relative 00.draft-legend.md %}
 </div>
+{% include_relative LICENSE %}
 {% include_relative 00.abstract.md %}
 <div id="toc" markdown="1">
 {% include_relative 00.toc.md %}
