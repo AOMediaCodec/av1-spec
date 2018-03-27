@@ -1,14 +1,17 @@
 ## Annex C: Included Experiments
 {:.no_count}
 
-### Overview
-{:.no_count}
 
-This is a temporary section that describes how the specification relates to the current code base.
+### Overview
+
+This is a temporary section that describes how the specification relates to the
+current code base.
+
 
 ### Included Experiments
 
-The specification has been updated to include the following list of adopted experiments:
+The specification has been updated to include the following list of adopted
+experiments:
 
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
@@ -42,10 +45,10 @@ The specification has been updated to include the following list of adopted expe
 | ext_intra_mod                 |
 | ext_intra_mod2                |
 | ext_inter                     |
-| ext_partition                 | 
+| ext_partition                 |
 | ext_partition_types           |
 | ext_qm                        |
-| ext_refs                      | 
+| ext_refs                      |
 | ext_skip                      |
 | ext_tile                      |
 | ext_tx                        |
@@ -130,13 +133,14 @@ The specification has been updated to include the following list of adopted expe
 | wedge                         |
 {:.table .table-sm .table-bordered }
 
+
 ### Excluded Experiments
 
 The specification has not yet been updated with the following experiments:
 
 | Experiment                    | Notes
 | ----------------------------- | ---------------------------
-| -                             | 
+| &nbsp;                        |
 {:.table .table-sm .table-bordered }
 
 
