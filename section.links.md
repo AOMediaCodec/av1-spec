@@ -178,6 +178,7 @@
 [section 7.12.1.12]: #inverse-identity-transform-8-process
 [section 7.16.4]: #wiener-filter-process
 [section 7.10.2.1]: #rounding-variables-derivation-process
+[section 9.4.1]: #derivation-process-informative
 [section 7.9.1.11]: #sorting-process
 [section 7.10.2]: #inter-prediction-process
 [section 7.10.3]: #palette-prediction-process
@@ -268,6 +269,7 @@
 [section 6.7.18]: #decode-subexp-semantics
 [section 6.9.28]: #mv-component-semantics
 [section 7.12.2]: #2d-inverse-transform
+[section 9.4.2]: #tables
 [section 5.9.52]: #clamp-mv-row-function
 [section 6.7.11]: #delta-quantizer-semantics
 [section 6.9.5]: #intra-frame-mode-info-semantics
