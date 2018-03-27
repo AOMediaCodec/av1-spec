@@ -6,9 +6,9 @@
 [section 6.1.2]: #obu-extension-header-semantics
 [section 7.10.1.5]: #smooth-intra-prediction-process
 [section 7.17.1.3]: #scaling-lookup-initialization-process
-[section 5.7.31]: #film-grain-params-syntax
+[section 5.7.30]: #film-grain-params-syntax
 [section 6.7.12]: #segmentation-params-semantics
-[section 5.7.30]: #inv-recenter-noneg-function
+[section 5.7.29]: #inv-recenter-noneg-function
 [section 7.16.2]: #self-guided-filter-process
 [section 6.9.29]: #residual-semantics
 [section 6.7.6]: #superres-params-semantics
@@ -45,14 +45,14 @@
 [section 6.9.26]: #read-compound-type-semantics
 [section 7.10.1]: #intra-prediction-process
 [section 2]: #terms-and-definitions
-[section 5.7.24]: #global-motion-params-syntax
+[section 5.7.23]: #global-motion-params-syntax
 [section 5.9.30]: #mv-syntax
 [section 5.9.38]: #compute-transform-type-function
 [section 7.18]: #motion-field-motion-vector-storage-process
 [section D]: #bibliography
 [section 6.9.2]: #clear-block-decoded-flags-semantics
 [section 1]: #scope
-[section 5.7.29]: #inverse-recenter-function
+[section 5.7.28]: #inverse-recenter-function
 [section C.3]: #excluded-experiments
 [section 9.1]: #scan-tables
 [section 4.9]: #descriptors
@@ -221,7 +221,6 @@
 [section 5.9.2]: #clear-block-decoded-flags-function
 [section 6.7.21]: #tx-mode-semantics
 [section 6.9.35]: #palette-tokens-semantics
-[section 5.7.23]: #compound-tools-syntax
 [section 7.16.6]: #get-source-sample-process
 [section 5.3]: #sequence-header-obu-syntax
 [section 7.9.1.3]: #scan-col-process
@@ -241,7 +240,6 @@
 [section 5.9.32]: #residual-syntax
 [section 4.7]: #method-of-describing-bitstream-syntax
 [section 5.9.12]: #loop-filter-delta-syntax
-[section 6.7.24]: #compound-tools-semantics
 [section 6.9.36]: #palette-color-context-semantics
 [section 7.10.2.4]: #block-warp-process
 [section 7.12.1.1]: #butterfly-functions
@@ -276,7 +274,7 @@
 [section 7.17.1.2]: #generate-grain-process
 [section 5.9.3]: #decode-partition-syntax
 [section 7.1]: #general-decoding-process
-[section 5.7.25]: #global-param-syntax
+[section 5.7.24]: #global-param-syntax
 [section 5.7.13]: #segmentation-params-syntax
 [section 5.9.54]: #clear-cdef-function
 [section 5.9.35]: #get-tx-size-function
@@ -302,7 +300,7 @@
 [section 8.2.1]: #initialization-process-for-symbol-decoder
 [section 5.4]: #temporal-delimiter-obu-syntax
 [section 5.1.2]: #obu-extension-header-syntax
-[section 5.7.26]: #decode-signed-subexp-with-ref-syntax
+[section 5.7.25]: #decode-signed-subexp-with-ref-syntax
 [section 6.9.9]: #skip-mode-semantics
 [section 6.7.16]: #global-motion-params-semantics
 [section 7.4]: #ordering-of-obus
@@ -330,9 +328,9 @@
 [section 5.9.44]: #palette-mode-info-syntax
 [section 7.10.1.9]: #intra-edge-upsample-selection-process
 [section 5.7.22]: #frame-reference-mode-syntax
-[section 5.7.28]: #decode-subexp-syntax
+[section 5.7.27]: #decode-subexp-syntax
 [section 5.7.4]: #frame-size-syntax
-[section 5.7.27]: #decode-unsigned-subexp-with-ref-syntax
+[section 5.7.26]: #decode-unsigned-subexp-with-ref-syntax
 [section 6.9.1]: #decode-tile-semantics
 [section 6.9.24]: #read-motion-mode-semantics
 [section 5.9.7]: #intra-segment-id-syntax
