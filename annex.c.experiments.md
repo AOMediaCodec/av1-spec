@@ -115,6 +115,7 @@ experiments:
 | short_filter                  |
 | simp_mv_pred                  |
 | simple_bwd_adapt              |
+| simple_lr_unit                |
 | simplify_tx_mode              |
 | skip_sgr                      |
 | smooth_hv                     |
