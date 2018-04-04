@@ -289,7 +289,7 @@
 [section 5.7.21]: #skip-mode-params-syntax
 [section 5.9.33]: #transform-block-syntax
 [section 7.20]: #reference-frame-loading-process
-[section 7.10.2.11]: #segment-mask-process
+[section 7.10.2.11]: #difference-weight-mask-process
 [section 7.13.5]: #sample-filtering-process
 [section 6.9.18]: #transform-type-semantics
 [section 7.12.1]: #1d-transforms
