@@ -45,7 +45,7 @@ version_date: Released 2017-xx-xx
 <div style="page-break-before: always"></div>
 {% include_relative annex.a.levels.md %}
 <div style="page-break-before: always"></div>
-{% include_relative annex.b.superframes.md %}
+{% include_relative _tmp/annex.b.superframes.md %}
 <div style="page-break-before: always"></div>
 {% include_relative annex.c.experiments.md %}
 </div>

@@ -27,7 +27,7 @@ version_date: Released 2017-xx-xx
 <div class="annex">
 {::options parse_block_html="false" /}
 {% include_relative annex.a.levels.md %}
-{% include_relative annex.b.superframes.md %}
+{% include_relative _tmp/annex.b.superframes.md %}
 {% include_relative annex.c.experiments.md %}
 </div>
 

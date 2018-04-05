@@ -25,6 +25,7 @@ module.exports = (grunt) ->
           { src:  '98.testing.md', dest: '_tmp/' },
           { src:  '04.conventions.md', dest: '_tmp/' },
           { src:  '06.bitstream.syntax.md', dest: '_tmp/' }
+          { src:  'annex.b.superframes.md', dest: '_tmp/' }
         ]
     copy:
       docs:
