@@ -69,6 +69,7 @@
 [section 8.2.3]: #exit-process-for-symbol-decoder
 [section 5.9.25]: #assign-mv-syntax
 [section 6.3.2]: #timing-info-semantics
+[section 7.5.1]: #parsing-random-access-points-informative
 [section 4.3]: #relational-operators
 [section 6.6.3]: #metadata-high-dynamic-range-mastering-display-color-volume-semantics
 [section 7]: #decoding-process
@@ -289,7 +290,6 @@
 [section 5.7.21]: #skip-mode-params-syntax
 [section 5.9.33]: #transform-block-syntax
 [section 7.20]: #reference-frame-loading-process
-[section 7.10.2.11]: #difference-weight-mask-process
 [section 7.13.5]: #sample-filtering-process
 [section 6.9.18]: #transform-type-semantics
 [section 7.12.1]: #1d-transforms
@@ -301,6 +301,7 @@
 [section 7.13.5.3]: #wide-filter-process
 [section 8.2.1]: #initialization-process-for-symbol-decoder
 [section 5.4]: #temporal-delimiter-obu-syntax
+[section 7.10.2.11]: #difference-weight-mask-process
 [section 5.1.2]: #obu-extension-header-syntax
 [section 5.7.25]: #decode-signed-subexp-with-ref-syntax
 [section 6.9.9]: #skip-mode-semantics
