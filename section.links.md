@@ -53,7 +53,6 @@
 [section 6.9.2]: #clear-block-decoded-flags-semantics
 [section 1]: #scope
 [section 5.7.28]: #inverse-recenter-function
-[section C.3]: #excluded-experiments
 [section 9.1]: #scan-tables
 [section 4.9]: #descriptors
 [section 7.14.2]: #cdef-direction-process
@@ -69,7 +68,7 @@
 [section 8.2.3]: #exit-process-for-symbol-decoder
 [section 5.9.25]: #assign-mv-syntax
 [section 6.3.2]: #timing-info-semantics
-[section 7.5.1]: #parsing-random-access-points-informative
+[section C.1]: #parsing-random-access-points-informative
 [section 4.3]: #relational-operators
 [section 6.6.3]: #metadata-high-dynamic-range-mastering-display-color-volume-semantics
 [section 7]: #decoding-process
@@ -93,6 +92,7 @@
 [section 9.4]: #quantizer-matrix-tables
 [section 6.9.25]: #read-inter-intra-semantics
 [section 4.9.7]: #ln
+[section C]: #annex-c-error-resilience-behaviour
 [section 6.9.17]: #var-tx-size-semantics
 [section 5.6.4]: #metadata-scalability-syntax
 [section 7.9.1.9]: #compound-search-stack-process
@@ -156,14 +156,12 @@
 [section 6.9.32]: #intra-angle-info-semantics
 [section 5.9.39]: #get-scan-function
 [section 5.9.43]: #read-cfl-alphas-syntax
-[section C]: #annex-c-included-experiments
 [section 6.9.38]: #decode-loop-restoration-unit-semantics
 [section 5.7.17]: #loop-filter-delta-parameters-syntax
 [section 6.9.37]: #read-cdef-semantics
 [section 6.9.34]: #palette-mode-info-semantics
 [section 4.2]: #logical-operators
 [section B.1]: #overview-1
-[section C.1]: #overview-2
 [section 5.9.41]: #intra-angle-info-chroma-syntax
 [section 7.10.2.9]: #overlap-blending-process
 [section 7.9.1.12]: #extra-search-process
@@ -260,7 +258,6 @@
 [section A.1.2]: #levels
 [section 5.9.18]: #inter-segment-id-syntax
 [section 7.10.2.14]: #distance-weights-process
-[section C.2]: #included-experiments
 [section 5.9.1]: #decode-tile-syntax
 [section 8.2.2]: #boolean-decoding-process
 [section 5.9.53]: #clamp-mv-col-function
