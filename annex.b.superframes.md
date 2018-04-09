@@ -27,10 +27,10 @@ This annex defines a simple method of packing OBUs into a bitstream format.
 | --------------------------------------------------------- | ---------------- |
 | temporal_unit( sz ) {                                     | **Type**
 |    while ( sz > 0 ) {
-|        @@frame_size                                       | leb128()
+|        @@frame_unit_size                                  | leb128()
 |        sz -= Leb128Bytes
-|        frame_unit( frame_size )
-|        sz -= frame_size
+|        frame_unit( frame_unit_size )
+|        sz -= frame_unit_size
 |    }
 |}
 {:.syntax }
