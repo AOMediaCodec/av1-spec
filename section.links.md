@@ -145,7 +145,7 @@
 [section 5.7.6]: #frame-size-with-refs-syntax
 [section 6.9.33]: #read-cfl-alphas-semantics
 [section 7.12.1.15]: #inverse-identity-transform-64-process
-[section 7.9.1.1]: #setup-zero-mv-process
+[section 7.9.1.1]: #setup-global-mv-process
 [section 6.7]: #frame-header-obu-semantics
 [section 8.2.4]: #parsing-process-for-read_literal
 [section 5.9.13]: #segmentation-feature-active-function
