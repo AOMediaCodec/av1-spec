@@ -131,6 +131,7 @@
 [section 7.5]: #random-access-decoding
 [section 7.10.1.4]: #dc-intra-prediction-process
 [section 5.9]: #tile-group-obu-syntax
+[section 6.7.24]: #temporal-point-info-semantics
 [section 6.8]: #frame-obu-semantics
 [section 6.7.4]: #render-size-semantics
 [section 7.2]: #large-scale-tile-decoding-process
@@ -188,6 +189,7 @@
 [section 5.7.5]: #render-size-syntax
 [section 7.13.2]: #filter-size-process
 [section 6.9.10]: #skip-semantics
+[section 6.3.3]: #decoder-model-info-semantics
 [section 7.8.2]: #get-mv-projection-process
 [section 7.12.1.14]: #inverse-identity-transform-32-process
 [section 7.12]: #inverse-transform-process
@@ -280,6 +282,7 @@
 [section 5.9.35]: #get-tx-size-function
 [section 5.9.11]: #quantizer-index-delta-syntax
 [section 5.7.16]: #quantizer-index-delta-parameters-syntax
+[section 6.3.4]: #operating-parameters-info-semantics
 [section 7.10.1.1]: #basic-intra-prediction-process
 [section 7.17]: #output-process
 [section 7.9.1.6]: #temporal-sample-process
@@ -311,6 +314,7 @@
 [section 7.11]: #reconstruction-and-dequantization
 [section 5]: #syntax-structures
 [section 8.2]: #parsing-process-for-symbol-decoder
+[section 5.7.31]: #temporal-point-info-syntax
 [section B]: #annex-b-bitstream-format
 [section 5.9.5]: #mode-info-syntax
 [section 7.12.1.10]: #inverse-walsh-hadamard-transform-process
@@ -326,6 +330,7 @@
 [section 5.1]: #obu-syntax
 [section 6.6.5]: #scalability-structure-semantics
 [section 5.9.44]: #palette-mode-info-syntax
+[section 5.3.4]: #operating-parameters-info-syntax
 [section 7.10.1.9]: #intra-edge-upsample-selection-process
 [section 5.7.22]: #frame-reference-mode-syntax
 [section 5.7.27]: #decode-subexp-syntax
@@ -338,6 +343,7 @@
 [section 7.13.1]: #edge-loop-filter-process
 [section 7.10.2.7]: #warp-estimation-process
 [section 5.8]: #frame-obu-syntax
+[section 5.3.3]: #decoder-model-info-syntax
 [section 7.10.2.13]: #mask-blend-process
 [section 7.9.1.13]: #add-extra-mv-candidate-process
 [section 7.6]: #cdf-update-process
