@@ -42,6 +42,7 @@
 [section 5.7.11]: #quantization-params-syntax
 [section 6.6.4]: #metadata-scalability-semantics
 [section 6.9.30]: #transform-block-semantics
+[section 7.6]: #frame-end-update-cdf-process
 [section 4.6]: #mathematical-functions
 [section 7.10.1.7]: #intra-filter-type-process
 [section 6.9.26]: #read-compound-type-semantics
@@ -353,7 +354,6 @@
 [section 5.3.3]: #decoder-model-info-syntax
 [section 7.10.2.13]: #mask-blend-process
 [section 7.9.1.13]: #add-extra-mv-candidate-process
-[section 7.6]: #cdf-update-process
 [section 7.11.1]: #dequantization-functions
 [section 7.16.5]: #wiener-coefficient-process
 [section 5.2]: #reserved-obu-syntax
