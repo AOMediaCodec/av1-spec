@@ -1,5 +1,6 @@
 [section 7.8.3]: #get-block-position-process
 [section 5.1.3]: #trailing-bits-syntax
+[section C.1]: #definitions-1
 [section 5.9.9]: #skip-mode-syntax
 [section 6.9.8]: #inter-segment-id-semantics
 [section 5.1.1]: #obu-header-syntax
@@ -13,6 +14,7 @@
 [section 6.9.29]: #residual-semantics
 [section 6.7.6]: #superres-params-semantics
 [section A]: #annex-a-profiles-and-levels
+[section C.3]: #encoder-consequences-1
 [section 5.9.50]: #is-inside-filter-region-function
 [section 7.10.1.8]: #intra-edge-filter-strength-selection-process
 [section 6.7.8]: #interpolation-filter-semantics
@@ -68,7 +70,6 @@
 [section 8.2.3]: #exit-process-for-symbol-decoder
 [section 5.9.25]: #assign-mv-syntax
 [section 6.3.2]: #timing-info-semantics
-[section C.1]: #parsing-random-access-points-informative
 [section 4.3]: #relational-operators
 [section 6.6.3]: #metadata-high-dynamic-range-mastering-display-color-volume-semantics
 [section 7]: #decoding-process
@@ -85,18 +86,18 @@
 [section 6.7.20]: #film-grain-params-semantics
 [section 9.3]: #default-cdf-tables
 [section 7.14]: #cdef-process
-[section 6.9]: #tile-group-obu-semantics
+[section 7.5.1]: #definitions
 [section 6.2]: #reserved-obu-semantics
 [section 5.7.18]: #cdef-params-syntax
 [section 6.9.31]: #coefficients-semantics
 [section 9.4]: #quantizer-matrix-tables
 [section 6.9.25]: #read-inter-intra-semantics
 [section 4.9.7]: #ln
-[section C]: #annex-c-error-resilience-behaviour
 [section 6.9.17]: #var-tx-size-semantics
 [section 5.6.4]: #metadata-scalability-syntax
 [section 7.9.1.9]: #compound-search-stack-process
 [section 7.9.1.7]: #add-reference-motion-vector-process
+[section 7.5.2]: #conformance-requirements
 [section 5.9.49]: #is-inside-function
 [section 5.9.29]: #get-mode-function
 [section 4.9.2]: #uvlc
@@ -129,6 +130,7 @@
 [section 5.9.36]: #get-plane-residual-size-function
 [section 7.12.1.9]: #inverse-adst-process
 [section 7.5]: #random-access-decoding
+[section 7.5.3]: #encoder-consequences
 [section 7.10.1.4]: #dc-intra-prediction-process
 [section 5.9]: #tile-group-obu-syntax
 [section 6.7.24]: #temporal-point-info-semantics
@@ -157,7 +159,8 @@
 [section 6.9.32]: #intra-angle-info-semantics
 [section 5.9.39]: #get-scan-function
 [section 5.9.43]: #read-cfl-alphas-syntax
-[section 6.9.38]: #decode-loop-restoration-unit-semantics
+[section 6.9]: #tile-group-obu-semantics
+[section 7.5.4]: #decoder-consequences
 [section 5.7.17]: #loop-filter-delta-parameters-syntax
 [section 6.9.37]: #read-cdef-semantics
 [section 6.9.34]: #palette-mode-info-semantics
@@ -250,6 +253,7 @@
 [section 7.10.2.12]: #inter-intra-mask-process
 [section 6.9.19]: #is-inter-semantics
 [section 7.10.2.6]: #resolve-divisor-process
+[section C]: #annex-c-error-resilience-behaviour-informative-
 [section 6.6.2]: #metadata-high-dynamic-range-content-light-level-semantics
 [section 5.9.16]: #var-tx-size-syntax
 [section 4.5]: #assignment
@@ -307,6 +311,7 @@
 [section 6.9.9]: #skip-mode-semantics
 [section 6.7.16]: #global-motion-params-semantics
 [section 7.4]: #ordering-of-obus
+[section C.4]: #decoder-consequences-1
 [section 4.9.6]: #nsn
 [section 7.13.3]: #adaptive-filter-strength-process
 [section 5.9.21]: #intra-block-mode-info-syntax
@@ -316,6 +321,7 @@
 [section 8.2]: #parsing-process-for-symbol-decoder
 [section 5.7.31]: #temporal-point-info-syntax
 [section B]: #annex-b-bitstream-format
+[section 6.9.38]: #decode-loop-restoration-unit-semantics
 [section 5.9.5]: #mode-info-syntax
 [section 7.12.1.10]: #inverse-walsh-hadamard-transform-process
 [section 5.1.4]: #byte-alignment-syntax
@@ -332,6 +338,7 @@
 [section 5.9.44]: #palette-mode-info-syntax
 [section 5.3.4]: #operating-parameters-info-syntax
 [section 7.10.1.9]: #intra-edge-upsample-selection-process
+[section C.2]: #recommendation
 [section 5.7.22]: #frame-reference-mode-syntax
 [section 5.7.27]: #decode-subexp-syntax
 [section 5.7.4]: #frame-size-syntax
