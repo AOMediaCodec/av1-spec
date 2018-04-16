@@ -1,6 +1,6 @@
 [section 7.8.3]: #get-block-position-process
 [section 5.1.3]: #trailing-bits-syntax
-[section C.1]: #definitions-1
+[section C.4]: #decoder-consequences-of-processable-frames
 [section 5.9.9]: #skip-mode-syntax
 [section 6.9.8]: #inter-segment-id-semantics
 [section 5.1.1]: #obu-header-syntax
@@ -14,7 +14,6 @@
 [section 6.9.29]: #residual-semantics
 [section 6.7.6]: #superres-params-semantics
 [section A]: #annex-a-profiles-and-levels
-[section C.3]: #encoder-consequences-1
 [section 5.9.50]: #is-inside-filter-region-function
 [section 7.10.1.8]: #intra-edge-filter-strength-selection-process
 [section 6.7.8]: #interpolation-filter-semantics
@@ -280,6 +279,7 @@
 [section 6.9.5]: #intra-frame-mode-info-semantics
 [section 7.17.1.2]: #generate-grain-process
 [section 5.9.3]: #decode-partition-syntax
+[section C.2]: #recommendation-for-processable-frames
 [section 7.1]: #general-decoding-process
 [section 5.7.24]: #global-param-syntax
 [section 5.7.13]: #segmentation-params-syntax
@@ -312,8 +312,8 @@
 [section 6.9.9]: #skip-mode-semantics
 [section 6.7.16]: #global-motion-params-semantics
 [section 7.4]: #ordering-of-obus
-[section C.4]: #decoder-consequences-1
 [section 4.9.6]: #nsn
+[section C.3]: #encoder-consequences-of-processable-frames
 [section 7.13.3]: #adaptive-filter-strength-process
 [section 5.9.21]: #intra-block-mode-info-syntax
 [section 5.6.1]: #metadata-private-data-syntax
@@ -339,7 +339,6 @@
 [section 5.9.44]: #palette-mode-info-syntax
 [section 5.3.4]: #operating-parameters-info-syntax
 [section 7.10.1.9]: #intra-edge-upsample-selection-process
-[section C.2]: #recommendation
 [section 5.7.22]: #frame-reference-mode-syntax
 [section 5.7.27]: #decode-subexp-syntax
 [section 5.7.4]: #frame-size-syntax
@@ -359,6 +358,7 @@
 [section 5.2]: #reserved-obu-syntax
 [section 7.10.1.6]: #filter-corner-process
 [section 5.3.2]: #timing-info-syntax
+[section C.1]: #definition-of-processable-frames
 [section B.3]: #bitstream-semantics
 [section 7.13.5.2]: #narrow-filter-process
 [section 5.6.2]: #metadata-high-dynamic-range-content-light-level-syntax
