@@ -250,7 +250,7 @@
 [section 7.12.1.1]: #butterfly-functions
 [section 6.9.23]: #ref-frames-semantics
 [section 7.9.1.10]: #lower-precision-process
-[section 7.10.2.12]: #inter-intra-mask-process
+[section 7.10.2.12]: #intra-mode-variant-mask-process
 [section 6.9.19]: #is-inter-semantics
 [section 7.10.2.6]: #resolve-divisor-process
 [section C]: #annex-c-error-resilience-behaviour-informative-
