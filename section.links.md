@@ -146,7 +146,6 @@
 [section 5.9.17]: #inter-frame-mode-info-syntax
 [section 5.7.6]: #frame-size-with-refs-syntax
 [section 6.9.33]: #read-cfl-alphas-semantics
-[section 7.12.1.15]: #inverse-identity-transform-64-process
 [section 6.7]: #frame-header-obu-semantics
 [section 8.2.4]: #parsing-process-for-read_literal
 [section 5.9.13]: #segmentation-feature-active-function
@@ -240,7 +239,7 @@
 [section 7.10.2.3]: #block-inter-prediction-process
 [section 6.7.15]: #loop-filter-delta-parameters-semantics
 [section 6.9.20]: #intra-block-mode-info-semantics
-[section 7.12.1.16]: #inverse-identity-transform-process
+[section 7.12.1.15]: #inverse-identity-transform-process
 [section 5.7.10]: #loop-filter-params-syntax
 [section 7.10.1.3]: #directional-intra-prediction-process
 [section 4.9.9]: #nsn-1
