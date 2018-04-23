@@ -121,7 +121,7 @@
 [section 7.10]: #prediction-processes
 [section 5.7]: #frame-header-obu-syntax
 [section 5.7.3]: #reference-frame-marking-function
-[section 7.3]: #decode-frame-process
+[section 7.3]: #decode-frame-wrapup-process
 [section 6.9.6]: #intra-segment-id-semantics
 [section 5.9.48]: #palette-color-context-function
 [section 6.9.27]: #mv-semantics
