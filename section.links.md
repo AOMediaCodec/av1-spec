@@ -76,7 +76,7 @@
 [section 6.6.3]: #metadata-high-dynamic-range-mastering-display-color-volume-semantics
 [section 7]: #decoding-process
 [section 6.3.1]: #color-config-semantics
-[section 5.9.56]: #decode-loop-restoration-syntax
+[section 5.9.55]: #decode-loop-restoration-syntax
 [section 6.7.3]: #frame-size-semantics
 [section 5.9.28]: #read-compound-type-syntax
 [section 6.1]: #obu-semantics
@@ -112,7 +112,7 @@
 [section 7.19]: #reference-frame-update-process
 [section 6.9.21]: #inter-block-mode-info-semantics
 [section 5.7.14]: #tile-info-syntax
-[section 5.9.55]: #read-cdef-syntax
+[section 5.9.54]: #read-cdef-syntax
 [section 7.9.1.2]: #scan-row-process
 [section 7.10.1.11]: #intra-edge-filter-process
 [section 6.1.3]: #trailing-bits-semantics
@@ -121,7 +121,6 @@
 [section 7.10]: #prediction-processes
 [section 5.7]: #frame-header-obu-syntax
 [section 5.7.3]: #reference-frame-marking-function
-[section 7.3]: #decode-frame-wrapup-process
 [section 6.9.6]: #intra-segment-id-semantics
 [section 5.9.48]: #palette-color-context-function
 [section 6.9.27]: #mv-semantics
@@ -176,7 +175,6 @@
 [section 5.9.19]: #is-inter-syntax
 [section 7.8]: #motion-field-estimation-process
 [section 7.8.1]: #projection-process
-[section 5.9.51]: #check-references-functions
 [section 7.12.1.11]: #inverse-identity-transform-4-process
 [section 7.12.1.12]: #inverse-identity-transform-8-process
 [section 7.16.4]: #wiener-filter-process
@@ -221,6 +219,7 @@
 [section 7.14.3]: #cdef-filter-process
 [section 5.6]: #metadata-obu-syntax
 [section A.1]: #overview
+[section 7.3]: #decode-frame-wrapup-process
 [section B.2]: #bitstream-syntax
 [section 7.12.1.6]: #inverse-adst4-process
 [section 5.9.2]: #clear-block-decoded-flags-function
@@ -266,7 +265,7 @@
 [section 7.10.2.14]: #distance-weights-process
 [section 5.9.1]: #decode-tile-syntax
 [section 8.2.2]: #boolean-decoding-process
-[section 5.9.53]: #clamp-mv-col-function
+[section 5.9.52]: #clamp-mv-col-function
 [section 6.9.22]: #filter-intra-mode-info-semantics
 [section 7.17.1.4]: #add-noise-synthesis-process
 [section 5.9.15]: #block-tx-size-syntax
@@ -274,7 +273,7 @@
 [section 6.9.28]: #mv-component-semantics
 [section 7.12.2]: #2d-inverse-transform
 [section 9.4.2]: #tables
-[section 5.9.52]: #clamp-mv-row-function
+[section 5.9.51]: #clamp-mv-row-function
 [section 6.7.11]: #delta-quantizer-semantics
 [section 6.9.5]: #intra-frame-mode-info-semantics
 [section 7.17.1.2]: #generate-grain-process
@@ -283,7 +282,7 @@
 [section 7.1]: #general-decoding-process
 [section 5.7.24]: #global-param-syntax
 [section 5.7.13]: #segmentation-params-syntax
-[section 5.9.54]: #clear-cdef-function
+[section 5.9.53]: #clear-cdef-function
 [section 5.9.35]: #get-tx-size-function
 [section 5.9.11]: #quantizer-index-delta-syntax
 [section 5.7.16]: #quantizer-index-delta-parameters-syntax
@@ -301,7 +300,7 @@
 [section 7.12.1]: #1d-transforms
 [section 5.9.31]: #mv-component-syntax
 [section 6.9.11]: #quantizer-index-delta-semantics
-[section 5.9.57]: #decode-loop-restoration-unit-syntax
+[section 5.9.56]: #decode-loop-restoration-unit-syntax
 [section 5.9.8]: #read-segment-id-syntax
 [section 6.7.19]: #decode-uniform-semantics
 [section 7.13.5.3]: #wide-filter-process
