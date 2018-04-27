@@ -150,7 +150,7 @@ file. It invokes the commercial tool [Prince] (formerly PrinceXML), which must
 first be installed on your system. PDF generation can then be done with:
 
 ~~~~~
-grunt && grunt exec
+$ grunt && grunt exec
 ~~~~~
 
 Note that while we are generating PDF as a convenience format during document
