@@ -116,10 +116,10 @@ file [`Gruntfile.coffee`].
 
 There are tasks to
 
-  * clean output directories,
-  * perform some automated text transformations on the content files,
-  * build the document with Jekyll,
-  * and copy output files to the correct directories for serving and viewing.
+  * clean output directories
+  * perform some automated text transformations on the content files
+  * build the document with Jekyll
+  * copy output files to the correct directories for serving and viewing
 
 These tasks are invoked in turn by the Grunt default task:
 
@@ -143,6 +143,21 @@ $ grunt connect:nospawn
 ~~~~~
 
 
+#### PDF
+
+Additionally, there is a task `grunt exec` for generating the spec as a PDF
+file. It invokes the commercial tool [Prince] (formerly PrinceXML), which must
+first be installed on your system. PDF generation can then be done with:
+
+~~~~~
+grunt && grunt exec
+~~~~~
+
+Note that while we are generating PDF as a convenience format during document
+development, the canonical spec will likely be served as HTML, not PDF.
+{:.alert .alert-info }
+
+
 [draft]: https://aomediacodec.github.io/av1-spec/
 [Markdown]: https://daringfireball.net/projects/markdown/
 [kramdown]: https://kramdown.gettalong.org/
@@ -156,3 +171,4 @@ $ grunt connect:nospawn
 [`Gemfile.lock`]: https://github.com/AOMediaCodec/av1-spec/blob/master/Gemfile.lock
 [these instructions]: https://www.taniarascia.com/how-to-install-and-use-node-js-and-npm-mac-and-windows/
 [`Gruntfile.coffee`]: https://github.com/AOMediaCodec/av1-spec/blob/master/Gruntfile.coffee
+[Prince]: https://www.princexml.com/
