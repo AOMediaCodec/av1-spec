@@ -77,7 +77,7 @@
 [section 6.6.3]: #metadata-high-dynamic-range-mastering-display-color-volume-semantics
 [section 7]: #decoding-process
 [section 6.3.1]: #color-config-semantics
-[section 5.9.56]: #decode-loop-restoration-syntax
+[section 5.9.56]: #read-loop-restoration-syntax
 [section 6.7.3]: #frame-size-semantics
 [section 5.9.28]: #read-compound-type-syntax
 [section 6.1]: #obu-semantics
@@ -302,7 +302,7 @@
 [section 7.12.1]: #1d-transforms
 [section 5.9.31]: #mv-component-syntax
 [section 6.9.11]: #quantizer-index-delta-semantics
-[section 5.9.57]: #decode-loop-restoration-unit-syntax
+[section 5.9.57]: #read-loop-restoration-unit-syntax
 [section 5.9.8]: #read-segment-id-syntax
 [section 6.7.19]: #decode-uniform-semantics
 [section 7.13.5.3]: #wide-filter-process
@@ -324,7 +324,7 @@
 [section 8.2]: #parsing-process-for-symbol-decoder
 [section 5.7.31]: #temporal-point-info-syntax
 [section B]: #annex-b-bitstream-format
-[section 6.9.39]: #decode-loop-restoration-unit-semantics
+[section 6.9.39]: #read-loop-restoration-unit-semantics
 [section 5.9.5]: #mode-info-syntax
 [section 7.12.1.10]: #inverse-walsh-hadamard-transform-process
 [section 5.1.4]: #byte-alignment-syntax
