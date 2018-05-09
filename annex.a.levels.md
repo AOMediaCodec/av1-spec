@@ -31,12 +31,39 @@ Each operating point contains a syntax element level.
 
 The following table defines the mapping from the syntax element (which takes integer values) to the defined levels (which use a X.Y format):
 
-| Value of level | Mapped level 
-| -------------- | -------------- 
-| 0              | TODO
+| Value of level | Mapped level
+| -------------- | --------------
+| 0              | 2.0
+| 1              | 2.1
+| 2              | 2.2
+| 3              | 2.3
+| 4              | 3.0
+| 5              | 3.1
+| 6              | 3.2
+| 7              | 3.3
+| 8              | 4.0
+| 9              | 4.1
+| 10             | 4.2
+| 11             | 4.3
+| 12             | 5.0
+| 13             | 5.1
+| 14             | 5.2
+| 15             | 5.3
+| 16             | 6.0
+| 17             | 6.1
+| 18             | 6.2
+| 19             | 6.3
+| 20             | 7.0
+| 21             | 7.1
+| 22             | 7.2
+| 23             | 7.3
+| 24-30          | Reserved
+| 31             | Still picture
 {:.table .table-sm .table-bordered }
 
 TODO there is currently no syntax element that specifies if the level is high or not.
+
+TODO there are 32 levels but the level syntax element is only 4 bits long.
 
 The level defines constraints on the bitstream as specified in the following tables:
 
@@ -76,7 +103,12 @@ The level defines constraints on the bitstream as specified in the following tab
 | 6.3    | 300        | 160.0    | 800.0    | 8            | 128      | 16          | 7680x4320@120fps
 {:.table .table-sm .table-bordered }
 
-It is a requirement of bitstream conformance that the following constraints hold:
+**Note:** The missing entries in these tables (for example level 2.2 and 7.0) represent
+levels that are not yet defined.
+{:.alert .alert-info }
+
+When level is contained in these tables,
+it is a requirement of bitstream conformance that the following constraints hold:
 
   * UpscaledWidth * FrameHeight is less than or equal to MaxPicSize
   
@@ -148,9 +180,9 @@ These constraints make use of the following variables:
   
 If scalability_mode_idc is not present or equal to a reserved value, then TemporalParallelNum and TemporalParallelDen are defined to be equal to 1.
 
-Otherwise, if scalabilty_mode_idc is not equal to SCALABILITY_SS, TemporalParallelDen is defined as 1 and TemporalParallelNum is defined as (1 \<\< ( TemporalLayers - 1 )) where TemporalLayers is the number of temporal layers as defined in the semantics for scalability_mode_idc.
+Otherwise, if scalability_mode_idc is not equal to SCALABILITY_SS, TemporalParallelDen is defined as 1 and TemporalParallelNum is defined as (1 \<\< ( TemporalLayers - 1 )) where TemporalLayers is the number of temporal layers as defined in the semantics for scalability_mode_idc.
 
-Otherwise (scalabilty_mode_idc is equal to SCALABILITY_SS), TemporalParallelNum and TemporalParallelDen are defined as follows:
+Otherwise (scalability_mode_idc is equal to SCALABILITY_SS), TemporalParallelNum and TemporalParallelDen are defined as follows:
 
 ~~~~~ c
 NumIndependent = 0
@@ -168,4 +200,18 @@ for ( i = 0; i < temporal_group_size; i++ ) {
 TemporalParallelNum = temporal_group_size
 TemporalParallelDen = temporal_group_size - NumIndependent
 ~~~~~
+
+If level is equal to 31 (mapped to the still picture level), then it is a requirement of bitstream conformance that the following constraints hold:
+
+  * FrameWidth is less than or equal to 65536
+  
+  * FrameHeight is less than or equal to 65536
+  
+  * TileWidth is less than or equal to 4096 for each tile
+  
+  * TileWidth * TileHeight is less than or equal to 4096 * 2304 for each tile
+  
+  * CroppedTileWidth is greater than or equal to 8 for each tile
+  
+  * CroppedTileHeight is greater than or equal to 8 for each tile
 
