@@ -67,44 +67,51 @@ TODO there are 32 levels but the level syntax element is only 4 bits long.
 
 The level defines constraints on the bitstream as specified in the following tables:
 
-| Level  | MaxPicSize | MaxHSize | MaxVSize | MaxDisplayRate | MaxDecodeRate
-| ------ | ---------- | -------- | -------- | -------------- | -------------
-| 2.0    | 512*288    | 512*4    | 288*4    | 4,423,680      | MaxDisplayRate * 1.25
-| 2.1    | 704*396    | 704*4    | 396*4    | 8,363,520      | MaxDisplayRate * 1.25
-| 3.0    | 1088*612   | 1088*4   | 612*4    | 19,975,680     | MaxDisplayRate * 1.25
-| 3.1    | 1376*774   | 1376*4   | 774*4    | 31,950,720     | MaxDisplayRate * 1.25
-| 4.0    | 2048*1152  | 2048*3   | 1152*3   | 70,778,880     | MaxDisplayRate * 1.10
-| 4.1    | 2048*1152  | 2048*3   | 1152*3   | 141,557,760    | MaxDisplayRate * 1.10
-| 5.0    | 4096*2176  | 4096*2   | 2176*2   | 267,386,880    | 273,715,200
-| 5.1    | 4096*2176  | 4096*2   | 2176*2   | 534,773,760    | 547,430,400
-| 5.2    | 4096*2176  | 4096*2   | 2176*2   | 1,069,547,520  | 1,094,860,800
-| 5.3    | 4096*2176  | 4096*2   | 2176*2   | 1,069,547,520  | 1,176,502,272
-| 6.0    | 8192*4352  | 8192*2   | 4352*2   | 1,069,547,520  | 1,176,502,272
-| 6.1    | 8192*4352  | 8192*2   | 4352*2   | 2,139,095,040  | 2,189,721,600
-| 6.2    | 8192*4352  | 8192*2   | 4352*2   | 4,278,190,080  | 4,379,443,200
-| 6.3    | 8192*4352  | 8192*2   | 4352*2   | 4,278,190,080  | 4,706,009,088
-{:.table .table-sm .table-bordered }
-
-| Level  | MaxHdrRate | MainMbps | HighMbps | MinCompBasis | MaxTiles | MaxTileCols | Example
-| ------ | ---------- | -------- | -------- | ------------ | -------- | ----------- | -------
-| 2.0    | 150        | 1.5      | -        | 2            | 8        | 4           | 426x240@30fps
-| 2.1    | 150        | 3.0      | -        | 2            | 8        | 4           | 640x360@30fps
-| 3.0    | 150        | 6.0      | -        | 2            | 16       | 6           | 854x480@30fps
-| 3.1    | 150        | 10.0     | -        | 2            | 16       | 6           | 1280x720@30fps
-| 4.0    | 300        | 12.0     | 30.0     | 4            | 32       | 8           | 1920x1080@30fps
-| 4.1    | 300        | 20.0     | 50.0     | 4            | 32       | 8           | 1920x1080@60fps
-| 5.0    | 300        | 27.0     | 100.0    | 6            | 64       | 8           | 3840x2160@30fps
-| 5.1    | 300        | 42.0     | 160.0    | 8            | 64       | 8           | 3840x2160@60fps
-| 5.2    | 300        | 60.0     | 240.0    | 8            | 64       | 8           | 3840x2160@120fps
-| 5.3    | 300        | 60.0     | 240.0    | 8            | 64       | 8           | 3840x2160@120fps
-| 6.0    | 300        | 60.0     | 240.0    | 8            | 128      | 16          | 7680x4320@30fps
-| 6.1    | 300        | 100.0    | 480.0    | 8            | 128      | 16          | 7680x4320@60fps
-| 6.2    | 300        | 160.0    | 800.0    | 8            | 128      | 16          | 7680x4320@120fps
-| 6.3    | 300        | 160.0    | 800.0    | 8            | 128      | 16          | 7680x4320@120fps
+| Level  | MaxPicSize | MaxHSize  | MaxVSize  | MaxDisplayRate | MaxDecodeRate
+|        | (Samples)  | (Samples) | (Samples) | (Samples/sec)  | (Samples/sec)
+| ------ | ---------- | --------- | --------- | -------------- | -------------
+| 2.0    | 147456     | 2048      | 1152      | 4,423,680      | 5,529,600
+| 2.1    | 278784     | 2816      | 1584      | 8,363,520      | 10454400
+| 3.0    | 665856     | 4352      | 2448      | 19,975,680     | 24969600
+| 3.1    | 1065024    | 5504      | 3096      | 31,950,720     | 39938400
+| 4.0    | 2359296    | 6144      | 3456      | 70,778,880     | 77856768
+| 4.1    | 2359296    | 6144      | 3456      | 141,557,760    | 155713536
+| 5.0    | 8912896    | 8192      | 4352      | 267,386,880    | 273,715,200
+| 5.1    | 8912896    | 8192      | 4352      | 534,773,760    | 547,430,400
+| 5.2    | 8912896    | 8192      | 4352      | 1,069,547,520  | 1,094,860,800
+| 5.3    | 8912896    | 8192      | 4352      | 1,069,547,520  | 1,176,502,272
+| 6.0    | 35651584   | 16384     | 8704      | 1,069,547,520  | 1,176,502,272
+| 6.1    | 35651584   | 16384     | 8704      | 2,139,095,040  | 2,189,721,600
+| 6.2    | 35651584   | 16384     | 8704      | 4,278,190,080  | 4,379,443,200
+| 6.3    | 35651584   | 16384     | 8704      | 4,278,190,080  | 4,706,009,088
 {:.table .table-sm .table-bordered }
 
 **Note:** The missing entries in these tables (for example level 2.2 and 7.0) represent
 levels that are not yet defined.
+{:.alert .alert-info }
+
+| Level  | MaxHdrRate | MainMbps    | HighMbps    | MinCompBasis | MaxTiles | MaxTileCols | Example
+|        | (/sec)     | (MBits/sec) | (MBits/sec) |              |          |             | 
+| ------ | ---------- | ----------- | ----------- | ------------ | -------- | ----------- | -------
+| 2.0    | 150        | 1.5         | -           | 2            | 8        | 4           | 426x240@30fps
+| 2.1    | 150        | 3.0         | -           | 2            | 8        | 4           | 640x360@30fps
+| 3.0    | 150        | 6.0         | -           | 2            | 16       | 6           | 854x480@30fps
+| 3.1    | 150        | 10.0        | -           | 2            | 16       | 6           | 1280x720@30fps
+| 4.0    | 300        | 12.0        | 30.0        | 4            | 32       | 8           | 1920x1080@30fps
+| 4.1    | 300        | 20.0        | 50.0        | 4            | 32       | 8           | 1920x1080@60fps
+| 5.0    | 300        | 27.0        | 100.0       | 6            | 64       | 8           | 3840x2160@30fps
+| 5.1    | 300        | 42.0        | 160.0       | 8            | 64       | 8           | 3840x2160@60fps
+| 5.2    | 300        | 60.0        | 240.0       | 8            | 64       | 8           | 3840x2160@120fps
+| 5.3    | 300        | 60.0        | 240.0       | 8            | 64       | 8           | 3840x2160@120fps
+| 6.0    | 300        | 60.0        | 240.0       | 8            | 128      | 16          | 7680x4320@30fps
+| 6.1    | 300        | 100.0       | 480.0       | 8            | 128      | 16          | 7680x4320@60fps
+| 6.2    | 300        | 160.0       | 800.0       | 8            | 128      | 16          | 7680x4320@120fps
+| 6.3    | 300        | 160.0       | 800.0       | 8            | 128      | 16          | 7680x4320@120fps
+{:.table .table-sm .table-bordered }
+
+**Note:** Examples are given for non-scalable cases, but the constraints also apply to scalable
+streams.  For example, a 60fps spatial scalable stream with a base layer at 960x540, and an
+enhancement layer at 1920x1080 should be labelled as level 4.1 (assuming the other constraints, such as bitrate, are met).
 {:.alert .alert-info }
 
 When level is contained in these tables,
@@ -148,7 +155,6 @@ it is a requirement of bitstream conformance that the following constraints hold
   {:.alert .alert-info }
   
 These constraints make use of the following variables:
-
 
   * TileWidth is defined as (MiColEnd - MiColStart) * MI_SIZE
   
@@ -214,4 +220,32 @@ If level is equal to 31 (mapped to the still picture level), then it is a requir
   * CroppedTileWidth is greater than or equal to 8 for each tile
   
   * CroppedTileHeight is greater than or equal to 8 for each tile
+  
+
+The buffer model is used to define additional conformance requirements.
+
+These requirements depend on the following level and profile dependent variables:
+
+  * If high_tier is equal to 0, MaxBitrate is equal to MainMbps multiplied by 1,000,000
+  
+  * Otherwise (high_tier is equal to 1), MaxBitrate is equal to HighMbps multiplied by 1,000,000
+  
+  * MaxBufferSize is equal to MaxBitrate multiplied by 1 second
+  
+  * BufferPoolMaxSize is equal to 10
+  
+  * If seq_profile is equal to 0, BitrateProfileFactor is equal to 1.0
+  
+  * If seq_profile is equal to 1, BitrateProfileFactor is equal to 2.0
+  
+  * If seq_profile is equal to 2, BitrateProfileFactor is equal to 3.0
+  
+The additional requirements in the buffer model are:
+
+  * BitRate[ op ] shall be less than or equal to the MaxBitRate * BitrateProfileFactor
+    defined in the level constraints for the level associated with operating point op.
+    
+  * BufferSize[ op ] shall be less or equal the MaxBufferSize * BitrateProfileFactor
+    defined in the level constraints for the level associated with operating point op.
+
 
