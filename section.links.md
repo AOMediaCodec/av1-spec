@@ -15,6 +15,7 @@
 [section 7.17.2]: #self-guided-filter-process
 [section 6.10.31]: #residual-semantics
 [section 6.8.7]: #superres-params-semantics
+[section B]: #annex-b-nominal-bitstream-interchange-format
 [section A]: #annex-a-profiles-and-levels
 [section 5.10.52]: #is-inside-filter-region-function
 [section 7.11.2.9]: #intra-edge-filter-strength-selection-process
@@ -225,6 +226,7 @@
 [section 7.9.3]: #get-mv-projection-process
 [section 7.13.2.14]: #inverse-identity-transform-32-process
 [section 7.13]: #inverse-transform-process
+[section A.4]: #decoder-conformance
 [section 6]: #syntax-structures-semantics
 [section 5.8.18]: #loop-filter-delta-parameters-syntax
 [section 7.11.2.11]: #intra-edge-upsample-process
@@ -357,7 +359,6 @@
 [section 5]: #syntax-structures
 [section 8.2]: #parsing-process-for-symbol-decoder
 [section 5.8.32]: #temporal-point-info-syntax
-[section B]: #annex-b-bitstream-format
 [section 5.10.6]: #mode-info-syntax
 [section 7.13.2.10]: #inverse-walsh-hadamard-transform-process
 [section 5.2.5]: #byte-alignment-syntax
