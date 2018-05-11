@@ -109,9 +109,12 @@ levels that are not yet defined.
 | 6.3    | 300        | 160.0       | 800.0       | 8            | 128      | 16          | 7680x4320@120fps
 {:.table .table-sm .table-bordered }
 
-**Note:** Examples are given for non-scalable cases, but the constraints also apply to scalable
-streams.  For example, a 60fps spatial scalable stream with a base layer at 960x540, and an
-enhancement layer at 1920x1080 should be labelled as level 4.1 (assuming the other constraints, such as bitrate, are met).
+**Note:** Examples are given for non-scalable cases, but the constraints also apply to
+each operating point of a scalable
+stream.  For example, consider a 60fps spatial scalable stream with a base layer at 960x540, and an
+enhancement layer at 1920x1080.
+The operating point containing just the base layer may be labelled as level 3.0,
+while the operating point containing both the base and enhancement layer may be labelled as level 4.1.
 {:.alert .alert-info }
 
 When the mapped level is contained in these tables,
