@@ -1,25 +1,23 @@
-## Annex B: Bitstream format
+## Annex B: Nominal bitstream interchange format
 {:.no_count}
-
 
 ### Overview
 {:.no_count}
 
-An AV1 bitstream consists of a number of OBUs that are typically held within
+An AV1 bitstream consists of a number of OBUs that may typically be held within
 a container format alongside audio and timing information.
 
-This annex defines a simple method of packing OBUs into a bitstream format.
+This annex defines one simple method of packing OBUs into a bitstream format,
+other methods are also allowed.
 
 ### Bitstream syntax
 {:.no_count}
 
 | --------------------------------------------------------- | ---------------- |
-| bitstream( fileSz ) {                                     | **Type**
-|    while ( fileSz > 0 ) {
+| bitstream( ) {                                            | **Type**
+|    while ( more_data_in_bitstream() ) {
 |        @@temporal_unit_size                               | leb128()
-|        fileSz -= Leb128Bytes
 |        temporal_unit( temporal_unit_size )
-|        fileSz -= temporal_unit_size
 |    }
 |}
 {:.syntax }
@@ -50,8 +48,9 @@ This annex defines a simple method of packing OBUs into a bitstream format.
 ### Bitstream semantics
 {:.no_count}
 
-**fileSz** specifies the number of bytes in the entire bitstream and is provided by
-external means.
+**more_data_in_bitstream()** is a system-dependent method of determining whether
+the end of the bitstream has been reached.  It returns 1 when there is more data
+to be read, or 0 when the end of the bitstream has been reached.
 
 **temporal_unit_size** specifies the length in bytes of the next temporal unit.
 
@@ -62,7 +61,7 @@ external means.
 **Note:** It is allowed for the OBU to set obu_has_size_field equal to 1 to indicate
 that the obu_size syntax element is present.  In this case, the decoding process
 assumes that obu_size and obu_length are set consistently.
-If obu_size and obu_length are both present, but inconsistent, then the packed file
+If obu_size and obu_length are both present, but inconsistent, then the packed bitstream
 is deemed invalid.
 {:.alert .alert-info }
 
