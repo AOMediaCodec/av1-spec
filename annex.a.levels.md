@@ -89,23 +89,23 @@ The level defines constraints on the bitstream as specified in the following tab
 levels that are not yet defined.
 {:.alert .alert-info }
 
-| Level  | MaxHdrRate | MainMbps    | HighMbps    | MinCompBasis | MaxTiles | MaxTileCols | Example
-|        | (/sec)     | (MBits/sec) | (MBits/sec) |              |          |             | 
-| ------ | ---------- | ----------- | ----------- | ------------ | -------- | ----------- | -------
-| 2.0    | 150        | 1.5         | -           | 2            | 8        | 4           | 426x240@30fps
-| 2.1    | 150        | 3.0         | -           | 2            | 8        | 4           | 640x360@30fps
-| 3.0    | 150        | 6.0         | -           | 2            | 16       | 6           | 854x480@30fps
-| 3.1    | 150        | 10.0        | -           | 2            | 16       | 6           | 1280x720@30fps
-| 4.0    | 300        | 12.0        | 30.0        | 4            | 32       | 8           | 1920x1080@30fps
-| 4.1    | 300        | 20.0        | 50.0        | 4            | 32       | 8           | 1920x1080@60fps
-| 5.0    | 300        | 27.0        | 100.0       | 6            | 64       | 8           | 3840x2160@30fps
-| 5.1    | 300        | 42.0        | 160.0       | 8            | 64       | 8           | 3840x2160@60fps
-| 5.2    | 300        | 60.0        | 240.0       | 8            | 64       | 8           | 3840x2160@120fps
-| 5.3    | 300        | 60.0        | 240.0       | 8            | 64       | 8           | 3840x2160@120fps
-| 6.0    | 300        | 60.0        | 240.0       | 8            | 128      | 16          | 7680x4320@30fps
-| 6.1    | 300        | 100.0       | 480.0       | 8            | 128      | 16          | 7680x4320@60fps
-| 6.2    | 300        | 160.0       | 800.0       | 8            | 128      | 16          | 7680x4320@120fps
-| 6.3    | 300        | 160.0       | 800.0       | 8            | 128      | 16          | 7680x4320@120fps
+| Level  | MaxHeaderRate | MainMbps    | HighMbps    | MinCompBasis | MaxTiles | MaxTileCols | Example
+|        | (/sec)        | (MBits/sec) | (MBits/sec) |              |          |             | 
+| ------ | ------------- | ----------- | ----------- | ------------ | -------- | ----------- | -------
+| 2.0    | 150           | 1.5         | -           | 2            | 8        | 4           | 426x240@30fps
+| 2.1    | 150           | 3.0         | -           | 2            | 8        | 4           | 640x360@30fps
+| 3.0    | 150           | 6.0         | -           | 2            | 16       | 6           | 854x480@30fps
+| 3.1    | 150           | 10.0        | -           | 2            | 16       | 6           | 1280x720@30fps
+| 4.0    | 300           | 12.0        | 30.0        | 4            | 32       | 8           | 1920x1080@30fps
+| 4.1    | 300           | 20.0        | 50.0        | 4            | 32       | 8           | 1920x1080@60fps
+| 5.0    | 300           | 27.0        | 100.0       | 6            | 64       | 8           | 3840x2160@30fps
+| 5.1    | 300           | 42.0        | 160.0       | 8            | 64       | 8           | 3840x2160@60fps
+| 5.2    | 300           | 60.0        | 240.0       | 8            | 64       | 8           | 3840x2160@120fps
+| 5.3    | 300           | 60.0        | 240.0       | 8            | 64       | 8           | 3840x2160@120fps
+| 6.0    | 300           | 60.0        | 240.0       | 8            | 128      | 16          | 7680x4320@30fps
+| 6.1    | 300           | 100.0       | 480.0       | 8            | 128      | 16          | 7680x4320@60fps
+| 6.2    | 300           | 160.0       | 800.0       | 8            | 128      | 16          | 7680x4320@120fps
+| 6.3    | 300           | 160.0       | 800.0       | 8            | 128      | 16          | 7680x4320@120fps
 {:.table .table-sm .table-bordered }
 
 **Note:** Examples are given for non-scalable cases, but the constraints also apply to
@@ -129,7 +129,7 @@ it is a requirement of bitstream conformance that the following constraints hold
   
   * TotalDecodedLumaSampleRate (defined below) is less than or equal to MaxDecodeRate
   
-  * NumFrameHeadersSec (defined below) is less than or equal to MaxHdrRate 
+  * NumFrameHeadersSec (defined below) is less than or equal to MaxHeaderRate 
   
   * The number of tiles per second is less than or equal to MaxTiles * 120
   
