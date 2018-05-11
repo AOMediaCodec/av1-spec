@@ -58,7 +58,7 @@ The following table defines the mapping from the syntax element (which takes int
 | 22             | 7.2
 | 23             | 7.3
 | 24-30          | Reserved
-| 31             | Still picture
+| 31             | Maximum parameters
 {:.table .table-sm .table-bordered }
 
 TODO there is currently no syntax element that specifies if the level is high or not.
@@ -114,7 +114,7 @@ streams.  For example, a 60fps spatial scalable stream with a base layer at 960x
 enhancement layer at 1920x1080 should be labelled as level 4.1 (assuming the other constraints, such as bitrate, are met).
 {:.alert .alert-info }
 
-When level is contained in these tables,
+When the mapped level is contained in these tables,
 it is a requirement of bitstream conformance that the following constraints hold:
 
   * UpscaledWidth * FrameHeight is less than or equal to MaxPicSize
@@ -207,19 +207,11 @@ TemporalParallelNum = temporal_group_size
 TemporalParallelDen = temporal_group_size - NumIndependent
 ~~~~~
 
-If level is equal to 31 (mapped to the still picture level), then it is a requirement of bitstream conformance that the following constraints hold:
-
-  * FrameWidth is less than or equal to 65536
+If level is equal to 31 (indicating the maximum parameters level), then there are no level-based constraints on the bitstream.
   
-  * FrameHeight is less than or equal to 65536
-  
-  * TileWidth is less than or equal to 4096 for each tile
-  
-  * TileWidth * TileHeight is less than or equal to 4096 * 2304 for each tile
-  
-  * CroppedTileWidth is greater than or equal to 8 for each tile
-  
-  * CroppedTileHeight is greater than or equal to 8 for each tile
+**Note:** The maximum parameters level should only be set for bitstreams that do not conform to any other level.
+Typically this would be used for large resolution still images. 
+{:.alert .alert-info }
   
 
 The buffer model is used to define additional conformance requirements.
@@ -248,4 +240,15 @@ The additional requirements in the buffer model are:
   * BufferSize[ op ] shall be less or equal the MaxBufferSize * BitrateProfileFactor
     defined in the level constraints for the level associated with operating point op.
 
+### Decoder Conformance
 
+A level X.Y compliant decoder must be able to decode all bitstreams that conform to that level.
+
+**Note:** If the level of a bitstream is equal to 31 (indicating the maximum parameters level),
+the decoder should examine the properties of the bitstream and decide whether to decode it or not.
+There is no assurance that all pictures will be decoded.
+A decoder would typically decode pictures up to a certain maximum uncompressed picture size
+(or maximum compressed picture size or maximum width or maximum tile size)
+that the decoder maker considers sufficiently extreme for their use case,
+and not decode anything bigger than that. 
+{:.alert .alert-info }
