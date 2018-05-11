@@ -258,7 +258,7 @@
 [section 7.9.1.10]: #lower-precision-process
 [section 6.9.19]: #is-inter-semantics
 [section 7.10.2.6]: #resolve-divisor-process
-[section C]: #annex-c-error-resilience-behaviour-informative-
+[section C]: #annex-c-error-resilience-behavior-informative-
 [section 6.6.2]: #metadata-high-dynamic-range-content-light-level-semantics
 [section 5.9.16]: #var-tx-size-syntax
 [section 4.5]: #assignment

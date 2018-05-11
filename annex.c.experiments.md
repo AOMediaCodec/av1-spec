@@ -1,4 +1,4 @@
-## Annex C: Error resilience behaviour (informative) 
+## Annex C: Error resilience behavior (informative) 
 {:.no_count}
 
 This annex defines additional starting points for decoding.
