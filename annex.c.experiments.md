@@ -10,13 +10,13 @@ It is recommended that decoders should support these starting points.
 
 The intention is to allow decoders to start even when the decoded output may be corrupted.
 
-A property of a bitstream is defined in [section C.1][].
+A property of a bitstream is defined in [section C.2][].
 
-The recommendations are expressed in [section C.2][].
+The recommendations are expressed in [section C.3][].
 
-The consequences for encoders are specified in [section C.3][].
+The consequences for encoders are specified in [section C.4][].
 
-The consequences for decoders are specified in [section C.4][].
+The consequences for decoders are specified in [section C.5][].
 
 ### Definition of processable frames
 
@@ -31,7 +31,7 @@ In particular, a frame that is processable will have correct values for:
   
   * The size, bitdepth, subsampling structure of any output frames
   
-  * All values written in the reference frame update process specified in [section 7.19][], except for the contents of FrameStore
+  * All values written in the reference frame update process specified in [section 7.20][], except for the contents of FrameStore
   (which may or may not be correct).
 
 In most codecs, this concept is unnecessary because it is trivial to determine if frames are processable (either because all frames are automatically processable, or because the conditions are straightforward).
