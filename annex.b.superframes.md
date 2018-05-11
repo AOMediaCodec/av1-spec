@@ -1,4 +1,4 @@
-## Annex B: Bitstream Format
+## Annex B: Bitstream format
 {:.no_count}
 
 
@@ -10,7 +10,7 @@ a container format alongside audio and timing information.
 
 This annex defines a simple method of packing OBUs into a bitstream format.
 
-### Bitstream Syntax
+### Bitstream syntax
 {:.no_count}
 
 | --------------------------------------------------------- | ---------------- |
