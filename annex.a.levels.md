@@ -151,7 +151,7 @@ it is a requirement of bitstream conformance that the following constraints hold
   
   * CroppedTileHeight (defined below) is greater than or equal to 8 for each tile
   
-  * MaxTileSizeInLumaSamples * NumFrameHeadersSec * TemporalParallelDen)/TemporalParallelNum (defined below) is less than or equal to 588,251,136 (where this number is the decode luma sample rate of 4096x2176 * 60fps * 1.1))
+  * MaxTileSizeInLumaSamples * NumFrameHeadersSec * TemporalParallelDen/TemporalParallelNum (defined below) is less than or equal to 588,251,136 (where this number is the decode luma sample rate of 4096x2176 * 60fps * 1.1)
   
   **Note:** The purpose of this constraint is to ensure that for decode luma sample rates above 4K60 there is sufficient parallelism for decoder implementations. Parallelism can be chosen by the encoder as either tile level parallelism or temporal layer parallelism or a combination provided the above constraint holds. The constraint has no effect on levels 5.1 and below.
   {:.alert .alert-info }
@@ -176,9 +176,11 @@ These constraints make use of the following variables:
   
   * CompressedSize is defined for each frame as the total bytes in the OBUs related to this frame (OBU_FRAME, OBU_FRAME_HEADER, OBU_METADATA, OBU_TILE_GROUP), minus 128 (to allow for overhead of metadata and header data)
   
-  * If mono_chrome is equal to 1, ChromaOverhead is set equal to 1, otherwise ChromaOverhead is set equal to (1+2/((1+subsampling_x)*(1+subsampling_y))) (Note this can be a fraction)
+  * If mono_chrome is equal to 1, 
+    ChromaOverhead (representing the number of chroma samples for every 4 luma samples) is set equal to 0, otherwise
+    ChromaOverhead is set equal to 8 \>\> (subsampling_x + subsampling_y)
   
-  * UnCompressedSize is defined as MaxPicSize * BitDepth * ChromaOverhead / 8
+  * UnCompressedSize is defined as MaxPicSize * BitDepth * (4 + ChromaOverhead) / 32
   
   * SpeedAdj is defined as TotalDecodedLumaSampleRate / MaxDisplayRate
   
