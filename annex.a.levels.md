@@ -18,11 +18,10 @@ There are three named profiles:
   * "High" compliant decoders must be able to decode streams with seq_profile less than or equal to 1.
   * "Professional" compliant decoders must be able to decode streams with seq_profile less than or equal to 2.
   
-**Note:** Main profile consists of YUV 4:2:0 or monochrome sequences with bit depth equal to 8 or 10.
-High profile consists of all main profile sequences plus YUV 4:4:4 sequences with bit depth equal to 8 or 10 (monochrome is not allowed when seq_profile=1).
-Professional profile consists of all high and main profile sequences plus YUV 4:2:2 sequences with bit depth equal to 8 or 10 or 12,
-4:2:0 sequences with bit depth equal to 12,
-4:4:4 sequences with bit depth equal to 12, and monochrome sequences with bit depth equal to 12.
+**Note:** The Main profile supports YUV 4:2:0 or monochrome bitstreams with bit depth equal to 8 or 10.
+The High profile further adds support for 4:4:4 bitstreams with the same bit depth constraints.
+Finally, the Professional profile extends support over the High profile to also
+bitstreams with bit depth equal to 12, and also adds support for the 4:2:2 video format.
 {:.alert .alert-info }
 
 ### Levels
