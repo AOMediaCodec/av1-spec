@@ -26,43 +26,43 @@ bitstreams with bit depth equal to 12, and also adds support for the 4:2:2 video
 
 ### Levels
 
-Each operating point contains a syntax element level.
+Each operating point contains a syntax element seq_level_idx.
 
 The following table defines the mapping from the syntax element (which takes integer values) to the defined levels (which use a X.Y format):
 
-| Value of level | Mapped level
-| -------------- | --------------
-| 0              | 2.0
-| 1              | 2.1
-| 2              | 2.2
-| 3              | 2.3
-| 4              | 3.0
-| 5              | 3.1
-| 6              | 3.2
-| 7              | 3.3
-| 8              | 4.0
-| 9              | 4.1
-| 10             | 4.2
-| 11             | 4.3
-| 12             | 5.0
-| 13             | 5.1
-| 14             | 5.2
-| 15             | 5.3
-| 16             | 6.0
-| 17             | 6.1
-| 18             | 6.2
-| 19             | 6.3
-| 20             | 7.0
-| 21             | 7.1
-| 22             | 7.2
-| 23             | 7.3
-| 24-30          | Reserved
-| 31             | Maximum parameters
+| Value of seq_level_idx | Level
+| ---------------------- | --------------
+| 0                      | 2.0
+| 1                      | 2.1
+| 2                      | 2.2
+| 3                      | 2.3
+| 4                      | 3.0
+| 5                      | 3.1
+| 6                      | 3.2
+| 7                      | 3.3
+| 8                      | 4.0
+| 9                      | 4.1
+| 10                     | 4.2
+| 11                     | 4.3
+| 12                     | 5.0
+| 13                     | 5.1
+| 14                     | 5.2
+| 15                     | 5.3
+| 16                     | 6.0
+| 17                     | 6.1
+| 18                     | 6.2
+| 19                     | 6.3
+| 20                     | 7.0
+| 21                     | 7.1
+| 22                     | 7.2
+| 23                     | 7.3
+| 24-30                  | Reserved
+| 31                     | Maximum parameters
 {:.table .table-sm .table-bordered }
 
-TODO there is currently no syntax element that specifies if the level is high or not.
+TODO there is currently no syntax element that specifies if the tier is high or not.
 
-TODO there are 32 levels but the level syntax element is only 4 bits long.
+TODO there are 32 levels but the seq_level_idx syntax element is only 4 bits long.
 
 The level defines variables as specified in the following tables:
 
@@ -214,7 +214,7 @@ it is a requirement of bitstream conformance that the following constraints hold
   The constraint has no effect on levels 5.1 and below.
   {:.alert .alert-info }
 
-If level is equal to 31 (indicating the maximum parameters level), then there are no level-based constraints on the bitstream.
+If seq_level_idx is equal to 31 (indicating the maximum parameters level), then there are no level-based constraints on the bitstream.
   
 **Note:** The maximum parameters level should only be set for bitstreams that do not conform to any other level.
 Typically this would be used for large resolution still images. 
