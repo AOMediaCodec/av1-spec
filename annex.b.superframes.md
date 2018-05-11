@@ -5,7 +5,7 @@
 ### Overview
 {:.no_count}
 
-An AV1 bitstream consists of a number of OBUs that are normally held within
+An AV1 bitstream consists of a number of OBUs that are typically held within
 a container format alongside audio and timing information.
 
 This annex defines a simple method of packing OBUs into a bitstream format.
