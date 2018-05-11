@@ -149,9 +149,9 @@ it is a requirement of bitstream conformance that the following constraints hold
   
   * CroppedTileHeight (defined below) is greater than or equal to 8 for each tile
   
-  * MaxTileSizeInLumaSamples * NumFrameHeadersSec * TemporalParallelDen)/TemporalParallelNum (defined below) is less than or equal to 588,251,136 (where this number is the decode pixel rate of 4096x2176 * 60fps * 1.1))
+  * MaxTileSizeInLumaSamples * NumFrameHeadersSec * TemporalParallelDen)/TemporalParallelNum (defined below) is less than or equal to 588,251,136 (where this number is the decode luma sample rate of 4096x2176 * 60fps * 1.1))
   
-  **Note:** The purpose of this constraint is to ensure that for decode pixel rates above 4K60 there is sufficient parallelism for decoder implementations. Parallelism can be chosen by the encoder as either tile level parallelism or temporal layer parallelism or a combination provided the above constraint holds. The constraint has no effect on levels 5.1 and below.
+  **Note:** The purpose of this constraint is to ensure that for decode luma sample rates above 4K60 there is sufficient parallelism for decoder implementations. Parallelism can be chosen by the encoder as either tile level parallelism or temporal layer parallelism or a combination provided the above constraint holds. The constraint has no effect on levels 5.1 and below.
   {:.alert .alert-info }
   
 These constraints make use of the following variables:
