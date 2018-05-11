@@ -64,7 +64,7 @@ TODO there is currently no syntax element that specifies if the level is high or
 
 TODO there are 32 levels but the level syntax element is only 4 bits long.
 
-The level defines constraints on the bitstream as specified in the following tables:
+The level defines variables as specified in the following tables:
 
 | Level  | MaxPicSize | MaxHSize  | MaxVSize  | MaxDisplayRate | MaxDecodeRate
 |        | (Samples)  | (Samples) | (Samples) | (Samples/sec)  | (Samples/sec)
@@ -116,47 +116,7 @@ The operating point containing just the base layer may be labelled as level 3.0,
 while the operating point containing both the base and enhancement layer may be labelled as level 4.1.
 {:.alert .alert-info }
 
-When the mapped level is contained in these tables,
-it is a requirement of bitstream conformance that the following constraints hold:
-
-  * UpscaledWidth * FrameHeight is less than or equal to MaxPicSize
-  
-  * UpscaledWidth is less than or equal to MaxHSize
-  
-  * FrameHeight is less than or equal to MaxVSize
-  
-  * TotalDisplayLumaSampleRate (defined below) is less than or equal to MaxDisplayRate
-  
-  * TotalDecodedLumaSampleRate (defined below) is less than or equal to MaxDecodeRate
-  
-  * NumFrameHeadersSec (defined below) is less than or equal to MaxHeaderRate 
-  
-  * The number of tiles per second is less than or equal to MaxTiles * 120
-  
-  * NumTiles is less than or equal to MaxTiles
-  
-  * TileCols is less than or equal to MaxTileCols
-  
-  * CompressedRatio (defined below) is greater than or equal to MinPicCompressRatio (defined below)
-  
-  * TileWidth (defined below) is less than or equal to 4096 for each tile
-  
-  * TileWidth * TileHeight is less than or equal to 4096 * 2304 for each tile
-  
-  * FrameWidth is greater than or equal to 16
-  
-  * FrameHeight is greater than or equal to 16
-  
-  * CroppedTileWidth (defined below) is greater than or equal to 8 for each tile
-  
-  * CroppedTileHeight (defined below) is greater than or equal to 8 for each tile
-  
-  * MaxTileSizeInLumaSamples * NumFrameHeadersSec * TemporalParallelDen/TemporalParallelNum (defined below) is less than or equal to 588,251,136 (where this number is the decode luma sample rate of 4096x2176 * 60fps * 1.1)
-  
-  **Note:** The purpose of this constraint is to ensure that for decode luma sample rates above 4K60 there is sufficient parallelism for decoder implementations. Parallelism can be chosen by the encoder as either tile level parallelism or temporal layer parallelism or a combination provided the above constraint holds. The constraint has no effect on levels 5.1 and below.
-  {:.alert .alert-info }
-  
-These constraints make use of the following variables:
+The bitstream constraints depend on the variables in the table, and additional variables derived as follows:
 
   * TileWidth is defined as (MiColEnd - MiColStart) * MI_SIZE
   
@@ -211,6 +171,49 @@ TemporalParallelNum = temporal_group_size
 TemporalParallelDen = temporal_group_size - NumIndependent
 ~~~~~
 
+When the mapped level is contained in the tables above,
+it is a requirement of bitstream conformance that the following constraints hold:
+
+  * UpscaledWidth * FrameHeight is less than or equal to MaxPicSize
+
+  * UpscaledWidth is less than or equal to MaxHSize
+
+  * FrameHeight is less than or equal to MaxVSize
+
+  * TotalDisplayLumaSampleRate is less than or equal to MaxDisplayRate
+
+  * TotalDecodedLumaSampleRate is less than or equal to MaxDecodeRate
+
+  * NumFrameHeadersSec is less than or equal to MaxHeaderRate
+
+  * The number of tiles per second is less than or equal to MaxTiles * 120
+
+  * NumTiles is less than or equal to MaxTiles
+
+  * TileCols is less than or equal to MaxTileCols
+
+  * CompressedRatio is greater than or equal to MinPicCompressRatio
+
+  * TileWidth is less than or equal to 4096 for each tile
+
+  * TileWidth * TileHeight is less than or equal to 4096 * 2304 for each tile
+
+  * FrameWidth is greater than or equal to 16
+
+  * FrameHeight is greater than or equal to 16
+
+  * CroppedTileWidth is greater than or equal to 8 for each tile
+
+  * CroppedTileHeight is greater than or equal to 8 for each tile
+
+  * MaxTileSizeInLumaSamples * NumFrameHeadersSec * TemporalParallelDen/TemporalParallelNum is less than or equal to 588,251,136 (where this number is the decode luma sample rate of 4096x2176 * 60fps * 1.1)
+
+  **Note:** The purpose of this constraint is to ensure that for decode luma sample rates above 4K60 there is
+  sufficient parallelism for decoder implementations. Parallelism can be chosen by the encoder as either tile
+  level parallelism or temporal layer parallelism or a combination provided the above constraint holds. 
+  The constraint has no effect on levels 5.1 and below.
+  {:.alert .alert-info }
+
 If level is equal to 31 (indicating the maximum parameters level), then there are no level-based constraints on the bitstream.
   
 **Note:** The maximum parameters level should only be set for bitstreams that do not conform to any other level.
@@ -223,24 +226,24 @@ The buffer model is used to define additional conformance requirements.
 These requirements depend on the following level and profile dependent variables:
 
   * If high_tier is equal to 0, MaxBitrate is equal to MainMbps multiplied by 1,000,000
-  
+
   * Otherwise (high_tier is equal to 1), MaxBitrate is equal to HighMbps multiplied by 1,000,000
-  
+
   * MaxBufferSize is equal to MaxBitrate multiplied by 1 second
-  
+
   * BufferPoolMaxSize is equal to 10
-  
+
   * If seq_profile is equal to 0, BitrateProfileFactor is equal to 1.0
-  
+
   * If seq_profile is equal to 1, BitrateProfileFactor is equal to 2.0
-  
+
   * If seq_profile is equal to 2, BitrateProfileFactor is equal to 3.0
   
 The additional requirements in the buffer model are:
 
   * BitRate[ op ] shall be less than or equal to the MaxBitRate * BitrateProfileFactor
     defined in the level constraints for the level associated with operating point op.
-    
+
   * BufferSize[ op ] shall be less or equal the MaxBufferSize * BitrateProfileFactor
     defined in the level constraints for the level associated with operating point op.
 
