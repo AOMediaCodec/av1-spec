@@ -59,7 +59,7 @@ external means.
 
 **obu_length** specifies the length in bytes of the next OBU.
 
-**Note:** It is legal for the OBU to set obu_has_size_field equal to 1 to indicate
+**Note:** It is allowed for the OBU to set obu_has_size_field equal to 1 to indicate
 that the obu_size syntax element is present.  In this case, the decoding process
 assumes that obu_size and obu_length are set consistently.
 If obu_size and obu_length are both present, but inconsistent, then the packed file

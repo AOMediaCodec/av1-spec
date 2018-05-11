@@ -2,7 +2,7 @@
 {:.no_count}
 
 
-### Overview
+### General
 {:.no_toc .no_count}
 
 Profiles and levels specify restrictions on the capabilities needed to decode the bitstreams.
@@ -10,7 +10,7 @@ Profiles and levels specify restrictions on the capabilities needed to decode th
 The profile specifies the bit depth and subsampling formats supported, while the level defines
 resolution and performance characteristics.
 
-#### Profiles
+### Profiles
 
 There are three named profiles:
 
@@ -25,7 +25,7 @@ Professional profile consists of all high and main profile sequences plus YUV 4:
 4:4:4 sequences with bit depth equal to 12, and monochrome sequences with bit depth equal to 12.
 {:.alert .alert-info }
 
-#### Levels
+### Levels
 
 Each operating point contains a syntax element level.
 

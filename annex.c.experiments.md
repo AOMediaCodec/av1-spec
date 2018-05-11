@@ -1,6 +1,8 @@
 ## Annex C: Error resilience behavior (informative) 
 {:.no_count}
 
+### General
+
 This annex defines additional starting points for decoding.
 
 It is recommended that decoders should support these starting points.
