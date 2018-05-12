@@ -28,7 +28,7 @@ bitstreams with bit depth equal to 12, and also adds support for the 4:2:2 video
 
 Each operating point contains a syntax element seq_level_idx.
 
-The following table defines the mapping from the syntax element (which takes integer values) to the defined levels (which use a X.Y format):
+The following table defines the mapping from the syntax element (which takes integer values) to the defined levels:
 
 | Value of seq_level_idx | Level
 | ---------------------- | --------------
@@ -59,6 +59,11 @@ The following table defines the mapping from the syntax element (which takes int
 | 24-30                  | Reserved
 | 31                     | Maximum parameters
 {:.table .table-sm .table-bordered }
+
+**Note:** The level uses a a X.Y format.
+X is equal to (seq_level_idx \>\> 2). 
+Y is given by (seq_level_idx & 3).
+{:.alert .alert-info }
 
 TODO there is currently no syntax element that specifies if the tier is high or not.
 
@@ -142,11 +147,14 @@ The bitstream constraints depend on the variables in the table, and additional v
   
   * UnCompressedSize is defined as MaxPicSize * BitDepth * (4 + ChromaOverhead) / 32
   
-  * SpeedAdj is defined as TotalDecodedLumaSampleRate / MaxDisplayRate
+  * SpeedAdj is defined as TotalDecodedLumaSampleRate ÷ MaxDisplayRate
   
   * MinPicCompressRatio defined as Max( 0.8, MinCompBasis * SpeedAdj * !still_picture )
   
-  * CompressedRatio is defined as UnCompressedSize / CompressedSize
+  * CompressedRatio is defined as UnCompressedSize ÷ CompressedSize
+  
+**Note:** The ÷ operator represents standard mathematical division (in contrast to the / operator which repesents integer division).
+{:.alert .alert-info }
   
 If scalability_mode_idc is not present or equal to a reserved value, then TemporalParallelNum and TemporalParallelDen are defined to be equal to 1.
 
@@ -219,7 +227,6 @@ If seq_level_idx is equal to 31 (indicating the maximum parameters level), then 
 **Note:** The maximum parameters level should only be set for bitstreams that do not conform to any other level.
 Typically this would be used for large resolution still images. 
 {:.alert .alert-info }
-  
 
 The buffer model is used to define additional conformance requirements.
 
