@@ -98,12 +98,12 @@
 [section 6.8.4]: #frame-size-semantics
 [section 5.10.29]: #read-compound-type-syntax
 [section 6.2]: #obu-semantics
-[section 6.8.23]: #skip-mode-params-semantics
+[section 6.8.22]: #skip-mode-params-semantics
 [section 6.7.2]: #metadata-private-data-semantics
 [section 9.3]: #conversion-tables
 [section 4.10.2]: #fn
 [section 3]: #symbols-and-abbreviated-terms
-[section 6.8.21]: #film-grain-params-semantics
+[section 6.8.20]: #film-grain-params-semantics
 [section 9.4]: #default-cdf-tables
 [section 7.15]: #cdef-process
 [section 6.10]: #tile-group-obu-semantics
@@ -124,7 +124,7 @@
 [section 5.10.30]: #get-mode-function
 [section 4.10.3]: #uvlc
 [section 4.5]: #bitwise-operators
-[section 6.8.24]: #frame-reference-mode-semantics
+[section 6.8.23]: #frame-reference-mode-semantics
 [section A.1]: #general-22
 [section 5.10.24]: #filter-intra-mode-info-syntax
 [section 7.11.3.6]: #setup-shear-process
@@ -156,7 +156,7 @@
 [section 7.6.4]: #encoder-consequences
 [section 7.11.2.5]: #dc-intra-prediction-process
 [section 5.10]: #tile-group-obu-syntax
-[section 6.8.25]: #temporal-point-info-semantics
+[section 6.8.24]: #temporal-point-info-semantics
 [section 6.9]: #frame-obu-semantics
 [section 6.8.5]: #render-size-semantics
 [section 7.3]: #large-scale-tile-decoding-process
@@ -258,7 +258,7 @@
 [section B.2]: #bitstream-syntax
 [section 7.13.2.6]: #inverse-adst4-process
 [section 5.10.3]: #clear-block-decoded-flags-function
-[section 6.8.22]: #tx-mode-semantics
+[section 6.8.21]: #tx-mode-semantics
 [section 6.10.37]: #palette-tokens-semantics
 [section 7.17.6]: #get-source-sample-process
 [section 5.4]: #sequence-header-obu-syntax
@@ -339,7 +339,6 @@
 [section 5.10.32]: #mv-component-syntax
 [section 6.10.12]: #quantizer-index-delta-semantics
 [section 5.10.9]: #read-segment-id-syntax
-[section 6.8.20]: #decode-uniform-semantics
 [section 7.14.6.4]: #wide-filter-process
 [section 8.2.2]: #initialization-process-for-symbol-decoder
 [section 5.5]: #temporal-delimiter-obu-syntax
