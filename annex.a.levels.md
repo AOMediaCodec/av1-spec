@@ -67,8 +67,6 @@ Y is given by (seq_level_idx & 3).
 
 TODO there is currently no syntax element that specifies if the tier is high or not.
 
-TODO there are 32 levels but the seq_level_idx syntax element is only 4 bits long.
-
 The level defines variables as specified in the following tables:
 
 | Level  | MaxPicSize | MaxHSize  | MaxVSize  | MaxDisplayRate | MaxDecodeRate
