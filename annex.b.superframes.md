@@ -1,16 +1,15 @@
-## Annex B: Nominal bitstream interchange format
+## Annex B: Length delimited bitstream format
 {:.no_count}
 
 ### Overview
 {:.no_count}
 
-An AV1 bitstream consists of a number of OBUs that may typically be held within
-a container format alongside audio and timing information.
+[Section 5][] defines the syntax for OBUs.
+[Section 5.2][] defines the low-overhead bitstream format.
+This annex defines a length-delimited format for packing OBUs into a format that
+enables skipping through temporal units and frames more easily.
 
-This annex defines one simple method of packing OBUs into a bitstream format,
-other methods are also allowed.
-
-### Bitstream syntax
+### Length delimited bitstream syntax
 {:.no_count}
 
 | --------------------------------------------------------- | ---------------- |
@@ -45,7 +44,7 @@ other methods are also allowed.
 {:.syntax }
 
 
-### Bitstream semantics
+### Length delimited bitstream semantics
 {:.no_count}
 
 **more_data_in_bitstream()** is a system-dependent method of determining whether
