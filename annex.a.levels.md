@@ -65,8 +65,6 @@ X is equal to (seq_level_idx \>\> 2).
 Y is given by (seq_level_idx & 3).
 {:.alert .alert-info }
 
-TODO there is currently no syntax element that specifies if the tier is high or not.
-
 The level defines variables as specified in the following tables:
 
 | Level  | MaxPicSize | MaxHSize  | MaxVSize  | MaxDisplayRate | MaxDecodeRate
@@ -228,11 +226,11 @@ Typically this would be used for large resolution still images.
 
 The buffer model is used to define additional conformance requirements.
 
-These requirements depend on the following level and profile dependent variables:
+These requirements depend on the following level, tier, and profile dependent variables:
 
-  * If high_tier is equal to 0, MaxBitrate is equal to MainMbps multiplied by 1,000,000
+  * If seq_tier is equal to 0, MaxBitrate is equal to MainMbps multiplied by 1,000,000
 
-  * Otherwise (high_tier is equal to 1), MaxBitrate is equal to HighMbps multiplied by 1,000,000
+  * Otherwise (seq_tier is equal to 1), MaxBitrate is equal to HighMbps multiplied by 1,000,000
 
   * MaxBufferSize is equal to MaxBitrate multiplied by 1 second
 
