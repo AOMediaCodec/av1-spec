@@ -99,7 +99,6 @@
 [section 5.11.29]: #read-compound-type-syntax
 [section 6.2]: #obu-semantics
 [section 6.8.22]: #skip-mode-params-semantics
-[section 6.7.2]: #metadata-private-data-semantics
 [section 9.3]: #conversion-tables
 [section 4.10.2]: #fn
 [section 3]: #symbols-and-abbreviated-terms
@@ -232,6 +231,7 @@
 [section 7.11.2.11]: #intra-edge-upsample-process
 [section 7.16]: #upscaling-process
 [section 7.10.2.8]: #search-stack-process
+[section 5.8.2]: #metadata-itut-t35-syntax
 [section 6.2.2]: #obu-header-semantics
 [section 7.10.2.5]: #temporal-scan-process
 [section 5.5.2]: #color-config-syntax
@@ -299,6 +299,7 @@
 [section A.3]: #levels
 [section 5.11.19]: #inter-segment-id-syntax
 [section 7.11.3.15]: #distance-weights-process
+[section 6.7.2]: #metadata-itut-t35-semantics
 [section 5.11.2]: #decode-tile-syntax
 [section 8.2.3]: #boolean-decoding-process
 [section 5.11.54]: #clamp-mv-col-function
@@ -355,7 +356,6 @@
 [section C.4]: #encoder-consequences-of-processable-frames
 [section 7.14.4]: #adaptive-filter-strength-process
 [section 5.11.22]: #intra-block-mode-info-syntax
-[section 5.8.2]: #metadata-private-data-syntax
 [section 7.12]: #reconstruction-and-dequantization
 [section 5]: #syntax-structures
 [section 8.2]: #parsing-process-for-symbol-decoder
