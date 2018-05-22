@@ -9,9 +9,9 @@
 [section 7.11.2.6]: #smooth-intra-prediction-process
 [section 7.18.2.4]: #scaling-lookup-initialization-process
 [section 5.3.1]: #general-obu-syntax
-[section 5.9.31]: #film-grain-params-syntax
+[section 5.9.30]: #film-grain-params-syntax
 [section 6.8.13]: #segmentation-params-semantics
-[section 5.9.30]: #inv-recenter-noneg-function
+[section 6.10.14]: #cdef-params-semantics
 [section 7.17.2]: #self-guided-filter-process
 [section 6.10.31]: #residual-semantics
 [section 6.8.7]: #superres-params-semantics
@@ -67,7 +67,6 @@
 [section 7.15.2]: #cdef-direction-process
 [section 6.8.14]: #tile-info-semantics
 [section 7.11.2.4]: #directional-intra-prediction-process
-[section 6.10.14]: #cdef-params-semantics
 [section 5.11.5]: #decode-block-syntax
 [section 7.9.1]: #general-6
 [section 7.10.1]: #general-7
@@ -359,7 +358,7 @@
 [section 7.12]: #reconstruction-and-dequantization
 [section 5]: #syntax-structures
 [section 8.2]: #parsing-process-for-symbol-decoder
-[section 5.9.32]: #temporal-point-info-syntax
+[section 5.9.31]: #temporal-point-info-syntax
 [section 5.11.6]: #mode-info-syntax
 [section 7.13.2.10]: #inverse-walsh-hadamard-transform-process
 [section 5.3.5]: #byte-alignment-syntax
