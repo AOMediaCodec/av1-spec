@@ -26,4 +26,4 @@ frame as a reference. Camera frames are highlighted in gray in the figure above,
 and are shown clustered into 5x5 groups to indicate which anchor fame each uses for prediction.
  
 The application is required to render a new 3-dimensional view at a rate of 90 fps.
-Each rendered frame is created from a single set of tiles as specified by a tile_list_obu as defined in [section TODO][].
+Each rendered frame is created from a single set of tiles as specified by a tile_list_obu as defined in [section 5.12][].
