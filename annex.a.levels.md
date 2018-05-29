@@ -1,9 +1,7 @@
 ## Annex A: Profiles and levels
 {:.no_count}
 
-
 ### General
-{:.no_toc .no_count}
 
 Profiles and levels specify restrictions on the capabilities needed to decode the bitstreams.
 
@@ -252,7 +250,7 @@ The additional requirements in the buffer model are:
 
 ### Decoder Conformance
 
-A level X.Y compliant decoder must be able to decode all bitstreams that conform to that level.
+A level X.Y compliant decoder must be able to decode all bitstreams (that can be decoded by the general decoding process) that conform to that level.
 
 **Note:** If the level of a bitstream is equal to 31 (indicating the maximum parameters level),
 the decoder should examine the properties of the bitstream and decide whether to decode it or not.
@@ -262,3 +260,18 @@ A decoder would typically decode pictures up to a certain maximum uncompressed p
 that the decoder maker considers sufficiently extreme for their use case,
 and not decode anything bigger than that. 
 {:.alert .alert-info }
+
+A level X.Y compliant decoder should be able to decode tile list OBUs (via the
+large scale tile decoding process) at a rate of 90 tile list OBUs per second subject to the following level-dependent constraints:
+
+  * UpscaledWidth * FrameHeight is less than or equal to MaxPicSize
+  
+  * UpscaledWidth is less than or equal to MaxHSize
+  
+  * FrameHeight is less than or equal to MaxVSize
+  
+  * TileWidth * TileHeight * ( tile_count_minus_1 + 1 ) * 90 is less than or equal to ( MaxDecodeRate / 2 )
+  
+  * For each tile list OBU, BytesPerTileList * 8 * 90 is less than or equal to MaxBitrate
+
+Where BytesPerTileList is defined as the sum of (coded_tile_data_size_minus_1 + 1) for each tile list entry in the tile list OBU.

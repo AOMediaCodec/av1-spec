@@ -25,3 +25,8 @@
      
   7. ISO/IEC 23091-4/ITU-T H.273, Coding-independent code points for video
      signal type identification.
+
+  8. Zhang, Cha, and Jin Li. "Compression of lumigraph with multiple reference frame (MRF) prediction and just-in-time rendering." Data Compression Conference, 2000. Proceedings. DCC 2000. IEEE, 2000.
+  
+  9. Birklbauer, Clemens, Simon Opelt, and Oliver Bimber. "Rendering gigaray light fields." Computer Graphics Forum. Vol. 32. No. 2pt4. Blackwell Publishing Ltd, 2013.
+

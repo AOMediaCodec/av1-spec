@@ -48,6 +48,8 @@ version_date: Released 2017-xx-xx
 {% include_relative _tmp/annex.b.superframes.md %}
 <div style="page-break-before: always"></div>
 {% include_relative annex.c.experiments.md %}
+<div style="page-break-before: always"></div>
+{% include_relative annex.d.large.scale.tile.md %}
 </div>
 
 <div id="biblio" markdown="1" style="page-break-before: always">
