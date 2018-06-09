@@ -232,8 +232,6 @@ These requirements depend on the following level, tier, and profile dependent va
 
   * MaxBufferSize is equal to MaxBitrate multiplied by 1 second
 
-  * BufferPoolMaxSize is equal to 10
-
   * If seq_profile is equal to 0, BitrateProfileFactor is equal to 1.0
 
   * If seq_profile is equal to 1, BitrateProfileFactor is equal to 2.0
