@@ -163,7 +163,7 @@ for ( i = 0; i < temporal_group_size; i++ ) {
     independent = 1
     for ( j = 0; j < temporal_group_ref_cnt[ i ]; j++ ) {
       ref = (i - temporal_group_ref_pic_diff[ i ][ j ] + temporal_group_size) % temporal_group_size
-      if (temporal_group_temporal_id[ ref ] == temporal_group_temporal_id[ i ])
+      if ( temporal_group_temporal_id[ ref ] == temporal_group_temporal_id[ i ] )
         independent = 0
     }
     NumIndependent += independent
