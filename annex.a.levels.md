@@ -58,7 +58,7 @@ The following table defines the mapping from the syntax element (which takes int
 | 31                     | Maximum parameters
 {:.table .table-sm .table-bordered }
 
-**Note:** The level uses a a X.Y format.
+**Note:** The level uses a X.Y format.
 X is equal to 2 + (seq_level_idx \>\> 2).
 Y is given by (seq_level_idx & 3).
 {:.alert .alert-info }
