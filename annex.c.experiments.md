@@ -35,7 +35,7 @@ In particular, a frame that is processable will have correct values for:
   (which may or may not be correct).
 
 In most codecs, this concept is unnecessary because it is trivial to determine if frames are processable (either because all frames are automatically processable, or because the conditions are straightforward).
-However, AV1 makes greater use of state in the reference buffers and so the condition for being processable is more complicated.
+However, AV1 makes greater use of state in the reference frames and so the condition for being processable is more complicated.
 
 Formally, the property of being processable is defined as follows.
 
