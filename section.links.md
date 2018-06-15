@@ -315,7 +315,7 @@
 [section 5.11.16]: #block-tx-size-syntax
 [section 6.8.19]: #decode-subexp-semantics
 [section 6.10.30]: #mv-component-semantics
-[section 7.13.3]: #2d-inverse-transform
+[section 7.13.3]: #2d-inverse-transform-process
 [section 9.5.3]: #tables
 [section 5.11.53]: #clamp-mv-row-function
 [section 6.8.12]: #delta-quantizer-semantics
