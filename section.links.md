@@ -13,7 +13,7 @@
 [section 6.8.13]: #segmentation-params-semantics
 [section 6.10.14]: #cdef-params-semantics
 [section 7.17.2]: #self-guided-filter-process
-[section 6.10.31]: #residual-semantics
+[section 6.10.32]: #residual-semantics
 [section 6.8.7]: #superres-params-semantics
 [section A]: #annex-a-profiles-and-levels
 [section 5.11.52]: #is-inside-filter-region-function
@@ -23,7 +23,7 @@
 [section 6.10.15]: #loop-restoration-params-semantics
 [section 5.9.3]: #get-relative-distance-function
 [section 6.8.6]: #frame-size-with-refs-semantics
-[section 6.10.30]: #compute-prediction-semantics
+[section 6.10.31]: #compute-prediction-semantics
 [section 6.8.2]: #uncompressed-header-semantics
 [section 9]: #additional-tables
 [section 5.12]: #tile-list-obu-syntax
@@ -43,12 +43,12 @@
 [section 5.9.21]: #tx-mode-syntax
 [section 5.9.12]: #quantization-params-syntax
 [section 6.7.5]: #metadata-scalability-semantics
-[section 6.10.32]: #transform-block-semantics
+[section 6.10.33]: #transform-block-semantics
 [section 7.7]: #frame-end-update-cdf-process
 [section 4.7]: #mathematical-functions
 [section C]: #annex-c-error-resilience-behavior-informative-
 [section 7.11.2.8]: #intra-filter-type-process
-[section 6.10.27]: #read-compound-type-semantics
+[section 6.10.28]: #read-compound-type-semantics
 [section 7.11.2]: #intra-prediction-process
 [section 5.11.57]: #read-loop-restoration-syntax
 [section 2]: #terms-and-definitions
@@ -109,10 +109,10 @@
 [section 6.10]: #tile-group-obu-semantics
 [section 6.3]: #reserved-obu-semantics
 [section 5.9.19]: #cdef-params-syntax
-[section 6.10.33]: #coefficients-semantics
+[section 6.10.34]: #coefficients-semantics
 [section 9.5]: #quantizer-matrix-tables
 [section 6.8.1]: #general-frame-header-obu-semantics
-[section 6.10.26]: #read-inter-intra-semantics
+[section 6.10.27]: #read-inter-intra-semantics
 [section 7.3.2]: #decode-camera-tile-process
 [section 4.10.8]: #ln
 [section 5.9.1]: #general-frame-header-obu-syntax
@@ -147,7 +147,7 @@
 [section 5.9.4]: #reference-frame-marking-function
 [section 6.10.7]: #intra-segment-id-semantics
 [section 5.11.50]: #palette-color-context-function
-[section 6.10.28]: #mv-semantics
+[section 6.10.29]: #mv-semantics
 [section 7.15.1]: #cdef-block-process
 [section 5.11.21]: #get-segment-id-function
 [section 7.13.2.5]: #inverse-adst-output-array-permutation-process
@@ -179,18 +179,18 @@
 [section 7.17.3]: #box-filter-process
 [section 8.2.6]: #symbol-decoding-process
 [section 7.10.4.2]: #add-sample-process
-[section 6.10.40]: #read-loop-restoration-unit-semantics
+[section 6.10.41]: #read-loop-restoration-unit-semantics
 [section 7.18.2.2]: #random-number-process
 [section 6.7]: #metadata-obu-semantics
-[section 6.10.34]: #intra-angle-info-semantics
+[section 6.10.35]: #intra-angle-info-semantics
 [section 5.11.41]: #get-scan-function
 [section 5.11.45]: #read-cfl-alphas-syntax
 [section 7.6.2]: #definitions
 [section 7.6.5]: #decoder-consequences
 [section 5.11.33]: #compute-prediction-syntax
-[section 6.10.39]: #read-cdef-semantics
+[section 6.10.40]: #read-cdef-semantics
 [section 6.10.10]: #skip-mode-semantics
-[section 6.10.36]: #palette-mode-info-semantics
+[section 6.10.37]: #palette-mode-info-semantics
 [section 7.11.1]: #general-10
 [section 7.11.2.1]: #general-11
 [section 7.11.3.1]: #general-12
@@ -209,7 +209,7 @@
 [section 6.5]: #temporal-delimiter-obu-semantics
 [section 5.11.20]: #is-inter-syntax
 [section 7.9]: #motion-field-estimation-process
-[section 6.10.35]: #read-cfl-alphas-semantics
+[section 6.10.36]: #read-cfl-alphas-semantics
 [section 7.13.2.11]: #inverse-identity-transform-4-process
 [section 7.13.2.12]: #inverse-identity-transform-8-process
 [section 7.17.4]: #wiener-filter-process
@@ -263,7 +263,7 @@
 [section 7.13.2.6]: #inverse-adst4-process
 [section 5.11.3]: #clear-block-decoded-flags-function
 [section 6.8.21]: #tx-mode-semantics
-[section 6.10.37]: #palette-tokens-semantics
+[section 6.10.38]: #palette-tokens-semantics
 [section 7.17.6]: #get-source-sample-process
 [section 5.5]: #sequence-header-obu-syntax
 [section 7.10.2.3]: #scan-col-process
@@ -287,7 +287,7 @@
 [section 5.11.34]: #residual-syntax
 [section 4.8]: #method-of-describing-bitstream-syntax
 [section 5.11.13]: #loop-filter-delta-syntax
-[section 6.10.38]: #palette-color-context-semantics
+[section 6.10.39]: #palette-color-context-semantics
 [section 7.11.3.5]: #block-warp-process
 [section 7.13.2.1]: #butterfly-functions
 [section 6.10.24]: #ref-frames-semantics
@@ -314,7 +314,7 @@
 [section 7.18.2.5]: #add-noise-synthesis-process
 [section 5.11.16]: #block-tx-size-syntax
 [section 6.8.19]: #decode-subexp-semantics
-[section 6.10.29]: #mv-component-semantics
+[section 6.10.30]: #mv-component-semantics
 [section 7.13.3]: #2d-inverse-transform
 [section 9.5.3]: #tables
 [section 5.11.53]: #clamp-mv-row-function
@@ -394,7 +394,7 @@
 [section 5.9.5]: #frame-size-syntax
 [section 5.9.27]: #decode-unsigned-subexp-with-ref-syntax
 [section 6.10.2]: #decode-tile-semantics
-[section 6.10.25]: #read-motion-mode-semantics
+[section 6.10.26]: #read-motion-mode-semantics
 [section 5.11.8]: #intra-segment-id-syntax
 [section 4.9]: #functions
 [section 7.14.2]: #edge-loop-filter-process
@@ -417,3 +417,4 @@
 [section 5.8.3]: #metadata-high-dynamic-range-content-light-level-syntax
 [section 7.8]: #set-frame-refs-process
 [section 5.11.42]: #intra-angle-info-luma-syntax
+[section 6.10.25]: #assign-mv-semantics
