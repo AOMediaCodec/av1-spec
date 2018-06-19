@@ -127,9 +127,9 @@ The bitstream constraints depend on the variables in the table, and additional v
   
   * MaxTileSizeInLumaSamples is defined as the largest product of TileWidth * TileHeight for all tiles within the coded video sequence
   
-  * TotalDisplayLumaSampleRate is defined as the luma sample rate (i.e. based on width * height of the output luma plane) for all output frames with the flag show_frame equal to 1 and frames referenced in frame headers with show_existing_frame = 1 for the scalability layer that conforms to the level indicated for this layer. In particular, for spatial and quality scalability, this limit applies to output pictures that belong to this particular layer. For temporal scalability, this restriction applies to the output pictures that belong to the indicated scalability layer and to the layers below.
-  
   * showCount for a particular frame is defined as the number of times the frame is shown (either due to show_frame equal to 1, or via the show_existing_frame mechanism)
+  
+  * TotalDisplayLumaSampleRate is defined as the sum of the UpscaledWidth * FrameHeight * showCount of all frames that belong to the temporal unit that belongs to the operating point, divided by the time difference between the display time of the first frame of the current temporal unit and the display time of the first frame of the next temporal unit (if present). For the last temporal unit in the bitstream, the time difference from the previous temporal unit is used. In particular, for spatial and quality scalability, this limit applies to output pictures that belong to this particular layer. For temporal scalability, this restriction applies to the output pictures that belong to the indicated scalability layer and to the layers below.
   
   * TotalDecodedLumaSampleRate is defined as the sum of the UpscaledWidth * FrameHeight * Max(1, showCount) of all frames that belong to the temporal unit that belongs to the operating point, divided by the time difference between the decoding time of the first frame of the current temporal unit and the decoding time of the first frame of the next temporal unit (if present). For the last temporal unit in the bitstream, the time difference from the previous temporal unit is used.  
 
