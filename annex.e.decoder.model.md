@@ -143,9 +143,9 @@ for the decoded frame that is kept in the BufferPool [ i ].
 Coded frames arrive at the decoder smoothing buffer of the size BufferSize at a rate defined by BitRate.
 The following variables are used in this section and below:
 
-BitRate is set to a value equal to the MaxBitrate specified for the level signaled for the operating that is being decoded.
+BitRate is set to a value equal to the MaxBitrate specified for the level signaled for the operating point that is being decoded.
 
-BufferSize s set to a value equal to the MaxBufferSize value specified for the level signaled for the operating that is being decoded.
+BufferSize is set to a value equal to the MaxBufferSize value specified for the level signaled for the operating point that is being decoded.
 
 Decodable Frame Group i (DFG i ) consists of all OBUs, including headers,
 between the end of the last OBU related to previous frame with show_existing_frame flag equal to 0, (frame  i - 1),
@@ -204,8 +204,8 @@ When the decoder model operates in the resource availability mode
 ScheduledRemoval [ i ] = ScheduledRemovalResource [ i ]
 ~~~~~
 
-Derivation of ScheduledRemovalTiming [ i ] in the decoding schedule mode is described in section X,
-and derivation of ScheduledRemovalResource [ i ] in the resource availability mode is described in section Y.
+Derivation of ScheduledRemovalTiming [ i ] in the decoding schedule mode is described in [section E.7.1][],
+and derivation of ScheduledRemovalResource [ i ] in the resource availability mode is described in [section E.7.2][].
 
 #### End of DFG bits arrival
 {:.no_count}
@@ -334,11 +334,11 @@ time_to_decode_frame( ) {
              lumaSamples =  (max_frame_width_minus_1 + 1) *
                                     (max_frame_height_minus_1 + 1)
     }
-    return  lumaSamples ÷ MaxDecodeRate[ level[operatingPoint] ]
+    return  lumaSamples ÷ MaxDecodeRate
 }
 ~~~~~
 
-The MaxDecodeRate value is defined Table N for the level signaled for the operating point the decoder has chosen to decode.
+The MaxDecodeRate value is defined in [section A.3] for the level signaled for the operating point the decoder has chosen to decode.
 
 ### Frame presentation timing
 {:.no_count}
@@ -592,7 +592,7 @@ get_next_frame( frameNum )
 }
 ~~~~~
 
-ReadFrameHeader( ) function parses a frame header OBU according to the process described in Section. 
+ReadFrameHeader( ) function parses a frame header OBU according to the process described in [section 5.9.1][]. 
 
 The decode process model simulates the values of selected timing points as successive frames are decoded.
 This timing incorporates the time that the decoder has to wait for a free frame buffer,
@@ -642,7 +642,7 @@ decode_process ( ) {
 }
 ~~~~~
 
-The various non-conformat error codes are:
+The various non-conformant error codes are:
 
 | Error Type                      | Description
 | ------------------------------- | ------------------
