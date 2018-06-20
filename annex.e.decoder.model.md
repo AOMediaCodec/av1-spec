@@ -602,7 +602,7 @@ TimeDelta[ i ] = ( ScheduledRemoval[ i ] - LastBitArrival[ i -1 ] ) * 90 000
 ~~~~~
 
 For the video sequence that includes one or more random access points, for each key frame,
-where the decoder_buffer_delay is signaled, the following expressions should hold to provide smooth playback without the need to rebuffer. 
+where the decoder_buffer_delay is signaled, the following expression should hold to provide smooth playback without the need to rebuffer. 
 
 ~~~~~ c
 decoder_buffer_delay <= ceil( TimeDelta[ i ] )
