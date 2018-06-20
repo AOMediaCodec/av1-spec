@@ -252,6 +252,8 @@ The additional requirements in the buffer model are:
 
 A level X.Y compliant decoder must be able to decode all bitstreams (that can be decoded by the general decoding process) that conform to that level.
 
+When doing that, the decoder must be able to display output frames according to the display schedule if such is indicated by the bitstream.
+
 **Note:** If the level of a bitstream is equal to 31 (indicating the maximum parameters level),
 the decoder should examine the properties of the bitstream and decide whether to decode it or not.
 There is no assurance that all pictures will be decoded.

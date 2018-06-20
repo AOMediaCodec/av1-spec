@@ -28,6 +28,7 @@ version_date: Released 2017-xx-xx
 {% include_relative _tmp/annex.b.superframes.md %}
 {% include_relative annex.c.experiments.md %}
 {% include_relative annex.d.large.scale.tile.md %}
+{% include_relative annex.e.decoder.model.md %}
 </div>
 
 {% include_relative bibliography.md %}
