@@ -415,7 +415,7 @@ For the video sequence that includes one or more random access points, for each 
 where the decoder_buffer_delay is signaled, the following expressions should hold to provide smooth playback without the need to rebuffer. 
 
 ~~~~~ c
-decoder_buffer_delay <= ceil( TimeDelta [ i ]
+decoder_buffer_delay <= ceil( TimeDelta [ i ] )
 ~~~~~
 
 #### Smoothing buffer overflow
@@ -542,10 +542,10 @@ If a free frame buffer is not available immediately, the PresentationTimes[ i ] 
 In decoding schedule mode the decoder only starts to decode a frame at the time designated by a Removal time associated with that frame, and expects a free frame buffer to be immediately available.
 
 ~~~~~ c
-start_decode_at_removal_time ( Removal ) {
-    for ( i = 0; i <BufferPoolMaxSize; i++ ) {
+start_decode_at_removal_time( removal ) {
+    for ( i = 0; i < BufferPoolMaxSize; i++ ) {
         if ( PlayerRefCount [ i ] > 0) {
-            if ( PresentationTimes[ i ] < Removal ) {
+            if ( PresentationTimes[ i ] < removal ) {
                  PlayerRefCount [ i ] = 0
                  if ( DecoderRefCount[ i ] == 0 )
                      free_buffer( i )
@@ -553,7 +553,7 @@ start_decode_at_removal_time ( Removal ) {
             break
         }
     }
-    return Removal
+    return removal
 }
 ~~~~~
 
