@@ -291,6 +291,9 @@ and generate the value of ScheduledRemovalResource[ i ].
 
 ~~~~~ c
 time_next_buffer_is_free ( i, time ) {
+    if ( i == 0 ) {
+        time = decoder_buffer_delay ÷ 90000
+    }
     foundBuffer = 0
     for ( k = 0; k < BufferPoolMaxSize; k++ ) {
         if ( DecoderRefCount [ k ] == 0 ) {
@@ -579,7 +582,7 @@ get_next_frame( frameNum )
 {
     if ( ReadFrameHeader( ) ) {
         if ( !show_existing_frame ) {
-            frameNum++ 
+            frameNum++
         }
         return frameNum
     } else {
@@ -602,12 +605,12 @@ Non-conformance is signaled by a call to the function bitstream_non_conformant; 
 decode_process ( ) {
     initialize_buffer_pool( )
     time = 0
-    frameNum = 0
+    frameNum = -1
     InitialPresentationDelay = 0
     while( (frameNum = get_next_frame( frameNum ) ) != - 1) {
         // Decode.
-        if ( show_existing_frame != 1 ) {
-            if ( Removal [ frameNum ] == -1 )
+        if ( !show_existing_frame ) {
+            if ( UsingResourceAvailabilityMode )
                 Removal [ frameNum ] = time_next_buffer_is_free( frameNum, time )
             time = start_decode_at_removal_time( Removal [ frameNum ] )
             if ( show_frame == 1 && time > PresentationTime [ frameNum ] )
@@ -640,6 +643,8 @@ decode_process ( ) {
     }
 }
 ~~~~~
+
+where UsingResourceAvailabilityMode is a variable that is set to 1 when using resource availability mode, or 0 when using decoding schedule mode.
 
 The various non-conformant error codes are:
 
