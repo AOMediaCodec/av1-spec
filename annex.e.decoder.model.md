@@ -14,7 +14,7 @@ The decoder model is applied to the Operating Point of a bitstream, for which th
 
 The decoder model defines two modes of operation. A conformant bitstream shall satisfy constraints imposed by one of these two modes of the decoder model depending on which mode is applicable. The applicability of the two modes of the decoder model used to check the bitstream conformance is described in the following two subsections.
 
-### Resource Availability Mode
+### Resource availability mode
 {:.no_count}
 
 In this mode the model simulates the operation of the decoder under the assumption that the complete coded frame
@@ -48,7 +48,7 @@ In this mode of operation, the decoder model parameters below take the following
 The decoder writes the decoded frame into one of the 10 available frame buffers.
 Decoding must be delayed until a frame buffer becomes available.
 
-###Decoding Schedule Mode
+### Decoding schedule mode
 {:.no_count}
 
 This mode imposes additional constraints relating to the operation of the smoothing buffer and the timing points, specified for each frame, defining exactly when the decoder should start decoding a frame and when that frame should be presented.
@@ -77,6 +77,7 @@ it is not possible to check the conformance of the stream to the claimed level.
 
 ### When timing information is not present in the bitstream
 {:.no_count}
+
 When the timing_info(), and other info necessary as the input to one of the decoder models and associated information
 is not present in the bitstream, it is impossible to verify whether the
 bitstream satisfy the levels constraints according to either of the decoder models.
@@ -217,11 +218,15 @@ LastBitArrival [ i ] = FirstBitArrival [ i ] + CodedBits [ i ] ÷ BitRate
 
 ### Removal of OBU data from smoothing buffer 
 {:.no_count}
+
+#### General
+{:.no_count}
+
 The decoder starts to decode a frame exactly at the moment when the data corresponding to its DFG
 is removed from the smoothing buffer. Each DFG has a scheduled removal time and an actual removal time.
 Under certain circumstances these times may be different.
 
-#### Removal times in Decoding schedule mode
+#### Removal times in decoding schedule mode
 {:.no_count}
 
 DFG i is scheduled for removal from the smoothing buffer at time ScheduledRemovalTiming [ i ]
@@ -265,7 +270,7 @@ i.e. ScheduledRemovalTiming[ i ] >= LastBitArrival[ i ], then it is removed at t
 Removal [ i ]  =  ScheduledRemovalTiming [ i ]
 ~~~~~
 
-#### Removal times in Resource availability mode
+#### Removal times in resource availability mode
 {:.no_count}
 
 In the resource availability mode, buffer_removal_time[ i ] are not signaled for the chosen operating point.
@@ -304,7 +309,7 @@ time_next_buffer_is_free ( time ) {
 }
 ~~~~~
 
-### Frame Decoding
+### Frame decoding
 {:.no_count}
 
 The time required to decode a frame (i.e. to process the decodable frame’s DFG),
@@ -381,6 +386,9 @@ PresentationInterval [ j ] = PresentationTime [ j + 1 ] - PresentationTime [ j ]
 ### Bitstream conformance
 {:.no_count}
 
+#### General
+{:.no_count}
+
 A conformant coded bitstream shall satisfy the following set of constraints.
 
 For the decoder model a DFG shall be available in the smoothing buffer at the scheduled removal time,
@@ -394,7 +402,7 @@ When buffer_removal_time [ i ] is not present in the bitstream, a bitstream is c
 If buffer_removal_time [ i ] is signaled, it shall have a value greater or equal than the
 equivalent value that would have been assigned if the decoder model was decoding frames in the resource availability mode.
 
-#### Decoder buffer delay consistency across RAP (applies to scheduled decoding mode)
+#### Decoder buffer delay consistency across RAP (applies to decoding schedule mode)
 {:.no_count}
 
 For frame i, where i > 0, TimeDelta [ i ] is defined as follows:
@@ -427,7 +435,7 @@ ScheduledRemoval [ i ] < LastBitArrival [ i ]
 
 When the low_delay_mode_flag[ op ] is equal to 0, the smoothing buffer shall never underflow.
 
-#### Minimum Decode Time (in scheduled decoding mode)
+#### Minimum decode time (applies to decoding schedule mode)
 {:.no_count}
 
 There must be enough time between a DFG being removed from the smoothing buffer,
