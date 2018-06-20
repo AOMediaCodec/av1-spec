@@ -38,12 +38,6 @@ These elements may be considered examples of elements of a conformant decoder,
 although the actual decoder implementation may differ. 
 {:.alert .alert-info }
 
-<figure class="figure center-block">
-  <img alt="" src="assets/images/buffer_pool.png" class="figure-img img-fluid">
-  <figcaption class="figure-caption"> Diagram representation of the BufferPool,
-  virtual buffer index and a current frame buffer index</figcaption>
-</figure>
-
 **BufferPool** is a storage area for a set of frame buffers.
 Buffer pool area allocated for storing separate frames is defined as BufferPool[ i ],
 where i takes values from 0 to BufferPoolMaxSize - 1. When a frame buffer is used for storing a decoded frame,
