@@ -10,11 +10,109 @@ A set of decoder model parameters may be optionally specified for zero or more o
 
 The decoder model describes the smoothing buffer, decoding process, operation of the frame buffers and the frame output process. 
 
-The decoder model is applied to the Operating Point of a bitstream, for which the decoder model is specified. Different operating points can have different decoder models that specified conformance to decoder levels signaled for these operating points. 
+The decoder model is applied to an operating point of a bitstream.
+Different operating points can have different decoder models that specify conformance to the levels signaled for these operating points. 
 
-The decoder model defines two modes of operation. A conformant bitstream shall satisfy constraints imposed by one of these two modes of the decoder model depending on which mode is applicable. The applicability of the two modes of the decoder model used to check the bitstream conformance is described in the following two subsections.
+The decoder model defines two modes of operation.
+A conformant bitstream shall satisfy constraints imposed by one of these two modes of the decoder model depending on which mode is applicable.
 
-### Resource availability mode
+[Section E.2][] defines additional concepts used by the decoder model.
+
+[Section E.3][] defines the operating modes.
+
+[Section E.4][] specifies how the frame timings can be computed in the different operating modes.
+
+[Section E.5][] specifies the decoder model process.
+
+[Section E.6][] specifies the conformance requirements.
+
+### Decoder model definitions
+{:.no_count}
+
+The decoder model uses the following elements to verify bitstream conformance that
+are not part of the decoding process specified in [section 7][].
+
+**Note:** The elements defined in this section do not have to be present in
+a conformant decoder implementation.
+These elements may be considered examples of elements of a conformant decoder,
+although the actual decoder implementation may differ. 
+{:.alert .alert-info }
+
+<figure class="figure center-block">
+  <img alt="" src="assets/images/buffer_pool.png" class="figure-img img-fluid">
+  <figcaption class="figure-caption"> Diagram representation of the BufferPool,
+  virtual buffer index and a current frame buffer index</figcaption>
+</figure>
+
+**BufferPool** is a storage area for a set of frame buffers.
+Buffer pool area allocated for storing separate frames is defined as BufferPool[ i ],
+where i takes values from 0 to BufferPoolMaxSize - 1. When a frame buffer is used for storing a decoded frame,
+it is indicated by a VBI slot that points to this frame buffer. BufferPoolMaxSize is equal to 10.
+
+**VBI** (virtual buffer index) is an array of indices of the frame areas in the BufferPool.
+VBI elements which do not point to any slot in the VBI are set to -1. VBI array size is equal to 8, with the indices taking values from 0 to 7. 
+
+**cfbi** (current frame buffer index) is the variable that contains the index to the area in the BufferPool that contains the current frame.
+
+**DecoderRefCount[ i ]** is a variable associated with a frame buffer i.
+DecoderRefCount[ i ] is initialized to 0, and incremented by 1 each time the decoder adds the buffer i to a VBI index slot.
+It is decremented by 1 each time the decoder removes the buffer from a VBI index slot i.
+The decoder may update multiple VBI index slots with the same frame buffer, as specified by refresh_frame_flags,
+so the counter may be incremented several times.
+The counter is only modified in this way when refresh_frame_flags is used to update the VBI index once the frame has been fully decoded.
+The decoder also increments the counter as it begins the decode process and decrements it again once complete.
+When the counter is 0 the pixel data becomes permanently invalid and shall not be used by the decode process.
+
+**PlayerRefCount[ i ]** is a variable associated with a frame buffer i.
+PlayerRefCount[ i ] is initialized to 0, incremented by 1 each time the decoder determines that the frame is a presentation frame.
+It is reset to 0 after the last time the frame is presented.
+
+**PresentationTimes[ i ]** is an array corresponding to the BufferPool [ i ] that holds the last presentation time
+for the decoded frame that is kept in the BufferPool [ i ].
+
+<figure class="figure center-block">
+  <img alt="" src="assets/images/buffer_fullness.png" class="figure-img img-fluid">
+  <figcaption class="figure-caption"> Example of how the coded frame buffer fullness varies
+  as data arrives from the stream, and is subsequently removed for decoding.
+  Relevant timing points and values are indicated.</figcaption>
+</figure>
+
+Coded frames arrive at the decoder smoothing buffer of the size BufferSize at a rate defined by BitRate.
+The following variables are used in this section and below:
+
+**BitRate** is set to a value equal to the MaxBitrate specified for the level signaled for the operating point that is being decoded.
+
+**BufferSize** is set to a value equal to the MaxBufferSize value specified for the level signaled for the operating point that is being decoded.
+
+**Decodable Frame Group i** (DFG i) consists of all OBUs, including headers,
+between the end of the last OBU related to previous frame with show_existing_frame flag equal to 0, (frame i - 1),
+and the end of the data that belongs to the current frame with show_existing_frame flag equal to 0 (frame i).
+This comprises the OBUs that make up frame i, plus any additional OBUs present in the bitstream that belong to frame i
+(such as the metadata OBU), and OBU that belong to frames with show_existing_frame flag equal to 1
+which are located between frame (i - 1) and the frame i.
+The decoder model assumes that the decoding time for processing a frame with show_existing_frame flag equal to 1,
+a header, or a metadata OBU is 0, hence the smoothing buffer operates in the units of DFG.
+
+**CodedBits[ i ]** is the amount of data, in bits, that belongs to DFG i.
+Note that the index i of the DFG only increases with frames with show_existing_frame flag equal to 0,
+i.e. frames that need to be decoded by the decoding process.
+
+**FirstBitArrival[ i ]** is the time when the first bit of the i-th DFG starts entering the decoder smoothing buffer.
+For the first coded DFG in the sequence, DFG 0 (or after updating decoder model parameters at RAP), FirstBitArrival[ 0 ] = 0.
+
+**LastBitArrival[ i ]** is the time when the last bit of DFG i finishes entering the smoothing buffer.
+
+Frames with show_existing_frame = 1, or show_frame = 1, are referred to as **Displayable Frames**.
+
+Each displayable frame j has a scheduled presentation time, **PresentationTime[ j ]**, defined to be a multiple of the display clock tick DispCT.
+
+**DispCT** represents the expected time interval between displaying two consecutive frames,
+or a common divisor of the expected times between displaying two consecutive frames if the encoded bitstream has a variable display frame rate.
+
+### Operating modes
+{:.no_count}
+
+#### Resource availability mode
 {:.no_count}
 
 In this mode the model simulates the operation of the decoder under the assumption that the complete coded frame
@@ -48,7 +146,7 @@ In this mode of operation, the decoder model parameters below take the following
 The decoder writes the decoded frame into one of the 10 available frame buffers.
 Decoding must be delayed until a frame buffer becomes available.
 
-### Decoding schedule mode
+#### Decoding schedule mode
 {:.no_count}
 
 This mode imposes additional constraints relating to the operation of the smoothing buffer and the timing points, specified for each frame, defining exactly when the decoder should start decoding a frame and when that frame should be presented.
@@ -75,7 +173,7 @@ the parameters necessary to input into this model can be signaled by the applica
 If the parameters necessary to run this model are not signaled,
 it is not possible to check the conformance of the stream to the claimed level.
 
-### When timing information is not present in the bitstream
+#### When timing information is not present in the bitstream
 {:.no_count}
 
 When the timing_info(), and other info necessary as the input to one of the decoder models and associated information
@@ -84,87 +182,7 @@ bitstream satisfy the levels constraints according to either of the decoder mode
 In order to enable the verification of the decoder conformance, the equivalent information necessary to verify
 the bitstream compliance can be provided by some external means.
 
-### Buffer model definition
-{:.no_count}
-
-The buffer model defines the following elements that are used to define the buffer model behavior.
-These elements are not part of the decoding process and are used to verify the bitstream conformance.
-The decoder conformance is defined by the decoder ability to decode all bitstreams conformant to the claimed decoder profile
-and level, while satisfying constraints on specified output frame timing (and frame content).
- 
-**Note:** The elements defined in this section do not have to be present in
-the conformant decoder implementation and are used to test the bitstream conformance.
-These elements may be considered examples of elements of the conformant decoder,
-although the actual decoder implementation may differ. 
-{:.alert .alert-info }
-
-<figure class="figure center-block">
-  <img alt="" src="assets/images/buffer_pool.png" class="figure-img img-fluid">
-  <figcaption class="figure-caption"> Diagram representation of the BufferPool,
-  virtual buffer index and a current frame buffer index</figcaption>
-</figure>
-
-**BufferPool** is a storage area for a set of frame buffers.
-Buffer pool area allocated for storing separate frames is defined as BufferPool [ i ],
-where i takes values from 0 to BufferPoolMaxSize - 1. When a frame buffer is used for storing a decoded frame,
-it is indicated by a VBI slot that points to this frame buffer. BufferPoolMaxSize is equal to 10.
-
-**VBI** (virtual buffer index) is an array of indices of the frame areas in the BufferPool.
-VBI elements which do not point to any slot in the VBI are set to -1. VBI array size is equal to 8, with the indices taking values from 0 to 7. 
-
-**cfbi** (current frame buffer index) is the variable that contains the index to the area in the BufferPool that contains the current frame.
-
-**DecoderRefCount [ i ]** is a variable associated with a frame buffer i.
-DecoderRefCount [ i ] is initialized to 0, and incremented by 1 each time the decoder adds the buffer i to a VBI index slot.
-It is decremented by 1 each time the decoder removes the buffer from a VBI index slot i.
-The decoder may update multiple VBI index slots with the same frame buffer, as specified by refresh_frame_flags,
-so the counter may be incremented several times.
-The counter is only modified in this way when refresh_frame_flags is used to update the VBI index once the frame has been fully decoded.
-The decoder also increments the counter as it begins the decode process and decrements it again once complete.
-When the counter is 0 the pixel data becomes permanently invalid and shall not be used by the decode process.
-
-**PlayerRefCount [ i ]** is a variable associated with a frame buffer i.
-PlayerRefCount [ i ] is initialized to 0, incremented by 1 each time the decoder determines that the frame is a presentation frame.
-It is decremented by 1 after each time the frame is presented.
-
-**PresentationTimes[ i ]** is an array corresponding to the BufferPool [ i ] that holds the last presentation time
-for the decoded frame that is kept in the BufferPool [ i ].
-
-<figure class="figure center-block">
-  <img alt="" src="assets/images/buffer_fullness.png" class="figure-img img-fluid">
-  <figcaption class="figure-caption"> Example of how the coded frame buffer fullness varies
-  as data arrives from the stream, and is subsequently removed for decoding.
-  Relevant timing points and values are indicated.</figcaption>
-</figure>
-
-### Operation of the smoothing buffer
-{:.no_count}
-
-Coded frames arrive at the decoder smoothing buffer of the size BufferSize at a rate defined by BitRate.
-The following variables are used in this section and below:
-
-BitRate is set to a value equal to the MaxBitrate specified for the level signaled for the operating point that is being decoded.
-
-BufferSize is set to a value equal to the MaxBufferSize value specified for the level signaled for the operating point that is being decoded.
-
-Decodable Frame Group i (DFG i ) consists of all OBUs, including headers,
-between the end of the last OBU related to previous frame with show_existing_frame flag equal to 0, (frame  i - 1),
-and the end of the data that belongs to the current frame with show_existing_frame flag equal to 0 (frame i).
-This comprises the OBUs that make up frame i, plus any additional OBUs present in the bitstream that belong to frame i
-(such as the metadata OBU), and OBU that belong to frames with show_existing_frame flag equal to 1
-which are located between frame (i - 1) and the frame i.
-The decoder model assumes that the decoding time for processing a frame with show_existing_frame flag equal to 1,
-a header, or a metadata OBU is 0, hence the smoothing buffer operates in the units of DFG.
-
-CodedBits [ i ] is the amount of the data, in bits, that belongs to the DFG i.
-Note that the index i in the DFG only increases with frames with show_existing_frame flag equal to 0,
-i.e. frames that need to be decoded by the decoding process.
-
-FirstBitArrival [ i ] is the time when the first bit of the i-th DFG starts entering the decoder smoothing buffer. For the first coded DFG in the sequence, DFG 0 (or after updating decoder model parameters at RAP), FirstBitArrival [ 0 ] = 0.
-
-LastBitArrival [ i ] is the time when the last bit of DFG i finishes entering the smoothing buffer.
-
-### Arrival of OBU data in smoothing buffer
+### Frame timing definitions
 {:.no_count}
 
 #### Start of DFG bits arrival
@@ -178,34 +196,17 @@ The first bit of DFG i is expected to arrive by the latest time that would guara
 the entire DFG by the time when the decodable frame in the DFG i is due to be decoded:
 
 ~~~~~ c
-FirstBitArrival [ i ]  = max ( LastBitArrival [ i - 1 ], LatestArrivalTime [ i ] ),
+FirstBitArrival[ i ]  = max ( LastBitArrival[ i - 1 ], LatestArrivalTime[ i ] ),
 ~~~~~
 
-where LatestArrivalTime [ i ] is the latest time when the first bit of DFG i must arrive in the smoothing buffer
+where LatestArrivalTime[ i ] is the latest time when the first bit of DFG i must arrive in the smoothing buffer
 to ensure that the complete DFG is available at the scheduled removal time, ScheduledRemoval [ i ], in units of seconds,
 unless the new set of decoding model parameters is received.
 In its turn, the latest time the DFG data should start being received is determined as follows:
 
 ~~~~~ c
-LatestArrivalTime [ i ]  = ScheduledRemoval [ i ]  -  ( encoder_buffer_delay  + decoder_buffer_delay ) ÷ 90 000
+LatestArrivalTime[ i ]  = ScheduledRemoval[ i ]  -  ( encoder_buffer_delay  + decoder_buffer_delay ) ÷ 90 000
 ~~~~~
-
-The ScheduledRemoval [ i ] time is determined differently in the resource availability and the decoding schedule mode. 
-
-When the decoder model operates in the decoding schedule mode
-
-~~~~~ c
-ScheduledRemoval [ i ] = ScheduledRemovalTiming [ i ]
-~~~~~
-
-When the decoder model operates in the resource availability mode
-
-~~~~~ c
-ScheduledRemoval [ i ] = ScheduledRemovalResource [ i ]
-~~~~~
-
-Derivation of ScheduledRemovalTiming [ i ] in the decoding schedule mode is described in [section E.7.1][],
-and derivation of ScheduledRemovalResource [ i ] in the resource availability mode is described in [section E.7.2][].
 
 #### End of DFG bits arrival
 {:.no_count}
@@ -213,18 +214,32 @@ and derivation of ScheduledRemovalResource [ i ] in the resource availability mo
 For the bits that belong to the DFG i, the time of arrival of the last bit of the DFG i is determined as follows:
 
 ~~~~~ c
-LastBitArrival [ i ] = FirstBitArrival [ i ] + CodedBits [ i ] ÷ BitRate
+LastBitArrival[ i ] = FirstBitArrival[ i ] + CodedBits[ i ] ÷ BitRate
 ~~~~~
 
-### Removal of OBU data from smoothing buffer 
-{:.no_count}
-
-#### General
+#### Scheduled removal times
 {:.no_count}
 
 The decoder starts to decode a frame exactly at the moment when the data corresponding to its DFG
 is removed from the smoothing buffer. Each DFG has a scheduled removal time and an actual removal time.
 Under certain circumstances these times may be different.
+
+The ScheduledRemoval[ i ] time is determined differently in the resource availability and the decoding schedule mode. 
+
+When the decoder model operates in the decoding schedule mode
+
+~~~~~ c
+ScheduledRemoval[ i ] = ScheduledRemovalTiming[ i ]
+~~~~~
+
+When the decoder model operates in the resource availability mode
+
+~~~~~ c
+ScheduledRemoval[ i ] = ScheduledRemovalResource[ i ]
+~~~~~
+
+Derivation of ScheduledRemovalTiming[ i ] in the decoding schedule mode is described in [section E.4.1][],
+and derivation of ScheduledRemovalResource[ i ] in the resource availability mode is described in [section E.4.2][].
 
 #### Removal times in decoding schedule mode
 {:.no_count}
@@ -235,9 +250,9 @@ signaled for the frame of the DFG with show_existing_frame flag equal to 0,
 relative to the moment of time when the first DFG is removed from the smoothing buffer, decoder_buffer_delay:
 
 ~~~~~ c
-ScheduledRemovalTiming [ 0 ] = decoder_buffer_delay ÷ 90 000
+ScheduledRemovalTiming[ 0 ] = decoder_buffer_delay ÷ 90 000
 
-ScheduledRemovalTiming [ i ] = ScheduledRemovalTiming [ 0 ]  + buffer_removal_time[ i ] * DecCT
+ScheduledRemovalTiming[ i ] = ScheduledRemovalTiming[ 0 ]  + buffer_removal_time[ i ] * DecCT
 ~~~~~
 
 DFG i is removed from the smoothing buffer at time Removal[ i ].
@@ -260,14 +275,14 @@ In that case the removal of the DFG is deferred until the first decode clock tic
 in the smoothing buffer, that is:
 
 ~~~~~ c
-Removal [ i ] = ceil ( LastBitArrival [ i ] ÷ DecCT ) * DecCT
+Removal[ i ] = ceil ( LastBitArrival[ i ] ÷ DecCT ) * DecCT
 ~~~~~
 
 If the entire DFG is available in the smoothing buffer at the scheduled removal time,
 i.e. ScheduledRemovalTiming[ i ] >= LastBitArrival[ i ], then it is removed at the scheduled time, that is:
 
 ~~~~~ c
-Removal [ i ]  =  ScheduledRemovalTiming [ i ]
+Removal[ i ]  =  ScheduledRemovalTiming[ i ]
 ~~~~~
 
 #### Removal times in resource availability mode
@@ -284,7 +299,7 @@ In this mode, the decoder starts to decode a frame as fast as it can after compl
 and a free frame buffer is available. A frame buffer is defined as being available
 if it is no longer being used and its content can be overwritten. 
 
-Removal times in the resource availability mode are produced by the decode process in [section E.10.8][]
+Removal times in the resource availability mode are produced by the decode process in [section E.5.2][]
 
 The following function, time_next_buffer_is_free, is used by the decode process to determine the Removal[ i ] time  for the next DFG
 and generate the value of ScheduledRemovalResource[ i ].
@@ -296,8 +311,8 @@ time_next_buffer_is_free ( i, time ) {
     }
     foundBuffer = 0
     for ( k = 0; k < BufferPoolMaxSize; k++ ) {
-        if ( DecoderRefCount [ k ] == 0 ) {
-            if ( PlayerRefCount [ k ] == 0 ) {
+        if ( DecoderRefCount[ k ] == 0 ) {
+            if ( PlayerRefCount[ k ] == 0 ) {
                 ScheduledRemovalResource[ i ] = time
                 return time
             }
@@ -312,7 +327,7 @@ time_next_buffer_is_free ( i, time ) {
 }
 ~~~~~
 
-### Frame decoding
+#### Frame decode timing
 {:.no_count}
 
 The time required to decode a frame (i.e. to process the decodable frame’s DFG),
@@ -345,180 +360,77 @@ If the spatial_layer_dimensions_present_flag syntax element is not present in th
 
 The MaxDecodeRate value is defined in [section A.3] for the level signaled for the operating point the decoder has chosen to decode.
 
-### Frame presentation timing
+#### Frame presentation timing
 {:.no_count}
-
-Frames with show_existing_frame = 1, or show_frame = 1 are referred to as Displayable Frames.
-Each displayable frame j has a scheduled presentation time, PresentationTime [ j ], defined to be a multiple of a display clock tick:
-
-~~~~~ c
-DispCT = num_units_in_display_tick ÷ time_scale
-~~~~~
-
-Here DispCT represents the expected time interval between displaying two consecutive frames, or a common divisor of the expected times between displaying two consecutive frames if the encoded bitstream has a variable display frame rate.
 
 Initial presentation delay is determined as follows:
 
 ~~~~~ c
-InitialPresentationDelay =  Removal [ initial_display_delay_minus_1 ] + TimeToDecode [ initial_display_delay_minus_1 ].
+InitialPresentationDelay =  Removal [ initial_display_delay_minus_1 ] + TimeToDecode [ initial_display_delay_minus_1 ]
 ~~~~~
 
 When equal_picture_interval is equal to 0, the decoder operates in variable frame rate mode, the frame presentation time is defined as follows:
 
 ~~~~~ c
-PresentationTime [ 0 ] = InitialPresentationDelay
+PresentationTime[ 0 ] = InitialPresentationDelay
 
-PresentationTime [ j ] = InitialPresentationDelay + ( frame_presentation_time[ j ] - frame_presentation_time[ 0 ] ) * DispCT
+PresentationTime[ j ] = InitialPresentationDelay + ( frame_presentation_time[ j ] - frame_presentation_time[ 0 ] ) * DispCT
 ~~~~~
 
 When equal_picture_interval is equal to 1, the decoder operates in the constant frame rate mode,
 and the frame presentation time is defined as follows:
 
 ~~~~~ c
-PresentationTime [ 0 ] = InitialPresentationDelay
+PresentationTime[ 0 ] = InitialPresentationDelay
 
-PresentationTime [ j ] = PresentationTime [ j - 1] + ( num_ticks_per_picture_minus_1 + 1 ) * DispCT,
+PresentationTime[ j ] = PresentationTime[ j - 1 ] + ( num_ticks_per_picture_minus_1 + 1 ) * DispCT
 ~~~~~
 
-where PresentationTime [ j - 1 ] refers to the previous frame in presentation order.
+where PresentationTime[ j - 1 ] refers to the previous frame in presentation order.
 
 The presentation interval, i.e. the time interval between the display of consecutive frames j and j + 1 in presentation order, is defined as follows: 
 
 ~~~~~ c
-PresentationInterval [ j ] = PresentationTime [ j + 1 ] - PresentationTime [ j ]
+PresentationInterval[ j ] = PresentationTime[ j + 1 ] - PresentationTime[ j ]
 ~~~~~
 
-### Bitstream conformance
+### Decoder model
 {:.no_count}
 
-#### General
+#### Decoder model functions
 {:.no_count}
 
-A conformant coded bitstream shall satisfy the following set of constraints.
+This section defines the buffer management functions invoked by the decoder model process.
 
-For the decoder model a DFG shall be available in the smoothing buffer at the scheduled removal time,
-i.e. ScheduledRemoval [ i ] >= LastBitArrival [ i ].
-
-It is a requirement of the bitstream conformance that after each RAP, the PresentationTime [ j ],
-where j corresponds to the frame decoding order is strictly increasing until the next RAP or the end of the coded video sequence, i.e. PresentationTime [ j + 1] > PresentationTime [ j ].
-
-When buffer_removal_time [ i ] is not present in the bitstream, a bitstream is conformant if the decoder model in resource availability mode can decode pictures successfully before they are scheduled for presentation.
-
-If buffer_removal_time [ i ] is signaled, it shall have a value greater or equal than the
-equivalent value that would have been assigned if the decoder model was decoding frames in the resource availability mode.
-
-#### Decoder buffer delay consistency across RAP (applies to decoding schedule mode)
-{:.no_count}
-
-For frame i, where i > 0, TimeDelta [ i ] is defined as follows:
-
-~~~~~ c
-TimeDelta [ i ] = ( ScheduledRemoval [ i ] - LastBitArrival [ i -1 ] ) * 90 000
-~~~~~
-
-For the video sequence that includes one or more random access points, for each key frame,
-where the decoder_buffer_delay is signaled, the following expressions should hold to provide smooth playback without the need to rebuffer. 
-
-~~~~~ c
-decoder_buffer_delay <= ceil( TimeDelta [ i ] )
-~~~~~
-
-#### Smoothing buffer overflow
-{:.no_count}
-
-Smoothing buffer overflow is defined as the state where the total number of bits in the smoothing buffer
-exceeds the size of the smoothing buffer BufferSize. The smoothing buffer shall never overflow.
-
-#### Smoothing buffer underflow
-{:.no_count}
-
-Smoothing buffer underflow is defined as the state where a complete DFG is not present in the smoothing buffer at the scheduled removal time, ScheduledRemoval [ i ]:
- 
-~~~~~ c
-ScheduledRemoval [ i ] < LastBitArrival [ i ]
-~~~~~
-
-When the low_delay_mode_flag[ op ] is equal to 0, the smoothing buffer shall never underflow.
-
-#### Minimum decode time (applies to decoding schedule mode)
-{:.no_count}
-
-There must be enough time between a DFG being removed from the smoothing buffer,
-Removal [ i ], and the scheduled removal of the next DFG, ScheduledRemoval [ i + 1 ]:
-
-~~~~~ c
-ScheduledRemoval [ i + 1] - Removal [ i ]  >= Max( TimeToDecode [ i ], 1 ÷ MaxNumFrameHeadersPerSec ),
-~~~~~
-
-where MaxNumFrameHeadersPerSec is defined in the level constraints.
-
-#### Minimum presentation Interval
-{:.no_count}
-
-The difference between presentation times for consecutive displayable frames, shall satisfy the following constraint: 
-
-~~~~~ c
-MaxFrameTime = MaxTotalDecodedSampleRate ÷ ( MaxNumFrameHeadersSec * MaxTotalDisplaySampleRate )
- 
-PresentationInterval [ j ]  >= Max( LumaPels ÷ MaxTotalDisplaySampleRate, MaxFrameTime )
-~~~~~
-
-Where MaxTotalDecodedSampleRate, MaxNumFrameHeadersPerSec, and MaxTotalDisplaySampleRate are defined in the level constraints.
-
-#### Decode deadline
-{:.no_count}
-
-It is a requirement of the bitstream conformance that each frame shall be fully decoded at,
-or before, the time that it is scheduled for presentation:
-
-~~~~~ c
-Removal [ i ] + TimeToDecode [ i ] <= PresentationTime [ i ]
-~~~~~
-
-#### Level imposed constraints
-{:.no_count}
-
-The sum of the  encoder_buffer_delay and the decoder_buffer_delay ( encoder_buffer_delay + decoder_buffer_delay )
-shall be constant for the entire video sequence .
-
-When operating in the decoding schedule mode mode, decoder_buffer_delay shall not be equal to 0 and shall not exceed 90000 * ( BufferSize ÷ BitRate).
-
-**Note:** It is common to choose ( encoder_buffer_delay + decoder_buffer_delay ) ÷ 90000 * BitRate equal to BufferSize.
-{:.alert .alert-info }
-
-#### Decode Process constraints
-{:.no_count}
-
-The decoding process below is shown for the operating point operatingPoint.
-It is a requirement of the bitstream conformance that executing the algorithm presented in the decode_process ( ) function
-below with the input with the bitstream data for a chosen operating point op and
-the decoder level constraints for the level indicated for the chosen operating point op does not result in the
-call of the bitstream_non_conformant () function. 
+The free_buffer function clears the variables for a particular index in the BufferPool.
 
 ~~~~~ c
 free_buffer( idx ) {
-    DecoderRefCount [ idx ] = 0
-    PlayerRefCount [ idx ] = 0
+    DecoderRefCount[ idx ] = 0
+    PlayerRefCount[ idx ] = 0
     PresentationTimes[ idx ] =  -1  
-}
-
-initialize_buffer_pool( ) {
-    for ( i = 0; i < BufferPoolMaxSize; i++ )
-        free_buffer ( i )
-    for ( i = 0; i < 8; i++ )
-        VBI[ i ] = -1
-    cfbi = -1
 }
 ~~~~~
 
-The decoder needs an un-assigned frame buffer from the BufferPool for each frame that it decodes.
-A buffer i is un-assigned if both DecoderRefCount [ i ] is equal to 0, and PlayerRefCount [ i ] is equal to 0. 
+The initialize_buffer_pool function resets the BufferPool and the VBI.
+
+~~~~~ c
+initialize_buffer_pool( ) {
+    for ( i = 0; i < BufferPoolMaxSize; i++ )
+        free_buffer( i )
+    for ( i = 0; i < 8; i++ )
+        VBI[ i ] = -1
+}
+~~~~~
+
+The get_free_buffer function searches for an un-assigned frame in the BufferPool.
+(The decoder needs an un-assigned frame buffer from the BufferPool for each frame that it decodes.)
 
 ~~~~~ c
 get_free_buffer( ) {
     for ( i = 0; i < BufferPoolMaxSize; i++ ) {
-        if ( DecoderRefCount [ i ] == 0 &&
-             PlayerRefCount [ i ] == 0 )
+        if ( DecoderRefCount[ i ] == 0 &&
+             PlayerRefCount[ i ] == 0 )
             return i
     return -1
 }
@@ -528,30 +440,34 @@ Once decoded, frames may update one or more of the VBI index slots, as defined b
 Each time a VBI index slot is updated the decoder reference count is incremented by 1 for the corresponding frame buffer.
 If the VBI index slot being updated is currently occupied, the decoder reference count for the frame buffer being displaced must be decremented by 1.
 
+The update_ref_buffers function updates the VBI and reference counts when the reference frames are updated.
+
 ~~~~~ c
 update_ref_buffers ( idx, refresh_frame_flags ) {
     for ( i = 0; i < 8; i++ ) {
         if ( refresh_frame_flags & ( 1 << i ) ) {
             if ( VBI[ i ] != -1 )
-                DecoderRefCount [ VBI[ i ] ] --
+                DecoderRefCount[ VBI[ i ] ] --
             VBI[ i ] = idx
-            DecoderRefCount [ idx ] ++
+            DecoderRefCount[ idx ] ++
         }
     }
 }
 ~~~~~
 
+In decoding schedule mode the decoder only starts to decode a frame at the time designated by a Removal time associated with that frame, and expects a free frame buffer to be immediately available.
+
 In resource availability mode the decoder may start to decode the next frame as soon as a free reference buffer is available.
 If a free frame buffer is not available immediately, the PresentationTimes[ i ] may be used to compute the time when such a buffer will become available.
 
-In decoding schedule mode the decoder only starts to decode a frame at the time designated by a Removal time associated with that frame, and expects a free frame buffer to be immediately available.
+The function start_decode_at_removal_time returns buffers to the BufferPool when they are no longer required for decode or display.
 
 ~~~~~ c
 start_decode_at_removal_time( removal ) {
     for ( i = 0; i < BufferPoolMaxSize; i++ ) {
-        if ( PlayerRefCount [ i ] > 0) {
+        if ( PlayerRefCount[ i ] > 0) {
             if ( PresentationTimes[ i ] < removal ) {
-                 PlayerRefCount [ i ] = 0
+                 PlayerRefCount[ i ] = 0
                  if ( DecoderRefCount[ i ] == 0 )
                      free_buffer( i )
             }
@@ -563,13 +479,15 @@ start_decode_at_removal_time( removal ) {
 ~~~~~
 
 The decoder needs to know the number of decoded frames in the BufferPool in order to determine the presentation delay for the first frame.
-A buffer is un-assigned if both DecoderRefCount [ i ] is equal to 0, and PlayerRefCount [ i ] is equal to 0. 
+A buffer is un-assigned if both DecoderRefCount[ i ] is equal to 0, and PlayerRefCount[ i ] is equal to 0. 
+
+The function frames_in_buffer_pool returns the number of assigned frames in the BufferPool.
 
 ~~~~~ c
 frames_in_buffer_pool( ) {
     framesInPool = 0
     for ( i = 0; i < BufferPoolMaxSize; i++ )
-        if ( DecoderRefCount [ i ] != 0 || PlayerRefCount [ i ] != 0 )
+        if ( DecoderRefCount[ i ] != 0 || PlayerRefCount[ i ] != 0 )
             framesInPool++
     return framesInPool
 }
@@ -594,9 +512,12 @@ get_next_frame( frameNum )
 When the function ReadFrameHeader() is invoked, the syntax elements and variables are set to the values
 at the conceptual point (in the decoding process specified in [section 7][])
 when the next uncompressed header has just been parsed.  If there are no more
-frame headers in the bitstream, then a value of 0 is returned.  Otherwise, a value of 1 is returned. 
+frame headers in the bitstream, then a value of 0 is returned.  Otherwise, a value of 1 is returned.
 
-The decode process model simulates the values of selected timing points as successive frames are decoded.
+#### Decoder model process
+{:.no_count}
+
+The decoder model process simulates the values of selected timing points as successive frames are decoded.
 This timing incorporates the time that the decoder has to wait for a free frame buffer,
 the time required to decode the frame and various basic checks to make sure that buffer slots are occupied when they are supposed to be.
 Non-conformance is signaled by a call to the function bitstream_non_conformant; the various error codes are tabulated below.
@@ -606,14 +527,15 @@ decode_process ( ) {
     initialize_buffer_pool( )
     time = 0
     frameNum = -1
+    cfbi = -1
     InitialPresentationDelay = 0
     while( (frameNum = get_next_frame( frameNum ) ) != - 1) {
         // Decode.
         if ( !show_existing_frame ) {
             if ( UsingResourceAvailabilityMode )
                 Removal [ frameNum ] = time_next_buffer_is_free( frameNum, time )
-            time = start_decode_at_removal_time( Removal [ frameNum ] )
-            if ( show_frame == 1 && time > PresentationTime [ frameNum ] )
+            time = start_decode_at_removal_time( Removal[ frameNum ] )
+            if ( show_frame == 1 && time > PresentationTime[ frameNum ] )
                 bitstream_non_conformant( DECODE_BUFFER_AVAILABLE_LATE )
             cfbi = get_free_buffer( )
             if ( cfbi == -1 )
@@ -629,16 +551,16 @@ decode_process ( ) {
             if ( displayIdx == -1 )
                 bitstream_non_conformant( DECODE_EXISTING_FRAME_BUF_EMPTY )
             if ( RefFrameType[ frame_to_show_map_idx ] == KEY_FRAME )
-                update_ref_buffers ( displayIdx, 0xFF )
+                update_ref_buffers( displayIdx, 0xFF )
         }
         // Display.
         if ( InitialPresentationDelay != 0 &&
             ( show_existing_frame == 1 || show_frame == 1 )) {
             // Presentation frame.
-            if ( time > PresentationTime [ frameNum ] )
+            if ( time > PresentationTime[ frameNum ] )
                 bitstream_non_conformant( DISPLAY_FRAME_LATE )
-            PresentationTimes[ displayIdx ]= PresentationTime [ frameNum ]
-            PlayerRefCount [ displayIdx ] ++
+            PresentationTimes[ displayIdx ]= PresentationTime[ frameNum ]
+            PlayerRefCount[ displayIdx ] ++
         }
     }
 }
@@ -655,4 +577,110 @@ The various non-conformant error codes are:
 | DECODE_EXISTING_FRAME_BUF_EMPTY | The index of the frame designated for display by a frame with show_existing_frame = 1 was empty.
 | DISPLAY_FRAME_LATE              | The frame was decoded too late for timely display, i.e. by the PresentationTime[ i ] time associated with the frame.
 {:.table .table-sm .table-bordered }
+
+
+### Bitstream conformance
+{:.no_count}
+
+#### General
+{:.no_count}
+
+A conformant coded bitstream shall satisfy the following set of constraints.
+
+For the decoder model a DFG shall be available in the smoothing buffer at the scheduled removal time,
+i.e. ScheduledRemoval[ i ] >= LastBitArrival[ i ].
+
+It is a requirement of the bitstream conformance that after each RAP, the PresentationTime[ j ],
+where j corresponds to the frame decoding order is strictly increasing until the next RAP or the end of the coded video sequence, i.e. PresentationTime[ j + 1] > PresentationTime[ j ].
+
+When buffer_removal_time[ i ] is not present in the bitstream, a bitstream is conformant if the decoder model in resource availability mode can decode pictures successfully before they are scheduled for presentation.
+
+If buffer_removal_time[ i ] is signaled, it shall have a value greater or equal than the
+equivalent value that would have been assigned if the decoder model was decoding frames in the resource availability mode.
+
+#### Decoder buffer delay consistency across RAP (applies to decoding schedule mode)
+{:.no_count}
+
+For frame i, where i > 0, TimeDelta[ i ] is defined as follows:
+
+~~~~~ c
+TimeDelta[ i ] = ( ScheduledRemoval[ i ] - LastBitArrival[ i -1 ] ) * 90 000
+~~~~~
+
+For the video sequence that includes one or more random access points, for each key frame,
+where the decoder_buffer_delay is signaled, the following expressions should hold to provide smooth playback without the need to rebuffer. 
+
+~~~~~ c
+decoder_buffer_delay <= ceil( TimeDelta[ i ] )
+~~~~~
+
+#### Smoothing buffer overflow
+{:.no_count}
+
+Smoothing buffer overflow is defined as the state where the total number of bits in the smoothing buffer
+exceeds the size of the smoothing buffer BufferSize. The smoothing buffer shall never overflow.
+
+#### Smoothing buffer underflow
+{:.no_count}
+
+Smoothing buffer underflow is defined as the state where a complete DFG is not present in the smoothing buffer at the scheduled removal time, ScheduledRemoval [ i ]:
+ 
+~~~~~ c
+ScheduledRemoval[ i ] < LastBitArrival[ i ]
+~~~~~
+
+When the low_delay_mode_flag[ op ] is equal to 0, the smoothing buffer shall never underflow.
+
+#### Minimum decode time (applies to decoding schedule mode)
+{:.no_count}
+
+There must be enough time between a DFG being removed from the smoothing buffer,
+Removal[ i ], and the scheduled removal of the next DFG, ScheduledRemoval[ i + 1 ]:
+
+~~~~~ c
+ScheduledRemoval[ i + 1] - Removal[ i ]  >= Max( TimeToDecode[ i ], 1 ÷ MaxNumFrameHeadersPerSec ),
+~~~~~
+
+where MaxNumFrameHeadersPerSec is defined in the level constraints.
+
+#### Minimum presentation Interval
+{:.no_count}
+
+The difference between presentation times for consecutive displayable frames, shall satisfy the following constraint: 
+
+~~~~~ c
+MaxFrameTime = MaxTotalDecodedSampleRate ÷ ( MaxNumFrameHeadersSec * MaxTotalDisplaySampleRate )
+ 
+PresentationInterval[ j ]  >= Max( LumaPels ÷ MaxTotalDisplaySampleRate, MaxFrameTime )
+~~~~~
+
+Where MaxTotalDecodedSampleRate, MaxNumFrameHeadersPerSec, and MaxTotalDisplaySampleRate are defined in the level constraints.
+
+#### Decode deadline
+{:.no_count}
+
+It is a requirement of the bitstream conformance that each frame shall be fully decoded at,
+or before, the time that it is scheduled for presentation:
+
+~~~~~ c
+Removal[ i ] + TimeToDecode[ i ] <= PresentationTime[ i ]
+~~~~~
+
+#### Level imposed constraints
+{:.no_count}
+
+The sum of encoder_buffer_delay and decoder_buffer_delay for a particular operating point
+shall be constant for the entire bitstream.
+
+When operating in the decoding schedule mode mode, decoder_buffer_delay shall not be equal to 0 and shall not exceed 90000 * ( BufferSize ÷ BitRate).
+
+**Note:** It is common to choose ( ( encoder_buffer_delay + decoder_buffer_delay ) ÷ 90000 ) * BitRate equal to BufferSize.
+{:.alert .alert-info }
+
+#### Decode Process constraints
+{:.no_count}
+
+It is a requirement of bitstream conformance that the decoder model process can be invoked with the bitstream data
+for any signaled operating point without triggering a call to the bitstream_non_conformant function.
+
 
