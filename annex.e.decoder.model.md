@@ -338,6 +338,8 @@ time_to_decode_frame( ) {
 }
 ~~~~~
 
+If the spatial_layer_dimensions_present_flag syntax element is not present in the coded video sequence, it is taken to be equal to 0.
+
 The MaxDecodeRate value is defined in [section A.3] for the level signaled for the operating point the decoder has chosen to decode.
 
 ### Frame presentation timing
