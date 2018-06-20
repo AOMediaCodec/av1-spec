@@ -528,7 +528,7 @@ update_ref_buffers ( idx, refresh_frame_flags ) {
     for ( i = 0; i < 8; i++ ) {
         if ( refresh_frame_flags & ( 1 << i ) ) {
             if ( VBI[ i ] != -1 )
-              DecoderRefCount [ VBI[ i ] ] --
+                DecoderRefCount [ VBI[ i ] ] --
             VBI[ i ] = idx
             DecoderRefCount [ idx ] ++
         }
@@ -545,14 +545,14 @@ In decoding schedule mode the decoder only starts to decode a frame at the time 
 start_decode_at_removal_time ( Removal ) {
     for ( i = 0; i <BufferPoolMaxSize; i++ ) {
         if ( PlayerRefCount [ i ] > 0) {
-             if ( PresentationTimes[ i ] < Removal ) {
+            if ( PresentationTimes[ i ] < Removal ) {
                  PlayerRefCount [ i ] = 0
                  if ( DecoderRefCount[ i ] == 0 )
                      free_buffer( i )
-    	 }
-             break
-          }
-     }
+            }
+            break
+        }
+    }
     return Removal
 }
 ~~~~~
@@ -562,11 +562,11 @@ A buffer is un-assigned if both DecoderRefCount [ i ] is equal to 0, and PlayerR
 
 ~~~~~ c
 frames_in_buffer_pool( ) {
-  framesInPool = 0	
-  for ( i = 0; i < BufferPoolMaxSize; i++ )
-    if ( DecoderRefCount [ i ] != 0 || PlayerRefCount [ i ]  != 0 )
-      framesInPool++
-  return framesInPool
+    framesInPool = 0
+    for ( i = 0; i < BufferPoolMaxSize; i++ )
+        if ( DecoderRefCount [ i ] != 0 || PlayerRefCount [ i ] != 0 )
+            framesInPool++
+    return framesInPool
 }
 ~~~~~
 
@@ -617,11 +617,11 @@ decode_process ( ) {
             if ( cfbi == -1 )
                 bitstream_non_conformant( DECODE_FRAME_BUF_UNAVAILABLE )
             time += time_to_decode_frame ( )
-        update_ref_buffers ( cfbi, refresh_frame_flags )
+            update_ref_buffers ( cfbi, refresh_frame_flags )
             displayIdx = cfbi
-        if ( InitialPresentationDelay == 0 && 
-            ( frames_in_buffer_pool( ) >= initial_display_delay_minus_1[ operatingPoint ] + 1 ) )
-          InitialPresentationDelay = time	
+            if ( InitialPresentationDelay == 0 && 
+                 ( frames_in_buffer_pool( ) >= initial_display_delay_minus_1[ operatingPoint ] + 1 ) )
+                InitialPresentationDelay = time	
         } else {
             displayIdx = VBI[ frame_to_show_map_idx ]
             if ( displayIdx == -1 )
@@ -632,11 +632,11 @@ decode_process ( ) {
         // Display.
         if ( InitialPresentationDelay != 0 &&
             ( show_existing_frame == 1 || show_frame == 1 )) {
-          // Presentation frame.
-          if ( time > PresentationTime [ frameNum ] )
-            bitstream_non_conformant( DISPLAY_FRAME_LATE )
-          PresentationTimes[ displayIdx ]= PresentationTime [ frameNum ]
-          PlayerRefCount [ displayIdx ] ++
+            // Presentation frame.
+            if ( time > PresentationTime [ frameNum ] )
+                bitstream_non_conformant( DISPLAY_FRAME_LATE )
+            PresentationTimes[ displayIdx ]= PresentationTime [ frameNum ]
+            PlayerRefCount [ displayIdx ] ++
         }
     }
 }
