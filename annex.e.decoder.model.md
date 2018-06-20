@@ -284,28 +284,28 @@ In this mode, the decoder starts to decode a frame as fast as it can after compl
 and a free frame buffer is available. A frame buffer is defined as being available
 if it is no longer being used and its content can be overwritten. 
 
-Removal times in the resource availability mode are defined as follows:
+Removal times in the resource availability mode are produced by the decode process in [section E.10.8][]
+
+The following function, time_next_buffer_is_free, is used by the decode process to determine the Removal[ i ] time  for the next DFG
+and generate the value of ScheduledRemovalResource[ i ].
 
 ~~~~~ c
-ScheduledRemovalResource [ 0 ] = decoder_buffer_delay ÷ 90 000 
-~~~~~
-
-and ScheduledRemovalResource[ i ] is defined to be the earliest time that a frame buffer becomes available, which can be computed using the function time_next_buffer_is_free( ) below. 
-
-The following function time_next_buffer_is_free () is used to determine the Removal[ i ] time  for the next DFG.
-
-~~~~~ c
-time_next_buffer_is_free ( time ) {
-    ScheduledRemovalResource[ i ] = UINT_MAX
+time_next_buffer_is_free ( i, time ) {
+    foundBuffer = 0
     for ( k = 0; k < BufferPoolMaxSize; k++ ) {
         if ( DecoderRefCount [ k ] == 0 ) {
-            if ( PlayerRefCount [ k ] == 0 ) 
-                return ScheduledRemovalResource[ i ] = time
-            if ( PresentationTimes[ k ] < bufFreeTime )
-                ScheduledRemovalResource[ i ] = PresentationTimes[ k ]
+            if ( PlayerRefCount [ k ] == 0 ) {
+                ScheduledRemovalResource[ i ] = time
+                return time
+            }
+            if ( !foundBuffer || PresentationTimes[ k ] < bufFreeTime ) {
+                bufFreeTime = PresentationTimes[ k ]
+                foundBuffer = 1
+            }
         }
     }
-    return ScheduledRemovalResource[ i ]
+    ScheduledRemovalResource[ i ] = bufFreeTime
+    return bufFreeTime
 }
 ~~~~~
 
@@ -611,7 +611,7 @@ decode_process ( ) {
         // Decode.
         if ( show_existing_frame != 1 ) {
             if ( Removal [ frameNum ] == -1 )
-                Removal [ frameNum ] = time_next_buffer_is_free( time )
+                Removal [ frameNum ] = time_next_buffer_is_free( frameNum, time )
             time = start_decode_at_removal_time( Removal [ frameNum ] )
             if ( show_frame == 1 && time > PresentationTime [ frameNum ] )
                 bitstream_non_conformant( DECODE_BUFFER_AVAILABLE_LATE )
