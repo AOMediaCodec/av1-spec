@@ -492,7 +492,7 @@ The function get_next_frame switches to decoding the next frame in decoding orde
 ~~~~~ c
 get_next_frame( frameNum ) 
 {
-    if ( ReadFrameHeader( ) ) {
+    if ( read_frame_header( ) ) {
         if ( !show_existing_frame ) {
             frameNum++
         }
@@ -503,7 +503,7 @@ get_next_frame( frameNum )
 }
 ~~~~~
 
-When the function ReadFrameHeader() is invoked, the syntax elements and variables are set to the values
+When the function read_frame_header() is invoked, the syntax elements and variables are set to the values
 at the conceptual point (in the decoding process specified in [section 7][])
 when the next uncompressed header has just been parsed.  If there are no more
 frame headers in the bitstream, then a value of 0 is returned.  Otherwise, a value of 1 is returned.
