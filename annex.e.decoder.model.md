@@ -616,8 +616,6 @@ decode_process ( ) {
             cfbi = get_free_buffer( )
             if ( cfbi == -1 )
                 bitstream_non_conformant( DECODE_FRAME_BUF_UNAVAILABLE )
-            if ( check_ref_buffers( ) == 0 )
-                bitstream_non_conformant( DECODE_REF_BUF_EMPTY )
             time += time_to_decode_frame ( )
         update_ref_buffers ( cfbi, refresh_frame_flags )
             displayIdx = cfbi
@@ -650,7 +648,6 @@ The various non-conformat error codes are:
 | ------------------------------- | ------------------
 | DECODE_BUFFER_AVAILABLE_LATE    | A free frame buffer only became available to the decoder after the time that the frame should have been displayed.
 | DECODE_FRAME_BUF_UNAVAILABLE    | All the frame buffers were in use.
-| DECODE_REF_BUF_EMPTY            | One or more of the slots in VBI specified as a reference by the current frame was empty.
 | DECODE_EXISTING_FRAME_BUF_EMPTY | The index of the frame designated for display by a frame with show_existing_frame = 1 was empty.
 | DISPLAY_FRAME_LATE              | The frame was decoded too late for timely display, i.e. by the PresentationTime[ i ] time associated with the frame.
 {:.table .table-sm .table-bordered }
