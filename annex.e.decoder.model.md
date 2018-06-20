@@ -1,4 +1,4 @@
-## Annex E: Decoder Model
+## Annex E: Decoder model
 {:.no_count}
 
 ### General
@@ -508,7 +508,7 @@ initialize_buffer_pool( ) {
 }
 ~~~~~
 
-The Decoder needs an un-assigned frame buffer from the BufferPool for each frame that it decodes.
+The decoder needs an un-assigned frame buffer from the BufferPool for each frame that it decodes.
 A buffer i is un-assigned if both DecoderRefCount [ i ] is equal to 0, and PlayerRefCount [ i ] is equal to 0. 
 
 ~~~~~ c
@@ -559,7 +559,7 @@ start_decode_at_removal_time( removal ) {
 }
 ~~~~~
 
-The Decoder needs to know the number of decoded frames in the BufferPool in order to determine the presentation delay for the first frame.
+The decoder needs to know the number of decoded frames in the BufferPool in order to determine the presentation delay for the first frame.
 A buffer is un-assigned if both DecoderRefCount [ i ] is equal to 0, and PlayerRefCount [ i ] is equal to 0. 
 
 ~~~~~ c
@@ -572,29 +572,26 @@ frames_in_buffer_pool( ) {
 }
 ~~~~~
 
+The function get_next_frame switches to decoding the next frame in decoding order for the operating point.
+
 ~~~~~ c
 get_next_frame( frameNum ) 
 {
-   // Switch to decoding next frame in the decoding order for the operatingPoint. 
-   // The header of the frame is read, and the frame context is re-initialized. 
-   // Until the next call of this function, the frame related variable in the decoder model algorithm
-   // are read from the frame that is being analyzed and decoded. 
-  
-   while ( ObuPresentInSmoothingBuffer ) {
-      parse_OBU ()
-      if ( obu_type == OBU_FRAME_HEADER ) {
-          ReadFrameHeader( )
-          if (show_existing_frame != 1 ) {
-              frameNum++ 
-          }
-      return frameNum
-   }
-
-   return  -1
+    if ( ReadFrameHeader( ) ) {
+        if ( !show_existing_frame ) {
+            frameNum++ 
+        }
+        return frameNum
+    } else {
+        return -1
+    }
 }
 ~~~~~
 
-ReadFrameHeader( ) function parses a frame header OBU according to the process described in [section 5.9.1][]. 
+When the function ReadFrameHeader() is invoked, the syntax elements and variables are set to the values
+at the conceptual point (in the decoding process specified in [section 7][])
+when the next uncompressed header has just been parsed.  If there are no more
+frame headers in the bitstream, then a value of 0 is returned.  Otherwise, a value of 1 is returned. 
 
 The decode process model simulates the values of selected timing points as successive frames are decoded.
 This timing incorporates the time that the decoder has to wait for a free frame buffer,
