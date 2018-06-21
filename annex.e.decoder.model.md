@@ -663,12 +663,12 @@ Removal[ i ] + TimeToDecode[ i ] <= PresentationTime[ i ]
 #### Level imposed constraints
 {:.no_count}
 
-The sum of encoder_buffer_delay and decoder_buffer_delay for a particular operating point
-shall be constant for the entire bitstream.
-
 When operating in the decoding schedule mode mode, decoder_buffer_delay shall not be equal to 0 and shall not exceed 90000 * ( BufferSize ÷ BitRate).
 
-**Note:** It is common to choose ( ( encoder_buffer_delay + decoder_buffer_delay ) ÷ 90000 ) * BitRate equal to BufferSize.
+**Note:** It is common to choose ( ( encoder_buffer_delay + decoder_buffer_delay ) ÷ 90000 ) * BitRate equal to a constant
+within a coded video sequence,
+and for this constant to be equal to BufferSize,
+but these are not strict requirements for bitstream conformance.
 {:.alert .alert-info }
 
 #### Decode Process constraints
