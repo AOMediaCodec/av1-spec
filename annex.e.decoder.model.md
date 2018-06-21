@@ -74,9 +74,9 @@ for the decoded frame that is kept in the BufferPool [ i ].
 Coded frames arrive at the decoder smoothing buffer of the size BufferSize at a rate defined by BitRate.
 The following variables are used in this section and below:
 
-**BitRate** is set to a value equal to the MaxBitrate specified for the level signaled for the operating point that is being decoded.
+**BitRate** is set to a value equal to MaxBitrate * BitrateProfileFactor specified for the level signaled for the operating point that is being decoded.
 
-**BufferSize** is set to a value equal to the MaxBufferSize value specified for the level signaled for the operating point that is being decoded.
+**BufferSize** is set to a value equal to MaxBufferSize * BitrateProfileFactor value specified for the level signaled for the operating point that is being decoded.
 
 **Decodable Frame Group i** (DFG i) consists of all OBUs, including headers,
 between the end of the last OBU related to previous frame with show_existing_frame flag equal to 0, (frame i - 1),

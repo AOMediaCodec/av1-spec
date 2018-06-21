@@ -239,14 +239,6 @@ These requirements depend on the following level, tier, and profile dependent va
   * If seq_profile is equal to 1, BitrateProfileFactor is equal to 2.0
 
   * If seq_profile is equal to 2, BitrateProfileFactor is equal to 3.0
-  
-The additional requirements in the buffer model are:
-
-  * BitRate[ op ] shall be less than or equal to the MaxBitRate * BitrateProfileFactor
-    defined in the level constraints for the level associated with operating point op.
-
-  * BufferSize[ op ] shall be less or equal the MaxBufferSize * BitrateProfileFactor
-    defined in the level constraints for the level associated with operating point op.
 
 ### Decoder Conformance
 
