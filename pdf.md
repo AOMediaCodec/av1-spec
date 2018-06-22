@@ -10,7 +10,7 @@ version_date: Released 2017-xx-xx
 {% include_relative 00.title.md %}
 {% include_relative 00.version.md %}
 {% include_relative AUTHORS.md %}
-{% include_relative 00.draft-legend.md %}
+{% include_relative 00.cover-legend.md %}
 {% include_relative LICENSE %}
 <div style="page-break-before: always"></div>
 {% include_relative 00.abstract.md %}
