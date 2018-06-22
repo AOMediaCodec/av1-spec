@@ -115,6 +115,9 @@ The operating point containing just the base layer may be labelled as level 3.0,
 while the operating point containing both the base and enhancement layer may be labelled as level 4.1.
 {:.alert .alert-info }
 
+**Note:** HighMbps values are not defined for levels below level 4.0. seq_tier equal to 1 can only be signaled for level 4.0 and above. 
+{:.alert .alert-info }
+
 The bitstream constraints depend on the variables in the table, and additional variables derived as follows:
 
   * TileWidth is defined as (MiColEnd - MiColStart) * MI_SIZE
