@@ -79,11 +79,11 @@ The following variables are used in this section and below:
 **BufferSize** is set to a value equal to MaxBufferSize * BitrateProfileFactor value specified for the level signaled for the operating point that is being decoded.
 
 **Decodable Frame Group i** (DFG i) consists of all OBUs, including headers,
-between the end of the last OBU related to previous frame with show_existing_frame flag equal to 0, (frame i - 1),
-and the end of the data that belongs to the current frame with show_existing_frame flag equal to 0 (frame i).
-This comprises the OBUs that make up frame i, plus any additional OBUs present in the bitstream that belong to frame i
+between the end of the last OBU associated with the previous frame with show_existing_frame flag equal to 0 (frame k),
+and the end of the last OBU associated with the current frame with show_existing_frame flag equal to 0 (frame p).
+This comprises the OBUs that make up frame p, plus any additional OBUs present in the bitstream that belong to frame p
 (such as the metadata OBU), and OBU that belong to frames with show_existing_frame flag equal to 1
-which are located between frame (i - 1) and the frame i.
+which are located between frame k and frame p.
 The decoder model assumes that the decoding time for processing a frame with show_existing_frame flag equal to 1,
 a header, or a metadata OBU is 0, hence the smoothing buffer operates in the units of DFG.
 
@@ -96,9 +96,7 @@ For the first coded DFG in the sequence, DFG 0 (or after updating decoder model 
 
 **LastBitArrival[ i ]** is the time when the last bit of DFG i finishes entering the smoothing buffer.
 
-Frames with show_existing_frame = 1, or show_frame = 1, are referred to as **Displayable Frames**.
-
-Each displayable frame j has a scheduled presentation time, **PresentationTime[ j ]**, defined to be a multiple of the display clock tick DispCT.
+Each **shown frame** j has a scheduled presentation time, **PresentationTime[ j ]**, defined to be a multiple of the display clock tick DispCT.
 
 **DispCT** represents the expected time interval between displaying two consecutive frames,
 or a common divisor of the expected times between displaying two consecutive frames if the encoded bitstream has a variable display frame rate.
@@ -642,7 +640,7 @@ where MaxNumFrameHeadersPerSec is defined in the level constraints.
 #### Minimum presentation Interval
 {:.no_count}
 
-The difference between presentation times for consecutive displayable frames, shall satisfy the following constraint: 
+The difference between presentation times for consecutive shown frames, shall satisfy the following constraint: 
 
 ~~~~~ c
 MinFrameTime = MaxTotalDecodedSampleRate ÷ ( MaxNumFrameHeadersSec * MaxTotalDisplaySampleRate )
