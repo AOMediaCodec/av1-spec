@@ -79,8 +79,8 @@ The following variables are used in this section and below:
 **BufferSize** is set to a value equal to MaxBufferSize * BitrateProfileFactor value specified for the level signaled for the operating point that is being decoded.
 
 **Decodable Frame Group i** (DFG i) consists of all OBUs, including headers,
-between the end of the last OBU of the previous frame with show_existing_frame flag equal to 0 (frame k),
-and the end of the last OBU of the current frame with show_existing_frame flag equal to 0 (frame p).
+between the end of the last OBU associated with the previous frame with show_existing_frame flag equal to 0 (frame k),
+and the end of the last OBU associated with the current frame with show_existing_frame flag equal to 0 (frame p).
 This comprises the OBUs that make up frame p, plus any additional OBUs present in the bitstream that belong to frame p
 (such as the metadata OBU), and OBU that belong to frames with show_existing_frame flag equal to 1
 which are located between frame k and frame p.
