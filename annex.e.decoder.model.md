@@ -485,14 +485,18 @@ frames_in_buffer_pool( ) {
 }
 ~~~~~
 
-The function get_next_frame switches to decoding the next frame in decoding order for the operating point.
+The function get_next_frame switches to decoding the next frame in decoding order for the operating point. Variable DfgNum increments with each frame that needs decoding and corresponds to the DFG index. Variable ShownFrameNum increments with each shown frame read from the bitstream.
 
 ~~~~~ c
 get_next_frame( frameNum ) 
 {
     if ( read_frame_header( ) ) {
+        frameNum++
         if ( !show_existing_frame ) {
-            frameNum++
+            DfgNum++
+        }
+        if ( show_frame || show_existing_frame) {
+            ShownFrameNum++
         }
         return frameNum
     } else {
@@ -519,15 +523,17 @@ decode_process ( ) {
     initialize_buffer_pool( )
     time = 0
     frameNum = -1
+    DfgNum = -1
+    ShownFrameNum = -1
     cfbi = -1
     InitialPresentationDelay = 0
     while( (frameNum = get_next_frame( frameNum ) ) != - 1) {
         // Decode.
         if ( !show_existing_frame ) {
             if ( UsingResourceAvailabilityMode )
-                Removal [ frameNum ] = time_next_buffer_is_free( frameNum, time )
-            time = start_decode_at_removal_time( Removal[ frameNum ] )
-            if ( show_frame == 1 && time > PresentationTime[ frameNum ] )
+                Removal [ DfgNum ] = time_next_buffer_is_free( DfgNum, time )
+            time = start_decode_at_removal_time( Removal[ DfgNum ] )
+            if ( show_frame == 1 && time > PresentationTime[ ShownFrameNum ] )
                 bitstream_non_conformant( DECODE_BUFFER_AVAILABLE_LATE )
             cfbi = get_free_buffer( )
             if ( cfbi == -1 )
@@ -549,9 +555,9 @@ decode_process ( ) {
         if ( InitialPresentationDelay != 0 &&
             ( show_existing_frame == 1 || show_frame == 1 )) {
             // Presentation frame.
-            if ( time > PresentationTime[ frameNum ] )
+            if ( time > PresentationTime[ ShownFrameNum ] )
                 bitstream_non_conformant( DISPLAY_FRAME_LATE )
-            PresentationTimes[ displayIdx ]= PresentationTime[ frameNum ]
+            PresentationTimes[ displayIdx ]= PresentationTime[ ShownFrameNum ]
             PlayerRefCount[ displayIdx ] ++
         }
     }
