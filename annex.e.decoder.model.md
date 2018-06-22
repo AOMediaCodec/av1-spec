@@ -592,6 +592,8 @@ When buffer_removal_time[ i ] is not present in the bitstream, a bitstream is co
 If buffer_removal_time[ i ] is signaled, it shall have a value greater or equal than the
 equivalent value that would have been assigned if the decoder model was decoding frames in the resource availability mode.
 
+Conformance requirements based on a decoder model are not applicable to a bitstream with seq_level_idx equal to 31. 
+
 In addition to these, a conformant bitstream shall satisfy the constraints specified in the following sections. 
 
 #### Decoder buffer delay consistency across RAP (applies to decoding schedule mode)
