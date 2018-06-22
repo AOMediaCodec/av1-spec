@@ -96,9 +96,7 @@ For the first coded DFG in the sequence, DFG 0 (or after updating decoder model 
 
 **LastBitArrival[ i ]** is the time when the last bit of DFG i finishes entering the smoothing buffer.
 
-Frames with show_existing_frame = 1, or show_frame = 1, are referred to as **Displayable Frames**.
-
-Each displayable frame j has a scheduled presentation time, **PresentationTime[ j ]**, defined to be a multiple of the display clock tick DispCT.
+Each **shown frame** j has a scheduled presentation time, **PresentationTime[ j ]**, defined to be a multiple of the display clock tick DispCT.
 
 **DispCT** represents the expected time interval between displaying two consecutive frames,
 or a common divisor of the expected times between displaying two consecutive frames if the encoded bitstream has a variable display frame rate.
@@ -642,7 +640,7 @@ where MaxNumFrameHeadersPerSec is defined in the level constraints.
 #### Minimum presentation Interval
 {:.no_count}
 
-The difference between presentation times for consecutive displayable frames, shall satisfy the following constraint: 
+The difference between presentation times for consecutive shown frames, shall satisfy the following constraint: 
 
 ~~~~~ c
 MinFrameTime = MaxTotalDecodedSampleRate ÷ ( MaxNumFrameHeadersSec * MaxTotalDisplaySampleRate )
