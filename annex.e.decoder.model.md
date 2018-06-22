@@ -165,7 +165,7 @@ In addition each frame must specify, for operating point op, the following param
 If the parameters listed above are not specified by the bitstream,
 the parameters necessary to input into this model can be signaled by the application or some other means.
 If the parameters necessary to run this model are not signaled,
-it is not possible to check the conformance of the stream to the claimed level.
+it is not possible to check the conformance of the stream to the claimed level with this model.
 
 #### When timing information is not present in the bitstream
 {:.no_count}
@@ -232,8 +232,8 @@ When the decoder model operates in the resource availability mode
 ScheduledRemoval[ i ] = ScheduledRemovalResource[ i ]
 ~~~~~
 
-Derivation of ScheduledRemovalTiming[ i ] in the decoding schedule mode is described in [section E.4.1][],
-and derivation of ScheduledRemovalResource[ i ] in the resource availability mode is described in [section E.4.2][].
+Derivation of ScheduledRemovalTiming[ i ] in the decoding schedule mode is described in [section E.4.4][],
+and derivation of ScheduledRemovalResource[ i ] in the resource availability mode is described in [section E.4.5][].
 
 #### Removal times in decoding schedule mode
 {:.no_count}
@@ -592,6 +592,8 @@ When buffer_removal_time[ i ] is not present in the bitstream, a bitstream is co
 If buffer_removal_time[ i ] is signaled, it shall have a value greater or equal than the
 equivalent value that would have been assigned if the decoder model was decoding frames in the resource availability mode.
 
+In addition to these, a conformant bitstream shall satisfy the constraints specified in the following sections. 
+
 #### Decoder buffer delay consistency across RAP (applies to decoding schedule mode)
 {:.no_count}
 
@@ -643,9 +645,9 @@ where MaxNumFrameHeadersPerSec is defined in the level constraints.
 The difference between presentation times for consecutive displayable frames, shall satisfy the following constraint: 
 
 ~~~~~ c
-MaxFrameTime = MaxTotalDecodedSampleRate ÷ ( MaxNumFrameHeadersSec * MaxTotalDisplaySampleRate )
+MinFrameTime = MaxTotalDecodedSampleRate ÷ ( MaxNumFrameHeadersSec * MaxTotalDisplaySampleRate )
  
-PresentationInterval[ j ]  >= Max( LumaPels ÷ MaxTotalDisplaySampleRate, MaxFrameTime )
+PresentationInterval[ j ]  >= Max( LumaPels ÷ MaxTotalDisplaySampleRate, MinFrameTime )
 ~~~~~
 
 Where MaxTotalDecodedSampleRate, MaxNumFrameHeadersPerSec, and MaxTotalDisplaySampleRate are defined in the level constraints.
