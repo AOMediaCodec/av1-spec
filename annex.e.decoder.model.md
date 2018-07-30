@@ -334,7 +334,7 @@ time_to_decode_frame( ) {
     if ( show_existing_frame == 1 ) {
         lumaSamples = 0
     } else if ( frame_type == KEY_FRAME ||
-                   frame_type == INTRA_ONLY )
+                frame_type == INTRA_ONLY ) {
         lumaSamples = UpscaledWidth * FrameHeight
     } else {
         if ( spatial_layer_dimensions_present_flag ) 
@@ -424,6 +424,7 @@ get_free_buffer( ) {
         if ( DecoderRefCount[ i ] == 0 &&
              PlayerRefCount[ i ] == 0 )
             return i
+    }
     return -1
 }
 ~~~~~
