@@ -40,8 +40,8 @@ although the actual decoder implementation may differ.
 
 **BufferPool** is a storage area for a set of frame buffers.
 Buffer pool area allocated for storing separate frames is defined as BufferPool[ i ],
-where i takes values from 0 to BufferPoolMaxSize - 1. When a frame buffer is used for storing a decoded frame,
-it is indicated by a VBI slot that points to this frame buffer. BufferPoolMaxSize is equal to 10.
+where i takes values from 0 to BUFFER_POOL_MAX_SIZE - 1. When a frame buffer is used for storing a decoded frame,
+it is indicated by a VBI slot that points to this frame buffer.
 
 **VBI** (virtual buffer index) is an array of indices of the frame areas in the BufferPool.
 VBI elements which do not point to any slot in the VBI are set to -1. VBI array size is equal to 8, with the indices taking values from 0 to 7. 
@@ -302,7 +302,7 @@ time_next_buffer_is_free ( i, time ) {
         time = decoder_buffer_delay ÷ 90000
     }
     foundBuffer = 0
-    for ( k = 0; k < BufferPoolMaxSize; k++ ) {
+    for ( k = 0; k < BUFFER_POOL_MAX_SIZE; k++ ) {
         if ( DecoderRefCount[ k ] == 0 ) {
             if ( PlayerRefCount[ k ] == 0 ) {
                 ScheduledRemovalResource[ i ] = time
@@ -408,7 +408,7 @@ The initialize_buffer_pool function resets the BufferPool and the VBI.
 
 ~~~~~ c
 initialize_buffer_pool( ) {
-    for ( i = 0; i < BufferPoolMaxSize; i++ )
+    for ( i = 0; i < BUFFER_POOL_MAX_SIZE; i++ )
         free_buffer( i )
     for ( i = 0; i < 8; i++ )
         VBI[ i ] = -1
@@ -420,7 +420,7 @@ The get_free_buffer function searches for an un-assigned frame in the BufferPool
 
 ~~~~~ c
 get_free_buffer( ) {
-    for ( i = 0; i < BufferPoolMaxSize; i++ ) {
+    for ( i = 0; i < BUFFER_POOL_MAX_SIZE; i++ ) {
         if ( DecoderRefCount[ i ] == 0 &&
              PlayerRefCount[ i ] == 0 )
             return i
@@ -457,7 +457,7 @@ The function start_decode_at_removal_time returns buffers to the BufferPool when
 
 ~~~~~ c
 start_decode_at_removal_time( removal ) {
-    for ( i = 0; i < BufferPoolMaxSize; i++ ) {
+    for ( i = 0; i < BUFFER_POOL_MAX_SIZE; i++ ) {
         if ( PlayerRefCount[ i ] > 0) {
             if ( PresentationTimes[ i ] < removal ) {
                  PlayerRefCount[ i ] = 0
@@ -479,7 +479,7 @@ The function frames_in_buffer_pool returns the number of assigned frames in the 
 ~~~~~ c
 frames_in_buffer_pool( ) {
     framesInPool = 0
-    for ( i = 0; i < BufferPoolMaxSize; i++ )
+    for ( i = 0; i < BUFFER_POOL_MAX_SIZE; i++ )
         if ( DecoderRefCount[ i ] != 0 || PlayerRefCount[ i ] != 0 )
             framesInPool++
     return framesInPool
