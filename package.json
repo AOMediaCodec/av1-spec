@@ -16,6 +16,7 @@
   },
   "license": "BSD-2-Clause",
   "dependencies": {
+    "anchor-js": "^4.1.1",
     "lodash": "^4.17.11"
   },
   "devDependencies": {
