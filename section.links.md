@@ -8,7 +8,7 @@
 [section 5.3.2]: #obu-header-syntax
 [section 6.2.3]: #obu-extension-header-semantics
 [section 7.11.2.6]: #smooth-intra-prediction-process
-[section 7.18.2.4]: #scaling-lookup-initialization-process
+[section 7.18.3.4]: #scaling-lookup-initialization-process
 [section 5.3.1]: #general-obu-syntax
 [section 5.9.30]: #film-grain-params-syntax
 [section 6.8.13]: #segmentation-params-semantics
@@ -198,7 +198,7 @@
 [section E.6]: #bitstream-conformance
 [section 7.10.4.2]: #add-sample-process
 [section 6.10.41]: #read-loop-restoration-unit-semantics
-[section 7.18.2.2]: #random-number-process
+[section 7.18.3.2]: #random-number-process
 [section 6.7]: #metadata-obu-semantics
 [section 6.10.35]: #intra-angle-info-semantics
 [section 5.11.41]: #get-scan-function
@@ -265,7 +265,8 @@
 [section 4.10.5]: #leb128
 [section 7.10.2.4]: #scan-point-process
 [section 5.11.11]: #skip-syntax
-[section 7.18.2]: #film-grain-synthesis-process
+[section 7.18.3]: #film-grain-synthesis-process
+[section 7.18.2]: #intermediate-output-preparation-process
 [section 6.8.11]: #quantization-params-semantics
 [section 5.11.58]: #read-loop-restoration-unit-syntax
 [section 7.13.2.3]: #inverse-dct-process
@@ -335,7 +336,7 @@
 [section 6.7.6.4]: #l2t1--l2t1h-informative
 [section 6.10.23]: #filter-intra-mode-info-semantics
 [section 5.11.1]: #general-tile-group-obu-syntax
-[section 7.18.2.5]: #add-noise-synthesis-process
+[section 7.18.3.5]: #add-noise-synthesis-process
 [section 5.11.16]: #block-tx-size-syntax
 [section 6.8.19]: #decode-subexp-semantics
 [section 6.10.30]: #mv-component-semantics
@@ -345,7 +346,7 @@
 [section 6.8.12]: #delta-quantizer-semantics
 [section E.6.4]: #smoothing-buffer-underflow
 [section 6.10.6]: #intra-frame-mode-info-semantics
-[section 7.18.2.3]: #generate-grain-process
+[section 7.18.3.3]: #generate-grain-process
 [section 5.11.4]: #decode-partition-syntax
 [section E.4.5]: #removal-times-in-resource-availability-mode
 [section C.3]: #recommendation-for-processable-frames
@@ -433,7 +434,7 @@
 [section 7.10.2.13]: #add-extra-mv-candidate-process
 [section 7.12.2]: #dequantization-functions
 [section 6.7.6.3]: #l1t3-informative
-[section 7.18.2.1]: #general-18
+[section 7.18.3.1]: #general-18
 [section 7.17.5]: #wiener-coefficient-process
 [section 6.7.6.5]: #l2t2--l2t2h-informative
 [section 8.2.1]: #general-19
