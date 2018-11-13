@@ -124,6 +124,8 @@ The bitstream constraints depend on the variables in the table, and additional v
   
   * TileHeight is defined as (MiRowEnd - MiRowStart) * MI_SIZE
   
+  * RightMostTile is defined as MiColEnd == MiCols
+
   * CroppedTileWidth is defined as FrameWidth - MiColStart * MI_SIZE
   
   * CroppedTileHeight is defined as FrameHeight - MiRowStart * MI_SIZE
@@ -202,6 +204,10 @@ it is a requirement of bitstream conformance that the following constraints hold
   * CompressedRatio is greater than or equal to MinPicCompressRatio
 
   * TileWidth is less than or equal to 4096 for each tile
+
+  * For each tile, if use_superres is equal to 0 and RightMostTile is equal to 0, then TileWidth is greater than or equal to 64
+
+  * For each tile, if use_superres is equal to 1 and RightMostTile is equal to 0, then TileWidth is greater than or equal to 128
 
   * TileWidth * TileHeight is less than or equal to 4096 * 2304 for each tile
 
