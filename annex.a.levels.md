@@ -150,7 +150,8 @@ The bitstream constraints depend on the variables in the table, and additional v
   
   * SpeedAdj is defined as TotalDecodedLumaSampleRate ÷ MaxDisplayRate
   
-  * MinPicCompressRatio defined as Max( 0.8, MinCompBasis * SpeedAdj * !still_picture )
+  * If still_picture is equal to 0, MinPicCompressRatio is set equal to Max( 0.8, MinCompBasis * SpeedAdj ),
+    otherwise MinPicCompressRatio is set equal to 0.8
   
   * CompressedRatio is defined as UnCompressedSize ÷ CompressedSize
   
