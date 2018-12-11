@@ -25,5 +25,4 @@ The other (non-anchor) frames are referred to as "Camera Frames" and each one is
 frame as a reference. Camera frames are highlighted in gray in the figure above,
 and are shown clustered into 5x5 groups to indicate which anchor fame each uses for prediction.
  
-The application is required to render a new 3-dimensional view at a rate of 90 fps.
-Each rendered frame is created from a single set of tiles as specified by a tile_list_obu as defined in [section 5.12][].
+The application is required to render a new 3-dimensional view at a rate of 90 fps. Each rendered frame may require at most two tile list OBU as defined in [section 5.12][] to be decoded, resulting in a maximum decode rate of 180 tile list OBU per second. Each decoded tile list OBU produces one output frame.

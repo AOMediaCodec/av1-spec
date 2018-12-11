@@ -265,7 +265,7 @@ and not decode anything bigger than that.
 {:.alert .alert-info }
 
 A level X.Y compliant decoder should be able to decode tile list OBUs (via the
-large scale tile decoding process) at a rate of 90 tile list OBUs per second subject to the following level-dependent constraints:
+large scale tile decoding process) at a rate of 180 tile list OBUs per second subject to the following level-dependent constraints:
 
   * UpscaledWidth * FrameHeight is less than or equal to MaxPicSize
   
@@ -273,8 +273,8 @@ large scale tile decoding process) at a rate of 90 tile list OBUs per second sub
   
   * FrameHeight is less than or equal to MaxVSize
   
-  * TileWidth * TileHeight * ( tile_count_minus_1 + 1 ) * 90 is less than or equal to ( MaxDecodeRate / 2 )
+  * TileWidth * TileHeight * ( tile_count_minus_1 + 1 ) * 180 is less than or equal to ( MaxDecodeRate / 2 )
   
-  * For each tile list OBU, BytesPerTileList * 8 * 90 is less than or equal to MaxBitrate
+  * For each tile list OBU, BytesPerTileList * 8 * 180 is less than or equal to MaxBitrate
 
 Where BytesPerTileList is defined as the sum of (coded_tile_data_size_minus_1 + 1) for each tile list entry in the tile list OBU.
