@@ -155,7 +155,7 @@ The bitstream constraints depend on the variables in the table, and additional v
   
   * CompressedRatio is defined as UnCompressedSize ÷ CompressedSize
   
-**Note:** The ÷ operator represents standard mathematical division (in contrast to the / operator which repesents integer division).
+**Note:** The ÷ operator represents standard mathematical division (in contrast to the / operator which represents integer division).
 {:.alert .alert-info }
   
 If scalability_mode_idc is not present or equal to a reserved value, then TemporalParallelNum and TemporalParallelDen are defined to be equal to 1.
