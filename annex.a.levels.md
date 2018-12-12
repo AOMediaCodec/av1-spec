@@ -88,23 +88,23 @@ The level defines variables as specified in the following tables:
 levels that are not yet defined.
 {:.alert .alert-info }
 
-| Level  | MaxHeaderRate | MainMbps    | HighMbps    | MinCompBasis | MaxTiles | MaxTileCols | Example
-|        | (/sec)        | (MBits/sec) | (MBits/sec) |              |          |             | 
-| ------ | ------------- | ----------- | ----------- | ------------ | -------- | ----------- | -------
-| 2.0    | 150           | 1.5         | -           | 2            | 8        | 4           | 426x240@30fps
-| 2.1    | 150           | 3.0         | -           | 2            | 8        | 4           | 640x360@30fps
-| 3.0    | 150           | 6.0         | -           | 2            | 16       | 6           | 854x480@30fps
-| 3.1    | 150           | 10.0        | -           | 2            | 16       | 6           | 1280x720@30fps
-| 4.0    | 300           | 12.0        | 30.0        | 4            | 32       | 8           | 1920x1080@30fps
-| 4.1    | 300           | 20.0        | 50.0        | 4            | 32       | 8           | 1920x1080@60fps
-| 5.0    | 300           | 30.0        | 100.0       | 6            | 64       | 8           | 3840x2160@30fps
-| 5.1    | 300           | 40.0        | 160.0       | 8            | 64       | 8           | 3840x2160@60fps
-| 5.2    | 300           | 60.0        | 240.0       | 8            | 64       | 8           | 3840x2160@120fps
-| 5.3    | 300           | 60.0        | 240.0       | 8            | 64       | 8           | 3840x2160@120fps
-| 6.0    | 300           | 60.0        | 240.0       | 8            | 128      | 16          | 7680x4320@30fps
-| 6.1    | 300           | 100.0       | 480.0       | 8            | 128      | 16          | 7680x4320@60fps
-| 6.2    | 300           | 160.0       | 800.0       | 8            | 128      | 16          | 7680x4320@120fps
-| 6.3    | 300           | 160.0       | 800.0       | 8            | 128      | 16          | 7680x4320@120fps
+| Level  | MaxHeaderRate | MainMbps    | HighMbps    | MainCR | HighCR | MaxTiles | MaxTileCols | Example
+|        | (/sec)        | (MBits/sec) | (MBits/sec) |        |        |          |             |
+| ------ | ------------- | ----------- | ----------- | ------ |------- | -------- | ----------- | -------
+| 2.0    | 150           | 1.5         | -           | 2      | -      | 8        | 4           | 426x240@30fps
+| 2.1    | 150           | 3.0         | -           | 2      | -      | 8        | 4           | 640x360@30fps
+| 3.0    | 150           | 6.0         | -           | 2      | -      | 16       | 6           | 854x480@30fps
+| 3.1    | 150           | 10.0        | -           | 2      | -      | 16       | 6           | 1280x720@30fps
+| 4.0    | 300           | 12.0        | 30.0        | 4      | 4      | 32       | 8           | 1920x1080@30fps
+| 4.1    | 300           | 20.0        | 50.0        | 4      | 4      | 32       | 8           | 1920x1080@60fps
+| 5.0    | 300           | 30.0        | 100.0       | 6      | 4      | 64       | 8           | 3840x2160@30fps
+| 5.1    | 300           | 40.0        | 160.0       | 8      | 4      | 64       | 8           | 3840x2160@60fps
+| 5.2    | 300           | 60.0        | 240.0       | 8      | 4      | 64       | 8           | 3840x2160@120fps
+| 5.3    | 300           | 60.0        | 240.0       | 8      | 4      | 64       | 8           | 3840x2160@120fps
+| 6.0    | 300           | 60.0        | 240.0       | 8      | 4      | 128      | 16          | 7680x4320@30fps
+| 6.1    | 300           | 100.0       | 480.0       | 8      | 4      | 128      | 16          | 7680x4320@60fps
+| 6.2    | 300           | 160.0       | 800.0       | 8      | 4      | 128      | 16          | 7680x4320@120fps
+| 6.3    | 300           | 160.0       | 800.0       | 8      | 4      | 128      | 16          | 7680x4320@120fps
 {:.table .table-sm .table-bordered }
 
 **Note:** Examples are given for non-scalable cases, but the constraints also apply to
@@ -115,7 +115,7 @@ The operating point containing just the base layer may be labelled as level 3.0,
 while the operating point containing both the base and enhancement layer may be labelled as level 4.1.
 {:.alert .alert-info }
 
-**Note:** HighMbps values are not defined for levels below level 4.0. seq_tier equal to 1 can only be signaled for level 4.0 and above. 
+**Note:** HighMbps and HighCR values are not defined for levels below level 4.0. seq_tier equal to 1 can only be signaled for level 4.0 and above.
 {:.alert .alert-info }
 
 The bitstream constraints depend on the variables in the table, and additional variables derived as follows:
@@ -150,6 +150,8 @@ The bitstream constraints depend on the variables in the table, and additional v
   
   * SpeedAdj is defined as TotalDecodedLumaSampleRate ÷ MaxDisplayRate
   
+  * If seq_tier is equal to 0, MinCompBasis is set equal to MainCR, otherwise MinCompBasis is set equal to HighCR
+
   * If still_picture is equal to 0, MinPicCompressRatio is set equal to Max( 0.8, MinCompBasis * SpeedAdj ),
     otherwise MinPicCompressRatio is set equal to 0.8
   
