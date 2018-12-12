@@ -146,7 +146,7 @@ The bitstream constraints depend on the variables in the table, and additional v
     ChromaOverhead (representing the number of chroma samples for every 4 luma samples) is set equal to 0, otherwise
     ChromaOverhead is set equal to 8 \>\> (subsampling_x + subsampling_y)
   
-  * UnCompressedSize is defined as MaxPicSize * BitDepth * (4 + ChromaOverhead) / 32
+  * UnCompressedSize is defined for each frame as UpscaledWidth * FrameHeight * BitDepth * (4 + ChromaOverhead) / 32
   
   * SpeedAdj is defined as TotalDecodedLumaSampleRate ÷ MaxDisplayRate
   
