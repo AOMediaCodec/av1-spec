@@ -206,7 +206,7 @@ it is a requirement of bitstream conformance that the following constraints hold
 
   * CompressedRatio is greater than or equal to MinPicCompressRatio
 
-  * TileWidth is less than or equal to 4096 for each tile
+  * ( TileWidth * SuperresDenom / SUPERRES_NUM ) is less than or equal to MAX_TILE_WIDTH for each tile
 
   * For each tile, if use_superres is equal to 0 and RightMostTile is equal to 0, then TileWidth is greater than or equal to 64
 
