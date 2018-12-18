@@ -142,11 +142,11 @@ The bitstream constraints depend on the variables in the table, and additional v
   
   * CompressedSize is defined for each frame as the total bytes in the OBUs related to this frame (OBU_FRAME, OBU_FRAME_HEADER, OBU_METADATA, OBU_TILE_GROUP), minus 128 (to allow for overhead of metadata and header data)
   
-  * If mono_chrome is equal to 1, 
-    ChromaOverhead (representing the number of chroma samples for every 4 luma samples) is set equal to 0, otherwise
-    ChromaOverhead is set equal to 8 \>\> (subsampling_x + subsampling_y)
+  * If seq_profile is equal to 0, PicSizeProfileFactor is set equal to 15,
+    else if seq_profile is equal to 1, PicSizeProfileFactor is set equal to 30,
+    otherwise PicSizeProfileFactor is set equal to 36
   
-  * UnCompressedSize is defined for each frame as UpscaledWidth * FrameHeight * BitDepth * (4 + ChromaOverhead) / 32
+  * UnCompressedSize is defined for each frame as ( UpscaledWidth * FrameHeight * PicSizeProfileFactor ) >> 3
   
   * SpeedAdj is defined as TotalDecodedLumaSampleRate ÷ MaxDisplayRate
   
