@@ -3,30 +3,38 @@
 
 ### General
 
-Profiles and levels specify restrictions on the capabilities needed to decode the bitstreams.
+Profiles and levels specify restrictions on the capabilities needed to decode
+the bitstreams.
 
-The profile specifies the bit depth and subsampling formats supported, while the level defines
-resolution and performance characteristics.
+The profile specifies the bit depth and subsampling formats supported, while the
+level defines resolution and performance characteristics.
 
 ### Profiles
 
 There are three named profiles:
 
-  * "Main" compliant decoders must be able to decode streams with seq_profile equal to 0.
-  * "High" compliant decoders must be able to decode streams with seq_profile less than or equal to 1.
-  * "Professional" compliant decoders must be able to decode streams with seq_profile less than or equal to 2.
-  
-**Note:** The Main profile supports YUV 4:2:0 or monochrome bitstreams with bit depth equal to 8 or 10.
-The High profile further adds support for 4:4:4 bitstreams with the same bit depth constraints.
-Finally, the Professional profile extends support over the High profile to also
-bitstreams with bit depth equal to 12, and also adds support for the 4:2:2 video format.
+  * "Main" compliant decoders must be able to decode streams with seq_profile
+    equal to 0.
+
+  * "High" compliant decoders must be able to decode streams with seq_profile
+    less than or equal to 1.
+
+  * "Professional" compliant decoders must be able to decode streams with
+    seq_profile less than or equal to 2.
+
+**Note:** The Main profile supports YUV 4:2:0 or monochrome bitstreams with bit
+depth equal to 8 or 10. The High profile further adds support for 4:4:4
+bitstreams with the same bit depth constraints. Finally, the Professional
+profile extends support over the High profile to also bitstreams with bit depth
+equal to 12, and also adds support for the 4:2:2 video format.
 {:.alert .alert-info }
 
 ### Levels
 
 Each operating point contains a syntax element seq_level_idx.
 
-The following table defines the mapping from the syntax element (which takes integer values) to the defined levels:
+The following table defines the mapping from the syntax element (which takes
+integer values) to the defined levels:
 
 | Value of seq_level_idx | Level
 | ---------------------- | --------------
@@ -107,64 +115,97 @@ levels that are not yet defined.
 | 6.3    | 300           | 160.0       | 800.0       | 8      | 4      | 128      | 16          | 7680x4320@120fps
 {:.table .table-sm .table-bordered }
 
-**Note:** Examples are given for non-scalable cases, but the constraints also apply to
-each operating point of a scalable
-stream.  For example, consider a 60fps spatial scalable stream with a base layer at 960x540, and an
-enhancement layer at 1920x1080.
-The operating point containing just the base layer may be labelled as level 3.0,
-while the operating point containing both the base and enhancement layer may be labelled as level 4.1.
+**Note:** Examples are given for non-scalable cases, but the constraints also
+apply to each operating point of a scalable stream.  For example, consider a
+60fps spatial scalable stream with a base layer at 960x540, and an enhancement
+layer at 1920x1080. The operating point containing just the base layer may be
+labelled as level 3.0, while the operating point containing both the base and
+enhancement layer may be labelled as level 4.1.
 {:.alert .alert-info }
 
-**Note:** HighMbps and HighCR values are not defined for levels below level 4.0. seq_tier equal to 1 can only be signaled for level 4.0 and above.
+**Note:** HighMbps and HighCR values are not defined for levels below level 4.0.
+seq_tier equal to 1 can only be signaled for level 4.0 and above.
 {:.alert .alert-info }
 
-The bitstream constraints depend on the variables in the table, and additional variables derived as follows:
+The bitstream constraints depend on the variables in the table, and additional
+variables derived as follows:
 
   * TileWidth is defined as (MiColEnd - MiColStart) * MI_SIZE
-  
+
   * TileHeight is defined as (MiRowEnd - MiRowStart) * MI_SIZE
-  
+
   * RightMostTile is defined as MiColEnd == MiCols
 
   * CroppedTileWidth is defined as FrameWidth - MiColStart * MI_SIZE
-  
-  * CroppedTileHeight is defined as FrameHeight - MiRowStart * MI_SIZE
-  
-  * MaxTileSizeInLumaSamples is defined as the largest product of TileWidth * TileHeight for all tiles within the coded video sequence
-  
-  * showCount for a particular frame is defined as the number of times the frame is shown (either due to show_frame equal to 1, or via the show_existing_frame mechanism)
-  
-  * TotalDisplayLumaSampleRate is defined as the sum of the UpscaledWidth * FrameHeight * showCount of all frames that belong to the temporal unit that belongs to the operating point, divided by the time difference between the display time of the first frame of the current temporal unit and the display time of the first frame of the next temporal unit (if present). For the last temporal unit in the bitstream, the time difference from the previous temporal unit is used. In particular, for spatial and quality scalability, this limit applies to output pictures that belong to this particular layer. For temporal scalability, this restriction applies to the output pictures that belong to the indicated scalability layer and to the layers below.
-  
-  * TotalDecodedLumaSampleRate is defined as the sum of the UpscaledWidth * FrameHeight of all frames with show_existing_frame equal to 0 that belong to the temporal unit that belongs to the operating point, divided by the time difference between the decoding time of the first frame of the current temporal unit and the decoding time of the first frame of the next temporal unit (if present). For the last temporal unit in the bitstream, the time difference from the previous temporal unit is used.
 
-  * NumFrameHeadersSec is defined as the number of OBU_FRAME and OBU_FRAME_HEADER OBUs received per second (this number does not include duplicate frame headers or frame headers with show_existing_frame equal to 1)
-  
-  * CompressedSize is defined for each frame as the total bytes in the OBUs related to this frame (OBU_FRAME, OBU_FRAME_HEADER, OBU_METADATA, OBU_TILE_GROUP), minus 128 (to allow for overhead of metadata and header data)
-  
+  * CroppedTileHeight is defined as FrameHeight - MiRowStart * MI_SIZE
+
+  * MaxTileSizeInLumaSamples is defined as the largest product of TileWidth *
+    TileHeight for all tiles within the coded video sequence
+
+  * showCount for a particular frame is defined as the number of times the frame
+    is shown (either due to show_frame equal to 1, or via the
+    show_existing_frame mechanism)
+
+  * TotalDisplayLumaSampleRate is defined as the sum of the UpscaledWidth *
+    FrameHeight * showCount of all frames that belong to the temporal unit that
+    belongs to the operating point, divided by the time difference between the
+    display time of the first frame of the current temporal unit and the display
+    time of the first frame of the next temporal unit (if present). For the last
+    temporal unit in the bitstream, the time difference from the previous
+    temporal unit is used. In particular, for spatial and quality scalability,
+    this limit applies to output pictures that belong to this particular layer.
+    For temporal scalability, this restriction applies to the output pictures
+    that belong to the indicated scalability layer and to the layers below.
+
+  * TotalDecodedLumaSampleRate is defined as the sum of the UpscaledWidth *
+    FrameHeight of all frames with show_existing_frame equal to 0 that belong
+    to the temporal unit that belongs to the operating point, divided by the
+    time difference between the decoding time of the first frame of the current
+    temporal unit and the decoding time of the first frame of the next temporal
+    unit (if present). For the last temporal unit in the bitstream, the time
+    difference from the previous temporal unit is used.
+
+  * NumFrameHeadersSec is defined as the number of OBU_FRAME and
+    OBU_FRAME_HEADER OBUs received per second (this number does not include
+    duplicate frame headers or frame headers with show_existing_frame equal to 1)
+
+  * CompressedSize is defined for each frame as the total bytes in the OBUs
+    related to this frame (OBU_FRAME, OBU_FRAME_HEADER, OBU_METADATA,
+    OBU_TILE_GROUP), minus 128 (to allow for overhead of metadata and header data)
+
   * If seq_profile is equal to 0, PicSizeProfileFactor is set equal to 15,
     else if seq_profile is equal to 1, PicSizeProfileFactor is set equal to 30,
     otherwise PicSizeProfileFactor is set equal to 36
-  
-  * UnCompressedSize is defined for each frame as ( UpscaledWidth * FrameHeight * PicSizeProfileFactor ) >> 3
-  
+
+  * UnCompressedSize is defined for each frame as ( UpscaledWidth *
+    FrameHeight * PicSizeProfileFactor ) >> 3
+
   * SpeedAdj is defined as TotalDecodedLumaSampleRate ÷ MaxDisplayRate
-  
-  * If seq_tier is equal to 0, MinCompBasis is set equal to MainCR, otherwise MinCompBasis is set equal to HighCR
 
-  * If still_picture is equal to 0, MinPicCompressRatio is set equal to Max( 0.8, MinCompBasis * SpeedAdj ),
-    otherwise MinPicCompressRatio is set equal to 0.8
-  
+  * If seq_tier is equal to 0, MinCompBasis is set equal to MainCR, otherwise
+    MinCompBasis is set equal to HighCR
+
+  * If still_picture is equal to 0, MinPicCompressRatio is set equal to
+    Max( 0.8, MinCompBasis * SpeedAdj ), otherwise MinPicCompressRatio is set
+    equal to 0.8
+
   * CompressedRatio is defined as UnCompressedSize ÷ CompressedSize
-  
-**Note:** The ÷ operator represents standard mathematical division (in contrast to the / operator which represents integer division).
+
+**Note:** The ÷ operator represents standard mathematical division (in contrast
+to the / operator which represents integer division).
 {:.alert .alert-info }
-  
-If scalability_mode_idc is not present or equal to a reserved value, then TemporalParallelNum and TemporalParallelDen are defined to be equal to 1.
 
-Otherwise, if scalability_mode_idc is not equal to SCALABILITY_SS, TemporalParallelDen is defined as 1 and TemporalParallelNum is defined as (1 \<\< ( TemporalLayers - 1 )) where TemporalLayers is the number of temporal layers as defined in the semantics for scalability_mode_idc.
+If scalability_mode_idc is not present or equal to a reserved value, then
+TemporalParallelNum and TemporalParallelDen are defined to be equal to 1.
 
-Otherwise (scalability_mode_idc is equal to SCALABILITY_SS), TemporalParallelNum and TemporalParallelDen are defined as follows:
+Otherwise, if scalability_mode_idc is not equal to SCALABILITY_SS,
+TemporalParallelDen is defined as 1 and TemporalParallelNum is defined as
+(1 \<\< ( TemporalLayers - 1 )) where TemporalLayers is the number of temporal
+layers as defined in the semantics for scalability_mode_idc.
+
+Otherwise (scalability_mode_idc is equal to SCALABILITY_SS),
+TemporalParallelNum and TemporalParallelDen are defined as follows:
 
 ~~~~~ c
 NumIndependent = 0
@@ -206,11 +247,14 @@ it is a requirement of bitstream conformance that the following constraints hold
 
   * CompressedRatio is greater than or equal to MinPicCompressRatio
 
-  * ( TileWidth * SuperresDenom / SUPERRES_NUM ) is less than or equal to MAX_TILE_WIDTH for each tile
+  * ( TileWidth * SuperresDenom / SUPERRES_NUM ) is less than or equal to
+    MAX_TILE_WIDTH for each tile
 
-  * For each tile, if use_superres is equal to 0 and RightMostTile is equal to 0, then TileWidth is greater than or equal to 64
+  * For each tile, if use_superres is equal to 0 and RightMostTile is equal to
+    0, then TileWidth is greater than or equal to 64
 
-  * For each tile, if use_superres is equal to 1 and RightMostTile is equal to 0, then TileWidth is greater than or equal to 128
+  * For each tile, if use_superres is equal to 1 and RightMostTile is equal to
+    0, then TileWidth is greater than or equal to 128
 
   * TileWidth * TileHeight is less than or equal to 4096 * 2304 for each tile
 
@@ -222,27 +266,36 @@ it is a requirement of bitstream conformance that the following constraints hold
 
   * CroppedTileHeight is greater than or equal to 8 for each tile
 
-  * MaxTileSizeInLumaSamples * NumFrameHeadersSec * TemporalParallelDen/TemporalParallelNum is less than or equal to 588,251,136 (where this number is the decode luma sample rate of 4096x2176 * 60fps * 1.1)
+  * MaxTileSizeInLumaSamples * NumFrameHeadersSec *
+    TemporalParallelDen/TemporalParallelNum is less than or equal to 588,251,136
+    (where this number is the decode luma sample rate of 4096x2176 * 60fps *
+    1.1)
 
-  **Note:** The purpose of this constraint is to ensure that for decode luma sample rates above 4K60 there is
-  sufficient parallelism for decoder implementations. Parallelism can be chosen by the encoder as either tile
-  level parallelism or temporal layer parallelism or a combination provided the above constraint holds. 
-  The constraint has no effect on levels 5.1 and below.
+  **Note:** The purpose of this constraint is to ensure that for decode luma
+  sample rates above 4K60 there is sufficient parallelism for decoder
+  implementations. Parallelism can be chosen by the encoder as either tile
+  level parallelism or temporal layer parallelism or a combination provided the
+  above constraint holds. The constraint has no effect on levels 5.1 and below.
   {:.alert .alert-info }
 
-If seq_level_idx is equal to 31 (indicating the maximum parameters level), then there are no level-based constraints on the bitstream.
-  
-**Note:** The maximum parameters level should only be set for bitstreams that do not conform to any other level.
-Typically this would be used for large resolution still images. 
+If seq_level_idx is equal to 31 (indicating the maximum parameters level), then
+there are no level-based constraints on the bitstream.
+
+**Note:** The maximum parameters level should only be set for bitstreams that do
+not conform to any other level. Typically this would be used for large
+resolution still images.
 {:.alert .alert-info }
 
 The buffer model is used to define additional conformance requirements.
 
-These requirements depend on the following level, tier, and profile dependent variables:
+These requirements depend on the following level, tier, and profile dependent
+variables:
 
-  * If seq_tier is equal to 0, MaxBitrate is equal to MainMbps multiplied by 1,000,000
+  * If seq_tier is equal to 0, MaxBitrate is equal to MainMbps multiplied by
+    1,000,000
 
-  * Otherwise (seq_tier is equal to 1), MaxBitrate is equal to HighMbps multiplied by 1,000,000
+  * Otherwise (seq_tier is equal to 1), MaxBitrate is equal to HighMbps
+    multiplied by 1,000,000
 
   * MaxBufferSize is equal to MaxBitrate multiplied by 1 second
 
@@ -254,30 +307,36 @@ These requirements depend on the following level, tier, and profile dependent va
 
 ### Decoder Conformance
 
-A level X.Y compliant decoder must be able to decode all bitstreams (that can be decoded by the general decoding process) that conform to that level.
+A level X.Y compliant decoder must be able to decode all bitstreams (that can be
+decoded by the general decoding process) that conform to that level.
 
-When doing that, the decoder must be able to display output frames according to the display schedule if such is indicated by the bitstream.
+When doing that, the decoder must be able to display output frames according to
+the display schedule if such is indicated by the bitstream.
 
-**Note:** If the level of a bitstream is equal to 31 (indicating the maximum parameters level),
-the decoder should examine the properties of the bitstream and decide whether to decode it or not.
-There is no assurance that all pictures will be decoded.
-A decoder would typically decode pictures up to a certain maximum uncompressed picture size
-(or maximum compressed picture size or maximum width or maximum tile size)
-that the decoder maker considers sufficiently extreme for their use case,
-and not decode anything bigger than that. 
+**Note:** If the level of a bitstream is equal to 31 (indicating the maximum
+parameters level), the decoder should examine the properties of the bitstream
+and decide whether to decode it or not. There is no assurance that all pictures
+will be decoded. A decoder would typically decode pictures up to a certain
+maximum uncompressed picture size (or maximum compressed picture size or maximum
+width or maximum tile size) that the decoder maker considers sufficiently
+extreme for their use case, and not decode anything bigger than that.
 {:.alert .alert-info }
 
 A level X.Y compliant decoder should be able to decode tile list OBUs (via the
-large scale tile decoding process) at a rate of 180 tile list OBUs per second subject to the following level-dependent constraints:
+large scale tile decoding process) at a rate of 180 tile list OBUs per second
+subject to the following level-dependent constraints:
 
   * UpscaledWidth * FrameHeight is less than or equal to MaxPicSize
-  
-  * UpscaledWidth is less than or equal to MaxHSize
-  
-  * FrameHeight is less than or equal to MaxVSize
-  
-  * TileWidth * TileHeight * ( tile_count_minus_1 + 1 ) * 180 is less than or equal to ( MaxDecodeRate / 2 )
-  
-  * For each tile list OBU, BytesPerTileList * 8 * 180 is less than or equal to MaxBitrate
 
-Where BytesPerTileList is defined as the sum of (coded_tile_data_size_minus_1 + 1) for each tile list entry in the tile list OBU.
+  * UpscaledWidth is less than or equal to MaxHSize
+
+  * FrameHeight is less than or equal to MaxVSize
+
+  * TileWidth * TileHeight * ( tile_count_minus_1 + 1 ) * 180 is less than or
+    equal to ( MaxDecodeRate / 2 )
+
+  * For each tile list OBU, BytesPerTileList * 8 * 180 is less than or equal to
+    MaxBitrate
+
+Where BytesPerTileList is defined as the sum of (coded_tile_data_size_minus_1 +
+1) for each tile list entry in the tile list OBU.
