@@ -6,6 +6,6 @@ Jack Haughton, Argon Design Ltd
 **Codec Working Group Chair**  
 Adrian Grange, Google LLC
 
-**Design**  
+**Document Design**  
 Lou Quillio, Google LLC
 
