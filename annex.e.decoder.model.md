@@ -544,12 +544,11 @@ they are no longer required for decode or display.
 start_decode_at_removal_time( removal ) {
     for ( i = 0; i < BUFFER_POOL_MAX_SIZE; i++ ) {
         if ( PlayerRefCount[ i ] > 0) {
-            if ( PresentationTimes[ i ] < removal ) {
+            if ( PresentationTimes[ i ] <= removal ) {
                  PlayerRefCount[ i ] = 0
                  if ( DecoderRefCount[ i ] == 0 )
                      free_buffer( i )
             }
-            break
         }
     }
     return removal
