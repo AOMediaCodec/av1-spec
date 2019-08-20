@@ -117,7 +117,7 @@ flag equal to 0, i.e. frames that need to be decoded by the decoding process.
 
 **FirstBitArrival[ i ]** is the time when the first bit of the i-th DFG starts
 entering the decoder smoothing buffer. For the first coded DFG in the sequence,
-DFG 0 (or after updating decoder model parameters at RAP),
+DFG 0 (or after updating decoder model parameters at a random access point),
 FirstBitArrival[ 0 ] = 0.
 
 **LastBitArrival[ i ]** is the time when the last bit of DFG i finishes entering
@@ -684,9 +684,9 @@ A conformant coded bitstream shall satisfy the following set of constraints.
 For the decoder model a DFG shall be available in the smoothing buffer at the
 scheduled removal time, i.e. ScheduledRemoval[ i ] >= LastBitArrival[ i ].
 
-It is a requirement of the bitstream conformance that after each RAP, the
+It is a requirement of the bitstream conformance that after each random access point, the
 PresentationTime[ j ], where j corresponds to the frame decoding order is
-strictly increasing until the next RAP or the end of the coded video sequence,
+strictly increasing until the next random access point or the end of the coded video sequence,
 i.e. PresentationTime[ j + 1] > PresentationTime[ j ].
 
 When buffer_removal_time[ i ] is not present in the bitstream, a bitstream is
@@ -703,7 +703,7 @@ bitstream with seq_level_idx equal to 31.
 In addition to these, a conformant bitstream shall satisfy the constraints
 specified in the following sections.
 
-#### Decoder buffer delay consistency across RAP (applies to decoding schedule mode)
+#### Decoder buffer delay consistency across random access points (applies to decoding schedule mode)
 {:.no_count}
 
 For frame i, where i > 0, TimeDelta[ i ] is defined as follows:
