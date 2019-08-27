@@ -300,8 +300,13 @@ first DFG is removed from the smoothing buffer, decoder_buffer_delay:
 ~~~~~ c
 ScheduledRemovalTiming[ 0 ] = decoder_buffer_delay ÷ 90 000
 
-ScheduledRemovalTiming[ i ] = ScheduledRemovalTiming[ 0 ]  + buffer_removal_time[ i ] * DecCT
+ScheduledRemovalTiming[ i ] = ScheduledRemovalTiming[ PrevRap ]  + buffer_removal_time[ i ] * DecCT
 ~~~~~
+
+When j is not equal to 0 and frame j is associated with a random access point,
+PrevRap is the index associated with the previous random access point.
+Otherwise, if frame j is not associated with the random access point, PrevRap corresponds to
+the idex associated with the most recent accesss point.
 
 DFG i is removed from the smoothing buffer at time Removal[ i ].
 
@@ -438,8 +443,20 @@ frame rate mode, the frame presentation time is defined as follows:
 ~~~~~ c
 PresentationTime[ 0 ] = InitialPresentationDelay
 
-PresentationTime[ j ] = InitialPresentationDelay + ( frame_presentation_time[ j ] - frame_presentation_time[ 0 ] ) * DispCT
+PresentationTime[ j ] = InitialPresentationDelay + ( frame_presentation_time[ j ] - frame_presentation_time[ PrevPresent ] ) * DispCT
 ~~~~~
+
+When j is not equal to 0 and frame j is associated with a key frame random access point, a
+key frame recovery point or a frame following a delayed random access point and
+preceding the associated key frame dependent recovery point,
+PrevPresent corresponds to the index associated with the previous random access point
+if the previous random access point is a key frame random access point or a previous
+key frame dependent recovery point if the previous random access point is a
+delayed random access point. Otherwise, PrevPresent corresponds to
+the index associated with the last key frame random access point if the previous
+random access point is a key frame random access point or a previous
+key frame dependent recovery point if the previous random access point is a
+delayed random access point.
 
 When equal_picture_interval is equal to 1, the decoder operates in the constant
 frame rate mode, and the frame presentation time is defined as follows:
@@ -714,8 +731,7 @@ TimeDelta[ i ] = ( ScheduledRemoval[ i ] - LastBitArrival[ i -1 ] ) * 90 000
 
 For the video sequence that includes one or more random access points, for
 each key frame, where the decoder_buffer_delay is signaled, the following
-expression should hold to provide smooth playback without the need to
-rebuffer.
+expression shall hold.
 
 ~~~~~ c
 decoder_buffer_delay <= ceil( TimeDelta[ i ] )
