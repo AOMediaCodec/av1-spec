@@ -714,6 +714,10 @@ If buffer_removal_time[ i ] is signaled, it shall have a value greater or
 equal than the equivalent value that would have been assigned if the decoder
 model was decoding frames in the resource availability mode.
 
+For a conformance bitstream, a bitstream produced from the conformant bitstream
+by removing the part of the bitstream preceding any of its random access points
+shall also be a conformant bitstream according to the decoder model.
+
 Conformance requirements based on a decoder model are not applicable to a
 bitstream with seq_level_idx equal to 31.
 
