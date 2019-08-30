@@ -306,7 +306,7 @@ ScheduledRemovalTiming[ i ] = ScheduledRemovalTiming[ PrevRap ]  + buffer_remova
 When j is not equal to 0 and frame j is associated with a random access point,
 PrevRap is the index associated with the previous random access point.
 Otherwise, if frame j is not associated with the random access point, PrevRap corresponds to
-the idex associated with the most recent accesss point.
+the index associated with the most recent random access point.
 
 DFG i is removed from the smoothing buffer at time Removal[ i ].
 
@@ -714,7 +714,7 @@ If buffer_removal_time[ i ] is signaled, it shall have a value greater or
 equal than the equivalent value that would have been assigned if the decoder
 model was decoding frames in the resource availability mode.
 
-For a conformance bitstream, a bitstream produced from the conformant bitstream
+For a conformant bitstream, a bitstream produced from the conformant bitstream
 by removing the part of the bitstream preceding any of its random access points
 shall also be a conformant bitstream according to the decoder model.
 
@@ -740,6 +740,9 @@ expression shall hold.
 ~~~~~ c
 decoder_buffer_delay <= ceil( TimeDelta[ i ] )
 ~~~~~
+
+For frame j, where j > 0 and is associated with a random access point, let j-1
+
 
 #### Smoothing buffer overflow
 {:.no_count}
