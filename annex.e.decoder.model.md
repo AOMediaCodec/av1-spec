@@ -300,7 +300,7 @@ first DFG is removed from the smoothing buffer, decoder_buffer_delay:
 ~~~~~ c
 ScheduledRemovalTiming[ 0 ] = decoder_buffer_delay ÷ 90 000
 
-ScheduledRemovalTiming[ i ] = ScheduledRemovalTiming[ PrevRap ]  + buffer_removal_time[ i ] * DecCT
+ScheduledRemovalTiming[ i ] = ScheduledRemovalTiming[ PrevRap ] + buffer_removal_time[ i ] * DecCT
 ~~~~~
 
 When j is not equal to 0 and frame j is associated with a random access point,
@@ -714,8 +714,17 @@ If buffer_removal_time[ i ] is signaled, it shall have a value greater or
 equal than the equivalent value that would have been assigned if the decoder
 model was decoding frames in the resource availability mode.
 
-For a conformant bitstream, a bitstream produced from the conformant bitstream
-by removing the part of the bitstream preceding any of its random access points
+It is a requirement of a bitstream conformance that a conformant bistream
+is decodable according to the decoder model if the decoding starts from
+any of its random access points. This means that for a conformant bitstream,
+a bitstream produced from the conformant bitstream by removing the part of
+the bitstream preceding a keyframe random access point
+shall also be a conformant bitstream according to the decoder model.
+
+For a conformant bitstream, a bitstream produced from the conformant bitstream by:
+1) removing the part of the bitstream preceding a delayed random access point
+2) converting the part of the bitstream between the delayed random access point
+and the keyframe dependent recovery point into a keyframe random access point
 shall also be a conformant bitstream according to the decoder model.
 
 Conformance requirements based on a decoder model are not applicable to a
