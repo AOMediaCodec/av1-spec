@@ -750,9 +750,6 @@ expression shall hold.
 decoder_buffer_delay <= ceil( TimeDelta[ i ] )
 ~~~~~
 
-For frame j, where j > 0 and is associated with a random access point, let j-1
-
-
 #### Smoothing buffer overflow
 {:.no_count}
 
