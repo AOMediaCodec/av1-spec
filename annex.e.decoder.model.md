@@ -443,7 +443,7 @@ frame rate mode, the frame presentation time is defined as follows:
 ~~~~~ c
 PresentationTime[ 0 ] = InitialPresentationDelay
 
-PresentationTime[ j ] = InitialPresentationDelay + ( frame_presentation_time[ j ] - frame_presentation_time[ PrevPresent ] ) * DispCT
+PresentationTime[ j ] = PresentationTime[ PrevPresent ] + frame_presentation_time[ j ] * DispCT
 ~~~~~
 
 When j is not equal to 0 and frame j is associated with a key frame random access point, a
