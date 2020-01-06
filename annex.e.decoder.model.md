@@ -117,7 +117,7 @@ flag equal to 0, i.e. frames that need to be decoded by the decoding process.
 
 **FirstBitArrival[ i ]** is the time when the first bit of the i-th DFG starts
 entering the decoder smoothing buffer. For the first coded DFG in the sequence,
-DFG 0 (or after updating decoder model parameters at RAP),
+DFG 0 (or after updating decoder model parameters at a random access point),
 FirstBitArrival[ 0 ] = 0.
 
 **LastBitArrival[ i ]** is the time when the last bit of DFG i finishes entering
@@ -300,8 +300,13 @@ first DFG is removed from the smoothing buffer, decoder_buffer_delay:
 ~~~~~ c
 ScheduledRemovalTiming[ 0 ] = decoder_buffer_delay ÷ 90 000
 
-ScheduledRemovalTiming[ i ] = ScheduledRemovalTiming[ 0 ]  + buffer_removal_time[ i ] * DecCT
+ScheduledRemovalTiming[ i ] = ScheduledRemovalTiming[ PrevRap ] + buffer_removal_time[ i ] * DecCT
 ~~~~~
+
+When j is not equal to 0 and frame j is associated with a random access point,
+PrevRap is the index associated with the previous random access point.
+Otherwise, if frame j is not associated with the random access point, PrevRap corresponds to
+the index associated with the most recent random access point.
 
 DFG i is removed from the smoothing buffer at time Removal[ i ].
 
@@ -438,8 +443,20 @@ frame rate mode, the frame presentation time is defined as follows:
 ~~~~~ c
 PresentationTime[ 0 ] = InitialPresentationDelay
 
-PresentationTime[ j ] = InitialPresentationDelay + ( frame_presentation_time[ j ] - frame_presentation_time[ 0 ] ) * DispCT
+PresentationTime[ j ] = PresentationTime[ PrevPresent ] + frame_presentation_time[ j ] * DispCT
 ~~~~~
+
+When j is not equal to 0 and frame j is associated with a key frame random access point, a
+key frame recovery point or a frame following a delayed random access point and
+preceding the associated key frame dependent recovery point,
+PrevPresent corresponds to the index associated with the previous random access point
+if the previous random access point is a key frame random access point or a previous
+key frame dependent recovery point if the previous random access point is a
+delayed random access point. Otherwise, PrevPresent corresponds to
+the index associated with the last key frame random access point if the previous
+random access point is a key frame random access point or a previous
+key frame dependent recovery point if the previous random access point is a
+delayed random access point.
 
 When equal_picture_interval is equal to 1, the decoder operates in the constant
 frame rate mode, and the frame presentation time is defined as follows:
@@ -684,9 +701,9 @@ A conformant coded bitstream shall satisfy the following set of constraints.
 For the decoder model a DFG shall be available in the smoothing buffer at the
 scheduled removal time, i.e. ScheduledRemoval[ i ] >= LastBitArrival[ i ].
 
-It is a requirement of the bitstream conformance that after each RAP, the
+It is a requirement of the bitstream conformance that after each random access point, the
 PresentationTime[ j ], where j corresponds to the frame decoding order is
-strictly increasing until the next RAP or the end of the coded video sequence,
+strictly increasing until the next random access point or the end of the coded video sequence,
 i.e. PresentationTime[ j + 1] > PresentationTime[ j ].
 
 When buffer_removal_time[ i ] is not present in the bitstream, a bitstream is
@@ -697,13 +714,26 @@ If buffer_removal_time[ i ] is signaled, it shall have a value greater or
 equal than the equivalent value that would have been assigned if the decoder
 model was decoding frames in the resource availability mode.
 
+It is a requirement of a bitstream conformance that a conformant bistream
+is decodable according to the decoder model if the decoding starts from
+any of its random access points. This means that for a conformant bitstream,
+a bitstream produced from the conformant bitstream by removing the part of
+the bitstream preceding a keyframe random access point
+shall also be a conformant bitstream according to the decoder model.
+
+For a conformant bitstream, a bitstream produced from the conformant bitstream by:
+1) removing the part of the bitstream preceding a delayed random access point
+2) converting the part of the bitstream between the delayed random access point
+and the keyframe dependent recovery point into a keyframe random access point
+shall also be a conformant bitstream according to the decoder model.
+
 Conformance requirements based on a decoder model are not applicable to a
 bitstream with seq_level_idx equal to 31.
 
 In addition to these, a conformant bitstream shall satisfy the constraints
 specified in the following sections.
 
-#### Decoder buffer delay consistency across RAP (applies to decoding schedule mode)
+#### Decoder buffer delay consistency across random access points (applies to decoding schedule mode)
 {:.no_count}
 
 For frame i, where i > 0, TimeDelta[ i ] is defined as follows:
@@ -714,8 +744,7 @@ TimeDelta[ i ] = ( ScheduledRemoval[ i ] - LastBitArrival[ i -1 ] ) * 90 000
 
 For the video sequence that includes one or more random access points, for
 each key frame, where the decoder_buffer_delay is signaled, the following
-expression should hold to provide smooth playback without the need to
-rebuffer.
+expression shall hold.
 
 ~~~~~ c
 decoder_buffer_delay <= ceil( TimeDelta[ i ] )
