@@ -138,7 +138,7 @@ rate.
 #### Resource availability mode
 {:.no_count}
 
-In this mode the model simulates the operation of the decoder under the
+In this mode, the model simulates the operation of the decoder under the
 assumption that the complete coded frame is available in the smoothing buffer
 when decoding of that frame begins. In addition, it is assumed that the decoder
 will begin to decode a frame immediately after it finishes decoding the previous
@@ -150,7 +150,7 @@ of a bitstream.
 
 To verify that a bitstream can be decoded by a decoder under the constraints of
 a particular level it is assumed that the decoder performs the decoding
-operations at maximum speed (the minimum time interval) specified for that level
+operations at the maximum speed (the minimum time interval) specified for that level
 in [section A.3][].
 
 To use Resource Availability mode, the following parameters should be set in the
@@ -310,7 +310,7 @@ the index associated with the most recent random access point.
 
 DFG i is removed from the smoothing buffer at time Removal[ i ].
 
-There are two modes of operation of a decoder which determine whether the
+There are two modes of operation of a decoder that determine whether the
 actual DFG removal time Removal[ i ] may be different from the scheduled DFG
 removal timing ScheduledRemovalTiming [ i ]. As was mentioned earlier, the
 decoder starts decoding a frame instantaneously when the data that belongs to
@@ -349,7 +349,7 @@ Removal[ i ]  =  ScheduledRemovalTiming[ i ]
 #### Removal times in resource availability mode
 {:.no_count}
 
-In the resource availability mode, buffer_removal_time[ i ] are not signaled for
+In the resource availability mode, buffer_removal_time[ i ] is not signaled for
 the chosen operating point. In this mode, timing of the decoder model is driven
 by the availability of the resources in the decoder, in particular, by times
 when the decoding of the previous frame with show_existing_frame flag equal to 0
