@@ -159,7 +159,7 @@ variables derived as follows:
     that belong to the indicated scalability layer and to the layers below.
 
   * TotalDecodedLumaSampleRate is defined as the sum of the UpscaledWidth *
-    FrameHeight of all frames with show_existing_frame equal to 0 that belong
+    FrameHeight of all frames with show_existing_frame equal to 0 that belongs
     to the temporal unit that belongs to the operating point, divided by the
     time difference between the decoding time of the first frame of the current
     temporal unit and the decoding time of the first frame of the next temporal
