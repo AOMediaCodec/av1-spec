@@ -18,22 +18,21 @@ usually needed to build Ruby and certain Ruby gems.
 
 ### Ruby and rbenv
 
-This project currently depends on Ruby v2.4.1. Because your distro may lack this
+This project currently depends on Ruby v3.2.0. Because your distro may lack this
 version -- or installing it may conflict with your system's installed version --
-first **[install rbenv]**, then install Ruby v2.4.1 within it.
+first **[install rbenv]**, then install Ruby v3.2.0 within it.
 
 ~~~~~ bash
 # list all available versions:
 $ rbenv install -l
-2.2.6
-2.3.0-dev
-2.3.0-preview1
-2.3.0-preview2
-2.3.0
-2.4.1
+3.1.4
+3.2.0
+3.2.2
+jruby-9.4.2.0
+mruby-3.2.0
 
 # install a Ruby version:
-$ rbenv install 2.4.1
+$ rbenv install 3.2.0
 ~~~~~
 
 Depending on your distro and environment, you may have trouble building a
@@ -67,11 +66,11 @@ cd av1-spec
 In the directory of your local clone, do:
 
 ~~~~~ bash
-rbenv local 2.4.1
+rbenv local 3.2.0
 ~~~~~
 
 Regardless of any other Rubies installed on your system, the project environment
-will now use v2.4.1 and gems appropriate for it.
+will now use v3.2.0 and gems appropriate for it.
 
 
 ### Install Gem Dependencies with Bundler
@@ -100,9 +99,6 @@ npm update -g npm
 ## Install grunt globally
 npm install -g grunt-cli
 
-## Go the the project directory
-cd av1-spec
-
 ## Install the project's Node dependencies
 ## (uses package.json and Gruntfile)
 npm install
@@ -125,21 +121,6 @@ These tasks are invoked in turn by the Grunt default task:
 
 ~~~~~
 $ grunt
-~~~~~
-
-There is also a task that starts a local web server, and launches the document
-in your web browser:
-
-~~~~~
-$ grunt connect:local
-~~~~~
-
-The document will be viewable at <http://127.0.0.1:4000/docs/>
-
-If you'd rather not launch a browser window, use:
-
-~~~~~
-$ grunt connect:nospawn
 ~~~~~
 
 
