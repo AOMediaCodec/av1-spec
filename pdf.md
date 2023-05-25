@@ -19,7 +19,7 @@ version_date: Released 2017-xx-xx
 </div>
 </div>
 </div>
-<div style="counter-increment: page -12 pages -12"></div>
+<div style="counter-increment: page -1 pages -12"></div>
 {% include_relative 01.scope.md %}
 {% include_relative 02.terms.md %}
 <div style="page-break-before: always"></div>
