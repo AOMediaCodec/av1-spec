@@ -29,7 +29,7 @@ In particular, a frame that is processable will have correct values for:
 
   * All syntax elements
 
-  * The size, bitdepth, subsampling structure of any output frames
+  * The size, bitdepth and subsampling structure of any output frames
 
   * All values written in the reference frame update process specified in [section 7.20][], except for the contents of FrameStore
   (which may or may not be correct).
@@ -50,7 +50,7 @@ A frame with show_existing_frame equal to 0 is defined to be processable if the 
   has been scaled - but this is not known unless the frame has been processed)
 
   * The decoding process for the frame does not use values in RefOrderHint before they have been written
-    (written either by the decoding process for the current frame, or written when a previous frame was processed)
+    (written either by the decoding process for the current frame or written when a previous frame was processed)
 
   * If the syntax element found_ref is equal to 1, ref_frame_idx[ i ] indicates a frame that has been processed
   (this is necessary because the frame dimensions are only correct for processed frames)
