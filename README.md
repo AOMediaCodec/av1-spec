@@ -144,7 +144,7 @@ development, the canonical spec will likely be served as HTML, not PDF.
 [kramdown]: https://kramdown.gettalong.org/
 [Jekyll]: https://jekyllrb.com/
 [rbenv]: https://github.com/rbenv/rbenv
-[bundler]: http://bundler.io/
+[bundler]: https://bundler.io/
 [install rbenv]: https://github.com/rbenv/rbenv#installation
 [GruntJS]: https://gruntjs.com/
 [NodeJS]: https://nodejs.org/
