@@ -23,7 +23,7 @@
      and management – Part 2-1: Colour management – Default RGB colour space –
      sRGB.
      
-  7. ISO/IEC 23091-4/ITU-T H.273, Coding-independent code points for video
+  7. ISO/IEC 23091-2/ITU-T H.273, Coding-independent code points for video
      signal type identification.
 
   8. Zhang, Cha, and Jin Li. "Compression of lumigraph with multiple reference frame (MRF) prediction and just-in-time rendering." Data Compression Conference, 2000. Proceedings. DCC 2000. IEEE, 2000.
